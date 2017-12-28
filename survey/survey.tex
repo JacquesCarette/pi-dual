@@ -164,8 +164,8 @@ of computation (which are logically irreversible) and the fundamental
 laws of physics (which are reversible). One could certainly dismiss
 the mismatch as irrelevant to the practice of computing but our thesis
 is that the next computing revolution is likely to be founded on
-revised models of computation that are designed to in harmony with the
-laws of physics.
+revised models of computation that are designed to in closer harmony
+with the laws of physics.
 
 After a detailed introduction on the origins of ``logically
 reversibile computer operations'' and an excursion into the origins of
@@ -210,12 +210,13 @@ to the take the information content of computations into consideration
 -- in fact, at that time there was no quantifiable notion of
 information. These models followed in the footsteps of logic where,
 following hundreds of years of tradition, conventional operations such
-conjunction and disjunction are logically irreversible. These models
-were already radical enough, by being purely \emph{constructive}, in
-an era where classical mathematics, with its pervasive use of excluded
-middle and frequent use of the axiom of choice, did not overly worry
-about effective representation. Landauer's observation implied however
-that ideas in each field have consequences for the
+conjunction and disjunction lose information by logically
+irreversible. These models were already radical enough, by being
+purely \emph{constructive}, in an era where classical mathematics,
+with its pervasive use of excluded middle and frequent use of the
+axiom of choice, did not overly worry about effective
+representation. Landauer's observation implied however that ideas in
+each field have consequences for the
 other~\cite{bennett:1973:lrc,bennett1985fundamental,bennett2010notes,bennett2003notes,baker:1992:nft,baez2011physics,dblp:conf/csfw/malacarias12}. To
 really appreciate this fact, we delve deeper into the origin of our
 computational models and argue that they are essentially reflections
@@ -223,19 +224,14 @@ of contemporary laws of physics.
 
 %%%%%%%%%
 \paragraph*{Origins of Computational Models.}
-Machines that ``compute'' are quite old. M\"{u}ller (1786) first
-conceived of the idea of a ``difference machine'', which Babbage
-(1819--1822) was able to construct. There are other computer
-precursors as well -- the first stored programs were actually for
-looms, most notably those of Bouchon (1725) which operated on a paper
-tape, and Jacquard (1804) which operated by chains of punched cards.
-Logical operations in high-level programming languages and in our
-hardware are based on Boolean Logic -- which really ought to be called
-\emph{Piercean logic}, as Boole had a rather different conception of
-logic which is rather far from our current models.  Nevertheless,
-going back to Boole's 1853 book entitled \emph{An Investigation of the
-  Laws of Thought, on which are Founded the Mathematical Theories of
-  Logic and Probabilities}. The opening sentence of Ch.~1 is:
+Our current logical operations in high-level programming languages and
+in our current hardware are both based on Boolean Logic -- which
+really ought to be called \emph{Piercean logic}, as Boole had a rather
+different conception of logic which is rather far from our current
+models.  Nevertheless, going back to Boole's 1853 book entitled
+\emph{An Investigation of the Laws of Thought, on which are Founded
+  the Mathematical Theories of Logic and Probabilities}. The opening
+sentence of Ch.~1 is:
 \begin{quote}
   The design of the following treatise is to investigate the fundamental laws
   of those operations of the mind by which reasoning is performed; \ldots
@@ -250,14 +246,20 @@ later, we find:
   consequence of the fundamental law of thought, whose expression is $x^2 =
   x$.
 \end{quote}
-This ``law'' is reasonable in a classical world but is violated by
+This ``law'' is reasonable in a classical world but is violated by the
 postulates of quantum mechanics. Although a detailed historical
 analysis of Boole's ideas in the light of modern physics is beyond our
 scope, the above quotes should convey the idea that our elementary
 computing notions date back to ideas that were thought reasonable
 before \textasciitilde 1900.
 
-The 20th century witnessed the real advent of computer science as a
+Machines that ``compute'' are quite old. M\"{u}ller (1786) first
+conceived of the idea of a ``difference machine'', which Babbage
+(1819--1822) was able to construct. There are other computer
+precursors as well -- the first stored programs were actually for
+looms, most notably those of Bouchon (1725) which operated on a paper
+tape, and Jacquard (1804) which operated by chains of punched cards.
+But it was only in the 20th century that computer science emerged as a
 formal discipline. One of the pioneering works was Alan Turing's
 seminal paper in 1936 which established the idea that computation has
 a formal interpretation and that all computability can be captured
@@ -282,14 +284,14 @@ It is worth noting that these assumptions are both physical (on
 distances) and metaphysical (on restrictions of the mind).  If we take
 the human mind to be a physical ``machine'' which does computation,
 then when both of the above assumptions are translated to the language
-of physics, they embody what is known as the ``Bekenstein bound:''
+of physics, they embody what is known as the ``Bekenstein bound'',
 which is an upper limit on the amount of information that can be
 contained within a given finite region of space. A detailed historical
 account of these ideas in the context of modern physics is again
 beyond our scope. However, the quotes above, like the ones before,
 should convey the ideas that our theories of computation and
-complexity are based on some assumptions that Turing and others found
-reasonable in the 1930s.
+complexity are based on some physical assumptions that Turing and
+others found reasonable in the 1930s.
 
 To summarize, a major achievement of computer science has been the
 development of abstract models of computation that shield the
@@ -297,14 +299,12 @@ discipline from rapid changes in the underlying technology. Yet, as
 effective as these models have been, one must note that they
 \emph{embody several implicit physical assumptions} and these
 assumptions are based on a certain understanding of the laws of
-physics.
-
-Our understanding of physics has evolved tremendously since 1900!
-Thus it is time to revisit these abstractions, especially with respect
-to quantum mechanics.  Indeed one should take the physical principles
-underlying quantum mechanics, the most successful physical theory
-known to us and adapt computation to ``learn'' from these principles.
-In the words of Girard:
+physics. Our understanding of physics has evolved tremendously since
+1900!  Thus it is time to revisit these abstractions, especially with
+respect to quantum mechanics.  Indeed one should take the physical
+principles underlying quantum mechanics, the most successful physical
+theory known to us and adapt computation to ``learn'' from these
+principles.  In the words of Girard:
 \begin{quote}
   In other terms, what is so good in logic that quantum physics should
   obey?  Can't we imagine that our conceptions about logic are wrong,
@@ -314,11 +314,12 @@ In the words of Girard:
   shall interpret logic into quantum (Girard 2007).
 \end{quote}
 
-There are, in fact, many different principles of physics which are at
-odds with our current models of computation. In this paper, we will
-view data as an explicit representation of \emph{information},
-programs as processes that transform information in a reversible way,
-i.e., processes that are subject to the physical principle of
+There are, in fact, many different quantum mechanical principles which
+are at odds with our current models of computation. In this paper, we
+will focus on the following particular aspect. We will view data as an
+explicit representation of \emph{information} and programs as
+processes that transform information in a reversible way, i.e.,
+processes that are subject to the physical principle of
 \emph{conservation of information.} We will formalize this idea and
 follow its consequences, which will turn out to be far reaching.
 
@@ -349,7 +350,7 @@ When we look around, we find many different words for related
 concepts: isomorphism, equivalence, sameness, equality,
 interchangeability, comparability, and correspondence, to name a
 few. Some of these are informal concepts, while others have formal
-mathematical meaning.  More important, even amongst the formal
+mathematical meaning.  More importantly, even amongst the formal
 concepts, there are differences -- which is why there are so many of
 them! Because there are many such notions, we also need to walk our
 way through them to find the one which is ``just right''. Thus we seek
@@ -1057,6 +1058,11 @@ some level 2 morphisms not working.
 The interpretation on permutations is unclear, because the Pi representation
 has so much more structure, and permutations too have many different
 representations. So it is unclear what maps to what.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data IV: Circle ???}
+
+Would be interesting
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
