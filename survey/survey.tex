@@ -694,11 +694,6 @@ commutative semirings stand out even more, we will use $0, 1, +$, and $*$
 at the type level, and will denote ``equivalence'' by $\iso$.
 Thus Figure~\ref{pi-terms} shows the ``constants'' of the language.
 
-\jc{wavefront}
-
-Of course, one does not get a programming language with just (typed)
-constants!
-
 \begin{figure}[t]
 \[
 \Rule{}
@@ -720,6 +715,22 @@ constants!
 \caption{$\Pi$-combinators.}
 \label{pi-combinators}
 \end{figure}
+
+Of course, one does not get a programming language with just typed
+constants! There is a need to perform multiple equivalences. There are
+in fact three ways to do this: sequential composition $\odot$, 
+choice composition $\oplus$ (sometimes called juxtaposition) and parallel
+composition $otimes$. See Figure~\ref{pi-combinators} for the signatures.
+
+$c_1 \odot c_2$ corresponds to performing $c_1$ first, then $c_2$, and
+is the usual notion of composition -- and corresponds to $\fatsemi$ of
+the language of the previous section. $c_1 \oplus c\_2$ chooses to
+perform $c_1$ or $c_2$ depending on whether the input is labelled
+$\textsf{inl}$ or $\textsf{inr}$ respectively. $c_1 \otimes c_2$
+operates on a product structure, and applies $c_1$ to the first component
+and $c_2$ to the second.
+
+\jc{wavefront}
 
 The type-erasure will, naturally, be permutations. But where do the
 isomorphisms come from?  Well, inhabitants of types with (0,1,+,*)
