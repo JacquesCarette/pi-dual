@@ -436,13 +436,14 @@ $\mathit{swap}~j~j$ would represent the identity permutation.
 
 Although this language appears weak, it is universal for boolean
 combinational circuits. The result follows from the following
-construction of the Toffoli gate which is universal for combinational
-circuits. We write $[2^n]$ for the finite set representing $n$-bit
-words with the canonical ordering for binary numbers. Thus when $n=3$,
-the finite set has elements $\{0,1,2,3,4,5,6,7\}$ which correspond to
-the 3-bit words $\{000,001,010,011,100,101,110,111\}$. The Toffoli
-gate is a reversible function $[2^3] \rightarrow [2^3]$ which swaps
-$110$ and $111$, i.e., it can be realized as $\mathit{swap}~6~7$. 
+construction of the Toffoli gate and the fact that any combinational
+circuit can be realized using compositions of Toffoli gates. We write
+$[2^n]$ for the finite set representing $n$-bit words with the
+canonical ordering for binary numbers. Thus when $n=3$, the finite set
+has elements $\{0,1,2,3,4,5,6,7\}$ which correspond to the 3-bit words
+$\{000,001,010,011,100,101,110,111\}$. The Toffoli gate is a
+reversible function $[2^3] \rightarrow [2^3]$ which swaps $110$ and
+$111$, i.e., it can be realized as $\mathit{swap}~6~7$.
 
 In programming practice we are however more interested in structured
 data which will be the subject on next section. What we learn from
