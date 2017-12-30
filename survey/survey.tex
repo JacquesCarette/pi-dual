@@ -417,7 +417,7 @@ This discussion is purely ``semantic'', in the sense that it is about
 the denotation of simple primitive data (sets) and their reversible
 deformations (bijections).  We would like to reverse engineer a programming
 language from this denotation. But first, an obvious remark: any two sets
-$C$ and $D$ of cardinality $n$ are always in bijective correspondance. So
+$C$ and $D$ of cardinality $n$ are always in bijective correspondence. So
 we can abstract away from the details of the elements of $C$ and $D$ and
 instead choose canonical representations -- in much the same way as computers
 choose binary words to represent everything.
@@ -487,27 +487,31 @@ malleable. For example, imagining a product structure as arranged in a
 grid, by stretching we can turn this structure to a sum structure
 arranged in a line. 
 
-We now turn into the mathematical formalization of this idea. First we
-note that the type structure of types has a nice correspondance
-(Curry-Howard) to logic:
+We now turn into the mathematical formalization of this idea. Our goal
+is a sound and complete equivalence relation on types that maintains
+the number of points. First we note that the type structure of types
+has a nice correspondence (Curry-Howard) to logic:
 
 \begin{center}
 \begin{tabular}{c|c}
 Logic & Types \\ \hline
-$\true$ & $\top$ \\
-$\false$ & $\bot$ \\
+$\false$ & $\mathbf{0}$ \\
+$\true$ & $\mathbf{1}$ \\
 $\land$ & $\times$ \\
 $\lor$ & $\uplus$ \\
 \end{tabular}
 \end{center}
 
-This correspondance is rather fruitful. As logical expressions form
-a commutative semiring, we would expect that types too form a commutative
-semiring. And indeed they do -- at least up to \emph{type equivalence}.  The
-natural numbers $\Nat$ are another commutative semiring; it will turn out that,
-even though the Curry-Howard correspondance has been extremely fruitful for
-programming language research, it is $\Nat$ which will be a better model for
-finite structured types.
+This correspondence is rather fruitful. As logical expressions form a
+commutative semiring, we would expect that types too form a
+commutative semiring. And indeed they do -- at least up to \emph{type
+  isomorphism}.  The natural numbers $\Nat$ are another commutative
+semiring; it will turn out that, even though the Curry-Howard
+correspondence has been extremely fruitful for programming language
+research, it is $\Nat$ which will be a better model for finite
+structured types as the corresponding commutative semiring captures
+the familiar numerical identities that evidently preserve the number
+of points in the types. 
 
 \begin{defn}
   A \emph{commutative semiring} (sometimes called a \emph{commutative
@@ -537,23 +541,22 @@ The structure $\left(\mathbb{B}, \false, \true, \lor, \land\right)$
 is a commutative semiring.
 \end{prop}
 
-We cannot immediately use the above definition in a typed setting.
-First, types do not naturally want to be put together into a ``set''.
-This can be fixed if we replace the set $R$ with a universe $U$, and
-rather than insisting that we have $0 \in R$, we have a typing
-judgement $\bot : U$ (and similarly for the other items).
-
-Our first instinct would be to similarly replace $=$ with
-$\equiv$, i.e. propositional equality. This bring the second
-problem to the fore: this is false. For example, unless $A \equiv B$,
-$A \times B \equiv B \times A$ is not normally provable%
-\footnote{Not without assuming that $U$ is univalent, which we
-don't.}. But it should be clear that $A \times B$ and $B \times A$
-contain equivalent information. In other words, we would like to
-be able to witness that $A \times B$ can be reversibly deformed
-into $B \times A$. Which motivates the introduction of
-type \emph{equivalences}. To do this, we need a few important
-auxiliary concepts first.
+We would like to adapt the commutative semiring definition to the
+setting of structured types. First, types do not naturally want to be
+put together into a ``set''.  This can be fixed if we replace the set
+$R$ with a universe $U$, and replace the set membership $0 \in R$ with
+the typing judgement $\mathbf{0} : U$ (and similarly for the other
+items). Our first instinct would be to similarly replace $=$ with a
+judgement $A \equiv B$ that asserts that $A$ and $B$ are
+\emph{propositionally equal}. This is however not true: unless
+$A \equiv B$, $A \times B \equiv B \times A$ is not normally
+provable\footnote{Not without assuming that $U$ is univalent, which we
+  don't.}. But it should be clear that $A \times B$ and $B \times A$
+contain equivalent information. In other words, we would like to be
+able to witness that $A \times B$ can be reversibly deformed into
+$B \times A$. Which motivates the introduction of type
+\emph{equivalences}. To do this, we need a few important auxiliary
+concepts first.
 
 \begin{defn}[homotopy]
 \label{def:homotopy}
@@ -597,7 +600,7 @@ the definition of type equivalence. The differences will not matter to
 us here.
 
 If we replace $=$ by $\simeq$, then we can indeed prove that
-types (with $\bot, \top, \uplus, \times$) form a commutative semiring.
+types (with $\mathbf{0}, \mathbf{1}, \uplus, \times$) form a commutative semiring.
 
 The reader familiar with universal algebra should pause
 and ponder a bit about what we have done. We have lifted
@@ -607,14 +610,14 @@ of interest. Then, and only then, are we in a solid position
 to show that we have a concept (commutative semiring) which is flexible
 enough for types to be an instance.
 
-If we revisit the Curry-Howard correspondance, we notice one
+If we revisit the Curry-Howard correspondence, we notice one
 more issue. In logic, it is true that $A \lor A = A$ and
 $A \land A = A$. However, neither $A \uplus A$ nor $A \times A$ are
 equivalent to $A$. They are however \emph{equi-inhabited}. This is
 a fancy way of saying
 \[ A \uplus A \ \text{is inhabited} \qquad \Leftrightarrow
   \qquad A \ \text{is inhabited} \]
-The above is the real \textit{essence} of the correspondance.
+The above is the real \textit{essence} of the correspondence.
 In other words, classical Curry-Howard tells us about
 \emph{logical equivalence} of types. This is even a
 constructive statement: there are indeed functions
@@ -630,10 +633,10 @@ property of any binary operation $*$ where
 $\forall a. a * a = a$. And it should be clear that idempotent
 operations are \emph{forgetful}: its input has two copies of $a$,
 but its output, only one. On the type side, something more subtle
-happens. Consider $\top \uplus \top$ versus $\top$; the first has
+happens. Consider $\mathbf{1} \uplus \mathbf{1}$ versus $\mathbf{1}$; the first has
 \emph{two} proofs of inhabitation ($\texttt{inl tt} and \texttt{inr tt}$)
 while the second only one ($\texttt{tt}$). These cannot be put in
-bijective correspondance. Even though the ``payload'' \texttt{tt}
+bijective correspondence. Even though the ``payload'' \texttt{tt}
 is the same, forgetting $\texttt{inl}$ (or \texttt{inr}) throws
 away information -- something we have expressly disallowed.
 Yes, this should remind you of Maxwell's demon: even though the
@@ -645,15 +648,15 @@ data is indeed information, and must be preserved.
 \begin{array}{rrcll}
 \idc :& \tau & \simeq & \tau &: \idc \\
 \\
-\identlp :&  \bot \uplus \tau & \simeq & \tau &: \identrp \\
+\identlp :&  \mathbf{0} \uplus \tau & \simeq & \tau &: \identrp \\
 \swapp :&  \tau_1 \uplus \tau_2 & \simeq & \tau_2 \uplus \tau_1 &: \swapp \\
 \assoclp :&  \tau_1 \uplus (\tau_2 \uplus \tau_3) & \simeq & (\tau_1 \uplus \tau_2) \uplus \tau_3 &: \assocrp \\
 \\
-\identlt :&  \top \times \tau & \simeq & \tau &: \identrt \\
+\identlt :&  \mathbf{1} \times \tau & \simeq & \tau &: \identrt \\
 \swapt :&  \tau_1 \times \tau_2 & \simeq & \tau_2 \times \tau_1 &: \swapt \\
 \assoclt :&  \tau_1 \times (\tau_2 \times \tau_3) & \simeq & (\tau_1 \times \tau_2) \times \tau_3 &: \assocrt \\
 \\
-\distz :&~ \bot \times \tau & \simeq & \bot ~ &: \factorzl \\
+\distz :&~ \mathbf{0} \times \tau & \simeq & \mathbf{0} ~ &: \factorzl \\
 \dist :&~ (\tau_1 \uplus \tau_2) \times \tau_3 & \simeq & (\tau_1 \times \tau_3) \uplus (\tau_2 \times \tau_3)~ &: \factor
 \end{array}
 \]
@@ -661,9 +664,9 @@ data is indeed information, and must be preserved.
 \label{type-isos}
 \end{figure}
 
-Nevertheless, the Curry-Howard correspondance still has some
+Nevertheless, the Curry-Howard correspondence still has some
 force. We know that the inhabitants of types formed with
-with $\bot, \top, \uplus, \times$ are a commutative semiring. What we
+with $\mathbf{0}, \mathbf{1}, \uplus, \times$ are a commutative semiring. What we
 want to know is, which types are equivalent? From a commutative semiring
 perspective, this amounts to asking what terms are equal?
 We have a set of generators for those equations, namely those
@@ -698,7 +701,7 @@ a programming language, which we proceed to do next.
 
 We now have in our hands our desired denotational semantics: we want
 to create a language $\Pi$ such that the types and type combinators
-map to $\bot, \top, \uplus, \times$, and such that we have ground
+map to $\mathbf{0}, \mathbf{1}, \uplus, \times$, and such that we have ground
 terms whose denotation are all $16$ type isomorphisms of
 Figure~\ref{type-isos}. This is completely straightforward, as
 we can simply do this literally. To make the analogy with
@@ -1358,7 +1361,7 @@ language'' of semirings (and Rig Groupoids at level 2) is actually a
 programming language. And it is Pi. This is a neat twist on
 Curry-Howard because CH is about \textbf{inhabitation} only. But with
 ``conservation of information'' as the basis, a different kind of
-correspondance arises; in fact, this one may well be an actual
+correspondence arises; in fact, this one may well be an actual
 isomorphism.}
 
 %%%%%%%%%
