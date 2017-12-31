@@ -385,6 +385,7 @@ as to be reversible.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data I: Finite Sets}
+\label{sec:dataone}
 
 Some of the simplest spaces are the finite and discrete spaces of
 points. Indeed most programming languages provide some collection of
@@ -464,63 +465,69 @@ structured data which we investigate next.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data II: Structured Finite Types}
 
-Instead of the spaces consisting solely of unstructured isolated
-points, we now investigate structured spaces built from sums and
-products of elementary spaces. This structure corresponds to the
-building blocks of type theory which are: the empty type
-($\mathbf{0}$), the unit type ($\mathbf{1}$), the sum type ($\uplus$),
-and the product ($\times$) type. Before getting into the formal
-theory, let's consider possible deformations on the space
-$(\mathbf{1} \uplus \mathbf{0}) \times (\mathbf{1} \uplus
-\mathbf{1})$. This space is the product of two subspaces: the subspace
-$(\mathbf{1} \uplus \mathbf{0})$ which itself is the sum of the space
-$\mathbf{1}$ containing one element and the empty space $\mathbf{0}$
-and the subspace $(\mathbf{1} \uplus \mathbf{1})$ which is the sum of
-two spaces each containing one element. First, as discussed in the
-previous section, any deformation of this space must at least preserve
-the number of elements: we can neither create nor destroy points
-during any continuous deformation. Seeing that the number of elements
-in our example space is 2, a reasonable hypothesis is that we can
-deform the space above to any other space with 2 elements. What this
+Instead of spaces consisting solely of unstructured isolated points,
+we now investigate structured spaces built from sums and products of
+elementary spaces. This structure corresponds to the building blocks
+of type theory which are: the empty type ($\bot$), the unit type
+($\top$), the sum type ($\uplus$), and the product ($\times$)
+type. Before getting into the formal theory, let's consider possible
+deformations on the space
+$(\top \uplus \bot) \times (\top \uplus \top)$. This space is the
+product of two subspaces: the subspace $(\top \uplus \bot)$ which
+itself is the sum of the space $\top$ containing one element
+$\texttt{tt}$ and the empty space $\bot$ and the subspace
+$(\top \uplus \top)$ which is the sum of two spaces each containing
+the one element $\texttt{tt}$. First, as discussed in the previous
+section, any deformation of this space must at least preserve the
+number of elements: we can neither create nor destroy points during
+any continuous deformation. Seeing that the number of elements in our
+example space is 2, a reasonable hypothesis is that we can deform the
+space above to any other space with 2 elements such as
+$\top \uplus \top$ or $\top \uplus (\top \uplus \bot)$. What this
 really means is that we are treating the sum and product structure as
 malleable. For example, imagining a product structure as arranged in a
 grid, by stretching we can turn this structure to a sum structure
-arranged in a line. 
+arranged in a line, change the orientation of the grid by exchanging
+the axes, as well as do other transformations to be discussed in this
+section that preserve the number of points.
+
+%%%%%%%%%
+\subsection{A Model of Type Equivalences} 
 
 We now turn into the mathematical formalization of this idea. Our goal
-is a sound and complete equivalence relation on types that maintains
-the number of points. First we note that the type structure of types
-has a nice correspondence (Curry-Howard) to logic:
+is a denotational semantics on types that maintains the number of
+points. First we note that the type structure of types has a nice
+correspondence (Curry-Howard) to logic:
 
 \begin{center}
 \begin{tabular}{c|c}
 Logic & Types \\ \hline
-$\false$ & $\mathbf{0}$ \\
-$\true$ & $\mathbf{1}$ \\
+$\false$ & $\bot$ \\
+$\true$ & $\top$ \\
 $\land$ & $\times$ \\
 $\lor$ & $\uplus$ \\
 \end{tabular}
 \end{center}
 
-This correspondence is rather fruitful. As logical expressions form a
-commutative semiring, we would expect that types too form a
-commutative semiring. And indeed they do -- at least up to \emph{type
-  isomorphism}.  The natural numbers $\Nat$ are another commutative
-semiring; it will turn out that, even though the Curry-Howard
-correspondence has been extremely fruitful for programming language
-research, it is $\Nat$ which will be a better model for finite
-structured types as the corresponding commutative semiring captures
-the familiar numerical identities that evidently preserve the number
-of points in the types. 
+\noindent This correspondence is rather fruitful. As logical
+expressions form a commutative semiring, we would expect that types
+too form a commutative semiring. And indeed they do -- at least up to
+\emph{type isomorphism}.  The natural numbers $\Nat$ are another
+commutative semiring; it will turn out that, even though the
+Curry-Howard correspondence has been extremely fruitful for
+programming language research, it is $\Nat$ which will be a better
+model for finite structured types as the corresponding commutative
+semiring captures the familiar numerical identities that preserve the
+number of points in the types.
 
 \begin{defn}
-  A \emph{commutative semiring} (sometimes called a \emph{commutative
-    rig} (commutative ri\emph{n}g without negative elements) consists of a
-  set $R$, two distinguished elements of $R$ named 0 and 1, and two
-  binary operations~$+$ and $\cdot$, satisfying the following
-  relations for any $a,b,c \in R$:
-\begin{equation}
-\begin{array}{rcl}
+\label{def:rig}
+A \emph{commutative semiring} (sometimes called a \emph{commutative
+  rig} (commutative ri\emph{n}g without negative elements)
+$(R,0,1,+,\cdot)$ consists of a set $R$, two distinguished elements of
+$R$ named 0 and 1, and two binary operations~$+$ and $\cdot$,
+satisfying the following relations for any $a,b,c \in R$:
+\[\begin{array}{rcl}
 0 + a &=& a \\
 a + b &=& b + a \\
 a + (b + c) &=& (a + b) + c \\
@@ -531,9 +538,7 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 \\
 0 \cdot a &=& 0 \\
 (a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
-\end{array}
-\label{eq:csemiring}
-\end{equation}
+\end{array}\]
 \end{defn}
 
 \begin{prop}
@@ -545,28 +550,29 @@ We would like to adapt the commutative semiring definition to the
 setting of structured types. First, types do not naturally want to be
 put together into a ``set''.  This can be fixed if we replace the set
 $R$ with a universe $U$, and replace the set membership $0 \in R$ with
-the typing judgement $\mathbf{0} : U$ (and similarly for the other
-items). Our first instinct would be to similarly replace $=$ with a
+the typing judgement $\bot : U$ (and similarly for the other
+items). Our next instinct would be to similarly replace $=$ with a
 judgement $A \equiv B$ that asserts that $A$ and $B$ are
-\emph{propositionally equal}. This is however not true: unless
-$A \equiv B$, $A \times B \equiv B \times A$ is not normally
-provable\footnote{Not without assuming that $U$ is univalent, which we
-  don't.}. But it should be clear that $A \times B$ and $B \times A$
-contain equivalent information. In other words, we would like to be
-able to witness that $A \times B$ can be reversibly deformed into
+\emph{propositionally equal}. This is however not true: the
+proposition $A \times B \equiv B \times A$ is not
+normally\footnote{Except In homotopy type theory where equivalent
+  types are identified.} provable for arbitrary types $A$ and $B$. But
+it should be clear that $A \times B$ and $B \times A$ contain
+equivalent information. In other words, we would like to be able to
+witness that $A \times B$ can be reversibly deformed into
 $B \times A$. Which motivates the introduction of type
 \emph{equivalences}. To do this, we need a few important auxiliary
-concepts first.
+concepts.
 
-\begin{defn}[homotopy]
+\begin{defn}[Homotopy]
 \label{def:homotopy}
 Two functions $f,g:A \rightarrow B$ are \emph{homotopic} if
-$\forall x:A. f(x) = g(x)$. We denote this $f \sim g$.
+$\forall x:A. f(x) \equiv g(x)$. We denote this $f \sim g$.
 \end{defn}
 
 \noindent It is easy to prove that homotopies (for any given function
 space $A \rightarrow B$) are an equivalence relation.  The simplest
-definition of the data which makes up an equivalence is then
+definition of the data which makes up an equivalence is the following.
 
 \begin{defn}[Quasi-inverse]
 \label{def:quasi}
@@ -582,10 +588,10 @@ $\beta : g \circ f \sim \mathrm{id}_A$.
   function $f : A \rightarrow B$ together with a quasi-inverse for $f$.
 \end{defn}
 
-\noindent Why \emph{quasi}? The reasons are beyond our scope, but
-the interested reader can read sections $2.4$ and $4$ in \cite{hottbook}.
-There are several conceptually different, but equivalent,
-``better'' definitions.  We record just one here:
+\noindent Why \emph{quasi}? The reasons are beyond our scope, but the
+interested reader can read Sec.~$2.4$ and Ch.~$4$ in the HoTT
+book~\cite{hottbook}.  There are several conceptually different, but
+equivalent, ``better'' definitions.  We record just one here:
 
 \begin{defn}[Bi-invertibility]
 \label{def:biinv}
@@ -599,84 +605,85 @@ $\beta : h \circ f \sim \mathrm{id}_A$.
 the definition of type equivalence. The differences will not matter to
 us here.
 
-If we replace $=$ by $\simeq$, then we can indeed prove that
-types (with $\mathbf{0}, \mathbf{1}, \uplus, \times$) form a commutative semiring.
-
-The reader familiar with universal algebra should pause
-and ponder a bit about what we have done. We have lifted
-\emph{equality} from being in the signature of the ambient logic
-and instead put it in the signature of the algebraic structure
-of interest. Then, and only then, are we in a solid position
-to show that we have a concept (commutative semiring) which is flexible
-enough for types to be an instance.
+We are now in position to formally state the appropriate commutative
+semiring structure for types. After replacing the set $R$ with a
+universe $U$, we also replace the algebraic use of $=$ in
+Def.~\ref{def:rig} by the type equivalence relation $\simeq$. With
+this change, we can indeed prove that types (with
+$\bot, \top, \uplus, \times$) form a commutative semiring. The reader
+familiar with universal algebra should pause and ponder a bit about
+what we have done. We have lifted \emph{equality} from being in the
+signature of the ambient logic and instead put it in the signature of
+the algebraic structure of interest. Then, and only then, are we in a
+solid position to show that we have a concept (commutative semiring)
+which is flexible enough for types to be an instance.
 
 If we revisit the Curry-Howard correspondence, we notice one
 more issue. In logic, it is true that $A \lor A = A$ and
 $A \land A = A$. However, neither $A \uplus A$ nor $A \times A$ are
 equivalent to $A$. They are however \emph{equi-inhabited}. This is
 a fancy way of saying
-\[ A \uplus A \ \text{is inhabited} \qquad \Leftrightarrow
-  \qquad A \ \text{is inhabited} \]
-The above is the real \textit{essence} of the correspondence.
-In other words, classical Curry-Howard tells us about
-\emph{logical equivalence} of types. This is even a
+\[ A \uplus A \ \text{is inhabited} \qquad \Leftrightarrow \qquad A \
+  \text{is inhabited} \] The above is the real \textit{essence} of the
+Curry-Howard correspondence.  In other words, classical Curry-Howard
+tells us about \emph{logical equivalence} of types. This is even a
 constructive statement: there are indeed functions
 $f : A \uplus A \rightarrow A$ and $g : A \rightarrow A \uplus A$;
 however, they are not inverses.
 
-So mere inhabitation falls far short of our goals of being
-able to smoothly deform from one type to another.
-
-Let us thus analyze the crux of the ``problem''. In logic, we have
-that $\land$ and $\lor$ are both \emph{idempotent}: this is the
-property of any binary operation $*$ where
-$\forall a. a * a = a$. And it should be clear that idempotent
-operations are \emph{forgetful}: its input has two copies of $a$,
-but its output, only one. On the type side, something more subtle
-happens. Consider $\mathbf{1} \uplus \mathbf{1}$ versus $\mathbf{1}$; the first has
-\emph{two} proofs of inhabitation ($\texttt{inl tt} and \texttt{inr tt}$)
-while the second only one ($\texttt{tt}$). These cannot be put in
-bijective correspondence. Even though the ``payload'' \texttt{tt}
-is the same, forgetting $\texttt{inl}$ (or \texttt{inr}) throws
-away information -- something we have expressly disallowed.
-Yes, this should remind you of Maxwell's demon: even though the
-data is the same, they are tagged differently, and this
-data is indeed information, and must be preserved.
+So mere inhabitation falls far short of our goals of being able to
+smoothly deform from one type to another. Let us thus analyze the crux
+of the ``problem''. In logic, we have that $\land$ and $\lor$ are both
+\emph{idempotent}: this is the property of any binary operation $*$
+where $\forall a. a * a = a$. And it should be clear that an
+idempotent operations is a \emph{forgetful} operation: its input has
+two copies of $a$, but its output, only one. On the type side,
+something more subtle happens. Consider $\top \uplus \top$
+versus $\top$; the first has \emph{two} proofs of inhabitation
+($\texttt{inl tt}$ and $\texttt{inr tt}$) while the second only one
+($\texttt{tt}$). These cannot be put in bijective correspondence. Even
+though the ``payload'' \texttt{tt} is the same, forgetting
+$\texttt{inl}$ (or \texttt{inr}) throws away information -- something
+we have expressly disallowed.  Yes, this should remind you of
+Maxwell's demon: even though the data is the same, they are tagged
+differently, and this data is indeed information, and must be
+preserved.
 
 \begin{figure}[t]
 \[
 \begin{array}{rrcll}
-\idc :& \tau & \simeq & \tau &: \idc \\
+\idc :& A & \simeq & A &: \idc \\
 \\
-\identlp :&  \mathbf{0} \uplus \tau & \simeq & \tau &: \identrp \\
-\swapp :&  \tau_1 \uplus \tau_2 & \simeq & \tau_2 \uplus \tau_1 &: \swapp \\
-\assoclp :&  \tau_1 \uplus (\tau_2 \uplus \tau_3) & \simeq & (\tau_1 \uplus \tau_2) \uplus \tau_3 &: \assocrp \\
+\identlp :&  \bot \uplus A & \simeq & A &: \identrp \\
+\swapp :&  A \uplus B & \simeq & B \uplus A &: \swapp \\
+\assoclp :&  A \uplus (B \uplus C) & \simeq & (A \uplus B) \uplus C &: \assocrp \\
 \\
-\identlt :&  \mathbf{1} \times \tau & \simeq & \tau &: \identrt \\
-\swapt :&  \tau_1 \times \tau_2 & \simeq & \tau_2 \times \tau_1 &: \swapt \\
-\assoclt :&  \tau_1 \times (\tau_2 \times \tau_3) & \simeq & (\tau_1 \times \tau_2) \times \tau_3 &: \assocrt \\
+\identlt :&  \top \times A & \simeq & A &: \identrt \\
+\swapt :&  A \times B & \simeq & B \times A &: \swapt \\
+\assoclt :&  A \times (B \times C) & \simeq & (A \times B) \times C &: \assocrt \\
 \\
-\distz :&~ \mathbf{0} \times \tau & \simeq & \mathbf{0} ~ &: \factorzl \\
-\dist :&~ (\tau_1 \uplus \tau_2) \times \tau_3 & \simeq & (\tau_1 \times \tau_3) \uplus (\tau_2 \times \tau_3)~ &: \factor
+\distz :&~ \bot \times A & \simeq & \bot ~ &: \factorzl \\
+\dist :&~ (A \uplus B) \times C & \simeq & (A \times C) \uplus (B \times C)~ &: \factor
 \end{array}
 \]
 \caption{Type isomorphisms.}
 \label{type-isos}
 \end{figure}
 
-Nevertheless, the Curry-Howard correspondence still has some
-force. We know that the inhabitants of types formed with
-with $\mathbf{0}, \mathbf{1}, \uplus, \times$ are a commutative semiring. What we
-want to know is, which types are equivalent? From a commutative semiring
-perspective, this amounts to asking what terms are equal?
-We have a set of generators for those equations, namely those
-in~(\ref{eq:csemiring}). What we thus need is to create $8$ pairs
-of mutually inverse functions which witness these identities.
-For concreteness, we show the signatures in Figure~\ref{type-isos}.
-As these all come in symmetric pairs (some of which are self-symmetric),
-we give names for both directions. The names use $\iso$, $+$ and $*$
-as these will be what we use when we reflect these isomorphism into
-a programming language, which we proceed to do next.
+Nevertheless, the Curry-Howard correspondence still has some force. We
+know that the inhabitants of types formed with with
+$\bot, \top, \uplus, \times$ are a commutative semiring. What we want
+to know is, which types are equivalent? From a commutative semiring
+perspective, this amounts to asking what terms are equal?  We have a
+set of generators for those equations, namely those in
+Def.~\ref{def:rig}. What we thus need is to create $8$ pairs of
+mutually inverse functions which witness these identities.  For
+concreteness, we show the signatures in Fig.~\ref{type-isos}.  As
+these all come in symmetric pairs (some of which are self-symmetric),
+we give names for both directions. 
+
+%%%%%%%%%
+\subsection{A Language of Type Equivalences} 
 
 \begin{figure}[t]
 \[
@@ -699,15 +706,16 @@ a programming language, which we proceed to do next.
 \label{pi-terms}
 \end{figure}
 
-We now have in our hands our desired denotational semantics: we want
-to create a language $\Pi$ such that the types and type combinators
-map to $\mathbf{0}, \mathbf{1}, \uplus, \times$, and such that we have ground
-terms whose denotation are all $16$ type isomorphisms of
-Figure~\ref{type-isos}. This is completely straightforward, as
-we can simply do this literally. To make the analogy with
-commutative semirings stand out even more, we will use $0, 1, +$, and $*$
-at the type level, and will denote ``equivalence'' by $\iso$.
-Thus Figure~\ref{pi-terms} shows the ``constants'' of the language.
+We now have in our hands our desired denotational semantics. We want
+to create a programming language, which we call $\Pi$, such that the
+types and type combinators map to $\bot, \top, \uplus, \times$, and
+such that we have ground terms whose denotation are all $16$ type
+isomorphisms of Fig.~\ref{type-isos}. This is completely
+straightforward, as we can simply do this literally. To make the
+analogy with commutative semirings stand out even more, we will use
+$0, 1, +$, and $\times$ at the type level, and will denote
+``equivalence'' by $\iso$.  Thus Fig.~\ref{pi-terms} shows the
+``constants'' of the language.
 
 \begin{figure}[t]
 \[
@@ -733,17 +741,17 @@ Thus Figure~\ref{pi-terms} shows the ``constants'' of the language.
 
 Of course, one does not get a programming language with just typed
 constants! There is a need to perform multiple equivalences. There are
-in fact three ways to do this: sequential composition $\odot$, 
-choice composition $\oplus$ (sometimes called juxtaposition) and parallel
-composition $otimes$. See Figure~\ref{pi-combinators} for the signatures.
-
-$c_1 \odot c_2$ corresponds to performing $c_1$ first, then $c_2$, and
-is the usual notion of composition -- and corresponds to $\fatsemi$ of
-the language of the previous section. $c_1 \oplus c\_2$ chooses to
+in fact three ways to do this: sequential composition $\odot$, choice
+composition $\oplus$ (sometimes called juxtaposition), and parallel
+composition $\otimes$. See Fig.~\ref{pi-combinators} for the
+signatures. The construction $c_1 \odot c_2$ corresponds to performing
+$c_1$ first, then $c_2$, and is the usual notion of composition -- and
+corresponds to $\fatsemi$ of the language of permutations of
+Sec.~\ref{sec:dataone}. The construction $c_1 \oplus c\_2$ chooses to
 perform $c_1$ or $c_2$ depending on whether the input is labelled
-$\textsf{inl}$ or $\textsf{inr}$ respectively. $c_1 \otimes c_2$
-operates on a product structure, and applies $c_1$ to the first component
-and $c_2$ to the second.
+$\textsf{inl}$ or $\textsf{inr}$ respectively. Finally the
+construction $c_1 \otimes c_2$ operates on a product structure, and
+applies $c_1$ to the first component and $c_2$ to the second.
 
 \jc{wavefront}
 
@@ -2385,7 +2393,7 @@ inductive definitions over recursive datatypes without explicitly managing
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Acknowledgements} We would like to thank the numerous
 students and colleagues who participated in various aspects of this
-research and who provided valuable feedack and constructive criticism.
+research and who provided valuable feedback and constructive criticism.
 
 \bibliographystyle{acm}
 %\pagestyle{headings}
