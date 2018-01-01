@@ -715,7 +715,11 @@ straightforward, as we can simply do this literally. To make the
 analogy with commutative semirings stand out even more, we will use
 $0, 1, +$, and $\times$ at the type level, and will denote
 ``equivalence'' by $\iso$.  Thus Fig.~\ref{pi-terms} shows the
-``constants'' of the language.
+``constants'' of the language. Note how we have continued with
+the spirit of Curry-Howard: the terms of $\Pi$ are \emph{proof terms},
+but rather than being witnesses of inhabitation, they are witnesses of
+equivences. Thus the proof language of commutative semiring equivalences
+becomes terms of $\Pi$.
 
 \begin{figure}[t]
 \[
@@ -753,20 +757,27 @@ $\textsf{inl}$ or $\textsf{inr}$ respectively. Finally the
 construction $c_1 \otimes c_2$ operates on a product structure, and
 applies $c_1$ to the first component and $c_2$ to the second.
 
-\jc{wavefront}
+The type-erase of this language \emph{should} be permutations. But
+given types $A$ and $B$ that erase to $\fin{m}$ and $\fin{n}$ respectively,
+what are $A + B$ and $A * B$ ?  They correspond exactly to
+$\fin{m+n}$ and $\fin{m*n}$!  Geometrically, this corresponds to
+concatenation for $A + B$, i.e. lining up the elements of $A$ first,
+and then those of $B$. For $A * B$, one can picture this as
+lining up the elements of $A$ horizontally, those of $B$ vertically
+and perpendicular to those of $A$, and filling in the square with
+pairs of elements from $A$ and $B$; if one re-numbers these sequentially,
+reading row-wise, this gives an enumeration of $\fin{m*n}$.
 
-The type-erasure will, naturally, be permutations. But where do the
-isomorphisms come from?  Well, inhabitants of types with (0,1,+,*)
-form a semiring. So, still inspired by Curry-Howard, look to the
-proof-terms of semiring identities -- and voila, a nice set of
-isomorphisms! We can name these isomorphisms, AND give them
-implementations.
+From here, it is easy to see what, for example, $c_1 \oplus c_2$ must be,
+operationally: from a permutation on $\fin{m}$ and another on $\fin{n}$,
+create a permutation on $\fin{m+n}$ by having $c_1$ operate on the first
+$m$ elements of $A+B$, and $c_2$ operate on the last $n$ elements. 
+Similarly, $\swapp$ switches the roles of $A$ and $B$, and thus corresponds
+to $\fin{n+m}$. Note how we ``recover'' the commutativity of 
+natural number addition from this type isomorphism. Geometrically, $\swapt$
+is also rather interesting: it corresponds to matrix transpose!
 
-That gives us some ground terms.  Not enough for a PL! So then
-we need to be able to 'combine' these. So we add 3 combinators for
-3 different kinds of composition.
-Gives us a nice, reversible PL for
-structured finite types. We call it Pi.
+\jc{it would be nice to have a picture or two here}
 
 We actually have several choices. We can make Pi structurally reversible
 (i.e. there is a syntactic transformation on Pi which maps combinators
