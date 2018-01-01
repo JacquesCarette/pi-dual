@@ -811,19 +811,19 @@ examples:
 Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t₃$, and $c_3 : t_3 \leftrightarrow t_4$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-  {c_1 \circledcirc (c_2 \circledcirc c_3) \Leftrightarrow (c_1 \circledcirc c_2) \circledcirc c_3}
+  {c_1 \odot (c_2 \odot c_3) \Leftrightarrow (c_1 \odot c_2) \odot c_3}
 \\
-  {(c_1 \oplus (c_2 \oplus c_3)) \circledcirc \assoclp \Leftrightarrow \assoclp \circledcirc ((c_1 \oplus c_2) \oplus c_3)}
+  {(c_1 \oplus (c_2 \oplus c_3)) \odot \assoclp \Leftrightarrow \assoclp \odot ((c_1 \oplus c_2) \oplus c_3)}
 \\
-  {(c_1 \otimes (c_2 \otimes c_3)) \circledcirc \assoclt \Leftrightarrow \assoclt \circledcirc ((c_1 \otimes c_2) \otimes c_3)}
+  {(c_1 \otimes (c_2 \otimes c_3)) \odot \assoclt \Leftrightarrow \assoclt \odot ((c_1 \otimes c_2) \otimes c_3)}
 \\
-  {((c_1 \oplus c_2) \oplus c_3) \circledcirc \assocrp \Leftrightarrow \assocrp \circledcirc (c_1 \oplus (c_2 \oplus c_3))}
+  {((c_1 \oplus c_2) \oplus c_3) \odot \assocrp \Leftrightarrow \assocrp \odot (c_1 \oplus (c_2 \oplus c_3))}
 \\
-  {((c_1 \otimes c_2) \otimes c_3) \circledcirc \assocrt \Leftrightarrow \assocrt \circledcirc (c_1 \otimes (c_2 \otimes c_3))}
+  {((c_1 \otimes c_2) \otimes c_3) \odot \assocrt \Leftrightarrow \assocrt \odot (c_1 \otimes (c_2 \otimes c_3))}
 \\
-  {\assocrp \circledcirc \assocrp \Leftrightarrow ((\assocrp \oplus \idc) \circledcirc \assocrp) \circledcirc (\idc \oplus \assocrp)}
+  {\assocrp \odot \assocrp \Leftrightarrow ((\assocrp \oplus \idc) \odot \assocrp) \odot (\idc \oplus \assocrp)}
 \\
-  {\assocrt \circledcirc \assocrt \Leftrightarrow ((\assocrt \otimes \idc) \circledcirc \assocrt) \circledcirc (\idc \otimes \assocrt)}
+  {\assocrt \odot \assocrt \Leftrightarrow ((\assocrt \otimes \idc) \odot \assocrt) \odot (\idc \otimes \assocrt)}
 \end{array}\]
 \caption{\label{figj}Signatures of level-1 $\Pi$-combinators: associativity}
 \end{figure}
@@ -832,13 +832,13 @@ Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t₃$, and $c_3
 Let $a : t_1 \leftrightarrow t_2$, $b : t_3 \leftrightarrow t_4$, and $c : t₅ \leftrightarrow t₆$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-  {((a \oplus b) \otimes c) \circledcirc \dist \Leftrightarrow \dist \circledcirc ((a \otimes c) \oplus (b \otimes c))}
+  {((a \oplus b) \otimes c) \odot \dist \Leftrightarrow \dist \odot ((a \otimes c) \oplus (b \otimes c))}
 \\
-  {(a \otimes (b \oplus c)) \circledcirc \distl \Leftrightarrow \distl \circledcirc ((a \otimes b) \oplus (a \otimes c))}
+  {(a \otimes (b \oplus c)) \odot \distl \Leftrightarrow \distl \odot ((a \otimes b) \oplus (a \otimes c))}
 \\
-  {((a \otimes c) \oplus (b \otimes c)) \circledcirc \factor \Leftrightarrow \factor \circledcirc ((a \oplus b) \otimes c)}
+  {((a \otimes c) \oplus (b \otimes c)) \odot \factor \Leftrightarrow \factor \odot ((a \oplus b) \otimes c)}
 \\
-  {((a \otimes b) \oplus (a \otimes c)) \circledcirc \factorl \Leftrightarrow \factorl \circledcirc (a \otimes (b \oplus c))}
+  {((a \otimes b) \oplus (a \otimes c)) \odot \factorl \Leftrightarrow \factorl \odot (a \otimes (b \oplus c))}
 \end{array}\]
 \caption{\label{figi}Signatures of level-1 $\Pi$-combinators: distributivity and factoring}
 \end{figure}
@@ -847,13 +847,13 @@ Let $a : t_1 \leftrightarrow t_2$, $b : t_3 \leftrightarrow t_4$, and $c : t₅ 
 Let $c, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c', c'' : t_3 \leftrightarrow t_4$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-  {\idc \circledcirc \, c \Leftrightarrow c}
+  {\idc \odot \, c \Leftrightarrow c}
 \quad
-  {c \, \circledcirc \idc \, \Leftrightarrow c}
+  {c \, \odot \idc \, \Leftrightarrow c}
 \quad
-  {c\,\, \circledcirc\,! c \Leftrightarrow \idc}
+  {c\,\, \odot\,! c \Leftrightarrow \idc}
 \quad
-  {! c \circledcirc c \Leftrightarrow \idc}
+  {! c \odot c \Leftrightarrow \idc}
 \\
   {c \Leftrightarrow c}
 \quad
@@ -864,7 +864,7 @@ Let $c, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c', c'' : t_3 \leftrightar
 \quad
 \Rule{}
   {c_1 \Leftrightarrow c' \quad c_2 \Leftrightarrow c''}
-  {c_1 \circledcirc c_2 \Leftrightarrow c' \circledcirc c''}
+  {c_1 \odot c_2 \Leftrightarrow c' \odot c''}
   {}
 \end{array}\]
 \caption{\label{figh}Signatures of level-1 $\Pi$-combinators: identity and composition}
@@ -874,27 +874,27 @@ Let $c, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c', c'' : t_3 \leftrightar
 Let $c₀ : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c : t_1 \leftrightarrow t_2$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-  {\identlp \circledcirc c \Leftrightarrow (c₀ \oplus c) \circledcirc \identlp}
+  {\identlp \odot c \Leftrightarrow (c₀ \oplus c) \odot \identlp}
 \qquad
-  {\identrp \circledcirc (c₀ \oplus c) \Leftrightarrow c \circledcirc \identrp}
+  {\identrp \odot (c₀ \oplus c) \Leftrightarrow c \odot \identrp}
 \\
-  {\identlsp \circledcirc c \Leftrightarrow (c \oplus c₀) \circledcirc \identlsp}
+  {\identlsp \odot c \Leftrightarrow (c \oplus c₀) \odot \identlsp}
 \qquad
-  {\identrsp \circledcirc (c \oplus c₀) \Leftrightarrow c \circledcirc \identrsp}
+  {\identrsp \odot (c \oplus c₀) \Leftrightarrow c \odot \identrsp}
 \\
-  {\identlt \circledcirc c \Leftrightarrow (c_1 \otimes c) \circledcirc \identlt}
+  {\identlt \odot c \Leftrightarrow (c_1 \otimes c) \odot \identlt}
 \qquad
-  {\identrt \circledcirc (c_1 \otimes c) \Leftrightarrow c \circledcirc \identrp}
+  {\identrt \odot (c_1 \otimes c) \Leftrightarrow c \odot \identrp}
 \\
-  {\identlst \circledcirc c \Leftrightarrow (c \otimes c_1) \circledcirc \identlst}
+  {\identlst \odot c \Leftrightarrow (c \otimes c_1) \odot \identlst}
 \qquad
-  {\identrst \circledcirc (c \otimes c_1) \Leftrightarrow c \circledcirc \identrst}
+  {\identrst \odot (c \otimes c_1) \Leftrightarrow c \odot \identrst}
 \\
-  {\identlt \Leftrightarrow \distl \circledcirc (\identlt \oplus \identlt)}
+  {\identlt \Leftrightarrow \distl \odot (\identlt \oplus \identlt)}
 \\
-\identlp \Leftrightarrow \swapp \circledcirc \identrsp
+\identlp \Leftrightarrow \swapp \odot \identrsp
 \qquad
-\identlt \Leftrightarrow \swapt \circledcirc \identrst
+\identlt \Leftrightarrow \swapt \odot \identrst
 \end{array}\]
 \caption{\label{figg}Signatures of level-1 $\Pi$-combinators: unit}
 \end{figure}
@@ -903,17 +903,17 @@ Let $c₀ : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c : t_1 \lef
 Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-  {\swapp \circledcirc (c_1 \oplus c_2) \Leftrightarrow (c_2 \oplus c_1) \circledcirc \swapp}
+  {\swapp \odot (c_1 \oplus c_2) \Leftrightarrow (c_2 \oplus c_1) \odot \swapp}
 \quad
-  {\swapt \circledcirc (c_1 \otimes c_2) \Leftrightarrow (c_2 \otimes c_1) \circledcirc \swapt}
+  {\swapt \odot (c_1 \otimes c_2) \Leftrightarrow (c_2 \otimes c_1) \odot \swapt}
 \\
-  {(\assocrp \circledcirc \swapp) \circledcirc \assocrp \Leftrightarrow ((\swapp \oplus \idc) \circledcirc \assocrp) \circledcirc (\idc \oplus \swapp)}
+  {(\assocrp \odot \swapp) \odot \assocrp \Leftrightarrow ((\swapp \oplus \idc) \odot \assocrp) \odot (\idc \oplus \swapp)}
 \\
-  {(\assoclp \circledcirc \swapp) \circledcirc \assoclp \Leftrightarrow ((\idc \oplus \swapp) \circledcirc \assoclp) \circledcirc (\swapp \oplus \idc)}
+  {(\assoclp \odot \swapp) \odot \assoclp \Leftrightarrow ((\idc \oplus \swapp) \odot \assoclp) \odot (\swapp \oplus \idc)}
 \\
-  {(\assocrt \circledcirc \swapt) \circledcirc \assocrt \Leftrightarrow ((\swapt \otimes \idc) \circledcirc \assocrt) \circledcirc (\idc \otimes \swapt)}
+  {(\assocrt \odot \swapt) \odot \assocrt \Leftrightarrow ((\swapt \otimes \idc) \odot \assocrt) \odot (\idc \otimes \swapt)}
 \\
-  {(\assoclt \circledcirc \swapt) \circledcirc \assoclt \Leftrightarrow ((\idc \otimes \swapt) \circledcirc \assoclt) \circledcirc (\swapt \otimes \idc)}
+  {(\assoclt \odot \swapt) \odot \assoclt \Leftrightarrow ((\idc \otimes \swapt) \odot \assoclt) \odot (\swapt \otimes \idc)}
 \end{array}\]
 \caption{\label{figf}Signatures of level-1 $\Pi$-combinators: commutativity and associativity}
 \end{figure}
@@ -937,9 +937,9 @@ Let $a_1 : t₅ \leftrightarrow t_1$,  $a_2 : t₆ \leftrightarrow t_2$, $a_3 : 
 \qquad
   {\idc \otimes \, \idc \, \Leftrightarrow \idc}
 \\
-  {(a_1 \circledcirc a_3) \oplus (a_2 \circledcirc a_4) \Leftrightarrow (a_1 \oplus a_2) \circledcirc (a_3 \oplus a_4)}
+  {(a_1 \odot a_3) \oplus (a_2 \odot a_4) \Leftrightarrow (a_1 \oplus a_2) \odot (a_3 \oplus a_4)}
 \\
-  {(a_1 \circledcirc a_3) \otimes (a_2 \circledcirc a_4) \Leftrightarrow (a_1 \otimes a_2) \circledcirc (a_3 \otimes a_4)}
+  {(a_1 \odot a_3) \otimes (a_2 \odot a_4) \Leftrightarrow (a_1 \otimes a_2) \odot (a_3 \otimes a_4)}
 \end{array}\]
 \caption{\label{fige}Signatures of level-1 $\Pi$-combinators: functors}
 \end{figure}
@@ -947,9 +947,9 @@ Let $a_1 : t₅ \leftrightarrow t_1$,  $a_2 : t₆ \leftrightarrow t_2$, $a_3 : 
 \begin{figure}[t]
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-  {\identlsp \oplus \idc ~\Leftrightarrow~ \assocrp \circledcirc (\idc \oplus \, \identlp)}
+  {\identlsp \oplus \idc ~\Leftrightarrow~ \assocrp \odot (\idc \oplus \, \identlp)}
 \\
-  {\identlst \otimes \idc ~\Leftrightarrow~ \assocrt \circledcirc (\idc \otimes \, \identlt)}
+  {\identlst \otimes \idc ~\Leftrightarrow~ \assocrt \odot (\idc \otimes \, \identlt)}
 \end{array}\]
 \caption{\label{figd}Signatures of level-1 $\Pi$-combinators: unit and associativity}
 \end{figure}
@@ -959,27 +959,27 @@ Let $a_1 : t₅ \leftrightarrow t_1$,  $a_2 : t₆ \leftrightarrow t_2$, $a_3 : 
 Let $c : t_1 \leftrightarrow t_2$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-  {(c \otimes \idc) \circledcirc \absorbl \Leftrightarrow \absorbl \circledcirc \idc}
+  {(c \otimes \idc) \odot \absorbl \Leftrightarrow \absorbl \odot \idc}
 \quad
-  {(\idc \, \otimes c) \circledcirc \absorbr \Leftrightarrow \absorbr \circledcirc \idc}
+  {(\idc \, \otimes c) \odot \absorbr \Leftrightarrow \absorbr \odot \idc}
 \\
-  {\idc \circledcirc \, \factorzl \Leftrightarrow \factorzl \circledcirc (\idc \otimes c)}
+  {\idc \odot \, \factorzl \Leftrightarrow \factorzl \odot (\idc \otimes c)}
 \quad
-  {\idc \circledcirc \, \factorzr \Leftrightarrow \factorzr \circledcirc (c \otimes \idc)}
+  {\idc \odot \, \factorzr \Leftrightarrow \factorzr \odot (c \otimes \idc)}
 \\
   {\absorbr \Leftrightarrow \absorbl}
 \\
-  {\absorbr \Leftrightarrow (\distl \circledcirc (\absorbr \oplus \absorbr)) \circledcirc \identlp}
+  {\absorbr \Leftrightarrow (\distl \odot (\absorbr \oplus \absorbr)) \odot \identlp}
 \\
   {\identlst \Leftrightarrow \absorbr}
 \qquad
-  {\absorbl \Leftrightarrow \swapt \circledcirc \absorbr}
+  {\absorbl \Leftrightarrow \swapt \odot \absorbr}
 \\
-  {\absorbr \Leftrightarrow (\assoclt \circledcirc (\absorbr \otimes \idc)) \circledcirc \absorbr}
+  {\absorbr \Leftrightarrow (\assoclt \odot (\absorbr \otimes \idc)) \odot \absorbr}
 \\
-  {(\idc \otimes \absorbr) \circledcirc \absorbl \Leftrightarrow (\assoclt \circledcirc (\absorbl \otimes \idc)) \circledcirc \absorbr}
+  {(\idc \otimes \absorbr) \odot \absorbl \Leftrightarrow (\assoclt \odot (\absorbl \otimes \idc)) \odot \absorbr}
 \\
-  {\idc \otimes \, \identlp \Leftrightarrow (\distl \circledcirc (\absorbl \oplus \idc)) \circledcirc \identlp}
+  {\idc \otimes \, \identlp \Leftrightarrow (\distl \odot (\absorbl \oplus \idc)) \odot \identlp}
 \end{array}\]
 \caption{\label{figc}Signatures of level-1 $\Pi$-combinators: zero}
 \end{figure}
@@ -987,17 +987,17 @@ Let $c : t_1 \leftrightarrow t_2$:
 \begin{figure}[t]
 \[\def\arraystretch{1.3}
 \begin{array}{c}
-  {((\assoclp \otimes \idc) \circledcirc \dist) \circledcirc (\dist \oplus \idc) \Leftrightarrow (\dist \circledcirc (\idc \oplus \dist)) \circledcirc \assoclp}
+  {((\assoclp \otimes \idc) \odot \dist) \odot (\dist \oplus \idc) \Leftrightarrow (\dist \odot (\idc \oplus \dist)) \odot \assoclp}
 \\
-  {\assoclt \circledcirc \distl \Leftrightarrow ((\idc \otimes \distl) \circledcirc \distl) \circledcirc (\assoclt \oplus \assoclt)}
+  {\assoclt \odot \distl \Leftrightarrow ((\idc \otimes \distl) \odot \distl) \odot (\assoclt \oplus \assoclt)}
 \end{array}\]
 \vspace{ -0.5em}
 \[\def\arraystretch{1.3}
 \begin{array}{rcl}
-  (\distl \circledcirc (\dist \oplus \dist)) \circledcirc \assoclp &\Leftrightarrow&
-   \dist \circledcirc (\distl \oplus \distl) \circledcirc \assoclp ~\circledcirc \\
-&& (\assocrp \oplus \idc) ~\circledcirc \\
-&& ((\idc \oplus \swapp) \oplus \idc) ~\circledcirc \\
+  (\distl \odot (\dist \oplus \dist)) \odot \assoclp &\Leftrightarrow&
+   \dist \odot (\distl \oplus \distl) \odot \assoclp ~\odot \\
+&& (\assocrp \oplus \idc) ~\odot \\
+&& ((\idc \oplus \swapp) \oplus \idc) ~\odot \\
 &&      (\assoclp \oplus \idc)
 \end{array}\]
 \caption{\label{figb}Signatures of level-1 $\Pi$-combinators: associativity and distributivity}
@@ -1006,9 +1006,9 @@ Let $c : t_1 \leftrightarrow t_2$:
 \begin{figure}[t]
 \[\def\arraystretch{1.3}
 \begin{array}{rcl}
-  (\idc \otimes \swapp) \circledcirc \distl &\Leftrightarrow& \distl \circledcirc \swapp
+  (\idc \otimes \swapp) \odot \distl &\Leftrightarrow& \distl \odot \swapp
 \\
-  \dist \circledcirc (\swapt \oplus \swapt) &\Leftrightarrow & \swapt \circledcirc \distl
+  \dist \odot (\swapt \oplus \swapt) &\Leftrightarrow & \swapt \odot \distl
 \end{array}\]
 \caption{\label{figa}Signatures of level-1 $\Pi$-combinators: commutativity and distributivity}
 \end{figure}
@@ -1037,11 +1037,11 @@ conventional data structures, i.e, sets of values and structured trees
 of values. We now consider a richer, less conventional, but
 foundational notion of data: programs themselves. Indeed, universal
 computation models fundamentally rely on the fact that \emph{programs
-  are (or can be encoded as) data}, e.g., a Turing machine can be
+are (or can be encoded as) data}, e.g., a Turing machine can be
 encoded as a string that another Turing machine (or even the same
 machine) can manipulate. In our setting, the programs developed in the
 previous section are reversible deformations between structured finite
-types. We now ask whether these reversible deformations can themselves
+types. We now ask whether these programs can themselves
 be subject to (higher-level) reversible deformations?
 
 Before developing the theory, let's consider a small example
@@ -1051,8 +1051,8 @@ consisting of two deformations between the types $A + B$ and $C+D$:
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
   \draw[>=latex,<->,double,red,thick] (2.25,-1.2) -- (2.25,-2.9) ;
 %%  \node at (3.3,-2) {$\mathit{swapl}_{+\Leftrightarrow}$} ;
-%%  \node at (2.5,-1.3) {$((c_2~\oplus~c_1)~\circledcirc~\mathit{swap}_{+})$};
-%%  \node at (2.5,-2.7) {$(\mathit{swap}_{+}~\circledcirc~(c_1~\oplus~c_2))$};
+%%  \node at (2.5,-1.3) {$((c_2~\oplus~c_1)~\odot~\mathit{swap}_{+})$};
+%%  \node at (2.5,-2.7) {$(\mathit{swap}_{+}~\odot~(c_1~\oplus~c_2))$};
   \draw (-2,-2) ellipse (0.5cm and 1cm);
   \draw[fill] (-2,-1.5) circle [radius=0.025];
   \node[below] at (-2.1,-1.5) {$A$};
@@ -1081,11 +1081,11 @@ consisting of two deformations between the types $A + B$ and $C+D$:
   \draw     (1,1)  -- (2,1) -- (2,0) -- (1,0) -- cycle ;
   \draw     (1,0)  -- (2,0) -- (2,-1) -- (1,-1) -- cycle ;
 
-  \node at (3,-3.5) {$c_1$};
-  \node at (3,-4.5) {$c_2$};
+  \node at (3,-3.5) {$c_2$};
+  \node at (3,-4.5) {$c_1$};
 
-  \node at (1.5,0.5) {$c_2$};
-  \node at (1.5,-0.5) {$c_1$};
+  \node at (1.5,0.5) {$c_1$};
+  \node at (1.5,-0.5) {$c_2$};
 
   \draw     (2,0.5)  -- (2.5,0.5)  ;
   \draw     (2,-0.5) -- (2.5,-0.5) ;
@@ -1101,19 +1101,19 @@ consisting of two deformations between the types $A + B$ and $C+D$:
 
 \end{tikzpicture}
 \end{center}
-The top path is the reversible deformation
-$(c_2~\oplus~c_1)~\circledcirc~\mathit{swap}_{+}$ which deforms the
-type $A$ by $c_2$, deforms the type $B$ by $c_1$, and deforms the
+The top path is the $\Pi$ program
+$(c_1~\oplus~c_2)~\odot~\swapp$ which deforms the
+type $A$ by $c_1$, deforms the type $B$ by $c_2$, and deforms the
 resulting space by a twist that exchanges the two injections into the
 sum type. The bottom path performs the twist first and then deforms
-the type $A$ by $c_2$ and the type $B$ by $c_1$ as before. If one
+the type $A$ by $c_1$ and the type $B$ by $c_2$ as before. If one
 could imagine the paths are physical wires and the deformations $c_1$
 and $c_2$ as arbitrary deformations on these wires then, holding the
 points $A$, $B$, $C$, and $D$ fixed, it is possible to rotate the top
 part of the diagram to become identical to the bottom one. In other
 words, there exists a higher-level deformation of the program
-$(c_2~\oplus~c_1)~\circledcirc~\mathit{swap}_{+}$ to the program
-$\mathit{swap}_{+} \circledcirc (c_1~\oplus~c_2)$.
+$(c_1~\oplus~c_2)~\odot~\swapp$ to the program
+$\swapp \odot (c_2~\oplus~c_1)$.
 
 \amr{*** another wavefront ***}
 
