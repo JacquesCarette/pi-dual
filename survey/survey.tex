@@ -776,19 +776,26 @@ Similarly, $\swapp$ switches the roles of $A$ and $B$, and thus corresponds
 to $\fin{n+m}$. Note how we ``recover'' the commutativity of 
 natural number addition from this type isomorphism. Geometrically, $\swapt$
 is also rather interesting: it corresponds to matrix transpose!
+Furthermore, in this representations, some combinators like
+$\identlp$ and $\assoclp$ are identity operations: the underlying representations
+are not merely isomorphic, they are definitionally equal.
+In other words, the passage to $\Nat$ erases some structural information.
 
 \jc{it would be nice to have a picture or two here}
 
-We actually have several choices. We can make Pi structurally reversible
-(i.e. there is a syntactic transformation on Pi which maps combinators
-to combinators which witnesses reversibility), or build in a `reverse'
-combinator which flips things around. The latter lets us make the
-language much smaller, but then \emph{programs} in that language are longer.
-[Bias: since there will be many more programs written, the fact that the
-language definition, and its processors, is larger, is a one-time cost.
-Not that big a deal. So pick the version whose meta-theoretical
-properties are obvious. It is thus worthwhile to have reversibility be
-structural.]
+Embedded in our definition of $\Pi$ is a design decision: to make the
+terms of $\Pi$ \emph{syntactically} reversible. In other words, to
+every $\Pi$ constant, there is another $\Pi$ constant which is its
+inverse. This is not the only choice.  Another would be to add a
+$\mathit{flip}$ combinator to the language; we could then remove
+quite a few combinators as redundant. The drawback is that many
+programs in $\Pi$ become longer. Furthermore, some of the symmetry
+at ``higher levels'' (see next section) is also lost. Since the
+extra burden of language definition and of proofs is quite low, we
+prefer the structural symmetry over a minimalistic language definition.
+
+
+\jc{wavefront}
 
 sound and complete isomorphisms for finite types
 
