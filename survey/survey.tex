@@ -1110,22 +1110,64 @@ the type $A$ by $c_1$ and the type $B$ by $c_2$ as before. If one
 could imagine the paths are physical wires and the deformations $c_1$
 and $c_2$ as arbitrary deformations on these wires then, holding the
 points $A$, $B$, $C$, and $D$ fixed, it is possible to rotate the top
-part of the diagram to become identical to the bottom one. In other
-words, there exists a higher-level deformation of the program
+part of the diagram to become identical to the bottom one. That
+rotation can be undone (reversed), which takes the bottom
+part of the diagram into the top part.  In other
+words, there exists a deformation of the program
 $(c_1~\oplus~c_2)~\odot~\swapp$ to the program
-$\swapp \odot (c_2~\oplus~c_1)$.
+$\swapp \odot (c_2~\oplus~c_1)$. We can also show that this
+means that, as permutations, $(c_1~\oplus~c_2)~\odot~\swapp$ and
+$\swapp \odot (c_2~\oplus~c_1)$ are equal. And, of course, not
+all programs between the same types can be deformed into one
+another. The simplest example of inequivalent deformations
+are the two automorphisms of $1+1$, namely $\idc$ and $\swapp$.
+
+In the previous section, we saw how we could take the proof
+terms of commutative semirings as our starting point. What we need
+now is to understand how proofs of algeraic identities should be
+considered equivalent. Classical algebra does not help, as proofs
+in algebra are not considered first-class citizens. However,
+another route is available to us: since the work of 
+Hofmann and Streicher~\cite{hofmann96thegroupoid}, we know that
+one can model types as \emph{groupoids}.  Previously, we
+modeled types as (finite) sets.
+
+Thus, rather than looking at (untyped) commutative semirings,
+we should looked at a \emph{typed} version. This process frequently
+goes by the moniker of ``categorification''.  We want a categorical
+algebra, where the basic objects are groupoids (to model our types),
+and where there is a natural notion of $+$ and $*$.  At first,
+we hit what seems like a serious stumbling block: the category of
+all groupoids, Groupoid, does not have co-products or products.
+We don't want to work internally in Groupoid -- we want operations
+\emph{on} groupoids. In other words, we want something akin to
+symmetric monoidal categories, but with two interacting 
+monoidal structures.  Luckily, this already exists: the categorical
+analog to (commutative) semirings are (symmetric) Rig Categories.
+This straightforwardly generalizes to symmetric Rig Groupoids.
+
+How does this help? Coherence conditions! Symmetric monoidal categories,
+to start somewhere simple, do not just introduce weak transformations
+like the associator $\alpha$ and the left $\lambda$ and right $\rho$
+unitors, but also coherence conditions that these must satisfy. Looking,
+for example, at just the additive fragment of $\Pi$ (i.e. with just $0$,
+$1$ and $+$ for the types, $\odot$ and $\oplus$ as combinators, and
+only the terms so expressible), the sub-language would correspond,
+denotationally, to exactly symmetric monoidal groupoids. And what
+these possess are exactly some \emph{equations between equations}
+as commutative diagrams.  Adding in the coherence conditions 
+corresponding to naturality of the various transformers gives us a
+list of equations between programs.  Furthermore, the natural transformations
+that arise are in fact natural isomorphisms -- all of which are
+reversible.
+
+We can then proceed to prove that every one of the coherence conditions
+involved in defining a symmetric Rig Groupoid holds for the groupoid
+interpretation of types.
 
 \amr{*** another wavefront ***}
 
-
 Pi level 2.
-
-Take categorification seriously. Types are indeed groupoids, and
-endo-isomorphisms inhabit the Identity 'type' of a type. So + and *
-must be operations on groupoids. Look at the category of (small)
-categories for inspiration. So we have two monoidal structures.
-These are not co-product and product in Groupoid. But this is actually
-a good thing.
 
 So we end up looking, semantically, at weak Rig Groupoid. Syntactically,
 we take the easiest way there: simply make every coherence isomorphism into
