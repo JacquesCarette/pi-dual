@@ -92,6 +92,44 @@ McMaster University \qquad\qquad Google \qquad\qquad Indiana University}
 \newcommand{\inline}[3]{\ctr{#1} \textasciitilde \ctr{#2}:\ctr{#3}}
 
 \begin{document}
+\begin{abstract}
+  Our main models of computation (Turing Machines, RAM, but also
+  modern computer architecture) make some fundamental assumptions about
+  which operations are available: logical operations like conjunction,
+  disjunction and negation, as well as reading and writing to a
+  (large) collection to memory locations. While this conforms to
+  a macro-level view of physics, it does not mesh as well with
+  other views; in particular, both from a thermodynamic and a
+  quantum view, these models are flawed. Both latter views of
+  physics imply that information is a quantity that is conserved.
+
+  We first define what information, and its conservation, means
+  in a computational setting. This emphasizes the idea that
+  computations, whatever they are, must be reversible. Thinking
+  geometrically, we can think of programs as reversible deformations
+  of data. From this fundamental idea, we rebuild notions of data
+  and programs which, by construction, are reversible. After a
+  brief overview of what this means for unstructured finite data,
+  we dive into the main topic: a foundational reversible programming
+  language. We re-examine the Curry-Howard correspondence, as the
+  classical correspondence is not reversible. This allows us to
+  establish a new correspondence, this time between a reversible
+  programming language for witnessing type isomorphisms and
+  proof terms for commutative semirings, which is sound and
+  complete for finite types.
+
+  We then ``move up a level'' to examine what it means for a
+  program to be reversible when its data is a program. This
+  gives a notion of reversible program equivalence. To get
+  something sound and complete, we must look at a ``higher 
+  dimensional'' analog to commutative semirings: symmetric
+  Rig Groupoids. The coherence laws for these are exactly the
+  reversible program equivalences we sought.
+
+  Something about Theseus?
+
+\end{abstract}
+
 \maketitle
 
 % * Reversibility intro / motivation as we  have now more or less
