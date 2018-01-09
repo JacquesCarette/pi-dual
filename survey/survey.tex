@@ -92,45 +92,56 @@ McMaster University \qquad\qquad Google \qquad\qquad Indiana University}
 \newcommand{\inline}[3]{\ctr{#1} \textasciitilde \ctr{#2}:\ctr{#3}}
 
 \begin{document}
+\maketitle 
+
 \begin{abstract}
-  Our main models of computation (Turing Machines, RAM, but also
-  modern computer architecture) make some fundamental assumptions about
-  which operations are available: logical operations like conjunction,
-  disjunction and negation, as well as reading and writing to a
-  (large) collection to memory locations. While this conforms to
-  a macro-level view of physics, it does not mesh as well with
-  other views; in particular, both from a thermodynamic and a
-  quantum view, these models are flawed. Both latter views of
-  physics imply that information is a quantity that is conserved.
+  Our main models of computation (the Turing Machine and the RAM) and
+  most modern computer architectures make fundamental assumptions
+  about which primitive operations are realizable on a physical
+  computing device. The consensus is that these primitive operations
+  include logical operations like conjunction, disjunction and
+  negation, as well as reading and writing to a (large) collection to
+  memory locations. This perspective conforms to a macro-level view of
+  physics and indeed these operations are realizable using macro-level
+  devices involving thousands of electrons. This point of view is
+  however incompatible with computation realized using quantum devices
+  or analyzed using elementary thermodynamics as both these
+  fundamental physical theories imply that information is a conserved
+  quantity of physical processes and hence of primitive computational
+  operations.
 
-  We first define what information, and its conservation, means
-  in a computational setting. This emphasizes the idea that
-  computations, whatever they are, must be reversible. Thinking
-  geometrically, we can think of programs as reversible deformations
-  of data. From this fundamental idea, we rebuild notions of data
-  and programs which, by construction, are reversible. After a
-  brief overview of what this means for unstructured finite data,
-  we dive into the main topic: a foundational reversible programming
-  language. We re-examine the Curry-Howard correspondence, as the
-  classical correspondence is not reversible. This allows us to
-  establish a new correspondence, this time between a reversible
-  programming language for witnessing type isomorphisms and
-  proof terms for commutative semirings, which is sound and
-  complete for finite types.
+  Our aim is re-develop foundational computational models in a way
+  that embraces the principle of conservation of information. We first
+  define what information is and what its conservation means in a
+  computational setting. We emphasize the idea that computations,
+  whatever they are, must be reversible transformations on
+  data. Thinking topologically, one can think of data as modeled using
+  topological spaces and programs as modeled by reversible
+  deformations of these spaces. We then illustrate this idea using
+  three notions of data and their associated reversible computational
+  models. The first instance only assumes unstructured finite data,
+  i.e., discrete topological spaces. The corresponding notion of
+  reversible computation is that of permutations. We show how this
+  simple model subsumes conventional computations on finite sets. We
+  then consider a modern structured notion of data based on the
+  Curry-Howard correspondence between logic and type theory. We
+  develop the corresponding notion of reversible deformations using a
+  sound and complete programming language for witnessing type
+  isomorphisms and proof terms for commutative semirings.  We then
+  ``move up a level'' to examine spaces that treat programs as data
+  which is a crucial notion for any universal model of computation. To
+  derive the corresponding notion of reversible programs between
+  programs, i.e., reversible program equivalences, we look at the
+  ``higher dimensional'' analog to commutative semirings: symmetric
+  rig groupoids. The coherence laws for these groupoids turn out to be
+  exactly the sound and complete reversible program equivalences we
+  seek.
+ 
+  We conclude with some possible generalizations inspired by homotopy
+  type theory and survey several open directions for further research.
 
-  We then ``move up a level'' to examine what it means for a
-  program to be reversible when its data is a program. This
-  gives a notion of reversible program equivalence. To get
-  something sound and complete, we must look at a ``higher 
-  dimensional'' analog to commutative semirings: symmetric
-  Rig Groupoids. The coherence laws for these are exactly the
-  reversible program equivalences we sought.
-
-  Something about Theseus?
-
+%%  Something about Theseus?
 \end{abstract}
-
-\maketitle
 
 % * Reversibility intro / motivation as we  have now more or less
 
