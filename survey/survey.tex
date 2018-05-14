@@ -175,24 +175,26 @@ Machine and the RAM as well as in the early Von Neumann and in modern
 computer architectures, is that basic computer operations include
 logical operations like conjunction, disjunction, and negation, as
 well as reading from and writing to a large (infinite) collection of
-memory locations.
+memory locations. From this small set of primitive operations emerges
+all higher-level programming languages and abstractions.
 
-No doubt, this consensus has been successful. And no doubt, these
-operations \emph{can} indeed be performed on a computer. Yet, today,
-with a possible quantum computing revolution in sight and with
-unprecedented explosion in embedded computers and cyber-physical
-systems, there are reasons to re-think this foundational question
-again. In fact, the calls to re-think this foundational question have
-been proclaimed by physicists more than forty years ago as the
-following two quotes testify:
+No doubt, this consensus on the available primitive physical
+operations has been successful. And no doubt, these operations
+\emph{can} indeed be performed on a computer. Yet, today, with a
+possible quantum computing revolution in sight and with unprecedented
+explosion in embedded computers and cyber-physical systems, there are
+reasons to re-think this foundational question again. In fact, the
+calls to re-think this foundational question have been proclaimed by
+physicists more than forty years ago as the following two quotes
+testify:
 
 \begin{quote}
-  \textbf{Toffoli 1980~\cite{toffoli:1980}:} Mathematical models of computation are
-  abstract constructions, by their nature unfettered by physical
-  laws. However, if these models are to give indications that are
-  relevant to concrete computing, they must somehow capture, albeit in
-  a selective and stylized way, certain general physical restrictions
-  to which all concrete computing processes are
+  \textbf{Toffoli 1980~\cite{toffoli:1980}:} Mathematical models of
+  computation are abstract constructions, by their nature unfettered
+  by physical laws. However, if these models are to give indications
+  that are relevant to concrete computing, they must somehow capture,
+  albeit in a selective and stylized way, certain general physical
+  restrictions to which all concrete computing processes are
   subjected.
 
   \textbf{Feynman 1982~\cite{springerlink:10.1007/bf02650179}:}
@@ -239,7 +241,7 @@ until the establishment of \emph{Landauer's Principle} in
 happened recently in 2012~\cite{berut2012experimental}.
 
 Maxwell's demon appears to violate the second law of thermodynamics by
-having a tiny `intelligence' observing the movement of individual
+having a tiny ``intelligence'' observing the movement of individual
 particles of a gas and separating fast moving particles from slow
 moving ones, thereby reducing the total entropy of the
 system. Landauer's resolution of the demon relied on two ideas that
@@ -247,8 +249,9 @@ took root only a few decades earlier: the formal notion of computation
 (through the work of Turing and Church, 1936) and the formal notion of
 information (through the work of Shannon, 1948). Landauer reasoned
 that the computation done by the finite brain of the demon, involves
-getting information about the movement of molecules, acting on that
-information, and then overwriting it to make room for the next
+getting information about the movement of molecules, storing that
+information, analyzing that information to act on it, and then --- and
+this is the critical step --- overwriting it to make room for the next
 computation.  In other words, the computation that is manipulating
 information in the demon's brain \textit{must be thermodynamic work},
 thereby bringing the demon back into the fold of physics.
@@ -259,14 +262,15 @@ models of computation were developed, there was no compelling reason
 to the take the information content of computations into consideration
 -- in fact, at that time there was no quantifiable notion of
 information. These models followed in the footsteps of logic where,
-following hundreds of years of tradition, conventional operations such
-conjunction and disjunction lose information by logically
-irreversible. These models were already radical enough, by being
-purely \emph{constructive}, in an era where classical mathematics,
-with its pervasive use of excluded middle and frequent use of the
-axiom of choice, did not overly worry about effective
-representation. Landauer's observation implied however that ideas in
-each field have consequences for the
+following hundreds of years of tradition, the truth of a statement was
+seen as ``absolute'' and independent of any reasoning, understanding,
+or action. Statements were either true or false with no regard to any
+``observer'' and the idea that statements had information content that
+should be preserved was outside the classical understanding of
+logic. Hence the fact that conventional logic operations such as
+conjunction and disjunction were logically irreversible and hence lose
+information was not a concern. Landauer's observation implied however
+that ideas in each field have consequences for the
 other~\cite{bennett:1973:lrc,bennett1985fundamental,bennett2010notes,bennett2003notes,baker:1992:nft,baez2011physics,dblp:conf/csfw/malacarias12}. To
 really appreciate this fact, we delve deeper into the origin of our
 computational models and argue that they are essentially reflections
@@ -274,14 +278,13 @@ of contemporary laws of physics.
 
 %%%%%%%%%
 \paragraph*{Origins of Computational Models.}
-Our current logical operations in high-level programming languages and
-in our current hardware are both based on Boolean Logic -- which
-really ought to be called \emph{Piercean logic}, as Boole had a rather
-different conception of logic which is rather far from our current
-models.  Nevertheless, going back to Boole's 1853 book entitled
-\emph{An Investigation of the Laws of Thought, on which are Founded
-  the Mathematical Theories of Logic and Probabilities}. The opening
-sentence of Ch.~1 is:
+Current high-level programming languages as well as current hardware
+are both based on Boolean Logic -- which really ought to be called
+\emph{Piercean logic}, as Boole had a rather different conception of
+logic which is rather far from our current models.  Nevertheless,
+going back to Boole's 1853 book entitled \emph{An Investigation of the
+  Laws of Thought, on which are Founded the Mathematical Theories of
+  Logic and Probabilities}, we find that the opening sentence of Ch.~1 is:
 \begin{quote}
   The design of the following treatise is to investigate the fundamental laws
   of those operations of the mind by which reasoning is performed; \ldots
@@ -300,8 +303,8 @@ This ``law'' is reasonable in a classical world but is violated by the
 postulates of quantum mechanics. Although a detailed historical
 analysis of Boole's ideas in the light of modern physics is beyond our
 scope, the above quotes should convey the idea that our elementary
-computing notions date back to ideas that were thought reasonable
-before \textasciitilde 1900.
+computing notions date back to ideas that were thought reasonable in
+the late 1800s. 
 
 Machines that ``compute'' are quite old. M\"{u}ller (1786) first
 conceived of the idea of a ``difference machine'', which Babbage
@@ -366,12 +369,13 @@ principles.  In the words of Girard:
 
 There are, in fact, many different quantum mechanical principles which
 are at odds with our current models of computation. In this paper, we
-will focus on the following particular aspect. We will view data as an
-explicit representation of \emph{information} and programs as
-processes that transform information in a reversible way, i.e.,
-processes that are subject to the physical principle of
-\emph{conservation of information.} We will formalize this idea and
-follow its consequences, which will turn out to be far reaching.
+will focus on the previously identified principle of
+\emph{reversibility}. In more detail, we will view data as an explicit
+representation of \emph{information} and programs as processes that
+transform information in a reversible way, i.e., processes that are
+subject to the physical principle of \emph{conservation of
+  information.} We will formalize this idea and follow its
+consequences, which will turn out to be far reaching.
 
 %%%%%%%%%
 \paragraph*{Programs as Reversible Deformations.}
@@ -418,10 +422,10 @@ of that data which are reversible. In other words, we want our
 programs-as-transformations to ``play well'' with the inherent notion
 of ``sameness'' that our data will carry. Thus we need to start by
 looking at what structure our data has, and that will help us define
-an appropriate notion of program. Of course, when programs themselves
-are data, things do get more complicated.  In the following sections,
-we will look at different natural classes of data, and explore the
-corresponding notion of reversible programs.
+an appropriate notion of a reversible program. Of course, when
+programs themselves are data, things do get more complicated.  In the
+following sections, we will look at different natural classes of data,
+and explore the corresponding notion of reversible programs.
 
 To summarize, we will take ``the same'' as a fundamental principle and
 derive what it means for data, programs, program transformations, as
@@ -767,7 +771,7 @@ $0, 1, +$, and $\times$ at the type level, and will denote
 ``constants'' of the language. Note how we have continued with
 the spirit of Curry-Howard: the terms of $\Pi$ are \emph{proof terms},
 but rather than being witnesses of inhabitation, they are witnesses of
-equivences. Thus the proof language of commutative semiring equivalences
+equivalences. Thus the proof language of commutative semiring equivalences
 becomes terms of $\Pi$.
 
 \begin{figure}[t]
@@ -1176,7 +1180,7 @@ are the two automorphisms of $1+1$, namely $\idc$ and $\swapp$.
 
 In the previous section, we saw how we could take the proof
 terms of commutative semirings as our starting point. What we need
-now is to understand how proofs of algeraic identities should be
+now is to understand how proofs of algebraic identities should be
 considered equivalent. Classical algebra does not help, as proofs
 in algebra are not considered first-class citizens. However,
 another route is available to us: since the work of 
