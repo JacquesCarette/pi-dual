@@ -440,11 +440,11 @@ as to be reversible.
 \section{Data I: Finite Sets}
 \label{sec:dataone}
 
-Some of the simplest spaces are the finite and discrete spaces of
-points. Indeed most programming languages provide some collection of
-primitive data like booleans, characters, strings, and (bounded)
-numbers that are naturally modeled as finite sets. Infinite sets are much
-more subtle, and will be discussed in the conclusion.
+Most programming languages provide primitive data like booleans,
+characters, strings, and (bounded) numbers that are naturally modeled
+as finite sets. We therefore start by modeling reversible computations
+over finite and discrete spaces of points. Infinite sets are more
+subtle, and will be discussed in the conclusion.
 
 What does it mean to deform a space of points? For example, what
 transformation can we do on a bag of marbles? Well, we can shuffle
@@ -492,22 +492,62 @@ where $i,j:\Nat$, $i\neq j$ and $i,j < n$. Note that we could remove
 $\mathit{id}$ from the language and drop the $i\neq j$ condition so that
 $\mathit{swap}~j~j$ would represent the identity permutation.
 
+For convenience, we write $[2^n]$ for the finite set representing
+$n$-bit words with the canonical ordering for binary numbers. Thus
+when $n=3$, the finite set has elements $\{0,1,2,3,4,5,6,7\}$ which
+correspond to the 3-bit words $\{000,001,010,011,100,101,110,111\}$.
 Although this language appears weak, it is universal for boolean
-combinational circuits. The result follows from the following
-construction of the Toffoli gate and the fact that any combinational
-circuit can be realized using compositions of Toffoli gates. We write
-$[2^n]$ for the finite set representing $n$-bit words with the
-canonical ordering for binary numbers. Thus when $n=3$, the finite set
-has elements $\{0,1,2,3,4,5,6,7\}$ which correspond to the 3-bit words
-$\{000,001,010,011,100,101,110,111\}$. The Toffoli gate is a
-reversible function $[2^3] \rightarrow [2^3]$ which swaps $110$ and
-$111$, i.e., it can be realized as $\mathit{swap}~6~7$. 
+combinational circuits. To see this, we express, boolean negation
+\emph{not} as a permutation $[2^1] \rightarrow [2^1]$, controlled not
+(also known as \emph{cnot}) as a permutation
+$[2^2] \rightarrow [2^2]$, and controlled controlled-not (also known
+as \emph{toffoli}) as a permutation $[2^3] \rightarrow [2^3]$:
+\[\begin{array}{rcl}
+\mathit{not} &=& \mathit{swap}~0~1 \\
+\mathit{cnot} &=& \mathit{swap}~2~3 \\
+\mathit{toffoli} &=& \mathit{swap}~6~7
+\end{array}\]
+For example, \emph{toffoli} gate negates the third bit (the target
+bit) if both the first two bits (the control bits) are 1, i.e., it
+swaps $110$ and $111$. Universality follows since any combinational
+circuit can be realized using compositions of \emph{toffoli} gates.
 
-\amr{let's write a a couple more small examples, reversible 3 bit
-  adder, etc.}
+There is however a subtle issue: programming in such an unstructured
+language is \emph{not} compositional in the sense that using
+$\mathit{not}$ in a larger circuit forces us to change its
+implementation. To illustrate this point, consider the reversible full
+adder below designed by Desoete et al.~\cite{117414}:
 
-In programming practice we are however more interested in structured
-data which will be the subject on next section. What we learn from
+\begin{center}
+\includegraphics[scale=0.6]{full-adder.png}
+\end{center}
+
+In the figure (copied from a more general paper that includes
+alternative designs~\cite{Rentergem2005OptimalDO}), the full adder
+takes 4 inputs: the two bits to add $A$ and $B$, an incoming carry bit
+$C_i$, and a heap input initialized to 0 to maintain
+reversibility. There are four outputs: the first two are identical to
+the incoming bits $A$ and $B$ and are considered ``garbage.'' The
+third bit $S$ is the sum and the last bit $C_o$ is the outgoing carry
+bit. In the notation used to describe the circuit, the $x$ denotes
+boolean negation, the dots are control bits. In our reversible
+language, we can express this circuit as the following permutation of
+type $[2^4] \rightarrow [2^4]$:
+
+\[\begin{array}{ll}
+\mathit{swap}~12~14 \fatsemi \mathit{swap}~13~15 & \mbox{toffoli} \\
+\mathit{swap}~8~12 \fatsemi \mathit{swap}~9~14 \fatsemi 
+    \mathit{swap}~10~13 \fatsemi \mathit{swap}~11~15 & \mbox{cnot and swap} \\
+\mathit{swap}~6~7 \fatsemi \mathit{swap}~14~15 & \mbox{toffoli} \\
+\mathit{swap}~4~6 \fatsemi \mathit{swap}~5~7 \fatsemi
+    \mathit{swap}~12~14 \fatsemi \mathit{swap}~13~15 & \mbox{cnot}
+\end{array}\]
+
+Note how the implementation of $\mathit{cnot}$ as a permutation
+$[2^2] \rightarrow [2^2]$ cannot be directly reused in a circuit
+$[2^4] \rightarrow [2^4]$. Indeed, in programming practice we are
+interested in structured data and compositional abstractions which
+will be the subject on next section. What we do learn however from
 this short investigation using untyped flat sets is what the
 ``\emph{purely operational}'' view of the theory would be. In
 particular, it tells us that permutations are an inescapable part of
