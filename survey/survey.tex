@@ -570,7 +570,7 @@ type. Before getting into the formal theory, let's consider possible
 deformations on the space
 $(\top \uplus \bot) \times (\top \uplus \top)$. This space is the
 product of two subspaces: the subspace $(\top \uplus \bot)$ which
-itself is the sum of the space $\top$ containing one element
+itself is the sum of the space~$\top$ containing one element
 $\texttt{tt}$ and the empty space $\bot$ and the subspace
 $(\top \uplus \top)$ which is the sum of two spaces each containing
 the one element $\texttt{tt}$. First, as discussed in the previous
@@ -619,7 +619,7 @@ number of points in the types.
 \begin{defn}
 \label{def:rig}
 A \emph{commutative semiring} (sometimes called a \emph{commutative
-  rig} (commutative ri\emph{n}g without negative elements)
+  rig} (commutative ri\emph{n}g without negative elements))
 $(R,0,1,+,\cdot)$ consists of a set $R$, two distinguished elements of
 $R$ named 0 and 1, and two binary operations~$+$ and $\cdot$,
 satisfying the following relations for any $a,b,c \in R$:
@@ -644,14 +644,14 @@ is a commutative semiring.
 
 We would like to adapt the commutative semiring definition to the
 setting of structured types. First, types do not naturally want to be
-put together into a ``set''.  This can be fixed if we replace the set
+put together into a ``set.''  This can be fixed if we replace the set
 $R$ with a universe $U$, and replace the set membership $0 \in R$ with
 the typing judgement $\bot : U$ (and similarly for the other
 items). Our next instinct would be to similarly replace $=$ with a
 judgement $A \equiv B$ that asserts that $A$ and $B$ are
 \emph{propositionally equal}. This is however not true: the
 proposition $A \times B \equiv B \times A$ is not
-normally\footnote{Except In homotopy type theory where equivalent
+normally\footnote{Except in univalent type theory where equivalent
   types are identified.} provable for arbitrary types $A$ and $B$. But
 it should be clear that $A \times B$ and $B \times A$ contain
 equivalent information. In other words, we would like to be able to
@@ -851,7 +851,13 @@ Sec.~\ref{sec:dataone}. The construction $c_1 \oplus c_2$ chooses to
 perform $c_1$ or $c_2$ depending on whether the input is labelled
 $\textsf{inl}$ or $\textsf{inr}$ respectively. Finally the
 construction $c_1 \otimes c_2$ operates on a product structure, and
-applies $c_1$ to the first component and $c_2$ to the second.
+applies $c_1$ to the first component and $c_2$ to the second. The
+language of permutations lacked the ability to combine permutations by
+taking sums and products which led to the awkward non-compositional
+programming style illustrated in the full adder example. In this
+language the full adder can be programmed as follows:
+
+\amr{***HERE***}
 
 The type-erase of this language \emph{should} be permutations. But
 given types $A$ and $B$ that erase to $\fin{m}$ and $\fin{n}$ respectively,
