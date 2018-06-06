@@ -216,22 +216,22 @@ of computation (which are logically irreversible) and the fundamental
 laws of physics (which are reversible). One could certainly dismiss
 the mismatch as irrelevant to the practice of computing but our thesis
 is that the next computing revolution is likely to be founded on
-revised models of computation that are designed to in closer harmony
+revised models of computation that are designed to be in closer harmony
 with the laws of physics.
 
 After a detailed introduction on the origins of ``logically
 reversibile computer operations'' and an excursion into the origins of
-``irreversible computer operations'', we will develop in detail three
+``irreversible computer operations,'' we will develop in detail three
 reversible models of computation and discuss their potential
 applications.
 
 %%%%%%%%%
-\paragraph*{Maxwell's Demon.}
+\paragraph*{Maxwell's Daemon.}
 To fully appreciate the missing principle of ``reversibility'' in
 conventional computing, we go back to an old thought experiment by
 J. C. Maxwell. The details are codified in a letter that Maxwell wrote
 to P. G Tait in 1867 -- the letter, whose ideas are now known as
-\emph{Maxwell's Demon}, tells of a thought experiment that seems to
+\emph{Maxwell's Daemon}, tells of a thought experiment that seems to
 indicate that intelligent beings can somehow violate the second law of
 thermodynamics, thereby violating physics itself. Many resolutions
 were offered for this conundrum (for a compilation, see the book by
@@ -240,26 +240,27 @@ until the establishment of \emph{Landauer's Principle} in
 1961~\cite{Landauer:1961} -- a principle whose experimental validation
 happened recently in 2012~\cite{berut2012experimental}.
 
-Maxwell's demon appears to violate the second law of thermodynamics by
+Maxwell's daemon appears to violate the second law of thermodynamics by
 having a tiny ``intelligence'' observing the movement of individual
 particles of a gas and separating fast moving particles from slow
 moving ones, thereby reducing the total entropy of the
-system. Landauer's resolution of the demon relied on two ideas that
+system. Landauer's resolution of the daemon relied on two ideas that
 took root only a few decades earlier: the formal notion of computation
-(through the work of Turing and Church, 1936) and the formal notion of
-information (through the work of Shannon, 1948). Landauer reasoned
-that the computation done by the finite brain of the demon, involves
-getting information about the movement of molecules, storing that
-information, analyzing that information to act on it, and then --- and
-this is the critical step --- overwriting it to make room for the next
-computation.  In other words, the computation that is manipulating
-information in the demon's brain \textit{must be thermodynamic work},
-thereby bringing the demon back into the fold of physics.
+(through the work of Turing~\cite{turing}, Church~\cite{church51}, and
+others) and the formal notion of information (through the work of
+Shannon~\cite{shannon1948}). Landauer reasoned that the computation
+done by the finite brain of the daemon, involves getting information
+about the movement of molecules, storing that information, analyzing
+that information to act on it, and then --- and this is the critical
+step --- overwriting it to make room for the next computation.  In
+other words, the computation that is manipulating information in the
+daemon's brain \textit{must be thermodynamic work}, thereby bringing
+the daemon back into the fold of physics.
 
 This is a strange and wonderful idea: information, physics, and
 computation are inextricably linked. In contrast, when the early
 models of computation were developed, there was no compelling reason
-to the take the information content of computations into consideration
+to take the information content of computations into consideration
 -- in fact, at that time there was no quantifiable notion of
 information. These models followed in the footsteps of logic where,
 following hundreds of years of tradition, the truth of a statement was
@@ -279,15 +280,14 @@ of contemporary laws of physics.
 %%%%%%%%%
 \paragraph*{Origins of Computational Models.}
 Current high-level programming languages as well as current hardware
-are both based on Boolean Logic -- which really ought to be called
-\emph{Piercean logic}, as Boole had a rather different conception of
-logic which is rather far from our current models.  Nevertheless,
-going back to Boole's 1853 book entitled \emph{An Investigation of the
-  Laws of Thought, on which are Founded the Mathematical Theories of
-  Logic and Probabilities}, we find that the opening sentence of Ch.~1 is:
+are both based on the mathematical formalization of logic developed by
+De Morgan, Venn, Boole, and Peirce in the mid to late 1800s. Going
+back to Boole's 1853 book entitled \emph{An Investigation of the Laws
+  of Thought, on which are Founded the Mathematical Theories of Logic
+  and Probabilities}, we find that the opening sentence of Ch.~1 is:
 \begin{quote}
   The design of the following treatise is to investigate the fundamental laws
-  of those operations of the mind by which reasoning is performed; \ldots
+  of those operations of the mind by which reasoning is performed; 
 \end{quote}
 which clearly identifies the ``source'' of the logical laws as
 mirroring Boole's understanding of human reasoning. A few chapters
@@ -307,25 +307,25 @@ computing notions date back to ideas that were thought reasonable in
 the late 1800s. 
 
 Machines that ``compute'' are quite old. M\"{u}ller (1786) first
-conceived of the idea of a ``difference machine'', which Babbage
+conceived of the idea of a ``difference machine,'' which Babbage
 (1819--1822) was able to construct. There are other computer
 precursors as well -- the first stored programs were actually for
 looms, most notably those of Bouchon (1725) which operated on a paper
 tape, and Jacquard (1804) which operated by chains of punched cards.
 But it was only in the 20th century that computer science emerged as a
 formal discipline. One of the pioneering works was Alan Turing's
-seminal paper in 1936 which established the idea that computation has
-a formal interpretation and that all computability can be captured
-within a formal system. Implicit in this achievement however is the
-idea that abstract models of computation are just that --
-\emph{abstractions of computation realized in the physical world.}
+seminal paper~\cite{turing} in 1936 which established the idea that
+computation has a formal interpretation and that all computability can
+be captured within a formal system. Implicit in this achievement
+however is the idea that abstract models of computation are just that
+-- \emph{abstractions of computation realized in the physical world.}
 Indeed, going back to Turing's 1936 article \emph{On Computable
   Numbers, with an Application to the Entscheidungsproblem,}, the
 opening sentence of Sec. 1 is:
 \begin{quote}
-  We have said that the computable numbers are those whose decimals are
-  calculable by finite means \ldots the justification lies in the fact that
-  the human memory is necessarily limited.
+  We have said that the computable numbers are those whose decimals
+  are calculable by finite means [\ldots] the justification lies in
+  the fact that the human memory is necessarily limited.
 \end{quote}
 In Sec. 9, we find:
 \begin{quote}
@@ -337,14 +337,14 @@ It is worth noting that these assumptions are both physical (on
 distances) and metaphysical (on restrictions of the mind).  If we take
 the human mind to be a physical ``machine'' which does computation,
 then when both of the above assumptions are translated to the language
-of physics, they embody what is known as the ``Bekenstein bound'',
-which is an upper limit on the amount of information that can be
-contained within a given finite region of space. A detailed historical
-account of these ideas in the context of modern physics is again
-beyond our scope. However, the quotes above, like the ones before,
-should convey the ideas that our theories of computation and
-complexity are based on some physical assumptions that Turing and
-others found reasonable in the 1930s.
+of physics, they embody what is known as the ``Bekenstein
+bound''~\cite{PhysRevD.23.287}, which is an upper limit on the amount
+of information that can be contained within a given finite region of
+space. A detailed historical account of these ideas in the context of
+modern physics is again beyond our scope. However, the quotes above,
+like the ones before, should convey the ideas that our theories of
+computation and complexity are based on some physical assumptions that
+Turing and others found reasonable in the 1930s.
 
 To summarize, a major achievement of computer science has been the
 development of abstract models of computation that shield the
@@ -357,14 +357,14 @@ physics. Our understanding of physics has evolved tremendously since
 respect to quantum mechanics.  Indeed one should take the physical
 principles underlying quantum mechanics, the most successful physical
 theory known to us and adapt computation to ``learn'' from these
-principles.  In the words of Girard:
+principles.  In the words of Girard~\cite{Girard:2007:TMI:1348911.1348915}:
 \begin{quote}
   In other terms, what is so good in logic that quantum physics should
   obey?  Can't we imagine that our conceptions about logic are wrong,
   so wrong that they are unable to cope with the quantum miracle?
   [\ldots] Instead of teaching logic to nature, it is more reasonable
   to learn from her. Instead of interpreting quantum into logic, we
-  shall interpret logic into quantum (Girard 2007).
+  shall interpret logic into quantum.
 \end{quote}
 
 There are, in fact, many different quantum mechanical principles which
@@ -407,9 +407,9 @@ few. Some of these are informal concepts, while others have formal
 mathematical meaning.  More importantly, even amongst the formal
 concepts, there are differences -- which is why there are so many of
 them! Because there are many such notions, we also need to walk our
-way through them to find the one which is ``just right''. Thus we seek
+way through them to find the one which is ``just right.'' Thus we seek
 a concept which is neither too strong nor too weak, that will express
-when some structured information should be treated as ``the same''.
+when some structured information should be treated as ``the same.''
 We can draw an analogy with topology: in topology, all point sets can
 always be equipped with either the discrete or the indiscrete
 topology, but both of these extremes are rarely useful. We will
@@ -467,7 +467,7 @@ of finite sets $C,D$, there always exists another bijection
 $g : D \rightarrow C$ which is $f$'s inverse. So, for finite sets,
 \emph{bijections} act as reversible deformations.
 
-This discussion is purely ``semantic'', in the sense that it is about
+This discussion is purely ``semantic,'' in the sense that it is about
 the denotation of simple primitive data (sets) and their reversible
 deformations (bijections).  We would like to reverse engineer a programming
 language from this denotation. But first, an obvious remark: any two sets
@@ -729,7 +729,7 @@ however, they are not inverses.
 
 So mere inhabitation falls far short of our goals of being able to
 smoothly deform from one type to another. Let us thus analyze the crux
-of the ``problem''. In logic, we have that $\land$ and $\lor$ are both
+of the ``problem.'' In logic, we have that $\land$ and $\lor$ are both
 \emph{idempotent}: this is the property of any binary operation $*$
 where $\forall a. a * a = a$. And it should be clear that an
 idempotent operations is a \emph{forgetful} operation: its input has
@@ -741,7 +741,7 @@ versus $\top$; the first has \emph{two} proofs of inhabitation
 though the ``payload'' \texttt{tt} is the same, forgetting
 $\texttt{inl}$ (or \texttt{inr}) throws away information -- something
 we have expressly disallowed.  Yes, this should remind you of
-Maxwell's demon: even though the data is the same, they are tagged
+Maxwell's daemon: even though the data is the same, they are tagged
 differently, and this data is indeed information, and must be
 preserved.
 
@@ -857,7 +857,20 @@ taking sums and products which led to the awkward non-compositional
 programming style illustrated in the full adder example. In this
 language the full adder can be programmed as follows:
 
-\amr{***HERE***}
+\amr{***HERE***; operational semantics; It feels like I should be
+  writing about how the combinators (both for spaces and for
+  'permutations') work at a lower level. Did we ever write that up
+  somewhere?  We have lots of Agda code which 'does it', nicely, but
+  somehow I can't remember an English prose version of it. I am not
+  sure how long we want to make it.  For example, do we talk about the
+  'matrix' representation of combinators-for-permutations-on-[n], and
+  how these make things like 0+a=a and associativity obvious by
+  construction?
+  Let’s have a geometric representation of spaces:
+- A + B means putting A next to B
+- A * B means putting A and B on two perpendicular axes and filling the square (volume) between them
+All the combinators would indeed have a natural action and if we have
+a few nice pictures it would be great. What do you think? }
 
 The type-erase of this language \emph{should} be permutations. But
 given types $A$ and $B$ that erase to $\fin{m}$ and $\fin{n}$ respectively,
@@ -1239,7 +1252,7 @@ modeled types as (finite) sets.
 
 Thus, rather than looking at (untyped) commutative semirings,
 we should looked at a \emph{typed} version. This process frequently
-goes by the moniker of ``categorification''.  We want a categorical
+goes by the moniker of ``categorification.''  We want a categorical
 algebra, where the basic objects are groupoids (to model our types),
 and where there is a natural notion of $+$ and $*$.  At first,
 we hit what seems like a serious stumbling block: the category of
@@ -1314,10 +1327,10 @@ Partial isos
 
 meta-circular interpreter
 
-DANGER: here, we leave the safe land of ``preservation of information'',
+DANGER: here, we leave the safe land of ``preservation of information,''
 because partiality is not reversible. So while trace gives a reversible
 program as output, it itself isn't a reversible operation. Like the
-demon's brain in Maxwell's thought experiment, trace irreversible work!
+daemon's brain in Maxwell's thought experiment, trace irreversible work!
 So trace, which is fundamental to all work with recursive types, is
 only reversible "at level 1". So we need to replace trace with some other
 operation for level 2 reversibility to also hold -- and this is an open
@@ -1528,7 +1541,7 @@ models of computation or well known programming languages, and then
 adapts them to be reversible. Pi is different in that it starts from
 the semantic implications of reversibility. Then, because it adds
 types, rather than control-flow (or even data-flow) as its next layer
-of ``understanding'', this leads to equivalences, isomorphisms, etc.
+of ``understanding,'' this leads to equivalences, isomorphisms, etc.
 This then leads, quite naturally, to finding that the ``proof
 language'' of semirings (and Rig Groupoids at level 2) is actually a
 programming language. And it is Pi. This is a neat twist on
@@ -1544,7 +1557,7 @@ Let
 `$b$' be a (not necessarily finite) type whose values are labeled
 $b^1, b^2, \ldots$. Let $\xi$ be a random variable of type $b$ that is
 equal to $b^i$ with probability $p_i$. The entropy of $\xi$ is defined
-as $-\sum p_i \log{p_i}$~\cite{Shannon1948}.  Consider a function
+as $-\sum p_i \log{p_i}$~\cite{shannon1948}.  Consider a function
 $f : b_1 \rightarrow b_2$ where $b_2$ is a (not necessarily finite)
 type whose values are labeled $b_2^1, b_2^2, \ldots$. The output
 entropy of the function is given by $- \sum q_j \log{q_j}$ where $q_j$
@@ -2560,7 +2573,7 @@ inductive definitions over recursive datatypes without explicitly managing
 students and colleagues who participated in various aspects of this
 research and who provided valuable feedback and constructive criticism.
 
-\bibliographystyle{acm}
+\bibliographystyle{unsrt}
 %\pagestyle{headings}
 \bibliography{cites}
 \end{document}
