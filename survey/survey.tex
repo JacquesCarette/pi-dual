@@ -871,6 +871,14 @@ language the full adder can be programmed as follows:
 - A * B means putting A and B on two perpendicular axes and filling the square (volume) between them
 All the combinators would indeed have a natural action and if we have
 a few nice pictures it would be great. What do you think? }
+\jc{You are correct, I don't think we have any English prose which
+explains the operations of our combinators. The `matrix' representation
+makes sense for the untyped version, but is not necessarily adequate for
+the typed version, as it becomes quite an indirect way to view it, since you
+first have to assign numbers to each 'path' through a type as a proxy.
+Though if we want to have path-indexed instead of Fin-indexed matrices,
+I would be fine. So we could indeed still draw those pictures.  However,
+this would lead associativity of * to be an equation on two 3D matrices...}
 
 The type-erase of this language \emph{should} be permutations. But
 given types $A$ and $B$ that erase to $\fin{m}$ and $\fin{n}$ respectively,
