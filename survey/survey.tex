@@ -500,7 +500,7 @@ Although this language appears weak, it is universal for reversible
 boolean combinational circuits $[2^i] \rightarrow [2^i]$ with $i$
 input/output wires. 
 
-We illustrate the expressiveness of the language, we develop a few
+To illustrate the expressiveness of the language, we develop a few
 small examples. We start by writing boolean negation ``not'' as a
 permutation $[2^1] \rightarrow [2^1]$, the controlled-not gate (also
 known as ``cnot'') as a permutation $[2^2] \rightarrow [2^2]$, and the
@@ -934,6 +934,10 @@ We need to be consistent about it.}
 
 \jc{wavefront}
 
+Operational Semantics: 
+
+
+
 sound and complete isomorphisms for finite types
 
 \begin{verbatim}
@@ -943,6 +947,27 @@ examples:
   toffoli
   fredkin
 \end{verbatim}
+
+Implement Fredkin gate and mention the following:
+
+\begin{quote}
+  Ed Fredkin pursued the idea that information must be finite in
+  density. One day, he announced that things must be even more simple
+  than that. He said that he was going to assume that information
+  itself is conserved. “You’re out of you mind, Ed.” I
+  pronounced. “That’s completely ridiculous. Nothing could happen in
+  such a world. There couldn’t even be logical gates. No decisions
+  could ever be made.” But when Fredkin gets one of his ideas, he’s
+  quite immune to objections like that; indeed, they fuel him with
+  energy. Soon he went on to assume that information processing must
+  also be reversible — and invented what’s now called the Fredkin
+  gate. (Minsky 1999)
+\end{quote}
+
+%%%%%%%%%
+\subsection{Examples} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{figure}[t]
 Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 : t_3 \leftrightarrow t_4$:
@@ -1150,23 +1175,7 @@ Let $c : t_1 \leftrightarrow t_2$:
 \caption{\label{figa}Signatures of level-1 $\Pi$-combinators: commutativity and distributivity}
 \end{figure}
 
-Implement Fredkin gate and mention the following:
-
-\begin{quote}
-  Ed Fredkin pursued the idea that information must be finite in
-  density. One day, he announced that things must be even more simple
-  than that. He said that he was going to assume that information
-  itself is conserved. “You’re out of you mind, Ed.” I
-  pronounced. “That’s completely ridiculous. Nothing could happen in
-  such a world. There couldn’t even be logical gates. No decisions
-  could ever be made.” But when Fredkin gets one of his ideas, he’s
-  quite immune to objections like that; indeed, they fuel him with
-  energy. Soon he went on to assume that information processing must
-  also be reversible — and invented what’s now called the Fredkin
-  gate. (Minsky 1999)
-\end{quote}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
 \section{Data III: Reversible Programs between Reversible Programs}
 
 In the previous sections, we examined equivalences between
