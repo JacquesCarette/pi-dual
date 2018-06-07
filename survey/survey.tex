@@ -496,27 +496,37 @@ For convenience, we write $[2^n]$ for the finite set representing
 $n$-bit words with the canonical ordering for binary numbers. Thus
 when $n=3$, the finite set has elements $\{0,1,2,3,4,5,6,7\}$ which
 correspond to the 3-bit words $\{000,001,010,011,100,101,110,111\}$.
-Although this language appears weak, it is universal for boolean
-combinational circuits. To see this, we express, boolean negation
-\emph{not} as a permutation $[2^1] \rightarrow [2^1]$, controlled not
-(also known as \emph{cnot}) as a permutation
-$[2^2] \rightarrow [2^2]$, and controlled controlled-not (also known
-as \emph{toffoli}) as a permutation $[2^3] \rightarrow [2^3]$:
+Although this language appears weak, it is universal for reversible
+boolean combinational circuits $[2^i] \rightarrow [2^i]$ with $i$
+input/output wires. 
+
+We illustrate the expressiveness of the language, we develop a few
+small examples. We start by writing boolean negation ``not'' as a
+permutation $[2^1] \rightarrow [2^1]$, the controlled-not gate (also
+known as ``cnot'') as a permutation $[2^2] \rightarrow [2^2]$, and the
+controlled-controlled-not gate (also known as ``toffoli'') as a
+permutation $[2^3] \rightarrow [2^3]$:
 \[\begin{array}{rcl}
-\mathit{not} &=& \mathit{swap}~0~1 \\
-\mathit{cnot} &=& \mathit{swap}~2~3 \\
-\mathit{toffoli} &=& \mathit{swap}~6~7
+\mbox{not} &=& \mathit{swap}~0~1 \\
+\mbox{cnot} &=& \mathit{swap}~2~3 \\
+\mbox{toffoli} &=& \mathit{swap}~6~7
 \end{array}\]
-For example, the \emph{toffoli} gate negates the third bit (the target
+The ``cnot'' gate operates on two bits and negates the second (the
+target bit) if the first one (the control bit) is 1, i.e., it swaps
+$10$ and $11$; the ``toffoli'' gate negates the third bit (the target
 bit) if both the first two bits (the control bits) are 1, i.e., it
-swaps $110$ and $111$. Universality follows since any combinational
-circuit can be realized using compositions of \emph{toffoli} gates.
+swaps $110$ and $111$.
 
 There is however a subtle issue: programming in such an unstructured
-language is \emph{not} compositional in the sense that using
-$\mathit{not}$ in a larger circuit forces us to change its
-implementation. To illustrate this point, consider the reversible full
-adder below designed by Desoete et al.~\cite{117414}:
+language is \emph{not} compositional in the sense that using the
+``not'' gate in a larger circuit forces us to change its
+implementation. Indeed if we had two bits and wanted to use ``not'' to
+negate the first bit, we would write the permutation of type
+$[2^2] \rightarrow [2^2]$ that permutes $00$ with $10$ \emph{and}
+permutes $01$ with $11$, i.e, the permutation
+$\mathit{swap}~0~2 \fatsemi \mathit{swap}~1~3$. To further illustrate
+how inconvenient this point is, consider the reversible full adder
+below designed by Desoete et al.~\cite{117414}:
 
 \begin{center}
 \includegraphics[scale=0.6]{full-adder.png}
@@ -529,34 +539,35 @@ $C_i$, and a heap input initialized to 0 to maintain
 reversibility. There are four outputs: the first two are identical to
 the incoming bits $A$ and $B$ and are considered ``garbage.'' The
 third bit $S$ is the sum and the last bit $C_o$ is the outgoing carry
-bit. In the notation used to describe the circuit, the $x$ denotes
+bit. In the notation used to describe the circuit, the $\times$ denotes
 boolean negation, the dots are control bits. In our reversible
 language, we can express this circuit as the following permutation of
 type $[2^4] \rightarrow [2^4]$:
 
 \[\begin{array}{ll}
-\mathit{swap}~12~14 \fatsemi \mathit{swap}~13~15 & \mbox{toffoli} \\
+\mathit{swap}~12~14 \fatsemi \mathit{swap}~13~15 ~\fatsemi & \mbox{toffoli} \\
 \mathit{swap}~8~12 \fatsemi \mathit{swap}~9~14 \fatsemi 
-    \mathit{swap}~10~13 \fatsemi \mathit{swap}~11~15 & \mbox{cnot and swap} \\
-\mathit{swap}~6~7 \fatsemi \mathit{swap}~14~15 & \mbox{toffoli} \\
+    \mathit{swap}~10~13 \fatsemi \mathit{swap}~11~15 ~\fatsemi & \mbox{cnot and swap} \\
+\mathit{swap}~6~7 \fatsemi \mathit{swap}~14~15 ~\fatsemi & \mbox{toffoli} \\
 \mathit{swap}~4~6 \fatsemi \mathit{swap}~5~7 \fatsemi
     \mathit{swap}~12~14 \fatsemi \mathit{swap}~13~15 & \mbox{cnot}
 \end{array}\]
 
 Note how the implementation of $\mathit{cnot}$ as a permutation
-$[2^2] \rightarrow [2^2]$ cannot be directly reused in a circuit
-$[2^4] \rightarrow [2^4]$. Indeed, in programming practice we are
-interested in structured data and compositional abstractions which
-will be the subject on next section. What we do learn however from
-this short investigation using untyped flat sets is what the
-``\emph{purely operational}'' view of the theory would be. In
-particular, it tells us that permutations are an inescapable part of
-the fabric of reversible computing.  However as permutations are
-untyped, and act on the canonicalized version of $n$-element sets
-(i.e. those sets where all the structure has been forgotten), these
-are a rather pale shadow of the rich tapestry of
-information-perserving transformations of structured data which we
-investigate next.
+$[2^2] \rightarrow [2^2]$ cannot be directly reused in the larger
+circuit $[2^4] \rightarrow [2^4]$. 
+
+For such reasons, in programming practice we are interested in
+structured data and compositional abstractions which will be the
+subject of the next section. What we do learn however from this short
+investigation using untyped flat sets is what the ``\emph{purely
+  operational}'' view of the theory would be. In particular, it tells
+us that permutations are an inescapable part of the fabric of
+reversible computing.  However as permutations are untyped, and act on
+the canonicalized version of $n$-element sets (i.e. those sets where
+all the structure has been forgotten), these are a rather pale shadow
+of the rich tapestry of information-perserving transformations of
+structured data which we investigate next.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data II: Structured Finite Types}
