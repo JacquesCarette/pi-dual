@@ -572,31 +572,32 @@ structured data which we investigate next.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data II: Structured Finite Types}
 
-Instead of spaces consisting solely of unstructured isolated points,
-we now investigate structured spaces built from sums and products of
-elementary spaces. This structure corresponds to the building blocks
-of type theory which are: the empty type ($\bot$), the unit type
-($\top$), the sum type ($\uplus$), and the product ($\times$)
-type. Before getting into the formal theory, let's consider possible
-deformations on the space
-$(\top \uplus \bot) \times (\top \uplus \top)$. This space is the
-product of two subspaces: the subspace $(\top \uplus \bot)$ which
-itself is the sum of the space~$\top$ containing one element
-$\texttt{tt}$ and the empty space $\bot$ and the subspace
-$(\top \uplus \top)$ which is the sum of two spaces each containing
-the one element $\texttt{tt}$. First, as discussed in the previous
-section, any deformation of this space must at least preserve the
-number of elements: we can neither create nor destroy points during
-any continuous deformation. Seeing that the number of elements in our
-example space is 2, a reasonable hypothesis is that we can deform the
-space above to any other space with 2 elements such as
-$\top \uplus \top$ or $\top \uplus (\top \uplus \bot)$. What this
-really means is that we are treating the sum and product structure as
-malleable. For example, imagining a product structure as arranged in a
-grid, by stretching we can turn this structure to a sum structure
-arranged in a line, change the orientation of the grid by exchanging
-the axes, as well as do other transformations to be discussed in this
-section that preserve the number of points.
+\roshan{Let's not substitute space for set without first motivating
+  the use of the word.}  Instead of spaces consisting solely of
+unstructured isolated points, we now investigate structured spaces
+built from sums and products of elementary spaces. This structure
+corresponds to the building blocks of type theory which are: the empty
+type ($\bot$), the unit type ($\top$), the sum type ($\uplus$), and
+the product ($\times$) type. Before getting into the formal theory,
+let's consider possible deformations on the space $(\top \uplus \bot)
+\times (\top \uplus \top)$. This space is the product of two
+subspaces: the subspace $(\top \uplus \bot)$ which itself is the sum
+of the space~$\top$ containing one element $\texttt{tt}$ and the empty
+space $\bot$ and the subspace $(\top \uplus \top)$ which is the sum of
+two spaces each containing the one element $\texttt{tt}$. First, as
+discussed in the previous section, any deformation of this space must
+at least preserve the number of elements: we can neither create nor
+destroy points during any continuous deformation. Seeing that the
+number of elements in our example space is 2, a reasonable hypothesis
+is that we can deform the space above to any other space with 2
+elements such as $\top \uplus \top$ or $\top \uplus (\top \uplus
+\bot)$. What this really means is that we are treating the sum and
+product structure as malleable. For example, imagining a product
+structure as arranged in a grid, by stretching we can turn this
+structure to a sum structure arranged in a line, change the
+orientation of the grid by exchanging the axes, as well as do other
+transformations to be discussed in this section that preserve the
+number of points.
 
 %%%%%%%%%
 \subsection{A Model of Type Equivalences} 
@@ -659,18 +660,21 @@ put together into a ``set.''  This can be fixed if we replace the set
 $R$ with a universe $U$, and replace the set membership $0 \in R$ with
 the typing judgement $\bot : U$ (and similarly for the other
 items). Our next instinct would be to similarly replace $=$ with a
-judgement $A \equiv B$ that asserts that $A$ and $B$ are
-\emph{propositionally equal}. This is however not true: the
+type $A \equiv B$ that asserts that $A$ and $B$ are
+\emph{propositionally equal} such that a term exhibiting this type can
+then be shown in the formal system. This is however not true: the
 proposition $A \times B \equiv B \times A$ is not
 normally\footnote{Except in univalent type theory where equivalent
   types are identified.} provable for arbitrary types $A$ and $B$. But
 it should be clear that $A \times B$ and $B \times A$ contain
 equivalent information. In other words, we would like to be able to
-witness that $A \times B$ can be reversibly deformed into
-$B \times A$. Which motivates the introduction of type
-\emph{equivalences}. To do this, we need a few important auxiliary
-concepts.
+witness that $A \times B$ can be reversibly deformed into $B \times
+A$. Which motivates the introduction of type \emph{equivalences}. To
+do this, we need a few important auxiliary concepts.
 
+\roshan{Let's define $\equiv$ below or provide a readable
+  reference. We should not assume that its meaning is automatically
+  understood.}
 \begin{defn}[Homotopy]
 \label{def:homotopy}
 Two functions $f,g:A \rightarrow B$ are \emph{homotopic} if
@@ -716,14 +720,18 @@ We are now in position to formally state the appropriate commutative
 semiring structure for types. After replacing the set $R$ with a
 universe $U$, we also replace the algebraic use of $=$ in
 Def.~\ref{def:rig} by the type equivalence relation $\simeq$. With
-this change, we can indeed prove that types (with
-$\bot, \top, \uplus, \times$) form a commutative semiring. The reader
-familiar with universal algebra should pause and ponder a bit about
-what we have done. We have lifted \emph{equality} from being in the
-signature of the ambient logic and instead put it in the signature of
-the algebraic structure of interest. Then, and only then, are we in a
-solid position to show that we have a concept (commutative semiring)
-which is flexible enough for types to be an instance.
+this change, we can indeed prove that types (with $\bot, \top, \uplus,
+\times$) form a commutative semiring. The reader familiar with
+universal algebra should pause and ponder a bit about what we have
+done. We have lifted \emph{equality} from being in the signature of
+the ambient logic and instead put it in the signature of the algebraic
+structure of interest. \roshan{The last coupe of sentences are
+  unclear. Let's strive to keep things easy to understand. Can we
+  spell them out the tradeoffs here and give an example or two to
+  clarify the point. If this is indeed an important aspect of things
+  let's spend some space explaining it.} Then, and only then, are we
+in a solid position to show that we have a concept (commutative
+semiring) which is flexible enough for types to be an instance.
 
 If we revisit the Curry-Howard correspondence, we notice one
 more issue. In logic, it is true that $A \lor A = A$ and
@@ -746,7 +754,7 @@ where $\forall a. a * a = a$. And it should be clear that an
 idempotent operations is a \emph{forgetful} operation: its input has
 two copies of $a$, but its output, only one. On the type side,
 something more subtle happens. Consider $\top \uplus \top$
-versus $\top$; the first has \emph{two} proofs of inhabitation
+versus $\top$; the first can have \emph{two} proofs of inhabitation
 ($\texttt{inl tt}$ and $\texttt{inr tt}$) while the second only one
 ($\texttt{tt}$). These cannot be put in bijective correspondence. Even
 though the ``payload'' \texttt{tt} is the same, forgetting
