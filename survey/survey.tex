@@ -379,7 +379,6 @@ consequences, which will turn out to be far reaching.
 
 %%%%%%%%%
 \paragraph*{Programs as Reversible Deformations.}
-
 To better understand the essence of ``conservation of information'' in
 the context of computing, we first look for analogous ideas in
 physics, but this time at the macro scale. Viewing information as a
@@ -435,6 +434,21 @@ contrast with most current approaches to reversible computation, which
 start from current models of computation involving irreversible
 operations and try to find various ways to \emph{patch things up} so
 as to be reversible.
+
+\amr{We should also have a quick survey of other works in reversible
+computation? Most of the other work tries to start from well known
+models of computation or well known programming languages, and then
+adapts them to be reversible. Pi is different in that it starts from
+the semantic implications of reversibility. Then, because it adds
+types, rather than control-flow (or even data-flow) as its next layer
+of ``understanding,'' this leads to equivalences, isomorphisms, etc.
+This then leads, quite naturally, to finding that the ``proof
+language'' of semirings (and Rig Groupoids at level 2) is actually a
+programming language. And it is Pi. This is a neat twist on
+Curry-Howard because CH is about \textbf{inhabitation} only. But with
+``conservation of information'' as the basis, a different kind of
+correspondence arises; in fact, this one may well be an actual
+isomorphism.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data I: Finite Sets}
@@ -876,29 +890,6 @@ taking sums and products which led to the awkward non-compositional
 programming style illustrated in the full adder example. In this
 language the full adder can be programmed as follows:
 
-\amr{***HERE***; operational semantics; It feels like I should be
-  writing about how the combinators (both for spaces and for
-  'permutations') work at a lower level. Did we ever write that up
-  somewhere?  We have lots of Agda code which 'does it', nicely, but
-  somehow I can't remember an English prose version of it. I am not
-  sure how long we want to make it.  For example, do we talk about the
-  'matrix' representation of combinators-for-permutations-on-[n], and
-  how these make things like 0+a=a and associativity obvious by
-  construction?
-  Let’s have a geometric representation of spaces:
-- A + B means putting A next to B
-- A * B means putting A and B on two perpendicular axes and filling the square (volume) between them
-All the combinators would indeed have a natural action and if we have
-a few nice pictures it would be great. What do you think? }
-\jc{You are correct, I don't think we have any English prose which
-explains the operations of our combinators. The `matrix' representation
-makes sense for the untyped version, but is not necessarily adequate for
-the typed version, as it becomes quite an indirect way to view it, since you
-first have to assign numbers to each 'path' through a type as a proxy.
-Though if we want to have path-indexed instead of Fin-indexed matrices,
-I would be fine. So we could indeed still draw those pictures.  However,
-this would lead associativity of * to be an equation on two 3D matrices...}
-
 The type-erase of this language \emph{should} be permutations. But
 given types $A$ and $B$ that erase to $\fin{m}$ and $\fin{n}$ respectively,
 what are $A + B$ and $A * B$ ?  They correspond exactly to
@@ -936,27 +927,33 @@ at ``higher levels'' (see next section) is also lost. Since the
 extra burden of language definition and of proofs is quite low, we
 prefer the structural symmetry over a minimalistic language definition.
 
-\jc{We should decide what you level convention is. Do we say
-that $\iso$ is level 0, so that $\Leftrightarrow$ is level 1?
-We need to be consistent about it.}
-
-\jc{wavefront}
-
-Operational Semantics: 
-
-
-
 sound and complete isomorphisms for finite types
 
-\begin{verbatim}
-examples:
-  (1 + 1) x ((1 + 1) x b) = (b+b) + (b+b)
-  conditionals
-  toffoli
-  fredkin
-\end{verbatim}
+%%%%%%%%%
+\subsection{Operational Semantics} 
 
-Implement Fredkin gate and mention the following:
+%%%%%%%%%
+\subsection{Graphical Language} 
+
+a graphical notation for programming in these models that reminiscent
+of Penrose diagrams for categories~\cite{selinger-graphical}, Geometry
+of Interaction (GoI) machines and Proof
+Nets~\cite{Mackie2011,DBLP:conf/popl/Mackie95}. In the graphical
+notation, computation is modeled by the flow of particles in a
+circuit.
+
+\amr{
+  Let’s have a geometric representation of spaces:
+- A + B means putting A next to B
+- A * B means putting A and B on two perpendicular axes and filling
+the square (volume) between them
+All the combinators would indeed have a natural action and if we have
+a few nice pictures it would be great. What do you think? }
+
+%%%%%%%%%
+\subsection{Examples} 
+
+Surprising expressiveness of Pi:
 
 \begin{quote}
   Ed Fredkin pursued the idea that information must be finite in
@@ -972,8 +969,17 @@ Implement Fredkin gate and mention the following:
   gate. (Minsky 1999)
 \end{quote}
 
-%%%%%%%%%
-\subsection{Examples} 
+\begin{verbatim}
+examples:
+  (1 + 1) x ((1 + 1) x b) = (b+b) + (b+b)
+  conditionals
+  toffoli
+  fredkin
+  revisit adder example from Sec 2 
+  perhaps a larger example as well (from RC 18 paper?)
+\end{verbatim}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -995,7 +1001,7 @@ Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 
 \\
   {\assocrt \odot \assocrt \Leftrightarrow ((\assocrt \otimes \idc) \odot \assocrt) \odot (\idc \otimes \assocrt)}
 \end{array}\]
-\caption{\label{figj}Signatures of level-1 $\Pi$-combinators: associativity}
+\caption{\label{figj}Signatures of level-2 $\Pi$-combinators: associativity}
 \end{figure}
 
 \begin{figure}[t]
@@ -1010,7 +1016,7 @@ Let $a : t_1 \leftrightarrow t_2$, $b : t_3 \leftrightarrow t_4$, and $c : t_5 \
 \\
   {((a \otimes b) \oplus (a \otimes c)) \odot \factorl \Leftrightarrow \factorl \odot (a \otimes (b \oplus c))}
 \end{array}\]
-\caption{\label{figi}Signatures of level-1 $\Pi$-combinators: distributivity and factoring}
+\caption{\label{figi}Signatures of level-2 $\Pi$-combinators: distributivity and factoring}
 \end{figure}
 
 \begin{figure}[t]
@@ -1037,7 +1043,7 @@ Let $c, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c', c'' : t_3 \leftrightar
   {c_1 \odot c_2 \Leftrightarrow c' \odot c''}
   {}
 \end{array}\]
-\caption{\label{figh}Signatures of level-1 $\Pi$-combinators: identity and composition}
+\caption{\label{figh}Signatures of level-2 $\Pi$-combinators: identity and composition}
 \end{figure}
 
 \begin{figure}[t]
@@ -1066,7 +1072,7 @@ Let $c_0 : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c : t_1 \left
 \qquad
 \identlt \Leftrightarrow \swapt \odot \identrst
 \end{array}\]
-\caption{\label{figg}Signatures of level-1 $\Pi$-combinators: unit}
+\caption{\label{figg}Signatures of level-2 $\Pi$-combinators: unit}
 \end{figure}
 
 \begin{figure}[t]
@@ -1085,7 +1091,7 @@ Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
 \\
   {(\assoclt \odot \swapt) \odot \assoclt \Leftrightarrow ((\idc \otimes \swapt) \odot \assoclt) \odot (\swapt \otimes \idc)}
 \end{array}\]
-\caption{\label{figf}Signatures of level-1 $\Pi$-combinators: commutativity and associativity}
+\caption{\label{figf}Signatures of level-2 $\Pi$-combinators: commutativity and associativity}
 \end{figure}
 
 \begin{figure}[t]
@@ -1111,7 +1117,7 @@ Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_
 \\
   {(a_1 \odot a_3) \otimes (a_2 \odot a_4) \Leftrightarrow (a_1 \otimes a_2) \odot (a_3 \otimes a_4)}
 \end{array}\]
-\caption{\label{fige}Signatures of level-1 $\Pi$-combinators: functors}
+\caption{\label{fige}Signatures of level-2 $\Pi$-combinators: functors}
 \end{figure}
 
 \begin{figure}[t]
@@ -1121,7 +1127,7 @@ Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_
 \\
   {\identlst \otimes \idc ~\Leftrightarrow~ \assocrt \odot (\idc \otimes \, \identlt)}
 \end{array}\]
-\caption{\label{figd}Signatures of level-1 $\Pi$-combinators: unit and associativity}
+\caption{\label{figd}Signatures of level-2 $\Pi$-combinators: unit and associativity}
 \end{figure}
 
 
@@ -1151,7 +1157,7 @@ Let $c : t_1 \leftrightarrow t_2$:
 \\
   {\idc \otimes \, \identlp \Leftrightarrow (\distl \odot (\absorbl \oplus \idc)) \odot \identlp}
 \end{array}\]
-\caption{\label{figc}Signatures of level-1 $\Pi$-combinators: zero}
+\caption{\label{figc}Signatures of level-2 $\Pi$-combinators: zero}
 \end{figure}
 
 \begin{figure}[t]
@@ -1170,7 +1176,7 @@ Let $c : t_1 \leftrightarrow t_2$:
 && ((\idc \oplus \swapp) \oplus \idc) ~\odot \\
 &&      (\assoclp \oplus \idc)
 \end{array}\]
-\caption{\label{figb}Signatures of level-1 $\Pi$-combinators: associativity and distributivity}
+\caption{\label{figb}Signatures of level-2 $\Pi$-combinators: associativity and distributivity}
 \end{figure}
 
 \begin{figure}[t]
@@ -1180,11 +1186,21 @@ Let $c : t_1 \leftrightarrow t_2$:
 \\
   \dist \odot (\swapt \oplus \swapt) &\Leftrightarrow & \swapt \odot \distl
 \end{array}\]
-\caption{\label{figa}Signatures of level-1 $\Pi$-combinators: commutativity and distributivity}
+\caption{\label{figa}Signatures of level-2 $\Pi$-combinators: commutativity and distributivity}
 \end{figure}
 
 %%%
 \section{Data III: Reversible Programs between Reversible Programs}
+
+\begin{verbatim}
+Mention convention:
+
+level 0: types
+level 1: type equivalences (pi combinators)
+level 2: equivalences between equivalences
+
+(cite MFPS invited paper)
+\end{verbatim}
 
 In the previous sections, we examined equivalences between
 conventional data structures, i.e, sets of values and structured trees
@@ -1276,6 +1292,9 @@ all programs between the same types can be deformed into one
 another. The simplest example of inequivalent deformations
 are the two automorphisms of $1+1$, namely $\idc$ and $\swapp$.
 
+%%%%%%%%%
+\subsection{A Model of Equivalences between Type Equivalences} 
+ 
 In the previous section, we saw how we could take the proof
 terms of commutative semirings as our starting point. What we need
 now is to understand how proofs of algebraic identities should be
@@ -1319,7 +1338,8 @@ We can then proceed to prove that every one of the coherence conditions
 involved in defining a symmetric Rig Groupoid holds for the groupoid
 interpretation of types.
 
-\amr{*** another wavefront ***}
+%%%%%%%%%
+\subsection{A Language of Equivalences between Type Equivalences} 
 
 Pi level 2.
 
@@ -1334,57 +1354,74 @@ The interpretation on permutations is unclear, because the Pi representation
 has so much more structure, and permutations too have many different
 representations. So it is unclear what maps to what.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Data IV: Circle ???}
+%%%%%%%%%
+\subsection{Operational Semantics} 
 
-Would be interesting
+%%%%%%%%%
+\subsection{Graphical Language} 
+
+%%%%%%%%%
+\subsection{Examples} 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 
-Must mention infinite sets since we promised to do so in Sec 2
+Possible extensions; quest for other principles; other data models; graphs; HoTT
 
-Discuss recursion, or add a section of infinite sets???
+%%%
+\subsection{Infinite Sets} 
 
-CS abstractions are based on ``old'' physics
-
-computer applications are more and more ``physical''
-
-physical principles such as conservation of information should be part
-of our foundational abstractions
-
-quest for other principles; other data models; graphs; HoTT
-
-Data IV: Recursive Types
-
-Add recursion to structured finite types, trace, feedback, loop...
+Must mention infinite sets since we promised to do so in Sec 2;
+Discuss recursion, trace, feedback, loop...
 
 Natural numbers: fold/unfold
 
 Partial isos
 
-meta-circular interpreter
+meta-circular interpreter from RC paper: Since these new models are
+substantially different from \lcal\ or familiar high-level languages,
+a point of concern is how one can effectively develop programs in
+them.  We address this by presenting a straightforward technique for
+deriving $\Pi$ programs by systematically translating logically
+reversible small-step abstract machines~\cite{isoint}. Complex
+programs can be devised in this way; we demonstrate the derivation of
+a meta-circular interpreter for $\Pi$.
 
-DANGER: here, we leave the safe land of ``preservation of information,''
-because partiality is not reversible. So while trace gives a reversible
-program as output, it itself isn't a reversible operation. Like the
-daemon's brain in Maxwell's thought experiment, trace irreversible work!
-So trace, which is fundamental to all work with recursive types, is
-only reversible "at level 1". So we need to replace trace with some other
-operation for level 2 reversibility to also hold -- and this is an open
-problem.
+DANGER: here, we leave the safe land of ``preservation of
+information,'' because partiality is not reversible. So while trace
+gives a reversible program as output, it itself isn't a reversible
+operation. Like the daemon's brain in Maxwell's thought experiment,
+trace irreversible work!  So trace, which is fundamental to all work
+with recursive types, is only reversible "at level 1". So we need to
+replace trace with some other operation for level 2 reversibility to
+also hold -- and this is an open problem.
 
-Data V: Exclusive Disjunctions
+%%%
+\subsection{Topological Spaces} 
+
+Data IV: Circle etc. Would be interesting 
+
+%%%
+\subsection{Theseus}
+ 
+%%%
+\subsection{Quantum Computing} 
+ 
+Extension of Theseus in 2018 FoSSaCS paper.
+
+Exclusive Disjunctions
 
 Quantum over finite field
 
 \jc{The reason I commented this out is that it is under-justified. The
 reader will simply not understand what these next few lines are really
 saying.}
-Indeed one should take the physical principles underlying quantum mechanics,
-the most successful physical theory known to us and adapt computation to
-``learn'' from these principles. To illustrate the depth of our crisis, Scott
-Aaronson, Umesh Vazirani, and others have proposed the following puzzle.
+
+Indeed one should take the physical principles underlying quantum
+mechanics, the most successful physical theory known to us and adapt
+computation to ``learn'' from these principles. To illustrate the
+depth of our crisis, Scott Aaronson, Umesh Vazirani, and others have
+proposed the following puzzle.
 
 One of these wild claims must be true!:
 \begin{itemize}
@@ -1396,103 +1433,14 @@ Indeed, if quantum physics is correct then there is an efficient quantum
 algorithm for factoring (Shor). If there is no efficient classical algorithm
 for factoring then the extended Church-Turing thesis is false.
 
-%% Below are pieces of text that are not immediately useful above, but
-%% from which we might still be able to pilfer usefully.
-
-%%%%%%%%%
-\subsection{Technical Overview}
-
-The technical development derives from ideas which are implicit in the
-works of \cite{toffoli:1980, Zuliani:2001:LR,
-  malacaria2007assessing,ClarkHM07,Ghica:2007:GSS:1190216.1190269}.
-(1) Functions whose output entropy is equal to their input entropy are
-information preserving functions.  (2) A function
-$f : b_1 \rightarrow b_2$ is \emph{logically reversible} if there
-exists an inverse function $f^{\dagger}$ such that for any input
-$v_1:b_1$ if there exists $v_2:b_2$ such that $f(v_1)=v_2$ \emph{iff}
-$f^{\dagger}(v_2)=v_1$.  (3) Logically reversible functions are
-information preserving.
-
-To summarize:
-\begin{enumerate}
-\item Based on isomorphisms of sum and product
-  types~\cite{Fiore:2004}, we develop a strong normalizing model of
-  computing, which we call $\Pi$, that is logically reversible and
-  information preserving. Every computation expressible in $\Pi$
-  is an isomorphism.
-
-\item We extend $\Pi$ with isorecursive type and trace operators from
-  category theory to obtain $\Pi$. Every computation expressible in
-  $\Pi$ is a partial isomorphism --- i.e. the system admits
-  non-termination. $\Pi$ is Turing complete while being information
-  preserving and logically reversible.
-
-\item We develop the categorical semantics of these
-  models~\cite{rc2011}. \amr{Mention n-categories.} We also develop
-  a graphical notation for programming in these models that
-  reminiscent of Penrose diagrams for
-  categories~\cite{selinger-graphical}, Geometry of Interaction (GoI)
-  machines and Proof
-  Nets~\cite{Mackie2011,DBLP:conf/popl/Mackie95}. In the graphical
-  notation, computation is modeled by the flow of particles in a
-  circuit.
-
-\item Since these new models are substantially different from \lcal\
-  or familiar high-level languages, a point of concern is how one can
-  effectively develop programs in them.  We address this by presenting
-  a straightforward technique for deriving $\Pi$ programs by
-  systematically translating logically reversible small-step abstract
-  machines~\cite{isoint}. Complex programs can be devised in this way;
-  we demonstrate the derivation of a meta-circular interpreter for
-  $\Pi$.
-
-\item We develop an arrow meta-language to encapsulate information
-  effects. This metalanguage serves to encapsulate effects, in much
-  the same way that traditional arrows or monads serve to encapsulate
-  effects over the \lcal.
-
-\item We show how a conventional irreversible model can be expressed
-  in our model. We compile the first-order fragment of typed \lcal\
-  extended with sums, products and loops to $\Pi$. This compilation is
-  interesting for two reasons: (1) it exposes the implicit information
-  effects of \lcal\ in the compilation to $\Pi$ and (2) the
-  compilation of $\Pi$ to $\Pi$ shows that information effects can be
-  erased by treating them as interactions with an explicit information
-  environment.
-
-\item We develop the notion of `duality' in $\Pi$ which gives us not
-  one duality (like in linear logic or Filinski's symmetric
-  \lcal~\cite{Filinski:89}), but two notions of duality -- an additive
-  duality and a multiplicative duality. This gives a crisp semantics
-  for negative and fractional types in the context of $\Pi$.
-
-\end{enumerate}
-
-Several intriguing areas of exploration remain and the book concludes
-with discussion of some of these, along with other possible
-applications.  Of these, the field of reversible and Quantum computing
-is closely related and we survey several connections in depth.  The
-exact connection between $\Pi$ and linear logic~\cite{Girard87tcs} is
-not fully understood though it is clear that both systems capture
-related but different notions of resource usage. A closely related
-area is the connection with duality of computation \cite{Filinski:89,
-  DBLP:conf/icfp/CurienH00, 10.1109/LICS.2010.23,Wadler:2003} ---
-i.e., the quest for a unifying framework between `computations',
-values, continuations and their logical counterparts. The
-investigation of duality gives rise to negative and fractional types
-which have an intuitive semantics and are reminiscent of negative
-information flow, superposition and entanglement from Quantum
-Physics~\cite{piee}.
-
-%%%%%%%%%
-\paragraph*{Conservation of Information.}
-
+%%%
+\subsection{Information Flow} 
+ 
 If information has a physical significance, then it is subject to
 conservation laws just as mass and energy are.  To make this idea
 concrete and to provide a taste of the applications it opens, consider
 a tiny 2-bit password = \verb|"10"|. The password checker looks like:
 
-% verbatim for now, will go to something decent later
 \begin{verbatim}
 check-password (guess) =
   if guess == "10"
@@ -1573,78 +1521,46 @@ duplicated, nor erased. Of course, if we make our notion of information
 too rigid, it will be impossible to even \textbf{modify} it! For computation
 to occur, modification must be possible.  But of what kind?
 
-\amr{We should also have a quick survey of other works in reversible
-computation? Most of the other work tries to start from well known
-models of computation or well known programming languages, and then
-adapts them to be reversible. Pi is different in that it starts from
-the semantic implications of reversibility. Then, because it adds
-types, rather than control-flow (or even data-flow) as its next layer
-of ``understanding,'' this leads to equivalences, isomorphisms, etc.
-This then leads, quite naturally, to finding that the ``proof
-language'' of semirings (and Rig Groupoids at level 2) is actually a
-programming language. And it is Pi. This is a neat twist on
-Curry-Howard because CH is about \textbf{inhabitation} only. But with
-``conservation of information'' as the basis, a different kind of
-correspondence arises; in fact, this one may well be an actual
-isomorphism.}
-
-%%%%%%%%%
-\paragraph*{Information.}
-We can now give a first precise definition of information preservation.
-Let
-`$b$' be a (not necessarily finite) type whose values are labeled
-$b^1, b^2, \ldots$. Let $\xi$ be a random variable of type $b$ that is
-equal to $b^i$ with probability $p_i$. The entropy of $\xi$ is defined
-as $-\sum p_i \log{p_i}$~\cite{shannon1948}.  Consider a function
-$f : b_1 \rightarrow b_2$ where $b_2$ is a (not necessarily finite)
-type whose values are labeled $b_2^1, b_2^2, \ldots$. The output
-entropy of the function is given by $- \sum q_j \log{q_j}$ where $q_j$
-indicates the probability of the output of the function to have value
-${b_2}^j$. We say a function is \emph{information-preserving} if its
-output entropy is equal to the entropy of its input. In later sections,
-we will refine this view.
-
-\amr{
+%%%
+\subsection{Conservation of Information, Information Effects, and Duality} 
+ 
 Talk about conservation of information in biology, computer science,
 evolutionary computing, and search. (See
 \url{http://www.evolutionnews.org/2012/08/conservation_of063671.html}.
-}
 
-In our current age, both Landauer's Principle and recent investigations
-of computational models well-suited to quantum mechanics, push us to
-revisit our current models of computation. Information, on top of
-having a physical manifestation, appears to be \emph{conserved},
-along with other quantities like energy, mass and momentum.
+We develop an arrow meta-language to encapsulate information
+effects. This metalanguage serves to encapsulate effects, in much the
+same way that traditional arrows or monads serve to encapsulate
+effects over the \lcal.
 
-But what does it mean for a computation to preserve information?
-What is the missing principle that will guide the creation of a new
-model of computation that ``conserve information''?
-It is nature to look again at physics for inspiration --
-in our current understanding of physics all of the primitive rules
-are reversible. Conventional computation is not. Can
-we embrace this simple principle as the building block of a model of
-computation? What would computation look like when viewed from this
-vantage point? Can non-trivial computation be performed in a
-reversible manner? And, if so, does it have applications?
+new paper \url{https://arxiv.org/pdf/1805.08605.pdf}
 
-Traditional models of computation are all unityped, generally
-operating on unstructured sequences of symbols. But recent
-investigations, in the intersection between mathematics and
-computer science (particularly in Homotopy Type Theory~\cite{hottbook})
-reveal that not only can mathematics be typed, but that doing so
-reveals further structure -- in both mathematics and in computation.
+Mention connections to negative, fractional, and algebraic numbers
 
-And that brings us to the principal objective of this survey: explore the
-domain of \emph{typed reversible computation}.
+%%%
+\subsection{Summary} 
 
-\amr{In the quantum case, this is clear. Say something about topological
-quantum computing.}
+CS abstractions are based on ``old'' physics
 
-\textbf{punch line: allowable operations that computers can perform
-  while embracing the laws of physics are operations that preserve
-  everthing in abstract space of ``data''; doughnut into cup kind of
-  transformations.}
+computer applications are more and more ``physical''
 
+physical principles such as conservation of information should be part
+of our foundational abstractions
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Acknowledgements} We would like to thank the numerous
+students and colleagues who participated in various aspects of this
+research and who provided valuable feedback and constructive criticism.
+
+\bibliographystyle{unsrt}
+%\pagestyle{headings}
+\bibliography{cites}
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{comment}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Theseus: Types and Simple Isomorphisms}
 \label{theseusI}
@@ -2604,17 +2520,5 @@ expressed~\cite{James:2012:IE:2103656.2103667}.  It is also desirable to add
 other programming features such as polymorphism, higher-order maps and
 inductive definitions over recursive datatypes without explicitly managing
 \ctr{Ctxt} values as we did in the \ctr{treeWalk} program.
+}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Acknowledgements} We would like to thank the numerous
-students and colleagues who participated in various aspects of this
-research and who provided valuable feedback and constructive criticism.
-
-\bibliographystyle{unsrt}
-%\pagestyle{headings}
-\bibliography{cites}
-\end{document}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
