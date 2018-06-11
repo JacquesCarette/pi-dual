@@ -592,6 +592,7 @@ structured data which we investigate next.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data II: Structured Finite Types}
+\label{sec:pi1}
 
 \roshan{Let's not substitute space for set without first motivating
   the use of the word.}  Instead of spaces consisting solely of
@@ -1198,16 +1199,7 @@ Let $c : t_1 \leftrightarrow t_2$:
 
 %%%
 \section{Data III: Reversible Programs between Reversible Programs}
-
-\begin{verbatim}
-Mention convention:
-
-level 0: types
-level 1: type equivalences (pi combinators)
-level 2: equivalences between equivalences
-
-(cite MFPS invited paper)
-\end{verbatim}
+\label{sec:pi2}
 
 In the previous sections, we examined equivalences between
 conventional data structures, i.e, sets of values and structured trees
@@ -1298,6 +1290,14 @@ $\swapp \odot (c_2~\oplus~c_1)$ are equal. And, of course, not
 all programs between the same types can be deformed into one
 another. The simplest example of inequivalent deformations
 are the two automorphisms of $1+1$, namely $\idc$ and $\swapp$.
+
+Our reversible language of type isomorphisms and equivalences between
+them has a strong connection to \emph{univalent universes} in
+HoTT~\cite{CARETTE20185}. Based on this connection, we refer to the
+types as being at level-0, to the equivalences between types (i.e., the
+combinators of Sec.~\ref{sec:pi1}) as being at level-1, and to the
+equivalences between equivalences of types (i.e., the combinators
+discussed in this section) as being at level-2. 
 
 %%%%%%%%%
 \subsection{A Model of Equivalences between Type Equivalences} 
