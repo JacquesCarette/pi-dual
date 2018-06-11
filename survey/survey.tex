@@ -1,4 +1,7 @@
 \documentclass{article}
+\usepackage[utf8x]{inputenc}
+\usepackage{agda}
+\usepackage[nocenter]{qtree}
 \usepackage{amssymb,amsthm,amsmath}
 \usepackage{fullpage}
 \usepackage{url}
@@ -66,6 +69,10 @@ $\displaystyle
  #4}}
 \newcommand{\jdg}[3]{#2 \proves_{#1} #3}
 
+\DeclareUnicodeCharacter{9678}{\ensuremath{\odot}}
+\DeclareUnicodeCharacter{9636}{\ensuremath{\Box}}
+%% shorten the longarrow
+\DeclareUnicodeCharacter{10231}{\ensuremath{\leftrightarrow}}
 
 \title{Embracing the Laws of Physics: \\ Three Reversible Models of Computation}
 \author{Jacques Carette \qquad\qquad Roshan P. James \qquad\qquad Amr Sabry \\
@@ -1363,6 +1370,318 @@ representations. So it is unclear what maps to what.
 %%%%%%%%%
 \subsection{Examples} 
 
+We illustrate our methodology using a small example. Consider a
+circuit that takes an input type consisting of three values
+\Tree [ {\small a} [ {\small b} {\small c} ] ]~
+and swaps the leftmost value with the rightmost value
+to produce
+\Tree [ {\small c} [ {\small b} {\small a} ] ]~.
+We can implement two such circuits using our Agda library for $\Pi$:
+
+\begin{code}%
+\>[0]\AgdaFunction{swap{-}fl1}\AgdaSpace{}%
+\AgdaFunction{swap{-}fl2}\AgdaSpace{}%
+\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaSymbol{\{}\AgdaBound{a}\AgdaSpace{}%
+\AgdaBound{b}\AgdaSpace{}%
+\AgdaBound{c}\AgdaSpace{}%
+\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaDatatype{U}\AgdaSymbol{\}}\AgdaSpace{}%
+\AgdaSymbol{→}\AgdaSpace{}%
+\AgdaInductiveConstructor{PLUS}\AgdaSpace{}%
+\AgdaBound{a}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{PLUS}\AgdaSpace{}%
+\AgdaBound{b}\AgdaSpace{}%
+\AgdaBound{c}\AgdaSymbol{)}\AgdaSpace{}%
+\AgdaDatatype{⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{PLUS}\AgdaSpace{}%
+\AgdaBound{c}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{PLUS}\AgdaSpace{}%
+\AgdaBound{b}\AgdaSpace{}%
+\AgdaBound{a}\AgdaSymbol{)}\<%
+\\
+\>[0]\AgdaFunction{swap{-}fl1}\AgdaSpace{}%
+\AgdaSymbol{=}\AgdaSpace{}%
+\AgdaInductiveConstructor{assocl₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}\<%
+\\
+%
+\\[\AgdaEmptyExtraSkip]%
+\>[0]\AgdaFunction{swap{-}fl2}\AgdaSpace{}%
+\AgdaSymbol{=}%
+\>[52I]\AgdaSymbol{(}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\<%
+\\
+\>[.]\<[52I]%
+\>[11]\AgdaInductiveConstructor{assocl₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\<%
+\\
+%
+\>[11]\AgdaSymbol{(}\AgdaInductiveConstructor{swap₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{id⟷}\AgdaSymbol{)}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\<%
+\\
+%
+\>[11]\AgdaInductiveConstructor{assocr₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\<%
+\\
+%
+\>[11]\AgdaSymbol{(}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}\<%
+\end{code}
+
+\noindent The first implementation rewrites the incoming values as follows:
+\[
+\Tree [ {\small a} [ {\small b} {\small c} ] ] ~\to~
+\Tree [ [ {\small a} {\small b} ] {\small c} ] ~\to~
+\Tree [ {\small c} [ {\small a} {\small b} ] ] ~\to~
+\Tree [ {\small c} [ {\small b} {\small a} ] ] ~.
+\]
+\noindent
+The second implementation rewrites the incoming values as follows:
+\[
+\Tree [ {\small a} [ {\small b} {\small c} ] ] ~\to~
+\Tree [ {\small a} [ {\small c} {\small b} ] ] ~\to~
+\Tree [ [ {\small a} {\small c} ] {\small b} ] ~\to~
+\Tree [ [ {\small c} {\small a} ] {\small b} ] ~\to~
+\Tree [ {\small c} [ {\small a} {\small b} ] ] ~\to~
+\Tree [ {\small c} [ {\small b} {\small a} ] ] ~.
+\]
+\noindent The two circuits are extensionally equal. Using the level-2
+isomorphisms we can \emph{explicitly} construct a sequence of
+rewriting steps that transforms the second circuit to the first.  The proof
+can be read as follows: the first three lines ``refocus'' from a right-associated
+isomorphism onto the (left-associated) composition of the first $3$ isomorphisms;
+then apply a complex rewrite on these (the ``hexagon'' coherence condition
+of symmetric braided monoidal categories); this exposes two inverse combinators
+next to each other --- so we have to refocus on these to eliminate them; we
+finally re-associate to get the result.
+
+\begin{code}%
+\>[0]\AgdaFunction{swap{-}fl2⇔swap{-}fl1}\AgdaSpace{}%
+\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaSymbol{\{}\AgdaBound{a}\AgdaSpace{}%
+\AgdaBound{b}\AgdaSpace{}%
+\AgdaBound{c}\AgdaSpace{}%
+\AgdaSymbol{:}\AgdaSpace{}%
+\AgdaDatatype{U}\AgdaSymbol{\}}\AgdaSpace{}%
+\AgdaSymbol{→}\AgdaSpace{}%
+\AgdaFunction{swap{-}fl2}\AgdaSpace{}%
+\AgdaSymbol{\{}\AgdaBound{a}\AgdaSymbol{\}}\AgdaSpace{}%
+\AgdaSymbol{\{}\AgdaBound{b}\AgdaSymbol{\}}\AgdaSpace{}%
+\AgdaSymbol{\{}\AgdaBound{c}\AgdaSymbol{\}}\AgdaSpace{}%
+\AgdaDatatype{⇔}\AgdaSpace{}%
+\AgdaFunction{swap{-}fl1}\<%
+\\
+\>[0]\AgdaFunction{swap{-}fl2⇔swap{-}fl1}\AgdaSpace{}%
+\AgdaSymbol{=}\<%
+\\
+\>[0][@{}l@{\AgdaIndent{0}}]%
+\>[2]\AgdaSymbol{((}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{assocl₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{swap₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{id⟷}\AgdaSymbol{)}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{assocr₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{))}\<%
+\\
+\>[0][@{}l@{\AgdaIndent{0}}]%
+\>[1]\AgdaFunction{⇔⟨}\AgdaSpace{}%
+\AgdaInductiveConstructor{id⇔}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊡}\AgdaSpace{}%
+\AgdaInductiveConstructor{assoc◎l}\AgdaSpace{}%
+\AgdaFunction{⟩}\<%
+\\
+\>[1][@{}l@{\AgdaIndent{0}}]%
+\>[2]\AgdaSymbol{((}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{assocl₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{swap₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{id⟷}\AgdaSymbol{))}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{assocr₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{))}\<%
+\\
+%
+\>[1]\AgdaFunction{⇔⟨}\AgdaSpace{}%
+\AgdaInductiveConstructor{assoc◎l}\AgdaSpace{}%
+\AgdaFunction{⟩}\<%
+\\
+\>[1][@{}l@{\AgdaIndent{0}}]%
+\>[2]\AgdaSymbol{(((}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{assocl₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{swap₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{id⟷}\AgdaSymbol{))}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{assocr₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{))}\<%
+\\
+%
+\>[1]\AgdaFunction{⇔⟨}\AgdaSpace{}%
+\AgdaInductiveConstructor{assoc◎l}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊡}\AgdaSpace{}%
+\AgdaInductiveConstructor{id⇔}\AgdaSpace{}%
+\AgdaFunction{⟩}\<%
+\\
+\>[1][@{}l@{\AgdaIndent{0}}]%
+\>[2]\AgdaSymbol{((((}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{assocl₊}\AgdaSymbol{)}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{swap₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{id⟷}\AgdaSymbol{))}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{assocr₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{))}\<%
+\\
+%
+\>[1]\AgdaFunction{⇔⟨}\AgdaSpace{}%
+\AgdaInductiveConstructor{hexagonl⊕r}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊡}\AgdaSpace{}%
+\AgdaInductiveConstructor{id⇔}\AgdaSpace{}%
+\AgdaFunction{⟩}\<%
+\\
+\>[1][@{}l@{\AgdaIndent{0}}]%
+\>[2]\AgdaSymbol{(((}\AgdaInductiveConstructor{assocl₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{assocl₊}\AgdaSymbol{)}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{assocr₊}%
+\>[44]\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{))}\<%
+\\
+%
+\>[1]\AgdaFunction{⇔⟨}\AgdaSpace{}%
+\AgdaInductiveConstructor{assoc◎r}\AgdaSpace{}%
+\AgdaFunction{⟩}\<%
+\\
+\>[1][@{}l@{\AgdaIndent{0}}]%
+\>[2]\AgdaSymbol{((}\AgdaInductiveConstructor{assocl₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{assocl₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{assocr₊}%
+\>[42]\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{))}\<%
+\\
+%
+\>[1]\AgdaFunction{⇔⟨}\AgdaSpace{}%
+\AgdaInductiveConstructor{id⇔}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊡}\AgdaSpace{}%
+\AgdaInductiveConstructor{assoc◎l}\AgdaSpace{}%
+\AgdaFunction{⟩}\<%
+\\
+\>[1][@{}l@{\AgdaIndent{0}}]%
+\>[2]\AgdaSymbol{((}\AgdaInductiveConstructor{assocl₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{assocl₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{assocr₊}\AgdaSymbol{)}%
+\>[44]\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{))}\<%
+\\
+%
+\>[1]\AgdaFunction{⇔⟨}\AgdaSpace{}%
+\AgdaInductiveConstructor{id⇔}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊡}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{linv◎l}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊡}\AgdaSpace{}%
+\AgdaInductiveConstructor{id⇔}\AgdaSymbol{)}\AgdaSpace{}%
+\AgdaFunction{⟩}\<%
+\\
+\>[1][@{}l@{\AgdaIndent{0}}]%
+\>[2]\AgdaSymbol{((}\AgdaInductiveConstructor{assocl₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{id⟷}%
+\>[28]\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{))}\<%
+\\
+%
+\>[1]\AgdaFunction{⇔⟨}\AgdaSpace{}%
+\AgdaInductiveConstructor{id⇔}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊡}\AgdaSpace{}%
+\AgdaInductiveConstructor{idl◎l}\AgdaSpace{}%
+\AgdaFunction{⟩}\<%
+\\
+\>[1][@{}l@{\AgdaIndent{0}}]%
+\>[2]\AgdaSymbol{((}\AgdaInductiveConstructor{assocl₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{)}%
+\>[22]\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{))}\<%
+\\
+%
+\>[1]\AgdaFunction{⇔⟨}\AgdaSpace{}%
+\AgdaInductiveConstructor{assoc◎r}\AgdaSpace{}%
+\AgdaFunction{⟩}\<%
+\\
+\>[1][@{}l@{\AgdaIndent{0}}]%
+\>[2]\AgdaSymbol{((}\AgdaInductiveConstructor{assocl₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSpace{}%
+\AgdaInductiveConstructor{◎}\AgdaSpace{}%
+\AgdaSymbol{(}\AgdaInductiveConstructor{id⟷}\AgdaSpace{}%
+\AgdaInductiveConstructor{⊕}\AgdaSpace{}%
+\AgdaInductiveConstructor{swap₊}\AgdaSymbol{))}\AgdaSpace{}%
+\AgdaFunction{▤}\AgdaSymbol{)}\<%
+\end{code}
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 
@@ -1404,6 +1723,81 @@ Data IV: Circle etc. Would be interesting
 %%%
 \subsection{Theseus}
  
+The most elementary control structure in a programming language is the
+ability to conditionally execute one of several possible code
+fragments. Expressing such an abstraction using predicates and nested
+\textbf{if}-expressions makes it difficult for both humans and
+compilers to reason about the control flow structure. Instead, in
+modern functional languages, this control flow paradigm is elegantly
+expressed using \emph{pattern-matching}. This approach yields code
+that is not only more concise and readable but also enables the
+compiler to easily verify two crucial properties: (i) non-overlapping
+patterns and (ii) exhaustive coverage of a datatype using a collection
+of patterns. Indeed most compilers for functional languages perform
+these checks, warning the user when they are violated. At a more
+fundamental level, e.g., in type theories and proof assistants, these
+properties are actually necessary for correct reasoning about
+programs. Our first insight, explained in this section, is that these
+properties, perhaps surprisingly, are sufficient to produce a simple
+and intuitive first-order reversible programming language.
+
+\begin{figure}[t]
+  \centering
+  \begin{minipage}{0.4\linewidth}
+    \begin{verbatim}
+f :: Either Int Int -> a
+f (Left 0)     = undefined
+f (Left (n+1)) = undefined
+f (Right n)    = undefined
+\end{verbatim}\vspace{-4ex}
+    \caption{A skeleton}\label{fig:intro-ex-1}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.4\linewidth}
+\begin{verbatim}
+g :: (Bool,Int) -> a
+g (False,n)  = undefined
+g (True,0)   = undefined
+g (True,n+1) = undefined
+\end{verbatim}\vspace{-4ex}
+    \caption{Another skeleton}\label{fig:intro-ex-2}
+  \end{minipage}
+  \\[3ex]
+  \begin{minipage}{0.6\linewidth}
+\begin{verbatim}
+h :: Either Int Int <-> (Bool,Int)
+h (Left 0)     = (True,0)
+h (Left (n+1)) = (False,n)
+h (Right n)    = (True,n+1)
+\end{verbatim}\vspace{-4ex}
+    \caption{An isomorphism}\label{fig:intro-ex-3}
+  \end{minipage}
+\end{figure}
+
+We start with a small illustrative example, written in a Haskell-like
+syntax.  Fig.~\ref{fig:intro-ex-1} gives the skeleton of a function
+\verb|f| that accepts a value of type \verb|Either Int| \verb|Int|; the
+patterns on the left-hand side exhaustively cover every possible
+incoming value and are non-overlapping. Similarly,
+Fig.~\ref{fig:intro-ex-2} gives the skeleton for a function~\verb|g|
+that accepts a value of type \verb|(Bool,Int)|; again the patterns on
+the left-hand side exhaustively cover every possible incoming value
+and are non-overlapping. Now we claim that since the types
+\verb|Either Int Int| and \verb|(Bool,Int)| are isomorphic, we can
+combine the patterns of \verb|f| and \verb|g| into \emph{symmetric
+  pattern-matching clauses} to produce a reversible function between
+the types \verb|Either Int Int| and
+\verb|(Bool,Int)|. Fig.~\ref{fig:intro-ex-3} gives one such function;
+there, we suggestively use \verb|<->| to indicate that the function
+can be executed in either direction. This reversible function is
+obtained by simply combining the non-overlapping exhaustive patterns
+on the two sides of a clause. In order to be well-formed in either
+direction, these clauses are subject to the constraint that each
+variable occurring on one side must occur exactly once on the other
+side (and with the same type). Thus it is acceptable to swap the
+second and third right-hand sides of \verb|h| but not the first and
+second ones.
+
 %%%
 \subsection{Quantum Computing} 
  
