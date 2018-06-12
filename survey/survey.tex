@@ -1481,23 +1481,83 @@ The constructs in Fig.~\ref{figi} explain how choice interacts with
 grouping. Intuitively, a choice nested inside a larger bundle can also
 be treated as an outer choice with the nested bundle duplicated in
 each branch. 
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\node[above] (A) at (-2,0) {$t_1$}; 
+\node[above] (B) at (-1.5,0) {$t_3$}; 
+\node[above] (C) at (-1,0) {$t_5$}; 
+\draw[thick,yellow] (-1.5,-0.25) arc[start angle=60, end angle=120, radius=0.5cm];
+\draw[thick] (A) -- (-2,-0.5); 
+\draw[thick] (B) -- (-1.5,-0.5); 
+\draw[thick] (C) -- (-1,-0.5);
+\node at (-2,-0.75) {$a$}; 
+\node at (-1.5,-0.75) {$b$}; 
+\node at (-1,-0.75) {$c$}; 
+\draw[thick] (-2,-1) -- (-2,-1.5); 
+\draw[thick] (-1.5,-1) -- (-1.5,-1.5); 
+\draw[thick] (-1,-1) -- (-1,-1.5);
+\node at (-1.5,-2) {$\dist$};
+\draw[thick] (-2.5,-2.5) -- (-2.5,-3); 
+\draw[thick] (-2,-2.5) -- (-2,-3); 
+\draw[green,densely dashed] (-2.25,-2.75) ellipse [x radius=0.4cm, y radius = 0.1cm]; 
+\draw[thick] (-1,-2.5) -- (-1,-3); 
+\draw[thick] (-0.5,-2.5) -- (-0.5,-3); 
+\draw[green,densely dashed] (-0.75,-2.75) ellipse [x radius=0.4cm, y radius = 0.1cm]; 
+\draw[thick,yellow] (-1,-2.75) arc[start angle=60, end angle=120, radius=1cm];
+\end{tikzpicture}
+\end{center}
+% ((a + b) * c) ; dist <=> dist ; ((a * c) + (b * c))
+% LHS: (t1 + t3) * t5 ~> (t2 + t4) * t6 ~> (t2 * t6) + (t4 * t6)
+% RHS: (t1 + t3) * t5 ~> (t1 * t5) + (t3 * t5) ~> (t2 * t6) + (t4 * t6)
+
 
 The constructs in Fig.~\ref{figh} \ldots 
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\end{tikzpicture}
+\end{center}
 
 The constructs in Fig.~\ref{figg} \ldots 
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\end{tikzpicture}
+\end{center}
 
 The constructs in Fig.~\ref{figf} \ldots 
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\end{tikzpicture}
+\end{center}
 
 The constructs in Fig.~\ref{fige} \ldots 
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\end{tikzpicture}
+\end{center}
 
 The constructs in Fig.~\ref{figd} \ldots 
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\end{tikzpicture}
+\end{center}
 
 The constructs in Fig.~\ref{figc} \ldots 
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\end{tikzpicture}
+\end{center}
 
 The constructs in Fig.~\ref{figb} \ldots 
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\end{tikzpicture}
+\end{center}
 
 The constructs in Fig.~\ref{figa} \ldots 
-
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\end{tikzpicture}
+\end{center}
 
 %%%%%%%%%
 \subsection{Operational Semantics} 
