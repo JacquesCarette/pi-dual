@@ -1361,21 +1361,118 @@ then $c_3$. The last two equivalences show how several uses of
 associativity interact together. For example, in the last equivalence
 the program on the left $\assocrt \odot \assocrt$ transforms an input
 type $((t_1 * t_2) * t_3) * t_4$ as follows: 
-\[ 
-((t_1 * t_2) * t_3) * t_4 \leadsto
-(t_1 * t_2) * (t_3 * t_4) \leadsto
-t_1 * (t_2 * (t_3 * t_4))
-\]
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\node[above] (A) at (-2,0) {$t_1$}; 
+\node[above] (B) at (-1.5,0) {$t_2$}; 
+\node[above] (C) at (-1,0) {$t_3$}; 
+\node[above] (D) at (-0.5,0) {$t_4$}; 
+\draw[thick] (A) -- (-2,-1.5); 
+\draw[thick] (B) -- (-1.5,-1.5); 
+\draw[thick] (C) -- (-1,-1.5);; 
+\draw[thick] (D) -- (-0.5,-1.5); 
+\draw[densely dashed] (-1.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\draw[densely dashed] (-1.6,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
+\end{tikzpicture}
+$\leadsto$ 
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\node[above] (A) at (-2,0) {$t_1$}; 
+\node[above] (B) at (-1.5,0) {$t_2$}; 
+\node[above] (C) at (-1,0) {$t_3$}; 
+\node[above] (D) at (-0.5,0) {$t_4$}; 
+\draw[thick] (A) -- (-2,-1.5); 
+\draw[thick] (B) -- (-1.5,-1.5); 
+\draw[thick] (C) -- (-1,-1.5);; 
+\draw[thick] (D) -- (-0.5,-1.5); 
+\draw[densely dashed] (-1.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\draw[densely dashed] (-0.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\end{tikzpicture}
+$\leadsto$
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\node[above] (A) at (-2,0) {$t_1$}; 
+\node[above] (B) at (-1.5,0) {$t_2$}; 
+\node[above] (C) at (-1,0) {$t_3$}; 
+\node[above] (D) at (-0.5,0) {$t_4$}; 
+\draw[thick] (A) -- (-2,-1.5); 
+\draw[thick] (B) -- (-1.5,-1.5); 
+\draw[thick] (C) -- (-1,-1.5);; 
+\draw[thick] (D) -- (-0.5,-1.5); 
+\draw[densely dashed] (-0.9,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
+\draw[densely dashed] (-0.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\end{tikzpicture}
+\end{center}
+% \[ 
+% ((t_1 * t_2) * t_3) * t_4 \leadsto
+% (t_1 * t_2) * (t_3 * t_4) \leadsto
+% t_1 * (t_2 * (t_3 * t_4))
+% \]
+
 The program on the right
 $((\assocrt \otimes \idc) \odot \assocrt) \odot (\idc \otimes
 \assocrt)$ achieves the same end-to-end transformation using the
 following sequence of steps:
-\[
-((t_1 * t_2) * t_3) * t_4 \leadsto
-(t_1 * (t_2 * t_3)) * t_4 \leadsto
-t_1 * ((t_2 * t_3) * t_4) \leadsto
-t_1 * (t_2 * (t_3 * t_4))
-\]
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\node[above] (A) at (-2,0) {$t_1$}; 
+\node[above] (B) at (-1.5,0) {$t_2$}; 
+\node[above] (C) at (-1,0) {$t_3$}; 
+\node[above] (D) at (-0.5,0) {$t_4$}; 
+\draw[thick] (A) -- (-2,-1.5); 
+\draw[thick] (B) -- (-1.5,-1.5); 
+\draw[thick] (C) -- (-1,-1.5);; 
+\draw[thick] (D) -- (-0.5,-1.5); 
+\draw[densely dashed] (-1.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\draw[densely dashed] (-1.6,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
+\end{tikzpicture}
+$\leadsto$ 
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\node[above] (A) at (-2,0) {$t_1$}; 
+\node[above] (B) at (-1.5,0) {$t_2$}; 
+\node[above] (C) at (-1,0) {$t_3$}; 
+\node[above] (D) at (-0.5,0) {$t_4$}; 
+\draw[thick] (A) -- (-2,-1.5); 
+\draw[thick] (B) -- (-1.5,-1.5); 
+\draw[thick] (C) -- (-1,-1.5);; 
+\draw[thick] (D) -- (-0.5,-1.5); 
+\draw[densely dashed] (-1.25,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\draw[densely dashed] (-1.5,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
+\end{tikzpicture}
+$\leadsto$
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\node[above] (A) at (-2,0) {$t_1$}; 
+\node[above] (B) at (-1.5,0) {$t_2$}; 
+\node[above] (C) at (-1,0) {$t_3$}; 
+\node[above] (D) at (-0.5,0) {$t_4$}; 
+\draw[thick] (A) -- (-2,-1.5); 
+\draw[thick] (B) -- (-1.5,-1.5); 
+\draw[thick] (C) -- (-1,-1.5);; 
+\draw[thick] (D) -- (-0.5,-1.5); 
+\draw[densely dashed] (-1.25,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\draw[densely dashed] (-1.0,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
+\end{tikzpicture}
+$\leadsto$
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\node[above] (A) at (-2,0) {$t_1$}; 
+\node[above] (B) at (-1.5,0) {$t_2$}; 
+\node[above] (C) at (-1,0) {$t_3$}; 
+\node[above] (D) at (-0.5,0) {$t_4$}; 
+\draw[thick] (A) -- (-2,-1.5); 
+\draw[thick] (B) -- (-1.5,-1.5); 
+\draw[thick] (C) -- (-1,-1.5);; 
+\draw[thick] (D) -- (-0.5,-1.5); 
+\draw[densely dashed] (-0.9,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
+\draw[densely dashed] (-0.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\end{tikzpicture}
+\end{center}
+% \[
+% ((t_1 * t_2) * t_3) * t_4 \leadsto
+% (t_1 * (t_2 * t_3)) * t_4 \leadsto
+% t_1 * ((t_2 * t_3) * t_4) \leadsto
+% t_1 * (t_2 * (t_3 * t_4))
+% \]
+
 The equivalence states that these two sequences of steps can be
 smoothly deformed to one another. 
 
