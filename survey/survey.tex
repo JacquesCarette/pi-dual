@@ -1360,7 +1360,8 @@ be smoothly transformed a program that performs $(c_1 \odot c_2)$ and
 then $c_3$. The last two equivalences show how several uses of
 associativity interact together. For example, in the last equivalence
 the program on the left $\assocrt \odot \assocrt$ transforms an input
-type $((t_1 * t_2) * t_3) * t_4$ as follows: 
+type $((t_1 * t_2) * t_3) * t_4$ to an output type
+$t_1 * (t_2 * (t_3 * t_4))$ as follows:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
@@ -1408,7 +1409,7 @@ $\leadsto$
 % t_1 * (t_2 * (t_3 * t_4))
 % \]
 
-The program on the right
+\noindent The program on the right
 $((\assocrt \otimes \idc) \odot \assocrt) \odot (\idc \otimes
 \assocrt)$ achieves the same end-to-end transformation using the
 following sequence of steps:
@@ -1473,13 +1474,13 @@ $\leadsto$
 % t_1 * (t_2 * (t_3 * t_4))
 % \]
 
-The equivalence states that these two sequences of steps can be
+\noindent The equivalence states that these two sequences of steps can be
 smoothly deformed to one another. 
 
-
-
-
-The constructs in Fig.~\ref{figi} \ldots 
+The constructs in Fig.~\ref{figi} explain how choice interacts with
+grouping. Intuitively, a choice nested inside a larger bundle can also
+be treated as an outer choice with the nested bundle duplicated in
+each branch. 
 
 The constructs in Fig.~\ref{figh} \ldots 
 
