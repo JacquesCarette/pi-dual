@@ -987,6 +987,48 @@ examples:
   perhaps a larger example as well (from RC 18 paper?)
 \end{verbatim}
 
+%%%
+\subsection{Spacetime Model}
+
+To gain an intuition for resources, we think of the types as possible
+events, and of the values as consistent timelines of events. From this
+perspective, $A \times B$ denotes spatial composition, where both $A$
+and $B$ must happen in \emph{some} order, and $A + B$ denotes temporal
+composition, where exactly one of $A$ and $B$ must happen at a given
+time. The event $1$ is then trivial, and $0$ is impossible.  We
+visualize the denotation of $1$ as a point in space, and $0$ as empty
+space. The denotation of $A + B$ is the denotation of $A$ drawn on top
+of the denotation of $B$ and separated by a border, and the denotation
+of $A \times B$ is just the denotation of $A$ written next to the
+denotation of $B$. Now we can formally define a consistent timeline
+recursively on the structure of a diagram:
+
+\begin{itemize}[noitemsep,topsep=0pt]
+\item An endpoint (the denotation of $1$) has exactly one timeline through it.
+Empty space (the denotation of $0$) has no timelines through it.
+\vspace{0.1pt}
+\item A timeline through a stack of alternatives $A_1 + A_2 + ... + A_n$ is a
+timeline through exactly one of the possible alternatives.
+\vspace{0.1pt}
+\item A timeline through a spatial composition of cells $A_1 \times A_2 \times ... \times A_n$
+is a timeline through \emph{all} of the cells, in any order.
+\end{itemize}
+
+For example, the following would be a consistent timeline through the diagram
+for $((2 + 2) \times (2 + 2)) + ((2 + 2) \times (2 + 2))$ times itself as shown
+in the left two boxes. The right two boxes show the trade-off between space and
+time encoded in distributivity. Since a timeline must pass through a column in
+exactly one point, the two boxes on the right have the same timelines:
+\begin{center}
+\includegraphics[scale=0.3]{images/tall-tl-1}
+\quad
+\includegraphics[scale=0.3]{images/tall-tl-2}
+\qquad\qquad\qquad
+\includegraphics[scale=0.3]{images/distrib-1}
+\qquad
+\includegraphics[scale=0.3]{images/distrib-2}
+\end{center}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
