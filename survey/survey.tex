@@ -594,8 +594,7 @@ structured data which we investigate next.
 \section{Data II: Structured Finite Types}
 \label{sec:pi1}
 
-\roshan{Let's not substitute space for set without first motivating
-  the use of the word.}  Instead of spaces consisting solely of
+Instead of spaces (aka discrete sets) consisting solely of
 unstructured isolated points, we now investigate structured spaces
 built from sums and products of elementary spaces. This structure
 corresponds to the building blocks of type theory which are: the empty
@@ -682,9 +681,9 @@ put together into a ``set.''  This can be fixed if we replace the set
 $R$ with a universe $U$, and replace the set membership $0 \in R$ with
 the typing judgement $\bot : U$ (and similarly for the other
 items). Our next instinct would be to similarly replace $=$ with a
-type $A \equiv B$ that asserts that $A$ and $B$ are
-\emph{propositionally equal} such that a term exhibiting this type can
-then be shown in the formal system. This is however not true: the
+type $A \equiv B$ that asserts that $A$ and $B$ are \emph{propositionally
+equal}, i.e. reduce to equivalent type-denoting expressions under the rules of
+the host type system.  This is however not true: the
 proposition $A \times B \equiv B \times A$ is not
 normally\footnote{Except in univalent type theory where equivalent
   types are identified.} provable for arbitrary types $A$ and $B$. But
@@ -776,7 +775,7 @@ where $\forall a. a * a = a$. And it should be clear that an
 idempotent operations is a \emph{forgetful} operation: its input has
 two copies of $a$, but its output, only one. On the type side,
 something more subtle happens. Consider $\top \uplus \top$
-versus $\top$; the first can have \emph{two} proofs of inhabitation
+versus $\top$; the first has exactly \emph{two} proofs of inhabitation
 ($\texttt{inl tt}$ and $\texttt{inr tt}$) while the second only one
 ($\texttt{tt}$). These cannot be put in bijective correspondence. Even
 though the ``payload'' \texttt{tt} is the same, forgetting
