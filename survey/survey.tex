@@ -457,6 +457,16 @@ Curry-Howard because CH is about \textbf{inhabitation} only. But with
 correspondence arises; in fact, this one may well be an actual
 isomorphism.}
 
+\jc{I think it would be fair to have a \textit{quick} survey
+of other works. The most important aspect would be to draw out that
+they all start from known models of computation and then attempt to
+make them reversible.  Our originality is to start from the semantics
+of reversibility (even further back, preservation of information)
+and derive a programming language purposefully designed to denote
+exactly that. Having said that, I am not in a good position to
+write such a survey, being the least knowledgeable of all 3 of us
+of this general area.}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data I: Finite Sets}
 \label{sec:dataone}
@@ -473,7 +483,7 @@ them around and that is the only transformation that will preserve the
 space. Turning to the mathematical abstraction as sets, we ask what
 does it mean for two finite sets to be ``the same''?  Well, clearly
 the sets $A = \left\{1, 2, 3\right\}$ and $B = \left\{c, d\right\}$
-are different.  Why?  Well, supposed there was a transformation
+are different.  Why?  Well, suppose there was a transformation
 $f : A \rightarrow B$ that deformed $A$ into $B$, and another
 $g : B \rightarrow A$ which undid this transformation. Since $f$ is
 total, by the pigeonhole principle, two elements of $A$ would be
@@ -545,8 +555,8 @@ implementation. Indeed if we had two bits and wanted to use ``not'' to
 negate the first bit, we would write the permutation of type
 $[2^2] \rightarrow [2^2]$ that permutes $00$ with $10$ \emph{and}
 permutes $01$ with $11$, i.e, the permutation
-$\mathit{swap}~0~2 \fatsemi \mathit{swap}~1~3$. To further illustrate
-how inconvenient this point is, consider the reversible full adder
+$\mathit{swap}~0~2 \fatsemi \mathit{swap}~1~3$. To illustrate
+how inconvenient this is, consider the reversible full adder
 below designed by Desoete et al.~\cite{117414}:
 
 \begin{center}
@@ -579,16 +589,16 @@ $[2^2] \rightarrow [2^2]$ cannot be directly reused in the larger
 circuit $[2^4] \rightarrow [2^4]$. 
 
 For such reasons, in programming practice we are interested in
-structured data and compositional abstractions which will be the
-subject of the next section. What we do learn however from this short
-investigation using untyped flat sets is what the ``\emph{purely
+structured data and compositional abstractions, which will be the
+subject of the next section. What we do learn from this short investigation
+using untyped and unstructured sets is what the ``\emph{purely
   operational}'' view of the theory would be. In particular, it tells
 us that permutations are an inescapable part of the fabric of
 reversible computing.  However as permutations are untyped, and act on
 the canonicalized version of $n$-element sets (i.e. those sets where
 all the structure has been forgotten), these are a rather pale shadow
-of the rich tapestry of information-perserving transformations of
-structured data which we investigate next.
+of the rich tapestry of information-preserving transformations of
+structured data, which we investigate next.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data II: Structured Finite Types}
