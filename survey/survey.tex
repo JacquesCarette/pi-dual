@@ -624,19 +624,21 @@ is that we can deform the space above to any other space with 2
 elements such as $\top \uplus \top$ or $\top \uplus (\top \uplus
 \bot)$. What this really means is that we are treating the sum and
 product structure as malleable. For example, imagining a product
-structure as arranged in a grid, by stretching we can turn this
-structure to a sum structure arranged in a line, change the
+structure as arranged in a grid; by ``stretching'' we can turn it
+in to a sum structure arranged in a line. We can also change the
 orientation of the grid by exchanging the axes, as well as do other
-transformations to be discussed in this section that preserve the
-number of points.
+transformations --- as long as we preserve the number of points.
+Of course, it is not a priori clear that this necessary requirement
+is also sufficient.  Making this intuition precise will be the topic of this
+section.
 
 %%%%%%%%%
 \subsection{A Model of Type Equivalences} 
 
-We now turn into the mathematical formalization of this idea. Our goal
-is a denotational semantics on types that maintains the number of
-points. First we note that the type structure of types has a nice
-correspondence (Curry-Howard) to logic:
+We now want a proper mathematical description of this idea. Our goal
+is a denotational semantics on types which makes types that have the
+same number of points be equivalent types.  First we note that the
+structure of types has a nice correspondence (Curry-Howard) to logic:
 
 \begin{center}
 \begin{tabular}{c|c}
@@ -662,9 +664,9 @@ number of points in the types.
 \begin{defn}
 \label{def:rig}
 A \emph{commutative semiring} (sometimes called a \emph{commutative
-  rig} (commutative ri\emph{n}g without negative elements))
+  rig} --- commutative ri\emph{n}g without negative elements)
 $(R,0,1,+,\cdot)$ consists of a set $R$, two distinguished elements of
-$R$ named 0 and 1, and two binary operations~$+$ and $\cdot$,
+$R$ named $0$ and $1$, and two binary operations~$+$ and $\cdot$,
 satisfying the following relations for any $a,b,c \in R$:
 \[\begin{array}{rcl}
 0 + a &=& a \\
@@ -696,16 +698,27 @@ equal}, i.e. reduce to equivalent type-denoting expressions under the rules of
 the host type system.  This is however not true: the
 proposition $A \times B \equiv B \times A$ is not
 normally\footnote{Except in univalent type theory where equivalent
-  types are identified.} provable for arbitrary types $A$ and $B$. But
+types are identified.} provable for arbitrary types $A$ and $B$. But
 it should be clear that $A \times B$ and $B \times A$ contain
 equivalent information. In other words, we would like to be able to
 witness that $A \times B$ can be reversibly deformed into $B \times
-A$. Which motivates the introduction of type \emph{equivalences}. To
+A$, and vice-versa. Which motivates the introduction of type \emph{equivalences}. To
 do this, we need a few important auxiliary concepts.
 
-\roshan{Let's define $\equiv$ below or provide a readable
-  reference. We should not assume that its meaning is automatically
-  understood.}
+\begin{defn}[Propositional Equivalence]\label{def:propeq}
+Two expressions $a, b$ of type $A$ are \emph{propositionally
+equal} if their normal forms are equivalent under the rules
+of the host type system.
+\end{defn}
+
+In Martin-L\"{o}f Type Theory, normal forms mean $\beta$-reduced
+$\eta$ long terms under $\alpha$-equivalence. In other words,
+expressions are evaluated as much as possible ($\beta$-reduced),
+all functions are fully applied ($\eta$ long), and the exact names
+of bound variables are irrelevant ($\alpha$-equivalence). Note that
+the above definition applies equally well to expressions that denote
+values and expressions that denote types.
+
 \begin{defn}[Homotopy]
 \label{def:homotopy}
 Two functions $f,g:A \rightarrow B$ are \emph{homotopic} if
