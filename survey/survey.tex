@@ -575,14 +575,16 @@ boolean negation, the dots are control bits. In our reversible
 language, we can express this circuit as the following permutation of
 type $[2^4] \rightarrow [2^4]$:
 
-\[\begin{array}{ll}
+\begin{equation}\label{eq:adder}
+\begin{array}{l@{\hspace{1cm}}l}
 \mathit{swap}~12~14 \fatsemi \mathit{swap}~13~15 ~\fatsemi & \mbox{toffoli} \\
 \mathit{swap}~8~12 \fatsemi \mathit{swap}~9~14 \fatsemi 
     \mathit{swap}~10~13 \fatsemi \mathit{swap}~11~15 ~\fatsemi & \mbox{cnot and swap} \\
 \mathit{swap}~6~7 \fatsemi \mathit{swap}~14~15 ~\fatsemi & \mbox{toffoli} \\
 \mathit{swap}~4~6 \fatsemi \mathit{swap}~5~7 \fatsemi
     \mathit{swap}~12~14 \fatsemi \mathit{swap}~13~15 & \mbox{cnot}
-\end{array}\]
+\end{array}
+\end{equation}
 
 Note how the implementation of $\mathit{cnot}$ as a permutation
 $[2^2] \rightarrow [2^2]$ cannot be directly reused in the larger
@@ -895,9 +897,11 @@ the spirit of Curry-Howard: the terms of $\Pi$ are \emph{proof terms},
 but rather than being witnesses of inhabitation, they are witnesses of
 equivalences. Thus we get an unexpected programming language design:
 
-\center{\fbox{
+\begin{center}
+\fbox{
 The proof language of commutative semiring equivalences
-becomes terms of the $\Pi$.}}
+becomes terms of the $\Pi$.}
+\end{center}
 \vspace*{3mm}
 
 \begin{figure}[t]
@@ -937,13 +941,12 @@ $\textsf{inl}$ or $\textsf{inr}$ respectively. Finally the
 construction $c_1 \otimes c_2$ operates on a product structure, and
 applies $c_1$ to the first component and $c_2$ to the second. The
 language of permutations lacked the ability to combine permutations by
-taking sums and products which led to the awkward non-compositional
-programming style illustrated in the full adder example. In this
-language the full adder can be programmed as follows:
+taking sums and products, which led to the awkward non-compositional
+programming style illustrated in the full adder example~\ref{eq:adder}.
 
-The type-erase of this language \emph{should} be permutations. But
-given types $A$ and $B$ that erase to $\fin{m}$ and $\fin{n}$ respectively,
-what are $A + B$ and $A * B$ ?  They correspond exactly to
+Thus the denotation of the $\Pi$ terms \emph{should} be permutations. But
+given types $A$ and $B$ denoting $\fin{m}$ and $\fin{n}$ respectively,
+what are $A \uplus B$ and $A \times B$ ?  They correspond exactly to
 $\fin{m+n}$ and $\fin{m*n}$!  Geometrically, this corresponds to
 concatenation for $A + B$, i.e. lining up the elements of $A$ first,
 and then those of $B$. For $A * B$, one can picture this as
@@ -967,7 +970,7 @@ In other words, the passage to $\Nat$ erases some structural information.
 
 \jc{it would be nice to have a picture or two here}
 
-Embedded in our definition of $\Pi$ is a design decision: to make the
+Embedded in our definition of $\Pi$ is a conscious design decision: to make the
 terms of $\Pi$ \emph{syntactically} reversible. In other words, to
 every $\Pi$ constant, there is another $\Pi$ constant which is its
 inverse. This is not the only choice.  Another would be to add a
@@ -978,10 +981,19 @@ at ``higher levels'' (see next section) is also lost. Since the
 extra burden of language definition and of proofs is quite low, we
 prefer the structural symmetry over a minimalistic language definition.
 
-sound and complete isomorphisms for finite types
+\amr{sound and complete isomorphisms for finite types}
 
 %%%%%%%%%
 \subsection{Operational Semantics} 
+
+\jc{One operational semantics is explicit, such as the eval and 
+evalB we've written many times (for example in PiEqui.agda in
+this repo). But in my opinion, the right way to do it is the
+\texttt{c2equiv} combinator in the same file, which interprets
+every combinator as a type equivalence, which can then just be
+run. \texttt{lemma0} and \texttt{lemma1} in the same file show
+that this is indeed the case. The advantage is that this lifts
+to level 2 quite cleanly.}
 
 %%%%%%%%%
 \subsection{Graphical Language} 
@@ -1032,6 +1044,14 @@ examples:
 
 %%%
 \subsection{Spacetime Model}
+\jc{While I really like this model, if we are going to keep it, we
+really need a much beefier introduction. This is the first mention of
+resources (and events and time). So we really should preface this by
+saying that, once we have $\Pi$, there is another \emph{completely
+different} but compatible interpretation in terms of resources. But
+we should also think of whether this fits. I actually think that it 
+does fit in this paper, but perhaps not in this section. Maybe
+also move to section 5?}
 
 To gain an intuition for resources, we think of the types as possible
 events, and of the values as consistent timelines of events. From this
