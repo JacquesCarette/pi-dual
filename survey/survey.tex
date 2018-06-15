@@ -683,7 +683,7 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 \end{defn}
 
 \begin{prop}
-The structure $\left(\mathbb{B}, \false, \true, \lor, \land\right)$
+The structure $\left(\Nat, \false, \true, \lor, \land\right)$
 is a commutative semiring.
 \end{prop}
 
@@ -840,6 +840,23 @@ concreteness, we show the signatures in Fig.~\ref{type-isos}.  As
 these all come in symmetric pairs (some of which are self-symmetric),
 we give names for both directions. 
 
+From category theory, we are informed of the following priviledge
+enjoyed by the natural numbers~$\Nat$:
+\begin{thm}
+The semiring $\left(\Nat, 0, 1, +, \cdot\right)$ is \emph{initial}
+in the category of semirings and semiring homomorphisms.
+\end{thm}
+\noindent In other words, for any semiring $S$, there is a homomorphism
+from $\Nat$ into $S$. But $\Nat$ is also the ``counting'' semiring,
+which formalizes the notion of cardinality of finite discrete sets.
+
+The previous section on finite sets, along with the reasoning above,
+thus leads us to posit that the correct denotational semantics for
+finite discrete types is that of the semiring
+$\left(\Nat, 0, 1, +, \cdot\right)$. It is worth noting that equality
+in this semiring is intensional (i.e. two things are equal if and only if
+they are identical after evaluation), unlike that for types.
+
 %%%%%%%%%
 \subsection{A Language of Type Equivalences} 
 
@@ -864,11 +881,11 @@ we give names for both directions.
 \label{pi-terms}
 \end{figure}
 
-We now have in our hands our desired denotational semantics. We want
-to create a programming language, which we call $\Pi$, such that the
+We now have in our hands our desired denotational semantics for types.
+We want to create a programming language, which we call $\Pi$, such that the
 types and type combinators map to $\bot, \top, \uplus, \times$, and
 such that we have ground terms whose denotation are all $16$ type
-isomorphisms of Fig.~\ref{type-isos}. This is completely
+isomorphisms of Fig.~\ref{type-isos}. This is rather
 straightforward, as we can simply do this literally. To make the
 analogy with commutative semirings stand out even more, we will use
 $0, 1, +$, and $\times$ at the type level, and will denote
@@ -876,8 +893,12 @@ $0, 1, +$, and $\times$ at the type level, and will denote
 ``constants'' of the language. Note how we have continued with
 the spirit of Curry-Howard: the terms of $\Pi$ are \emph{proof terms},
 but rather than being witnesses of inhabitation, they are witnesses of
-equivalences. Thus the proof language of commutative semiring equivalences
-becomes terms of $\Pi$.
+equivalences. Thus we get an unexpected programming language design:
+
+\center{\fbox{
+The proof language of commutative semiring equivalences
+becomes terms of the $\Pi$.}}
+\vspace*{3mm}
 
 \begin{figure}[t]
 \[
@@ -901,6 +922,7 @@ becomes terms of $\Pi$.
 \label{pi-combinators}
 \end{figure}
 
+\noindent
 Of course, one does not get a programming language with just typed
 constants! There is a need to perform multiple equivalences. There are
 in fact three ways to do this: sequential composition $\odot$, choice
