@@ -92,7 +92,7 @@ McMaster University \qquad\qquad Google \qquad\qquad Indiana University}
 \newcommand{\Nat}{\ensuremath{\mathbb{N}}}
 \newcommand{\true}{\mathit{true}}
 \newcommand{\false}{\mathit{false}}
-
+\newcommand{\Gpd}{\ensuremath{\mathsf{Groupoid}}}
 
 \newcommand{\kw}[1]{{\scriptsize{\textbf{\texttt{#1}}}}}
 \newcommand{\ctr}[1]{{\scriptsize{\texttt{#1}}}}
@@ -1200,6 +1200,14 @@ all programs between the same types can be deformed into one
 another. The simplest example of inequivalent deformations
 are the two automorphisms of $1+1$, namely $\idc$ and $\swapp$.
 
+While we will not make the details of the stretchable wires and
+slidable boxes formal, it is useful for intuition.  One caveat
+though: some of the sliding and stretching needs to be done in
+spaces of higher dimension than 3 to have ``enough room'' to
+move things along without collision or over-stretching wires.
+That, unfortunately, means that some equivalences are harder to
+grasp. Luckily, most equivalences only need 3 dimensions.
+
 Our reversible language of type isomorphisms and equivalences between
 them has a strong connection to \emph{univalent universes} in
 HoTT~\cite{CARETTE20185}. Based on this connection, we refer to the
@@ -1211,42 +1219,49 @@ discussed in this section) as being at level-2.
 %%%%%%%%%
 \subsection{A Model of Equivalences between Type Equivalences} 
  
-In the previous section, we saw how we could take the proof
-terms of commutative semirings as our starting point. What we need
-now is to understand how proofs of algebraic identities should be
+Previously we saw how we could take the proof terms of commutative semirings as
+our starting point for $\Pi$. What we need
+now is to understand how \emph{proofs} of algebraic identities should be
 considered equivalent. Classical algebra does not help, as proofs
-in algebra are not considered first-class citizens. However,
+are not considered first-class citizens. However,
 another route is available to us: since the work of 
 Hofmann and Streicher~\cite{hofmann96thegroupoid}, we know that
-one can model types as \emph{groupoids}.  Previously, we
-modeled types as (finite) sets.
+one can model types as \emph{groupoids}.  The additional
+structure comes from explicitly modeling the ``identity
+types'': instead of regarding all terms which witness
+the equality of (say) $a$ and $b$ of type $A$ as being
+indistinguishible, we posit that there may in fact by many.
+This alone is enough to show that types can be modeled by
+groupoids.
 
 Thus, rather than looking at (untyped) commutative semirings,
-we should looked at a \emph{typed} version. This process frequently
+we should look at a \emph{typed} version. This process frequently
 goes by the moniker of ``categorification.''  We want a categorical
 algebra, where the basic objects are groupoids (to model our types),
 and where there is a natural notion of $+$ and $*$.  At first,
 we hit what seems like a serious stumbling block: the category of
-all groupoids, Groupoid, does not have co-products or products.
-We don't want to work internally in Groupoid -- we want operations
+all groupoids, \Gpd, does not have either co-products 
+nor products. However, we don't want to work internally in
+\Gpd -- we want operations
 \emph{on} groupoids. In other words, we want something akin to
 symmetric monoidal categories, but with two interacting 
 monoidal structures.  Luckily, this already exists: the categorical
-analog to (commutative) semirings are (symmetric) Rig Categories.
+analog to (commutative) semirings are (symmetric) Rig
+Categories~\cite{laplaza72,kelly74}.
 This straightforwardly generalizes to symmetric Rig Groupoids.
 
 How does this help? Coherence conditions! Symmetric monoidal categories,
-to start somewhere simple, do not just introduce weak transformations
+to start somewhere simple, do not just introduce transformations
 like the associator $\alpha$ and the left $\lambda$ and right $\rho$
 unitors, but also coherence conditions that these must satisfy. Looking,
 for example, at just the additive fragment of $\Pi$ (i.e. with just $0$,
 $1$ and $+$ for the types, $\odot$ and $\oplus$ as combinators, and
 only the terms so expressible), the sub-language would correspond,
-denotationally, to exactly symmetric monoidal groupoids. And what
+denotationally, to exactly (non-empty) symmetric monoidal groupoids. And what
 these possess are exactly some \emph{equations between equations}
 as commutative diagrams.  Adding in the coherence conditions 
 corresponding to naturality of the various transformers gives us a
-list of equations between programs.  Furthermore, the natural transformations
+list of equations between programs.  Furthermore, all the natural transformations
 that arise are in fact natural isomorphisms -- all of which are
 reversible.
 
