@@ -900,8 +900,9 @@ equivalences. Thus we get an unexpected programming language design:
 
 \begin{center}
 \fbox{
-The proof language of commutative semiring equivalences
-becomes terms of the $\Pi$.}
+The proof terms denoting 
+commutative semiring equivalences
+induce the terms of $\Pi$.}
 \end{center}
 \vspace*{3mm}
 
@@ -1210,7 +1211,7 @@ grasp. Luckily, most equivalences only need 3 dimensions.
 
 Our reversible language of type isomorphisms and equivalences between
 them has a strong connection to \emph{univalent universes} in
-HoTT~\cite{CARETTE20185}. Based on this connection, we refer to the
+HoTT~\cite{Carette2018}. Based on this connection, we refer to the
 types as being at level-0, to the equivalences between types (i.e., the
 combinators of Sec.~\ref{sec:pi1}) as being at level-1, and to the
 equivalences between equivalences of types (i.e., the combinators
@@ -1219,8 +1220,8 @@ discussed in this section) as being at level-2.
 %%%%%%%%%
 \subsection{A Model of Equivalences between Type Equivalences} 
  
-Previously we saw how we could take the proof terms of commutative semirings as
-our starting point for $\Pi$. What we need
+Previously we saw how we could take the proof terms of commutative semirings
+equivalences as our starting point for $\Pi$. What we need
 now is to understand how \emph{proofs} of algebraic identities should be
 considered equivalent. Classical algebra does not help, as proofs
 are not considered first-class citizens. However,
@@ -1230,9 +1231,9 @@ one can model types as \emph{groupoids}.  The additional
 structure comes from explicitly modeling the ``identity
 types'': instead of regarding all terms which witness
 the equality of (say) $a$ and $b$ of type $A$ as being
-indistinguishible, we posit that there may in fact by many.
-This alone is enough to show that types can be modeled by
-groupoids.
+indistinguishible, we posit that there may in fact be many.
+This consequences of this one decision are enough to show that
+types can be modeled by groupoids.
 
 Thus, rather than looking at (untyped) commutative semirings,
 we should look at a \emph{typed} version. This process frequently
@@ -1249,25 +1250,6 @@ monoidal structures.  Luckily, this already exists: the categorical
 analog to (commutative) semirings are (symmetric) Rig
 Categories~\cite{laplaza72,kelly74}.
 This straightforwardly generalizes to symmetric Rig Groupoids.
-
-How does this help? Coherence conditions! Symmetric monoidal categories,
-to start somewhere simple, do not just introduce transformations
-like the associator $\alpha$ and the left $\lambda$ and right $\rho$
-unitors, but also coherence conditions that these must satisfy. Looking,
-for example, at just the additive fragment of $\Pi$ (i.e. with just $0$,
-$1$ and $+$ for the types, $\odot$ and $\oplus$ as combinators, and
-only the terms so expressible), the sub-language would correspond,
-denotationally, to exactly (non-empty) symmetric monoidal groupoids. And what
-these possess are exactly some \emph{equations between equations}
-as commutative diagrams.  Adding in the coherence conditions 
-corresponding to naturality of the various transformers gives us a
-list of equations between programs.  Furthermore, all the natural transformations
-that arise are in fact natural isomorphisms -- all of which are
-reversible.
-
-We can then proceed to prove that every one of the coherence conditions
-involved in defining a symmetric Rig Groupoid holds for the groupoid
-interpretation of types.
 
 \begin{figure}[t]
 Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 : t_3 \leftrightarrow t_4$:
@@ -1290,7 +1272,30 @@ Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 
 \caption{\label{figj}Signatures of level-2 $\Pi$-combinators: associativity}
 \end{figure}
 
-\begin{figure}[t]
+How does this help? Coherence conditions! Symmetric monoidal categories,
+to start somewhere simple, do not just introduce natural transformations
+like the associator $\alpha$ and the left and right unitors ($\lambda$ 
+and $\rho$ respectively), but also coherence conditions that these must satisfy.
+Looking, for example, at just the additive fragment of $\Pi$ (i.e. with just $0$,
+$1$ and $+$ for the types, $\odot$ and $\oplus$ as combinators, and
+only the terms so expressible), the sub-language would correspond,
+denotationally, to exactly (non-empty) symmetric monoidal groupoids. And what
+these possess are exactly some \emph{equations between equations}
+as commutative diagrams.  Transporting these coherence conditions, for
+example those that express that various transformations are \emph{natural}
+to $\Pi$, gives a list of equations between $\Pi$ programs.
+Furthermore, all the natural transformations
+that arise are in fact natural \emph{isomorphisms} -- and thus
+reversible.
+
+We can then proceed to prove that every one of the coherence conditions
+involved in defining a symmetric Rig Groupoid holds for the groupoid
+interpretation of types~\cite{Carette2016}.  This is somewhat tedious
+given the sheer number of these, but when properly formulated,
+relatively straightfoward, but see below for comments on some
+tricky cases.
+
+\begin{figure}[tb]
 Let $a : t_1 \leftrightarrow t_2$, $b : t_3 \leftrightarrow t_4$, and $c : t_5 \leftrightarrow t_6$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
@@ -1305,7 +1310,7 @@ Let $a : t_1 \leftrightarrow t_2$, $b : t_3 \leftrightarrow t_4$, and $c : t_5 \
 \caption{\label{figi}Signatures of level-2 $\Pi$-combinators: distributivity and factoring}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[tb]
 Let $c, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c', c'' : t_3 \leftrightarrow t_4$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
@@ -1332,7 +1337,30 @@ Let $c, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c', c'' : t_3 \leftrightar
 \caption{\label{figh}Signatures of level-2 $\Pi$-combinators: identity and composition}
 \end{figure}
 
-\begin{figure}[t]
+But why are these particular coherence laws? Are they all necessary?
+Conversely are they, in some appropriate sense, sufficient? This is
+the so-called \emph{coherence problem}. Mac Lane, in his farewell address
+as President of the American Mathematical Society~\cite{MacLane1976} gives
+a good introduction and overview of such problems.  A more modern
+interpretation (which can nevertheless be read into MacLane's own
+exposition) would read as follows: given a set of equalities on abstract
+words, regarded as a rewrite system, and two means of rewriting a word
+in that language to another, is there some suitable notion of canonical
+form that expresses the essential uniqueness of the non-trivial 
+rewrites?  Note how this word-and-rewrite problem is essentially
+independent of the eventual interpretation. One must take some care,
+as there are obvious degenerate cases (involving ``trivial'' equations
+involving $0$ or $1$) which lead to non-uniqueness. The landmark
+results, first by Kelly-MacLane~\cite{KellyMacLane71} for closed
+symmetric monoidal categories, then (independently) Laplaza and
+Kelly~\cite{laplaza72,kelly74} for symmetric Rig Categories, is
+that indeed there are sound and complete coherence conditions that
+insure that all the ``obvious'' equalities between different abstract
+words in these systems give rise to commutative diagrams. The
+``obvious'' equalities come from \emph{syzygies} or
+\emph{critical pairs} of the system of equations.
+
+\begin{figure}[tb]
 Let $c_0 : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c : t_1 \leftrightarrow t_2$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
@@ -1361,7 +1389,7 @@ Let $c_0 : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c : t_1 \left
 \caption{\label{figg}Signatures of level-2 $\Pi$-combinators: unit}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[tb]
 Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
@@ -1380,7 +1408,7 @@ Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
 \caption{\label{figf}Signatures of level-2 $\Pi$-combinators: commutativity and associativity}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[tb]
 Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, $c_3 : t_1 \leftrightarrow t_2$, and $c_4 : t_3 \leftrightarrow t_4$. \\
 Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_1 \leftrightarrow t_3$, and $a_4 : t_2 \leftrightarrow t_4$.
 \[\def\arraystretch{1.3}
@@ -1406,7 +1434,7 @@ Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_
 \caption{\label{fige}Signatures of level-2 $\Pi$-combinators: functors}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[tb]
 \[\def\arraystretch{1.3}
 \begin{array}{c}
   {\identlsp \oplus \idc ~\Leftrightarrow~ \assocrp \odot (\idc \oplus \, \identlp)}
@@ -1417,7 +1445,7 @@ Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_
 \end{figure}
 
 
-\begin{figure}[t]
+\begin{figure}[tb]
 Let $c : t_1 \leftrightarrow t_2$:
 \[\def\arraystretch{1.3}
 \begin{array}{c}
@@ -1446,7 +1474,7 @@ Let $c : t_1 \leftrightarrow t_2$:
 \caption{\label{figc}Signatures of level-2 $\Pi$-combinators: zero}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[tb]
 \[\def\arraystretch{1.3}
 \begin{array}{c}
   {((\assoclp \otimes \idc) \odot \dist) \odot (\dist \oplus \idc) \Leftrightarrow (\dist \odot (\idc \oplus \dist)) \odot \assoclp}
@@ -1465,7 +1493,7 @@ Let $c : t_1 \leftrightarrow t_2$:
 \caption{\label{figb}Signatures of level-2 $\Pi$-combinators: associativity and distributivity}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[tb]
 \[\def\arraystretch{1.3}
 \begin{array}{rcl}
   (\idc \otimes \swapp) \odot \distl &\Leftrightarrow& \distl \odot \swapp
