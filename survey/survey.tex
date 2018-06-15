@@ -2015,7 +2015,7 @@ finally re-associate to get the result.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Further Thoughts and Conclusions}
 
-Possible extensions; quest for other principles; other data models; graphs; HoTT
+We include with a collection of open problems and avenues for further research. 
 
 %%%
 \subsection{Infinite Sets} 
@@ -2023,9 +2023,12 @@ Possible extensions; quest for other principles; other data models; graphs; HoTT
 Must mention infinite sets since we promised to do so in Sec 2;
 Discuss recursion, trace, feedback, loop...
 
-Natural numbers: fold/unfold
+Inductive types: Natural numbers: fold/unfold
 
 Partial isos
+
+Other infinite type: Mention connections to negative, fractional, and
+algebraic numbers
 
 meta-circular interpreter from RC paper: Since these new models are
 substantially different from \lcal\ or familiar high-level languages,
@@ -2047,6 +2050,8 @@ also hold -- and this is an open problem.
 
 %%%
 \subsection{Topological Spaces} 
+
+other data models; graphs; HoTT
 
 Data IV: Circle etc. Would be interesting 
 
@@ -2246,20 +2251,14 @@ too rigid, it will be impossible to even \textbf{modify} it! For computation
 to occur, modification must be possible.  But of what kind?
 
 %%%
-\subsection{Conservation of Information, Information Effects, and Duality} 
+\subsection{Information Effects}
  
-Talk about conservation of information in biology, computer science,
-evolutionary computing, and search. (See
-\url{http://www.evolutionnews.org/2012/08/conservation_of063671.html}.
-
 We develop an arrow meta-language to encapsulate information
 effects. This metalanguage serves to encapsulate effects, in much the
 same way that traditional arrows or monads serve to encapsulate
 effects over the \lcal.
 
 new paper \url{https://arxiv.org/pdf/1805.08605.pdf}
-
-Mention connections to negative, fractional, and algebraic numbers
 
 %%%
 \subsection{Summary} 
@@ -2282,15 +2281,17 @@ students and colleagues who participated in various aspects of this
 research and who provided valuable feedback and constructive criticism.
 
 \bibliographystyle{unsrt}
-%\pagestyle{headings}
 \bibliography{cites}
 \end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+
+
+
 \begin{comment}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Theseus: Types and Simple Isomorphisms}
 \label{theseusI}
 
@@ -2660,7 +2661,7 @@ replace its implementation by an equivalent one that is expressible
 efficiently in the underlying hardware. In this case one could compile down
 to the CPU's native integer representation and operators.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parametrized Maps}
 \label{theseusII}
 
@@ -2935,7 +2936,7 @@ inlining the actual parameters. Thus compiling Theseus programs with
 parametrized maps to \ensuremath{\Pi^{o}} simply requires first inlining the maps and then
 doing the translation described in Sec.~\ref{translation}.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Iteration Labels}
 \label{theseusIII}
 \label{add1}
@@ -3212,7 +3213,7 @@ $\leftrightarrow$ \ctr{ti} and \lstinline{c2 : ti} $\leftrightarrow$
 \lstinline{(lab1 + lab2 + ...) + b} to include the types of the additional
 labels.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 \label{conc}
 
