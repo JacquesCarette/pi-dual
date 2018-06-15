@@ -721,8 +721,8 @@ values and expressions that denote types.
 
 \begin{defn}[Homotopy]
 \label{def:homotopy}
-Two functions $f,g:A \rightarrow B$ are \emph{homotopic} if
-$\forall x:A. f(x) \equiv g(x)$. We denote this $f \sim g$.
+Two functions $f,g:A \rightarrow B$ are \emph{homotopic}
+if~$\forall x:A. f(x) \equiv g(x)$. We denote this $f \sim g$.
 \end{defn}
 
 \noindent It is easy to prove that homotopies (for any given function
@@ -760,7 +760,7 @@ $\beta : h \circ f \sim \mathrm{id}_A$.
 the definition of type equivalence. The differences will not matter to
 us here.
 
-We are now in position to formally state the appropriate commutative
+We are now in position to describe the commutative
 semiring structure for types. After replacing the set $R$ with a
 universe $U$, we also replace the algebraic use of $=$ in
 Def.~\ref{def:rig} by the type equivalence relation $\simeq$. With
@@ -769,13 +769,12 @@ this change, we can indeed prove that types (with $\bot, \top, \uplus,
 universal algebra should pause and ponder a bit about what we have
 done. We have lifted \emph{equality} from being in the signature of
 the ambient logic and instead put it in the signature of the algebraic
-structure of interest. \roshan{The last coupe of sentences are
-  unclear. Let's strive to keep things easy to understand. Can we
-  spell them out the tradeoffs here and give an example or two to
-  clarify the point. If this is indeed an important aspect of things
-  let's spend some space explaining it.} Then, and only then, are we
-in a solid position to show that we have a concept (commutative
-semiring) which is flexible enough for types to be an instance.
+structure of interest.  In simpler terms, we shift equality from
+having a priviledged status in our meta-theory, to being just another
+symbol (denoting an equivalence relation) in our theory.  The understanding
+that equality is not an absolute concept has recently been an area of
+active research in mechanized mathematics --- although the concepts of
+intensional versus extensional equality go back to Frege and Russell.
 
 If we revisit the Curry-Howard correspondence, we notice one
 more issue. In logic, it is true that $A \lor A = A$ and
@@ -805,8 +804,8 @@ though the ``payload'' \texttt{tt} is the same, forgetting
 $\texttt{inl}$ (or \texttt{inr}) throws away information -- something
 we have expressly disallowed.  Yes, this should remind you of
 Maxwell's daemon: even though the data is the same, they are tagged
-differently, and this data is indeed information, and must be
-preserved.
+differently, and these tags are indeed information, and their
+information content must be preserved.
 
 \begin{figure}[t]
 \[
@@ -831,9 +830,9 @@ preserved.
 
 Nevertheless, the Curry-Howard correspondence still has some force. We
 know that the inhabitants of types formed with with
-$\bot, \top, \uplus, \times$ are a commutative semiring. What we want
+$\bot, \top, \uplus, \times$ form a commutative semiring. What we want
 to know is, which types are equivalent? From a commutative semiring
-perspective, this amounts to asking what terms are equal?  We have a
+perspective, this amounts to asking what terms are equal.  We have a
 set of generators for those equations, namely those in
 Def.~\ref{def:rig}. What we thus need is to create $8$ pairs of
 mutually inverse functions which witness these identities.  For
