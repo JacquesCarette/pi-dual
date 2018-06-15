@@ -746,8 +746,9 @@ $\beta : g \circ f \sim \mathrm{id}_A$.
 \end{defn}
 
 \noindent Why \emph{quasi}? The reasons are beyond our scope, but the
-interested reader can read Sec.~$2.4$ and Ch.~$4$ in the HoTT
-book~\cite{hottbook}.  There are several conceptually different, but
+interested reader can read Sec.~$2.4$ and Ch.~$4$ in the
+Homotopy Type Theory (HoTT) book~\cite{hottbook}.
+There are several conceptually different, but
 equivalent, ``better'' definitions.  We record just one here:
 
 \begin{defn}[Bi-invertibility]
@@ -1100,13 +1101,15 @@ the same timelines:
 \label{sec:pi2}
 
 In the previous sections, we examined equivalences between
-conventional data structures, i.e, sets of values and structured trees
-of values. We now consider a richer, less conventional, but
+conventional data structures, i.e., sets of values and structured trees
+of values. We now consider a richer but
 foundational notion of data: programs themselves. Indeed, universal
-computation models fundamentally rely on the fact that \emph{programs
+computation models crucially rely on the fact that \emph{programs
 are (or can be encoded as) data}, e.g., a Turing machine can be
 encoded as a string that another Turing machine (or even the same
-machine) can manipulate. In our setting, the programs developed in the
+machine) can manipulate. Similarly, first-class functions are
+the \emph{only} values in the $\lambda$-calculus.
+In our setting, the programs developed in the
 previous section are reversible deformations between structured finite
 types. We now ask whether these programs can themselves
 be subject to (higher-level) reversible deformations?
@@ -1114,6 +1117,10 @@ be subject to (higher-level) reversible deformations?
 Before developing the theory, let's consider a small example
 consisting of two deformations between the types $A + B$ and $C+D$:
 
+\jc{we need to make sure that the pictures we draw in the
+previous section are consistent with this one, otherwise we'll
+completely confuse our readers. Or we redraw this one to be
+consistent.}
 \begin{center}
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
   \draw[>=latex,<->,double,red,thick] (2.25,-1.2) -- (2.25,-2.9) ;
@@ -1142,11 +1149,11 @@ consisting of two deformations between the types $A + B$ and $C+D$:
   \draw[->] (3.5,-3.5) to[bend right] (6.5,-1.55) ;
   \draw[->] (3.5,-4.5) to[bend right] (6.5,-2.55) ;
 
-  \draw     (2.5,-3)  -- (3.5,-3) -- (3.5,-4) -- (2.5,-4) -- cycle ;
-  \draw     (2.5,-4)  -- (3.5,-4) -- (3.5,-5) -- (2.5,-5) -- cycle ;
+  \draw     (2.5,-3.1)  -- (3.5,-3.1) -- (3.5,-3.9) -- (2.5,-3.9) -- cycle ;
+  \draw     (2.5,-4.1)  -- (3.5,-4.1) -- (3.5,-4.9) -- (2.5,-4.9) -- cycle ;
 
-  \draw     (1,1)  -- (2,1) -- (2,0) -- (1,0) -- cycle ;
-  \draw     (1,0)  -- (2,0) -- (2,-1) -- (1,-1) -- cycle ;
+  \draw     (1,0.9)  -- (2,0.9) -- (2,0.1) -- (1,0.1) -- cycle ;
+  \draw     (1,-0.1)  -- (2,-0.1) -- (2,-0.9) -- (1,-0.9) -- cycle ;
 
   \node at (3,-3.5) {$c_2$};
   \node at (3,-4.5) {$c_1$};
@@ -1173,12 +1180,16 @@ $(c_1~\oplus~c_2)~\odot~\swapp$ which deforms the
 type $A$ by $c_1$, deforms the type $B$ by $c_2$, and deforms the
 resulting space by a twist that exchanges the two injections into the
 sum type. The bottom path performs the twist first and then deforms
-the type $A$ by $c_1$ and the type $B$ by $c_2$ as before. If one
-could imagine the paths are physical wires and the deformations $c_1$
-and $c_2$ as arbitrary deformations on these wires then, holding the
-points $A$, $B$, $C$, and $D$ fixed, it is possible to rotate the top
-part of the diagram to become identical to the bottom one. That
-rotation can be undone (reversed), which takes the bottom
+the type $A$ by $c_1$ and the type $B$ by $c_2$ as before. One
+could imagine the paths are physical \emph{elastic} wires in $3$ space, where
+the deformations $c_1$ and $c_2$ as arbitrary deformations on these wires, and
+the twists do not touch but are in fact well-separated. Then, holding the
+points $A$, $B$, $C$, and $D$ fixed, it is possible to imagine
+sliding $c_1$ and $c_2$ from the top wire rightward past the
+twist, and then using the elasticity of the wires, pull the
+twist back to line up with that of the bottom --- thus making
+both parts of the diagram identical.  Each of these moves
+can be undone (reversed), and doing so would take the bottom
 part of the diagram into the top part.  In other
 words, there exists a deformation of the program
 $(c_1~\oplus~c_2)~\odot~\swapp$ to the program
