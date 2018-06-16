@@ -2193,6 +2193,9 @@ for factoring then the extended Church-Turing thesis is false.
 %%%
 \subsection{Information Flow} 
  
+By insisting on a computational model that explicitly enforces  
+conservation of information \ldots
+
 If information has a physical significance, then it is subject to
 conservation laws just as mass and energy are.  To make this idea
 concrete and to provide a taste of the applications it opens, consider
@@ -2281,12 +2284,15 @@ to occur, modification must be possible.  But of what kind?
 %%%
 \subsection{Information Effects}
  
-We develop an arrow meta-language to encapsulate information
-effects. This metalanguage serves to encapsulate effects, in much the
-same way that traditional arrows or monads serve to encapsulate
-effects over the \lcal.
-
-new paper \url{https://arxiv.org/pdf/1805.08605.pdf}
+A computational model that enforces the principle of conservation of
+information is arguably \emph{richer} than a conventional model that
+cannot even express the notion of information. Practically the
+conventional model is easily recovered by simply adding constructs
+that intentionally and explicitly create or erase information. Such
+constructs allow one to recover the classical perspective with the
+added advantage that it is possible to reason about such creation and
+erasure of information using type and effect systems, monads, or
+arrows~\cite{infeffects,inversearrows}. 
 
 %%%
 \subsection{Summary} 
