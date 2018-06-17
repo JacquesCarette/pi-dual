@@ -773,7 +773,7 @@ universal algebra should pause and ponder a bit about what we have
 done. We have lifted \emph{equality} from being in the signature of
 the ambient logic and instead put it in the signature of the algebraic
 structure of interest.  In simpler terms, we shift equality from
-having a priviledged status in our meta-theory, to being just another
+having a privileged status in our meta-theory, to being just another
 symbol (denoting an equivalence relation) in our theory.  The understanding
 that equality is not an absolute concept has recently been an area of
 active research in mechanized mathematics --- although the concepts of
@@ -843,7 +843,7 @@ concreteness, we show the signatures in Fig.~\ref{type-isos}.  As
 these all come in symmetric pairs (some of which are self-symmetric),
 we give names for both directions. 
 
-From category theory, we are informed of the following priviledge
+From category theory, we are informed of the following privilege
 enjoyed by the natural numbers~$\Nat$:
 \begin{thm}
 The semiring $\left(\Nat, 0, 1, +, \cdot\right)$ is \emph{initial}
@@ -1231,7 +1231,7 @@ one can model types as \emph{groupoids}.  The additional
 structure comes from explicitly modeling the ``identity
 types'': instead of regarding all terms which witness
 the equality of (say) $a$ and $b$ of type $A$ as being
-indistinguishible, we posit that there may in fact be many.
+indistinguishable, we posit that there may in fact be many.
 This consequences of this one decision are enough to show that
 types can be modeled by groupoids.
 
@@ -1292,7 +1292,7 @@ We can then proceed to prove that every one of the coherence conditions
 involved in defining a symmetric Rig Groupoid holds for the groupoid
 interpretation of types~\cite{Carette2016}.  This is somewhat tedious
 given the sheer number of these, but when properly formulated,
-relatively straightfoward, but see below for comments on some
+relatively straightforward, but see below for comments on some
 tricky cases.
 
 \begin{figure}[tb]
@@ -2191,15 +2191,21 @@ algorithm for factoring (Shor). If there is no efficient classical algorithm
 for factoring then the extended Church-Turing thesis is false.
 
 %%%
-\subsection{Information Flow} 
+\subsection{Information Effects}
  
-By insisting on a computational model that explicitly enforces  
-conservation of information \ldots
+A computational model that enforces the principle of conservation of
+information is arguably \emph{richer} than a conventional model that
+cannot even express the notion of information. Practically the
+conventional model is easily recovered by simply adding constructs
+that intentionally and explicitly create or erase information. Such
+constructs allow one to recover the classical perspective with the
+added advantage that it is possible to reason about such creation and
+erasure of information using type and effect systems, monads, or
+arrows~\cite{infeffects,inversearrows}. 
 
-If information has a physical significance, then it is subject to
-conservation laws just as mass and energy are.  To make this idea
-concrete and to provide a taste of the applications it opens, consider
-a tiny 2-bit password = \verb|"10"|. The password checker looks like:
+An interesting application of such an idea is in the field of
+\emph{information-flow security}. To make this idea concrete, consider
+a tiny 2-bit password = \verb|"10"| and the associated password checker:
 
 \begin{verbatim}
 check-password (guess) =
@@ -2215,84 +2221,30 @@ attacker guesses \verb|"10"| (with probability $1/4$) the password (2
 bits) is leaked. If the attacker guesses one of the other choices
 (with probability $3/4$) the number of possibilities is reduced from 4
 to 3, i.e., the attacker learns $\log{4} - \log{3}$ bits of
-information. So in general the attacker learns\footnote{If the
-  password is 8 restricted ASCII characters (6 bits), the attacker
-  learns 0.00001 bits in the first probe.}:
+information. So in general the attacker learns:
 \[\begin{array}{ll}
    &  1/4 * 2 + 3/4 (\log{4} - \log{3}) \\
   =&  1/4 \log{4} + 3/4 \log{4/3} \\
   =&  - 1/4 \log{1/4} - 3/4 \log{3/4} \\
   \sim& 0.8 \mbox{~bits~in~the~first~probe}
 \end{array}\]
+This is a significant amount of information. But of course this is
+only because the password is so short: if the password was 8
+restricted ASCII characters (6 bits), the attacker would only learn
+0.00001 bits in the first probe.
 
-One can alternatively look at the situation by viewing the input as a
+An alternative formulation of the problem is to view the input as a
 random variable with 4 possibilities and a uniform distribution (i.e.,
-with 2 bits of information). The output is another random variable
+with 2 bits of information) and the output as another random variable
 with 4 possibilities but with the distribution
 $\{ (True, 1/4), (False, 3/4) \}$ which contains 0.8 bits of
 information. Thus 2 input bits of information were given to the
-function and only 0.8 were produced. Where did the 1.2 bits of
-information go? Once we accept the thesis that information is a
-physical entity this question cannot be ignored.
-
-The Landauer Principle states that erasing information requires
-energy. In other words, the password checking function must have
-erased 1.2 bits during its calculation, which dissipate as heat in any
-physical realization of the function. In conventional models of
-computation, this erasure is \emph{implicit}, i.e., it occurs as a
-side effect of calculation. We wish to look at models where
-erasure is simply not allowed.
-
-There are, in fact, many different principles of physics which are at
-odds with our current models of computation. Even within quantum
-mechanics itself, there are other ideas (such as superposition or
-entanglement) which are not present in current models. We will however
-restrict ourselves to exploring a single dimension in which our
-foundations should be revised: \textbf{conservation of information}.
-We will follow its consequences, which will turn out to be far
-reaching.
-
-\begin{quote}
-  The laws of physics are essentially algorithms for calculation. These
-  algorithms are significant only to the extent that they are executable in
-  our real physical world. Our usual laws of physics depend on the
-  mathematician's real number system. With that comes the presumption that
-  given any accuracy requirement, there exist a number of calculations steps,
-  which if executed, will satisfy that accuracy requirement. But the real
-  world is unlikely to supply us with unlimited memory of unlimited Turing
-  machine tapes, Therefore, continuum mathematics is not executable, and
-  physical laws which invoke that can not really be satisfactory. They are
-  references to illusionary procedures. Rolf Landauer, The physical nature of
-  information, Physics Letters A 217 (1996) pp. 188-193:
-\end{quote}
-
-A high level approach to conservation of information would proceed
-as follows:
-\begin{enumerate}
-\item Create a means to measure information.
-\item Show that this measure is sound with respect to our current understanding
-of what information ought to be.
-\item Assert that whatever ``quantity'' of information a system has, must
-remain invariant throughout the lifetime of the system.
-\end{enumerate}
-
-Certainly, whatever our notion of information, it can neither be created,
-duplicated, nor erased. Of course, if we make our notion of information
-too rigid, it will be impossible to even \textbf{modify} it! For computation
-to occur, modification must be possible.  But of what kind?
-
-%%%
-\subsection{Information Effects}
- 
-A computational model that enforces the principle of conservation of
-information is arguably \emph{richer} than a conventional model that
-cannot even express the notion of information. Practically the
-conventional model is easily recovered by simply adding constructs
-that intentionally and explicitly create or erase information. Such
-constructs allow one to recover the classical perspective with the
-added advantage that it is possible to reason about such creation and
-erasure of information using type and effect systems, monads, or
-arrows~\cite{infeffects,inversearrows}. 
+password checker and only 0.8 were produced. Where did the 1.2 bits of
+information go? By the Landauer Principle, these 1.2 bits must be
+accounted by an \emph{implicit} \emph{erasure} operation in the
+program. By writing the password checker in an extension of $\Pi$, the
+erasure construct becomes explicit and the information leak becomes
+exposed in the syntactic structure of the program~\cite{infeffects}.
 
 %%%
 \subsection{Summary} 
