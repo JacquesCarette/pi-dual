@@ -2046,63 +2046,89 @@ finally re-associate to get the result.
 We conclude with a collection of open problems and avenues for further research. 
 
 %%%
-\subsection{Infinite Sets} 
-
-Must mention infinite sets since we promised to do so in Sec 2;
-Discuss recursion, trace, feedback, loop...
-
-Inductive types: Natural numbers: fold/unfold
-
-Partial isos
-
-Other infinite type: Mention connections to negative, fractional, and
-algebraic numbers
-
-meta-circular interpreter from RC paper: Since these new models are
-substantially different from \lcal\ or familiar high-level languages,
-a point of concern is how one can effectively develop programs in
-them.  We address this by presenting a straightforward technique for
-deriving $\Pi$ programs by systematically translating logically
-reversible small-step abstract machines~\cite{isoint}. Complex
-programs can be devised in this way; we demonstrate the derivation of
-a meta-circular interpreter for $\Pi$.
-
-DANGER: here, we leave the safe land of ``preservation of
-information,'' because partiality is not reversible. So while trace
-gives a reversible program as output, it itself isn't a reversible
-operation. Like the daemon's brain in Maxwell's thought experiment,
-trace irreversible work!  So trace, which is fundamental to all work
-with recursive types, is only reversible "at level 1". So we need to
-replace trace with some other operation for level 2 reversibility to
-also hold -- and this is an open problem.
-
-%%%
-\subsection{Topological Spaces} 
-
-other data models; graphs; HoTT
-
-Data IV: Circle etc. Would be interesting 
-
-%%%
-\subsection{Theseus}
+\subsection{Information Effects}
  
-The most elementary control structure in a programming language is the
-ability to conditionally execute one of several possible code
-fragments. Expressing such an abstraction using predicates and nested
+A computational model that enforces the principle of conservation of
+information is arguably \emph{richer} than a conventional model that
+cannot even express the notion of information. Practically the
+conventional model is easily recovered by simply adding constructs
+that intentionally and explicitly create or erase information. Such
+constructs allow one to recover the classical perspective with the
+added advantage that it is possible to reason about such creation and
+erasure of information using type and effect systems, monads, or
+arrows~\cite{infeffects,inversearrows}. 
+
+An interesting application of such an idea is in the field of
+\emph{information-flow security}. To make this idea concrete, consider
+a tiny 2-bit password = \verb|"10"| and the associated password checker:
+
+\begin{verbatim}
+check-password (guess) =
+  guess == "10"
+\end{verbatim}
+
+One can ask how much information is leaked by this program assuming
+the attacker has no prior knowledge except that the password is 2
+bits, i.e., the four possible 2-bits are equally likely. If the
+attacker guesses \verb|"10"| (with probability $1/4$) the password (2
+bits) is leaked. If the attacker guesses one of the other choices
+(with probability $3/4$) the number of possibilities is reduced from 4
+to 3, i.e., the attacker learns $\log{4} - \log{3}$ bits of
+information. So in general the attacker learns:
+\[\begin{array}{ll}
+   &  1/4 * 2 + 3/4 (\log{4} - \log{3}) \\
+  =&  1/4 \log{4} + 3/4 \log{4/3} \\
+  =&  - 1/4 \log{1/4} - 3/4 \log{3/4} \\
+  \sim& 0.8 \mbox{~bits~in~the~first~probe}
+\end{array}\]
+This is a significant amount of information. But of course this is
+only because the password is so short: if the password was 8
+restricted ASCII characters (6 bits), the attacker would only learn
+0.00001 bits in the first probe.
+
+An alternative formulation of the problem is to view the input as a
+random variable with 4 possibilities and a uniform distribution (i.e.,
+with 2 bits of information) and the output as another random variable
+with 4 possibilities but with the distribution
+$\{ (True, 1/4), (False, 3/4) \}$ which contains 0.8 bits of
+information. Thus 2 input bits of information were given to the
+password checker and only 0.8 were produced. Where did the 1.2 bits of
+information go? By the Landauer Principle, these 1.2 bits must be
+accounted by an \emph{implicit} \emph{erasure} operation in the
+program. By writing the password checker in an extension of $\Pi$, the
+erasure construct becomes explicit and the information leak becomes
+exposed in the syntactic structure of the program~\cite{infeffects}.
+
+%%%
+\subsection{Theseus and Quantum Control}
+ 
+The $\Pi$ family of languages semantically captures the principles of
+reversibility and conservation of information. As a programming
+language it has some mixed properties: small programs are relatively
+easy to write; for some special classes of programs, it is even
+possible to define a methodology to write large $\Pi$ programs,
+including a self-interpreter for $\Pi$~\cite{isoint}. In general,
+however, the point-free style of combinators used in $\Pi$ becomes
+awkward and a new approach appears more suitable. To that end, we note
+that $\Pi$ encodes the most elementary control structure in a
+programming language-- which is the ability to conditionally execute
+one of several possible code fragments-- using combinators. Expressing
+such an abstraction using combinators or even predicates and nested
 \textbf{if}-expressions makes it difficult for both humans and
-compilers to reason about the control flow structure. Instead, in
-modern functional languages, this control flow paradigm is elegantly
-expressed using \emph{pattern-matching}. This approach yields code
-that is not only more concise and readable but also enables the
-compiler to easily verify two crucial properties: (i) non-overlapping
-patterns and (ii) exhaustive coverage of a datatype using a collection
-of patterns. Indeed most compilers for functional languages perform
-these checks, warning the user when they are violated. At a more
-fundamental level, e.g., in type theories and proof assistants, these
-properties are actually necessary for correct reasoning about
-programs. Our first insight, explained in this section, is that these
-properties, perhaps surprisingly, are sufficient to produce a simple
-and intuitive first-order reversible programming language.
+compilers to write, understand, and reason about the control flow
+structure of the program. Instead, in modern functional languages,
+this control flow paradigm is elegantly expressed using
+\emph{pattern-matching}. This approach yields code that is not only
+more concise and readable but also enables the compiler to easily
+verify two crucial properties: (i) non-overlapping patterns and (ii)
+exhaustive coverage of a datatype using a collection of
+patterns. Indeed most compilers for functional languages perform these
+checks, warning the user when they are violated. At a more fundamental
+level, e.g., in type theories and proof assistants, these properties
+are actually necessary for correct reasoning about programs. Our
+insight is that these properties, perhaps surprisingly, are sufficient
+to produce a simple and intuitive first-order reversible programming
+language which we call \emph{Theseus}.
 
 \begin{figure}[t]
   \centering
@@ -2137,10 +2163,10 @@ h (Right n)    = (True,n+1)
   \end{minipage}
 \end{figure}
 
-We start with a small illustrative example, written in a Haskell-like
+We provide a small illustrative example, written in a Haskell-like
 syntax.  Fig.~\ref{fig:intro-ex-1} gives the skeleton of a function
-\verb|f| that accepts a value of type \verb|Either Int| \verb|Int|; the
-patterns on the left-hand side exhaustively cover every possible
+\verb|f| that accepts a value of type \verb|Either Int| \verb|Int|;
+the patterns on the left-hand side exhaustively cover every possible
 incoming value and are non-overlapping. Similarly,
 Fig.~\ref{fig:intro-ex-2} gives the skeleton for a function~\verb|g|
 that accepts a value of type \verb|(Bool,Int)|; again the patterns on
@@ -2159,92 +2185,51 @@ direction, these clauses are subject to the constraint that each
 variable occurring on one side must occur exactly once on the other
 side (and with the same type). Thus it is acceptable to swap the
 second and third right-hand sides of \verb|h| but not the first and
-second ones.
+second ones. With some additional work, it is possible to extend
+Theseus to a full-fledged reversible programming
+language~\cite{theseus}. With just one additional insight, Theseus can
+be extended with superpositions and becomes a quantum programming
+language~\cite{10.1007/978-3-319-89366-2_19}.
 
 %%%
-\subsection{Quantum Computing} 
- 
-Extension of Theseus in 2018 FoSSaCS paper.
+\subsection{Richer Data: Infinite Sets and Topological Spaces} 
 
-Exclusive Disjunctions
+Must mention infinite sets since we promised to do so in Sec 2;
+Discuss recursion, trace, feedback, loop...
 
-Quantum over finite field
+Inductive types: Natural numbers: fold/unfold
 
-\jc{The reason I commented this out is that it is under-justified. The
-reader will simply not understand what these next few lines are really
-saying.}
+Partial isos
 
-Indeed one should take the physical principles underlying quantum
-mechanics, the most successful physical theory known to us and adapt
-computation to ``learn'' from these principles. To illustrate the
-depth of our crisis, Scott Aaronson, Umesh Vazirani, and others have
-proposed the following puzzle.
+Other infinite type: Mention connections to negative, fractional, and
+algebraic numbers
 
-One of these wild claims must be true!:
-\begin{itemize}
-\item the extended Church-Turing thesis is false, or
-\item quantum physics is false, or
-\item there is an efficient classical algorithm for factoring
-\end{itemize}
-Indeed, if quantum physics is correct then there is an efficient quantum
-algorithm for factoring (Shor). If there is no efficient classical algorithm
-for factoring then the extended Church-Turing thesis is false.
+meta-circular interpreter from RC paper: Since these new models are
+substantially different from \lcal\ or familiar high-level languages,
+a point of concern is how one can effectively develop programs in
+them.  We address this by presenting a straightforward technique for
+deriving $\Pi$ programs by systematically translating logically
+reversible small-step abstract machines~\cite{isoint}. Complex
+programs can be devised in this way; we demonstrate the derivation of
+a meta-circular interpreter for $\Pi$.
 
-%%%
-\subsection{Information Effects}
- 
-A computational model that enforces the principle of conservation of
-information is arguably \emph{richer} than a conventional model that
-cannot even express the notion of information. Practically the
-conventional model is easily recovered by simply adding constructs
-that intentionally and explicitly create or erase information. Such
-constructs allow one to recover the classical perspective with the
-added advantage that it is possible to reason about such creation and
-erasure of information using type and effect systems, monads, or
-arrows~\cite{infeffects,inversearrows}. 
+DANGER: here, we leave the safe land of ``preservation of
+information,'' because partiality is not reversible. So while trace
+gives a reversible program as output, it itself isn't a reversible
+operation. Like the daemon's brain in Maxwell's thought experiment,
+trace irreversible work!  So trace, which is fundamental to all work
+with recursive types, is only reversible "at level 1". So we need to
+replace trace with some other operation for level 2 reversibility to
+also hold -- and this is an open problem.
 
-An interesting application of such an idea is in the field of
-\emph{information-flow security}. To make this idea concrete, consider
-a tiny 2-bit password = \verb|"10"| and the associated password checker:
+other data models; graphs; HoTT
 
-\begin{verbatim}
-check-password (guess) =
-  if guess == "10"
-  then True
-  else False
-\end{verbatim}
+Data IV: Circle etc. Would be interesting 
 
-One can ask how much information is leaked by this program assuming
-the attacker has no prior knowledge except that the password is 2
-bits, i.e., the four possible 2-bits are equally likely. If the
-attacker guesses \verb|"10"| (with probability $1/4$) the password (2
-bits) is leaked. If the attacker guesses one of the other choices
-(with probability $3/4$) the number of possibilities is reduced from 4
-to 3, i.e., the attacker learns $\log{4} - \log{3}$ bits of
-information. So in general the attacker learns:
-\[\begin{array}{ll}
-   &  1/4 * 2 + 3/4 (\log{4} - \log{3}) \\
-  =&  1/4 \log{4} + 3/4 \log{4/3} \\
-  =&  - 1/4 \log{1/4} - 3/4 \log{3/4} \\
-  \sim& 0.8 \mbox{~bits~in~the~first~probe}
-\end{array}\]
-This is a significant amount of information. But of course this is
-only because the password is so short: if the password was 8
-restricted ASCII characters (6 bits), the attacker would only learn
-0.00001 bits in the first probe.
+topological spaces have strange cardinalities: negative types
+fractional types etc
 
-An alternative formulation of the problem is to view the input as a
-random variable with 4 possibilities and a uniform distribution (i.e.,
-with 2 bits of information) and the output as another random variable
-with 4 possibilities but with the distribution
-$\{ (True, 1/4), (False, 3/4) \}$ which contains 0.8 bits of
-information. Thus 2 input bits of information were given to the
-password checker and only 0.8 were produced. Where did the 1.2 bits of
-information go? By the Landauer Principle, these 1.2 bits must be
-accounted by an \emph{implicit} \emph{erasure} operation in the
-program. By writing the password checker in an extension of $\Pi$, the
-erasure construct becomes explicit and the information leak becomes
-exposed in the syntactic structure of the program~\cite{infeffects}.
+
 
 %%%
 \subsection{Summary} 
