@@ -2046,6 +2046,21 @@ finally re-associate to get the result.
 We conclude with a collection of open problems and avenues for further research. 
 
 %%%
+\subsection{Richer Data: Infinite Sets and Topological Spaces} 
+
+The three languages we discussed only deal with the finite spaces
+built from 0, 1, sums, and products. Programming practice, logic, and
+mathematics all deal with richer spaces including inductive types
+(e.g., the natural numbers, sequences, and trees), functions, and
+graphs. Extending $\Pi$ to such domains is possible but only after one
+refines the notions of reversibility and conservation of
+information. One approach is to use \emph{partial isomorphisms} that
+may be undefined on such inputs~\cite{infeffects,rc2011}. Another more
+speculative approach is to build such spaces, topologically, based on
+novel type constructions such as negative, fractional, or even
+imaginary types~\cite{seventrees,roshan-thesis}.
+
+%%%
 \subsection{Information Effects}
  
 A computational model that enforces the principle of conservation of
@@ -2090,7 +2105,7 @@ An alternative formulation of the problem is to view the input as a
 random variable with 4 possibilities and a uniform distribution (i.e.,
 with 2 bits of information) and the output as another random variable
 with 4 possibilities but with the distribution
-$\{ (True, 1/4), (False, 3/4) \}$ which contains 0.8 bits of
+$\{ (\mathit{True}, 1/4), (\mathit{False}, 3/4) \}$ which contains 0.8 bits of
 information. Thus 2 input bits of information were given to the
 password checker and only 0.8 were produced. Where did the 1.2 bits of
 information go? By the Landauer Principle, these 1.2 bits must be
@@ -2107,10 +2122,10 @@ reversibility and conservation of information. As a programming
 language it has some mixed properties: small programs are relatively
 easy to write; for some special classes of programs, it is even
 possible to define a methodology to write large $\Pi$ programs,
-including a self-interpreter for $\Pi$~\cite{isoint}. In general,
-however, the point-free style of combinators used in $\Pi$ becomes
-awkward and a new approach appears more suitable. To that end, we note
-that $\Pi$ encodes the most elementary control structure in a
+including a meta-circular interpreter for $\Pi$~\cite{isoint}. In
+general, however, the point-free style of combinators used in $\Pi$
+becomes awkward and a new approach appears more suitable. To that end,
+we note that $\Pi$ encodes the most elementary control structure in a
 programming language-- which is the ability to conditionally execute
 one of several possible code fragments-- using combinators. Expressing
 such an abstraction using combinators or even predicates and nested
@@ -2190,46 +2205,6 @@ Theseus to a full-fledged reversible programming
 language~\cite{theseus}. With just one additional insight, Theseus can
 be extended with superpositions and becomes a quantum programming
 language~\cite{10.1007/978-3-319-89366-2_19}.
-
-%%%
-\subsection{Richer Data: Infinite Sets and Topological Spaces} 
-
-Must mention infinite sets since we promised to do so in Sec 2;
-Discuss recursion, trace, feedback, loop...
-
-Inductive types: Natural numbers: fold/unfold
-
-Partial isos
-
-Other infinite type: Mention connections to negative, fractional, and
-algebraic numbers
-
-meta-circular interpreter from RC paper: Since these new models are
-substantially different from \lcal\ or familiar high-level languages,
-a point of concern is how one can effectively develop programs in
-them.  We address this by presenting a straightforward technique for
-deriving $\Pi$ programs by systematically translating logically
-reversible small-step abstract machines~\cite{isoint}. Complex
-programs can be devised in this way; we demonstrate the derivation of
-a meta-circular interpreter for $\Pi$.
-
-DANGER: here, we leave the safe land of ``preservation of
-information,'' because partiality is not reversible. So while trace
-gives a reversible program as output, it itself isn't a reversible
-operation. Like the daemon's brain in Maxwell's thought experiment,
-trace irreversible work!  So trace, which is fundamental to all work
-with recursive types, is only reversible "at level 1". So we need to
-replace trace with some other operation for level 2 reversibility to
-also hold -- and this is an open problem.
-
-other data models; graphs; HoTT
-
-Data IV: Circle etc. Would be interesting 
-
-topological spaces have strange cardinalities: negative types
-fractional types etc
-
-
 
 %%%
 \subsection{Summary} 
