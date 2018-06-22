@@ -972,10 +972,26 @@ In other words, the passage to $\Nat$ erases some structural information.
 
 \jc{it would be nice to have a picture or two here}
 
+\begin{figure}[t]
+\[
+\Rule{}
+{\jdg{}{}{c_1 : t_1 \iso t_2}}
+{\jdg{}{}{\ !\ c_1 : t_2 \iso t_1}}
+{}
+\]
+\caption{Derived $\Pi$-combinator.}
+\label{derived-pi-combinators}
+\end{figure}
+
 Embedded in our definition of $\Pi$ is a conscious design decision: to make the
 terms of $\Pi$ \emph{syntactically} reversible. In other words, to
 every $\Pi$ constant, there is another $\Pi$ constant which is its
-inverse. This is not the only choice.  Another would be to add a
+inverse. As this is used frequently, we give it the short name $!$,
+and its type is given in Fig.~\ref{derived-pi-combinator}. This
+combinator is \emph{defined}, by pattern matching on the syntax of
+its argument and structural recursion.
+
+This is not the only choice.  Another would be to add a
 $\mathit{flip}$ combinator to the language; we could then remove
 quite a few combinators as redundant. The drawback is that many
 programs in $\Pi$ become longer. Furthermore, some of the symmetry
@@ -1527,9 +1543,9 @@ Let $c, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c', c'' : t_3 \leftrightar
 \quad
   {c \, \odot \idc \, \Leftrightarrow c}
 \quad
-  {c\,\, \odot\,! c \Leftrightarrow \idc}
+  {c\,\, \odot\,!\, c \Leftrightarrow \idc}
 \quad
-  {! c \odot c \Leftrightarrow \idc}
+  {!\, c \odot c \Leftrightarrow \idc}
 \\
   {c \Leftrightarrow c}
 \quad
@@ -1548,6 +1564,11 @@ Let $c, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c', c'' : t_3 \leftrightar
 
 The constructs in Fig.~\ref{figh} express various properties of composition.
 The first two says that $\idc$ is a left and right identity for sequential composition.
+The next two say that all programs are reversible, both on the left and the right:
+running $c$ and then its reverse ($!\, c$) is equivalent to the identity, and the
+same for doing $!\, c$ first then $c$. The last line say that there is an
+identity level-2 combinator, a sequential composition, and that level-2
+equivalence respects level-1 sequential composition $\odot$.
 
 \begin{center}
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
