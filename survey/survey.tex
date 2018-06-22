@@ -99,7 +99,7 @@ McMaster University \qquad\qquad Google \qquad\qquad Indiana University}
 \newcommand{\inline}[3]{\ctr{#1} \textasciitilde \ctr{#2}:\ctr{#3}}
 
 \begin{document}
-\maketitle 
+\maketitle
 
 \begin{abstract}
   Our main models of computation (the Turing Machine and the RAM) and
@@ -142,7 +142,7 @@ McMaster University \qquad\qquad Google \qquad\qquad Indiana University}
   rig groupoids. The coherence laws for these groupoids turn out to be
   exactly the sound and complete reversible program equivalences we
   seek.
- 
+
   We conclude with some possible generalizations inspired by homotopy
   type theory and survey several open directions for further research.
 
@@ -294,7 +294,7 @@ back to Boole's 1853 book entitled \emph{An Investigation of the Laws
   and Probabilities}, we find that the opening sentence of Ch.~1 is:
 \begin{quote}
   The design of the following treatise is to investigate the fundamental laws
-  of those operations of the mind by which reasoning is performed; 
+  of those operations of the mind by which reasoning is performed;
 \end{quote}
 which clearly identifies the ``source'' of the logical laws as
 mirroring Boole's understanding of human reasoning. A few chapters
@@ -311,7 +311,7 @@ postulates of quantum mechanics. Although a detailed historical
 analysis of Boole's ideas in the light of modern physics is beyond our
 scope, the above quotes should convey the idea that our elementary
 computing notions date back to ideas that were thought reasonable in
-the late 1800s. 
+the late 1800s.
 
 Machines that ``compute'' are quite old. M\"{u}ller (1786) first
 conceived of the idea of a ``difference machine,'' which Babbage
@@ -529,7 +529,7 @@ when $n=3$, the finite set has elements $\{0,1,2,3,4,5,6,7\}$ which
 correspond to the 3-bit words $\{000,001,010,011,100,101,110,111\}$.
 Although this language appears weak, it is universal for reversible
 boolean combinational circuits $[2^i] \rightarrow [2^i]$ with $i$
-input/output wires. 
+input/output wires.
 
 To illustrate the expressiveness of the language, we develop a few
 small examples. We start by writing boolean negation ``not'' as a
@@ -578,7 +578,7 @@ type $[2^4] \rightarrow [2^4]$:
 \begin{equation}\label{eq:adder}
 \begin{array}{l@{\hspace{1cm}}l}
 \mathit{swap}~12~14 \fatsemi \mathit{swap}~13~15 ~\fatsemi & \mbox{toffoli} \\
-\mathit{swap}~8~12 \fatsemi \mathit{swap}~9~14 \fatsemi 
+\mathit{swap}~8~12 \fatsemi \mathit{swap}~9~14 \fatsemi
     \mathit{swap}~10~13 \fatsemi \mathit{swap}~11~15 ~\fatsemi & \mbox{cnot and swap} \\
 \mathit{swap}~6~7 \fatsemi \mathit{swap}~14~15 ~\fatsemi & \mbox{toffoli} \\
 \mathit{swap}~4~6 \fatsemi \mathit{swap}~5~7 \fatsemi
@@ -588,7 +588,7 @@ type $[2^4] \rightarrow [2^4]$:
 
 Note how the implementation of $\mathit{cnot}$ as a permutation
 $[2^2] \rightarrow [2^2]$ cannot be directly reused in the larger
-circuit $[2^4] \rightarrow [2^4]$. 
+circuit $[2^4] \rightarrow [2^4]$.
 
 For such reasons, in programming practice we are interested in
 structured data and compositional abstractions, which will be the
@@ -635,7 +635,7 @@ is also sufficient.  Making this intuition precise will be the topic of this
 section.
 
 %%%%%%%%%
-\subsection{A Model of Type Equivalences} 
+\subsection{A Model of Type Equivalences}
 
 We now want a proper mathematical description of this idea. Our goal
 is a denotational semantics on types which makes types that have the
@@ -841,7 +841,7 @@ Def.~\ref{def:rig}. What we thus need is to create $8$ pairs of
 mutually inverse functions which witness these identities.  For
 concreteness, we show the signatures in Fig.~\ref{type-isos}.  As
 these all come in symmetric pairs (some of which are self-symmetric),
-we give names for both directions. 
+we give names for both directions.
 
 From category theory, we are informed of the following privilege
 enjoyed by the natural numbers~$\Nat$:
@@ -861,7 +861,7 @@ in this semiring is intensional (i.e. two things are equal if and only if
 they are identical after evaluation), unlike that for types.
 
 %%%%%%%%%
-\subsection{A Language of Type Equivalences} 
+\subsection{A Language of Type Equivalences}
 
 \begin{figure}[t]
 \[
@@ -900,7 +900,7 @@ equivalences. Thus we get an unexpected programming language design:
 
 \begin{center}
 \fbox{
-The proof terms denoting 
+The proof terms denoting
 commutative semiring equivalences
 induce the terms of $\Pi$.}
 \end{center}
@@ -960,9 +960,9 @@ reading row-wise, this gives an enumeration of $\fin{m*n}$.
 From here, it is easy to see what, for example, $c_1 \oplus c_2$ must be,
 operationally: from a permutation on $\fin{m}$ and another on $\fin{n}$,
 create a permutation on $\fin{m+n}$ by having $c_1$ operate on the first
-$m$ elements of $A+B$, and $c_2$ operate on the last $n$ elements. 
+$m$ elements of $A+B$, and $c_2$ operate on the last $n$ elements.
 Similarly, $\swapp$ switches the roles of $A$ and $B$, and thus corresponds
-to $\fin{n+m}$. Note how we ``recover'' the commutativity of 
+to $\fin{n+m}$. Note how we ``recover'' the commutativity of
 natural number addition from this type isomorphism. Geometrically, $\swapt$
 is also rather interesting: it corresponds to matrix transpose!
 Furthermore, in this representations, some combinators like
@@ -980,7 +980,7 @@ In other words, the passage to $\Nat$ erases some structural information.
 {}
 \]
 \caption{Derived $\Pi$-combinator.}
-\label{derived-pi-combinators}
+\label{derived-pi-combinator}
 \end{figure}
 
 Embedded in our definition of $\Pi$ is a conscious design decision: to make the
@@ -1002,9 +1002,9 @@ prefer the structural symmetry over a minimalistic language definition.
 \amr{sound and complete isomorphisms for finite types}
 
 %%%%%%%%%
-\subsection{Operational Semantics} 
+\subsection{Operational Semantics}
 
-\jc{One operational semantics is explicit, such as the eval and 
+\jc{One operational semantics is explicit, such as the eval and
 evalB we've written many times (for example in PiEqui.agda in
 this repo). But in my opinion, the right way to do it is the
 \texttt{c2equiv} combinator in the same file, which interprets
@@ -1014,7 +1014,7 @@ that this is indeed the case. The advantage is that this lifts
 to level 2 quite cleanly.}
 
 %%%%%%%%%
-\subsection{Graphical Language} 
+\subsection{Graphical Language}
 
 a graphical notation for programming in these models that reminiscent
 of Penrose diagrams for categories~\cite{selinger-graphical}, Geometry
@@ -1032,7 +1032,7 @@ All the combinators would indeed have a natural action and if we have
 a few nice pictures it would be great. What do you think? }
 
 %%%%%%%%%
-\subsection{Examples} 
+\subsection{Examples}
 
 Surprising expressiveness of Pi:
 
@@ -1056,7 +1056,7 @@ examples:
   conditionals
   toffoli
   fredkin
-  revisit adder example from Sec 2 
+  revisit adder example from Sec 2
   perhaps a larger example as well (from RC 18 paper?)
 \end{verbatim}
 
@@ -1067,7 +1067,7 @@ really need a much beefier introduction. This is the first mention of
 resources (and events and time). So we really should preface this by
 saying that, once we have $\Pi$, there is another \emph{completely
 different} but compatible interpretation in terms of resources. But
-we should also think of whether this fits. I actually think that it 
+we should also think of whether this fits. I actually think that it
 does fit in this paper, but perhaps not in this section. Maybe
 also move to section 5?}
 
@@ -1231,17 +1231,17 @@ HoTT~\cite{Carette2018}. Based on this connection, we refer to the
 types as being at level-0, to the equivalences between types (i.e., the
 combinators of Sec.~\ref{sec:pi1}) as being at level-1, and to the
 equivalences between equivalences of types (i.e., the combinators
-discussed in this section) as being at level-2. 
+discussed in this section) as being at level-2.
 
 %%%%%%%%%
-\subsection{A Model of Equivalences between Type Equivalences} 
- 
+\subsection{A Model of Equivalences between Type Equivalences}
+
 Previously we saw how we could take the proof terms of commutative semirings
 equivalences as our starting point for $\Pi$. What we need
 now is to understand how \emph{proofs} of algebraic identities should be
 considered equivalent. Classical algebra does not help, as proofs
 are not considered first-class citizens. However,
-another route is available to us: since the work of 
+another route is available to us: since the work of
 Hofmann and Streicher~\cite{hofmann96thegroupoid}, we know that
 one can model types as \emph{groupoids}.  The additional
 structure comes from explicitly modeling the ``identity
@@ -1257,11 +1257,11 @@ goes by the moniker of ``categorification.''  We want a categorical
 algebra, where the basic objects are groupoids (to model our types),
 and where there is a natural notion of $+$ and $*$.  At first,
 we hit what seems like a serious stumbling block: the category of
-all groupoids, \Gpd, does not have either co-products 
+all groupoids, \Gpd, does not have either co-products
 nor products. However, we don't want to work internally in
 \Gpd -- we want operations
 \emph{on} groupoids. In other words, we want something akin to
-symmetric monoidal categories, but with two interacting 
+symmetric monoidal categories, but with two interacting
 monoidal structures.  Luckily, this already exists: the categorical
 analog to (commutative) semirings are (symmetric) Rig
 Categories~\cite{laplaza72,kelly74}.
@@ -1269,7 +1269,7 @@ This straightforwardly generalizes to symmetric Rig Groupoids.
 
 How does this help? Coherence conditions! Symmetric monoidal categories,
 to start somewhere simple, do not just introduce natural transformations
-like the associator $\alpha$ and the left and right unitors ($\lambda$ 
+like the associator $\alpha$ and the left and right unitors ($\lambda$
 and $\rho$ respectively), but also coherence conditions that these must satisfy.
 Looking, for example, at just the additive fragment of $\Pi$ (i.e. with just $0$,
 $1$ and $+$ for the types, $\odot$ and $\oplus$ as combinators, and
@@ -1299,7 +1299,7 @@ interpretation (which can nevertheless be read into Mac Lane's own
 exposition) would read as follows: given a set of equalities on abstract
 words, regarded as a rewrite system, and two means of rewriting a word
 in that language to another, is there some suitable notion of canonical
-form that expresses the essential uniqueness of the non-trivial 
+form that expresses the essential uniqueness of the non-trivial
 rewrites?  Note how this word-and-rewrite problem is essentially
 independent of the eventual interpretation. But one must take some care,
 as there are obvious degenerate cases (involving ``trivial'' equations
@@ -1314,7 +1314,7 @@ words in these systems give rise to commutative diagrams. The
 \emph{critical pairs} of the system of equations.
 
 %%%%%%%%%
-\subsection{A Language of Equivalences between Type Equivalences} 
+\subsection{A Language of Equivalences between Type Equivalences}
 
 \begin{figure}[tb]
 Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 : t_3 \leftrightarrow t_4$:
@@ -1363,45 +1363,45 @@ $t_1 * (t_2 * (t_3 * t_4))$ as follows:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]
-\node[above] (A) at (-2,0) {$t_1$}; 
-\node[above] (B) at (-1.5,0) {$t_2$}; 
-\node[above] (C) at (-1,0) {$t_3$}; 
-\node[above] (D) at (-0.5,0) {$t_4$}; 
-\draw[thick] (A) -- (-2,-1.5); 
-\draw[thick] (B) -- (-1.5,-1.5); 
-\draw[thick] (C) -- (-1,-1.5);; 
-\draw[thick] (D) -- (-0.5,-1.5); 
+\node[above] (A) at (-2,0) {$t_1$};
+\node[above] (B) at (-1.5,0) {$t_2$};
+\node[above] (C) at (-1,0) {$t_3$};
+\node[above] (D) at (-0.5,0) {$t_4$};
+\draw[thick] (A) -- (-2,-1.5);
+\draw[thick] (B) -- (-1.5,-1.5);
+\draw[thick] (C) -- (-1,-1.5);;
+\draw[thick] (D) -- (-0.5,-1.5);
 \draw[red,densely dashed] (-1.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
 \draw[green,densely dashed] (-1.6,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
 \end{tikzpicture}
-$\leadsto$ 
+$\leadsto$
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]
-\node[above] (A) at (-2,0) {$t_1$}; 
-\node[above] (B) at (-1.5,0) {$t_2$}; 
-\node[above] (C) at (-1,0) {$t_3$}; 
-\node[above] (D) at (-0.5,0) {$t_4$}; 
-\draw[thick] (A) -- (-2,-1.5); 
-\draw[thick] (B) -- (-1.5,-1.5); 
-\draw[thick] (C) -- (-1,-1.5);; 
-\draw[thick] (D) -- (-0.5,-1.5); 
+\node[above] (A) at (-2,0) {$t_1$};
+\node[above] (B) at (-1.5,0) {$t_2$};
+\node[above] (C) at (-1,0) {$t_3$};
+\node[above] (D) at (-0.5,0) {$t_4$};
+\draw[thick] (A) -- (-2,-1.5);
+\draw[thick] (B) -- (-1.5,-1.5);
+\draw[thick] (C) -- (-1,-1.5);;
+\draw[thick] (D) -- (-0.5,-1.5);
 \draw[red,densely dashed] (-1.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
 \draw[green,densely dashed] (-0.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
 \end{tikzpicture}
 $\leadsto$
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]
-\node[above] (A) at (-2,0) {$t_1$}; 
-\node[above] (B) at (-1.5,0) {$t_2$}; 
-\node[above] (C) at (-1,0) {$t_3$}; 
-\node[above] (D) at (-0.5,0) {$t_4$}; 
-\draw[thick] (A) -- (-2,-1.5); 
-\draw[thick] (B) -- (-1.5,-1.5); 
-\draw[thick] (C) -- (-1,-1.5);; 
-\draw[thick] (D) -- (-0.5,-1.5); 
+\node[above] (A) at (-2,0) {$t_1$};
+\node[above] (B) at (-1.5,0) {$t_2$};
+\node[above] (C) at (-1,0) {$t_3$};
+\node[above] (D) at (-0.5,0) {$t_4$};
+\draw[thick] (A) -- (-2,-1.5);
+\draw[thick] (B) -- (-1.5,-1.5);
+\draw[thick] (C) -- (-1,-1.5);;
+\draw[thick] (D) -- (-0.5,-1.5);
 \draw[red,densely dashed] (-0.9,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
 \draw[green,densely dashed] (-0.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
 \end{tikzpicture}
 \end{center}
-% \[ 
+% \[
 % ((t_1 * t_2) * t_3) * t_4 \leadsto
 % (t_1 * t_2) * (t_3 * t_4) \leadsto
 % t_1 * (t_2 * (t_3 * t_4))
@@ -1414,53 +1414,53 @@ following sequence of steps:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]]
-\node[above] (A) at (-2,0) {$t_1$}; 
-\node[above] (B) at (-1.5,0) {$t_2$}; 
-\node[above] (C) at (-1,0) {$t_3$}; 
-\node[above] (D) at (-0.5,0) {$t_4$}; 
-\draw[thick] (A) -- (-2,-1.5); 
-\draw[thick] (B) -- (-1.5,-1.5); 
-\draw[thick] (C) -- (-1,-1.5);; 
-\draw[thick] (D) -- (-0.5,-1.5); 
+\node[above] (A) at (-2,0) {$t_1$};
+\node[above] (B) at (-1.5,0) {$t_2$};
+\node[above] (C) at (-1,0) {$t_3$};
+\node[above] (D) at (-0.5,0) {$t_4$};
+\draw[thick] (A) -- (-2,-1.5);
+\draw[thick] (B) -- (-1.5,-1.5);
+\draw[thick] (C) -- (-1,-1.5);;
+\draw[thick] (D) -- (-0.5,-1.5);
 \draw[red,densely dashed] (-1.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
 \draw[green,densely dashed] (-1.6,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
 \end{tikzpicture}
-$\leadsto$ 
+$\leadsto$
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]]
-\node[above] (A) at (-2,0) {$t_1$}; 
-\node[above] (B) at (-1.5,0) {$t_2$}; 
-\node[above] (C) at (-1,0) {$t_3$}; 
-\node[above] (D) at (-0.5,0) {$t_4$}; 
-\draw[thick] (A) -- (-2,-1.5); 
-\draw[thick] (B) -- (-1.5,-1.5); 
-\draw[thick] (C) -- (-1,-1.5);; 
-\draw[thick] (D) -- (-0.5,-1.5); 
+\node[above] (A) at (-2,0) {$t_1$};
+\node[above] (B) at (-1.5,0) {$t_2$};
+\node[above] (C) at (-1,0) {$t_3$};
+\node[above] (D) at (-0.5,0) {$t_4$};
+\draw[thick] (A) -- (-2,-1.5);
+\draw[thick] (B) -- (-1.5,-1.5);
+\draw[thick] (C) -- (-1,-1.5);;
+\draw[thick] (D) -- (-0.5,-1.5);
 \draw[red,densely dashed] (-1.25,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
 \draw[green,densely dashed] (-1.5,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
 \end{tikzpicture}
 $\leadsto$
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]]
-\node[above] (A) at (-2,0) {$t_1$}; 
-\node[above] (B) at (-1.5,0) {$t_2$}; 
-\node[above] (C) at (-1,0) {$t_3$}; 
-\node[above] (D) at (-0.5,0) {$t_4$}; 
-\draw[thick] (A) -- (-2,-1.5); 
-\draw[thick] (B) -- (-1.5,-1.5); 
-\draw[thick] (C) -- (-1,-1.5);; 
-\draw[thick] (D) -- (-0.5,-1.5); 
+\node[above] (A) at (-2,0) {$t_1$};
+\node[above] (B) at (-1.5,0) {$t_2$};
+\node[above] (C) at (-1,0) {$t_3$};
+\node[above] (D) at (-0.5,0) {$t_4$};
+\draw[thick] (A) -- (-2,-1.5);
+\draw[thick] (B) -- (-1.5,-1.5);
+\draw[thick] (C) -- (-1,-1.5);;
+\draw[thick] (D) -- (-0.5,-1.5);
 \draw[red,densely dashed] (-1.25,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
 \draw[green,densely dashed] (-1.0,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
 \end{tikzpicture}
 $\leadsto$
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]]
-\node[above] (A) at (-2,0) {$t_1$}; 
-\node[above] (B) at (-1.5,0) {$t_2$}; 
-\node[above] (C) at (-1,0) {$t_3$}; 
-\node[above] (D) at (-0.5,0) {$t_4$}; 
-\draw[thick] (A) -- (-2,-1.5); 
-\draw[thick] (B) -- (-1.5,-1.5); 
-\draw[thick] (C) -- (-1,-1.5);; 
-\draw[thick] (D) -- (-0.5,-1.5); 
+\node[above] (A) at (-2,0) {$t_1$};
+\node[above] (B) at (-1.5,0) {$t_2$};
+\node[above] (C) at (-1,0) {$t_3$};
+\node[above] (D) at (-0.5,0) {$t_4$};
+\draw[thick] (A) -- (-2,-1.5);
+\draw[thick] (B) -- (-1.5,-1.5);
+\draw[thick] (C) -- (-1,-1.5);;
+\draw[thick] (D) -- (-0.5,-1.5);
 \draw[green,densely dashed] (-0.9,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
 \draw[red,densely dashed] (-0.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
 \end{tikzpicture}
@@ -1507,26 +1507,26 @@ and factoring has to commute with the combinator-level $\oplus$ and $\otimes$.
 \begin{comment}
 \begin{center}
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\node[above] (A) at (-2,0) {$t_1$}; 
-\node[above] (B) at (-1.5,0) {$t_3$}; 
-\node[above] (C) at (-1,0) {$t_5$}; 
+\node[above] (A) at (-2,0) {$t_1$};
+\node[above] (B) at (-1.5,0) {$t_3$};
+\node[above] (C) at (-1,0) {$t_5$};
 \draw[thick,yellow] (-1.5,-0.25) arc[start angle=60, end angle=120, radius=0.5cm];
-\draw[thick] (A) -- (-2,-0.5); 
-\draw[thick] (B) -- (-1.5,-0.5); 
+\draw[thick] (A) -- (-2,-0.5);
+\draw[thick] (B) -- (-1.5,-0.5);
 \draw[thick] (C) -- (-1,-0.5);
-\node at (-2,-0.75) {$a$}; 
-\node at (-1.5,-0.75) {$b$}; 
-\node at (-1,-0.75) {$c$}; 
-\draw[thick] (-2,-1) -- (-2,-1.5); 
-\draw[thick] (-1.5,-1) -- (-1.5,-1.5); 
+\node at (-2,-0.75) {$a$};
+\node at (-1.5,-0.75) {$b$};
+\node at (-1,-0.75) {$c$};
+\draw[thick] (-2,-1) -- (-2,-1.5);
+\draw[thick] (-1.5,-1) -- (-1.5,-1.5);
 \draw[thick] (-1,-1) -- (-1,-1.5);
 \node at (-1.5,-2) {$\dist$};
-\draw[thick] (-2.5,-2.5) -- (-2.5,-3); 
-\draw[thick] (-2,-2.5) -- (-2,-3); 
-\draw[green,densely dashed] (-2.25,-2.75) ellipse [x radius=0.4cm, y radius = 0.1cm]; 
-\draw[thick] (-1,-2.5) -- (-1,-3); 
-\draw[thick] (-0.5,-2.5) -- (-0.5,-3); 
-\draw[green,densely dashed] (-0.75,-2.75) ellipse [x radius=0.4cm, y radius = 0.1cm]; 
+\draw[thick] (-2.5,-2.5) -- (-2.5,-3);
+\draw[thick] (-2,-2.5) -- (-2,-3);
+\draw[green,densely dashed] (-2.25,-2.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\draw[thick] (-1,-2.5) -- (-1,-3);
+\draw[thick] (-0.5,-2.5) -- (-0.5,-3);
+\draw[green,densely dashed] (-0.75,-2.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
 \draw[thick,yellow] (-1,-2.75) arc[start angle=60, end angle=120, radius=1cm];
 \end{tikzpicture}
 \end{center}
@@ -1570,11 +1570,6 @@ same for doing $!\, c$ first then $c$. The last line say that there is an
 identity level-2 combinator, a sequential composition, and that level-2
 equivalence respects level-1 sequential composition $\odot$.
 
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\end{tikzpicture}
-\end{center}
-
 \begin{figure}[tb]
 Let $c_0 : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c : t_1 \leftrightarrow t_2$:
 \[\def\arraystretch{1.3}
@@ -1597,18 +1592,37 @@ Let $c_0 : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c : t_1 \left
 \\
   {\identlt \Leftrightarrow \distl \odot (\identlt \oplus \identlt)}
 \\
-\identlp \Leftrightarrow \swapp \odot \identrsp
+\identlp \Leftrightarrow \swapp \odot \identlsp
 \qquad
-\identlt \Leftrightarrow \swapt \odot \identrst
+\identlt \Leftrightarrow \swapt \odot \identlst
 \end{array}\]
 \caption{\label{figg}Signatures of level-2 $\Pi$-combinators: unit}
 \end{figure}
 
-The constructs in Fig.~\ref{figg} \ldots 
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\end{tikzpicture}
-\end{center}
+The constructs in Fig.~\ref{figg} may at first blush look similarly straightforward,
+but deserve some pause. One obvious question: What is the point of
+$c_0 : 0 \leftrightarrow 0$, isn't that just the identity combinator $\idc$
+for $A = 0$ (as defined in Fig.~\ref{type-isos})? Operationally, $c_0$
+is indeed indistinguishable from $\idc$. However, there are multiple syntactic
+ways of writing down combinators of type $0 \leftrightarrow 0$, and the
+first combinator in Fig.~\ref{figg} applies to all of them uniformly.
+This is another subtle aspect of coherence: all reasoning must be valid for
+all possible models, not just the one we have in mind. So even though
+operational reasoning may suggest that some relations \emph{may} be
+true between combinators, it can also mislead. The same reasoning
+applies to $c_1 : 1 \leftrightarrow 1$.  The first $8$ combinators can
+then be read as basic coherence for unit introduction and elimination,
+in both additive and multiplicative cases.
+
+The last two capture
+another simple idea, related to swapping: eliminating a unit
+on the left is the same as first swapping then eliminating on the
+right (both additively and multiplicatively). As a side note,
+these are not related to \emph{commutativity}, but rather
+come from one of the simplest coherence condition for
+braided monoidal categories. In other words, it reflects the
+idempotence of $\swapp$ and $\swapt$ rather than the
+commutativity of $\oplus$ and $\otimes$.
 
 \begin{figure}[tb]
 Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
@@ -1629,7 +1643,17 @@ Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
 \caption{\label{figf}Signatures of level-2 $\Pi$-combinators: commutativity and associativity}
 \end{figure}
 
-The constructs in Fig.~\ref{figf} \ldots 
+The first two equivalences in Fig.~\ref{figf} reflect the basic
+coherence between type-level swapping and and the level-2 combinator
+actions. The next four arise because of interactions between
+(additive and multiplicative) level-1 associativity and swapping.
+In other words, they arise as critical pairs.  For example,
+the first expresses that the two ways of going from
+$\left(A \oplus B\right) \oplus C$ to $B \oplus \left(C \oplus A\right)$
+are equivalent, with the second saying that the reverse (i.e.
+the results of applying $!$\~) also gives equivalent programs.
+The last two say the same but for the multiplicative structure.
+
 \begin{center}
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
 \end{tikzpicture}
@@ -1661,7 +1685,7 @@ Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_
 \caption{\label{fige}Signatures of level-2 $\Pi$-combinators: functors}
 \end{figure}
 
-The constructs in Fig.~\ref{fige} \ldots 
+The constructs in Fig.~\ref{fige} \ldots
 \begin{center}
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
 \end{tikzpicture}
@@ -1677,7 +1701,7 @@ The constructs in Fig.~\ref{fige} \ldots
 \caption{\label{figd}Signatures of level-2 $\Pi$-combinators: unit and associativity}
 \end{figure}
 
-The constructs in Fig.~\ref{figd} \ldots 
+The constructs in Fig.~\ref{figd} \ldots
 \begin{center}
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
 \end{tikzpicture}
@@ -1713,7 +1737,7 @@ Let $c : t_1 \leftrightarrow t_2$:
 \caption{\label{figc}Signatures of level-2 $\Pi$-combinators: zero}
 \end{figure}
 
-The constructs in Fig.~\ref{figc} \ldots 
+The constructs in Fig.~\ref{figc} \ldots
 \begin{center}
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
 \end{tikzpicture}
@@ -1738,7 +1762,7 @@ The constructs in Fig.~\ref{figc} \ldots
 \caption{\label{figb}Signatures of level-2 $\Pi$-combinators: associativity and distributivity}
 \end{figure}
 
-The constructs in Fig.~\ref{figb} \ldots 
+The constructs in Fig.~\ref{figb} \ldots
 \begin{center}
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
 \end{tikzpicture}
@@ -1754,20 +1778,20 @@ The constructs in Fig.~\ref{figb} \ldots
 \caption{\label{figa}Signatures of level-2 $\Pi$-combinators: commutativity and distributivity}
 \end{figure}
 
-The constructs in Fig.~\ref{figa} \ldots 
+The constructs in Fig.~\ref{figa} \ldots
 \begin{center}
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
 \end{tikzpicture}
 \end{center}
 
 %%%%%%%%%
-\subsection{Operational Semantics} 
+\subsection{Operational Semantics}
 
 %%%%%%%%%
-\subsection{Graphical Language} 
+\subsection{Graphical Language}
 
 %%%%%%%%%
-\subsection{Examples} 
+\subsection{Examples}
 
 We illustrate our methodology using a small example. Consider a
 circuit that takes an input type consisting of three values
@@ -2080,14 +2104,14 @@ finally re-associate to get the result.
 \AgdaInductiveConstructor{swap₊}\AgdaSymbol{))}\AgdaSpace{}%
 \AgdaFunction{▤}\AgdaSymbol{)}\<%
 \end{code}
- 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Further Thoughts and Conclusions}
 
-We conclude with a collection of open problems and avenues for further research. 
+We conclude with a collection of open problems and avenues for further research.
 
 %%%
-\subsection{Richer Data: Infinite Sets and Topological Spaces} 
+\subsection{Richer Data: Infinite Sets and Topological Spaces}
 
 The three languages we discussed only deal with the finite spaces
 built from 0, 1, sums, and products. Programming practice, logic, and
@@ -2103,7 +2127,7 @@ imaginary types~\cite{seventrees,roshan-thesis}.
 
 %%%
 \subsection{Information Effects}
- 
+
 A computational model that enforces the principle of conservation of
 information is arguably \emph{richer} than a conventional model that
 cannot even express the notion of information. Practically the
@@ -2112,7 +2136,7 @@ that intentionally and explicitly create or erase information. Such
 constructs allow one to recover the classical perspective with the
 added advantage that it is possible to reason about such creation and
 erasure of information using type and effect systems, monads, or
-arrows~\cite{infeffects,inversearrows}. 
+arrows~\cite{infeffects,inversearrows}.
 
 An interesting application of such an idea is in the field of
 \emph{information-flow security}. To make this idea concrete, consider
@@ -2157,7 +2181,7 @@ exposed in the syntactic structure of the program~\cite{infeffects}.
 
 %%%
 \subsection{Theseus and Quantum Control}
- 
+
 The $\Pi$ family of languages semantically captures the principles of
 reversibility and conservation of information. As a programming
 language it has some mixed properties: small programs are relatively
@@ -2248,7 +2272,7 @@ be extended with superpositions and becomes a quantum programming
 language~\cite{10.1007/978-3-319-89366-2_19}.
 
 %%%
-\subsection{Summary} 
+\subsection{Summary}
 
 The entire edifice of computer science including its mainstream models
 of computations, programming languages, and logics is founded on
@@ -2260,7 +2284,7 @@ this quantum revolution but we believe that additional physical
 principles inspired by quantum mechanics will have to be embraced in
 our computational thinking. This paper focused on one such principle
 --- \emph{conservation of information} --- and explored some of its
-exciting implications to the field of computer science. 
+exciting implications to the field of computer science.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Acknowledgements} We would like to thank the numerous
