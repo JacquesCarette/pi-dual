@@ -1251,27 +1251,6 @@ analog to (commutative) semirings are (symmetric) Rig
 Categories~\cite{laplaza72,kelly74}.
 This straightforwardly generalizes to symmetric Rig Groupoids.
 
-\begin{figure}[t]
-Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 : t_3 \leftrightarrow t_4$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {c_1 \odot (c_2 \odot c_3) \Leftrightarrow (c_1 \odot c_2) \odot c_3}
-\\
-  {(c_1 \oplus (c_2 \oplus c_3)) \odot \assoclp \Leftrightarrow \assoclp \odot ((c_1 \oplus c_2) \oplus c_3)}
-\\
-  {(c_1 \otimes (c_2 \otimes c_3)) \odot \assoclt \Leftrightarrow \assoclt \odot ((c_1 \otimes c_2) \otimes c_3)}
-\\
-  {((c_1 \oplus c_2) \oplus c_3) \odot \assocrp \Leftrightarrow \assocrp \odot (c_1 \oplus (c_2 \oplus c_3))}
-\\
-  {((c_1 \otimes c_2) \otimes c_3) \odot \assocrt \Leftrightarrow \assocrt \odot (c_1 \otimes (c_2 \otimes c_3))}
-\\
-  {\assocrp \odot \assocrp \Leftrightarrow ((\assocrp \oplus \idc) \odot \assocrp) \odot (\idc \oplus \assocrp)}
-\\
-  {\assocrt \odot \assocrt \Leftrightarrow ((\assocrt \otimes \idc) \odot \assocrt) \odot (\idc \otimes \assocrt)}
-\end{array}\]
-\caption{\label{figj}Signatures of level-2 $\Pi$-combinators: associativity}
-\end{figure}
-
 How does this help? Coherence conditions! Symmetric monoidal categories,
 to start somewhere simple, do not just introduce natural transformations
 like the associator $\alpha$ and the left and right unitors ($\lambda$ 
@@ -1295,6 +1274,201 @@ given the sheer number of these, but when properly formulated,
 relatively straightforward, but see below for comments on some
 tricky cases.
 
+But why are these particular coherence laws? Are they all necessary?
+Conversely are they, in some appropriate sense, sufficient? This is
+the so-called \emph{coherence problem}. Mac Lane, in his farewell address
+as President of the American Mathematical Society~\cite{MacLane1976} gives
+a good introduction and overview of such problems.  A more modern
+interpretation (which can nevertheless be read into Mac Lane's own
+exposition) would read as follows: given a set of equalities on abstract
+words, regarded as a rewrite system, and two means of rewriting a word
+in that language to another, is there some suitable notion of canonical
+form that expresses the essential uniqueness of the non-trivial 
+rewrites?  Note how this word-and-rewrite problem is essentially
+independent of the eventual interpretation. But one must take some care,
+as there are obvious degenerate cases (involving ``trivial'' equations
+involving $0$ or $1$) which lead to non-uniqueness. The landmark
+results, first by Kelly-Mac Lane~\cite{KELLY197197} for closed
+symmetric monoidal categories, then (independently) Laplaza and
+Kelly~\cite{laplaza72,kelly74} for symmetric Rig Categories, is
+that indeed there are sound and complete coherence conditions that
+insure that all the ``obvious'' equalities between different abstract
+words in these systems give rise to commutative diagrams. The
+``obvious'' equalities come from \emph{syzygies} or
+\emph{critical pairs} of the system of equations.
+
+%%%%%%%%%
+\subsection{A Language of Equivalences between Type Equivalences} 
+
+\begin{figure}[tb]
+Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 : t_3 \leftrightarrow t_4$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {c_1 \odot (c_2 \odot c_3) \Leftrightarrow (c_1 \odot c_2) \odot c_3}
+\\
+  {(c_1 \oplus (c_2 \oplus c_3)) \odot \assoclp \Leftrightarrow \assoclp \odot ((c_1 \oplus c_2) \oplus c_3)}
+\\
+  {(c_1 \otimes (c_2 \otimes c_3)) \odot \assoclt \Leftrightarrow \assoclt \odot ((c_1 \otimes c_2) \otimes c_3)}
+\\
+  {((c_1 \oplus c_2) \oplus c_3) \odot \assocrp \Leftrightarrow \assocrp \odot (c_1 \oplus (c_2 \oplus c_3))}
+\\
+  {((c_1 \otimes c_2) \otimes c_3) \odot \assocrt \Leftrightarrow \assocrt \odot (c_1 \otimes (c_2 \otimes c_3))}
+\\
+  {\assocrp \odot \assocrp \Leftrightarrow ((\assocrp \oplus \idc) \odot \assocrp) \odot (\idc \oplus \assocrp)}
+\\
+  {\assocrt \odot \assocrt \Leftrightarrow ((\assocrt \otimes \idc) \odot \assocrt) \odot (\idc \otimes \assocrt)}
+\end{array}\]
+\caption{\label{figj}Signatures of level-2 $\Pi$-combinators: associativity}
+\end{figure}
+
+As motivated in the previous section, the equivalences between type
+equivalences are perfectly modeled by the coherence conditions of weak
+Rig Groupoids. Syntactically, we take the easiest way there: simply
+make every coherence isomorphism into a programming construct. These
+constructs are collected in several figures (Fig.~\ref{figj} to
+Fig.~\ref{figa}) and are discussed next.
+
+Conveniently, the various coherence conditions can be naturally
+grouped into ``related'' laws.  Each group basically captures the
+interactions between compositions of level-1 $\Pi$ combinators.
+
+The constructs in Fig.~\ref{figj} capture the informal idea that all
+the different ways of associating programs are equivalent. The first
+says that sequential composition itself ($\odot$) is associative.
+The next $4$ capture how
+the $\oplus$ and $\otimes$ combinators ``commute'' with re-association.
+In other words, it expresses the type-level associativity of $+$ is
+properly reflected by the properties of $\oplus$.
+The last two equivalences show how composition of associativity combinators
+interact together. For example, the last equivalence captures the idea that the
+program $\assocrt \odot \assocrt$ transforms an input of
+type $((t_1 * t_2) * t_3) * t_4$ to an output of type
+$t_1 * (t_2 * (t_3 * t_4))$ as follows:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]
+\node[above] (A) at (-2,0) {$t_1$}; 
+\node[above] (B) at (-1.5,0) {$t_2$}; 
+\node[above] (C) at (-1,0) {$t_3$}; 
+\node[above] (D) at (-0.5,0) {$t_4$}; 
+\draw[thick] (A) -- (-2,-1.5); 
+\draw[thick] (B) -- (-1.5,-1.5); 
+\draw[thick] (C) -- (-1,-1.5);; 
+\draw[thick] (D) -- (-0.5,-1.5); 
+\draw[red,densely dashed] (-1.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\draw[green,densely dashed] (-1.6,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
+\end{tikzpicture}
+$\leadsto$ 
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]
+\node[above] (A) at (-2,0) {$t_1$}; 
+\node[above] (B) at (-1.5,0) {$t_2$}; 
+\node[above] (C) at (-1,0) {$t_3$}; 
+\node[above] (D) at (-0.5,0) {$t_4$}; 
+\draw[thick] (A) -- (-2,-1.5); 
+\draw[thick] (B) -- (-1.5,-1.5); 
+\draw[thick] (C) -- (-1,-1.5);; 
+\draw[thick] (D) -- (-0.5,-1.5); 
+\draw[red,densely dashed] (-1.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\draw[green,densely dashed] (-0.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\end{tikzpicture}
+$\leadsto$
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]
+\node[above] (A) at (-2,0) {$t_1$}; 
+\node[above] (B) at (-1.5,0) {$t_2$}; 
+\node[above] (C) at (-1,0) {$t_3$}; 
+\node[above] (D) at (-0.5,0) {$t_4$}; 
+\draw[thick] (A) -- (-2,-1.5); 
+\draw[thick] (B) -- (-1.5,-1.5); 
+\draw[thick] (C) -- (-1,-1.5);; 
+\draw[thick] (D) -- (-0.5,-1.5); 
+\draw[red,densely dashed] (-0.9,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
+\draw[green,densely dashed] (-0.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\end{tikzpicture}
+\end{center}
+% \[ 
+% ((t_1 * t_2) * t_3) * t_4 \leadsto
+% (t_1 * t_2) * (t_3 * t_4) \leadsto
+% t_1 * (t_2 * (t_3 * t_4))
+% \]
+
+\noindent The program on the right
+$((\assocrt \otimes \idc) \odot \assocrt) \odot (\idc \otimes
+\assocrt)$ achieves the same end-to-end transformation using the
+following sequence of steps:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]]
+\node[above] (A) at (-2,0) {$t_1$}; 
+\node[above] (B) at (-1.5,0) {$t_2$}; 
+\node[above] (C) at (-1,0) {$t_3$}; 
+\node[above] (D) at (-0.5,0) {$t_4$}; 
+\draw[thick] (A) -- (-2,-1.5); 
+\draw[thick] (B) -- (-1.5,-1.5); 
+\draw[thick] (C) -- (-1,-1.5);; 
+\draw[thick] (D) -- (-0.5,-1.5); 
+\draw[red,densely dashed] (-1.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\draw[green,densely dashed] (-1.6,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
+\end{tikzpicture}
+$\leadsto$ 
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]]
+\node[above] (A) at (-2,0) {$t_1$}; 
+\node[above] (B) at (-1.5,0) {$t_2$}; 
+\node[above] (C) at (-1,0) {$t_3$}; 
+\node[above] (D) at (-0.5,0) {$t_4$}; 
+\draw[thick] (A) -- (-2,-1.5); 
+\draw[thick] (B) -- (-1.5,-1.5); 
+\draw[thick] (C) -- (-1,-1.5);; 
+\draw[thick] (D) -- (-0.5,-1.5); 
+\draw[red,densely dashed] (-1.25,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\draw[green,densely dashed] (-1.5,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
+\end{tikzpicture}
+$\leadsto$
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]]
+\node[above] (A) at (-2,0) {$t_1$}; 
+\node[above] (B) at (-1.5,0) {$t_2$}; 
+\node[above] (C) at (-1,0) {$t_3$}; 
+\node[above] (D) at (-0.5,0) {$t_4$}; 
+\draw[thick] (A) -- (-2,-1.5); 
+\draw[thick] (B) -- (-1.5,-1.5); 
+\draw[thick] (C) -- (-1,-1.5);; 
+\draw[thick] (D) -- (-0.5,-1.5); 
+\draw[red,densely dashed] (-1.25,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\draw[green,densely dashed] (-1.0,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
+\end{tikzpicture}
+$\leadsto$
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]]
+\node[above] (A) at (-2,0) {$t_1$}; 
+\node[above] (B) at (-1.5,0) {$t_2$}; 
+\node[above] (C) at (-1,0) {$t_3$}; 
+\node[above] (D) at (-0.5,0) {$t_4$}; 
+\draw[thick] (A) -- (-2,-1.5); 
+\draw[thick] (B) -- (-1.5,-1.5); 
+\draw[thick] (C) -- (-1,-1.5);; 
+\draw[thick] (D) -- (-0.5,-1.5); 
+\draw[green,densely dashed] (-0.9,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
+\draw[red,densely dashed] (-0.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
+\end{tikzpicture}
+\end{center}
+% \[
+% ((t_1 * t_2) * t_3) * t_4 \leadsto
+% (t_1 * (t_2 * t_3)) * t_4 \leadsto
+% t_1 * ((t_2 * t_3) * t_4) \leadsto
+% t_1 * (t_2 * (t_3 * t_4))
+% \]
+
+\noindent This of course gives rise to a \emph{critical pair} in words over the
+level-1 language, as both of these programs are between the same types.
+Since neither of these involve either trivial types (like $0$ or $1$) nor
+twists (i.e. automorphisms) on the types themselves, coherence requires that
+these in fact be equivalent programs.  One interpretation is that
+\emph{outermost} re-associations is the same as \emph{innermost}
+re-associations.
+
+\jc{I am not a big fan of these pictures -- mainly because I can't give any
+intuition based on them of why these can be smoothly deformed into one another.
+All the ``pictures'' I can come up with [via purely formal reasoning] sit in at least
+5 dimensions -- one for each of the wires, and another to give room to maneuver.}
+
 \begin{figure}[tb]
 Let $a : t_1 \leftrightarrow t_2$, $b : t_3 \leftrightarrow t_4$, and $c : t_5 \leftrightarrow t_6$:
 \[\def\arraystretch{1.3}
@@ -1309,6 +1483,41 @@ Let $a : t_1 \leftrightarrow t_2$, $b : t_3 \leftrightarrow t_4$, and $c : t_5 \
 \end{array}\]
 \caption{\label{figi}Signatures of level-2 $\Pi$-combinators: distributivity and factoring}
 \end{figure}
+
+The constructs in Fig.~\ref{figi} are the basic coherence for
+$\dist$, $\distl$, $\factor$ and $\factorl$: the type-level distribution
+and factoring has to commute with the combinator-level $\oplus$ and $\otimes$.
+
+\begin{comment}
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\node[above] (A) at (-2,0) {$t_1$}; 
+\node[above] (B) at (-1.5,0) {$t_3$}; 
+\node[above] (C) at (-1,0) {$t_5$}; 
+\draw[thick,yellow] (-1.5,-0.25) arc[start angle=60, end angle=120, radius=0.5cm];
+\draw[thick] (A) -- (-2,-0.5); 
+\draw[thick] (B) -- (-1.5,-0.5); 
+\draw[thick] (C) -- (-1,-0.5);
+\node at (-2,-0.75) {$a$}; 
+\node at (-1.5,-0.75) {$b$}; 
+\node at (-1,-0.75) {$c$}; 
+\draw[thick] (-2,-1) -- (-2,-1.5); 
+\draw[thick] (-1.5,-1) -- (-1.5,-1.5); 
+\draw[thick] (-1,-1) -- (-1,-1.5);
+\node at (-1.5,-2) {$\dist$};
+\draw[thick] (-2.5,-2.5) -- (-2.5,-3); 
+\draw[thick] (-2,-2.5) -- (-2,-3); 
+\draw[green,densely dashed] (-2.25,-2.75) ellipse [x radius=0.4cm, y radius = 0.1cm]; 
+\draw[thick] (-1,-2.5) -- (-1,-3); 
+\draw[thick] (-0.5,-2.5) -- (-0.5,-3); 
+\draw[green,densely dashed] (-0.75,-2.75) ellipse [x radius=0.4cm, y radius = 0.1cm]; 
+\draw[thick,yellow] (-1,-2.75) arc[start angle=60, end angle=120, radius=1cm];
+\end{tikzpicture}
+\end{center}
+% ((a + b) * c) ; dist <=> dist ; ((a * c) + (b * c))
+% LHS: (t1 + t3) * t5 ~> (t2 + t4) * t6 ~> (t2 * t6) + (t4 * t6)
+% RHS: (t1 + t3) * t5 ~> (t1 * t5) + (t3 * t5) ~> (t2 * t6) + (t4 * t6)
+\end{comment}
 
 \begin{figure}[tb]
 Let $c, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c', c'' : t_3 \leftrightarrow t_4$:
@@ -1337,28 +1546,13 @@ Let $c, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c', c'' : t_3 \leftrightar
 \caption{\label{figh}Signatures of level-2 $\Pi$-combinators: identity and composition}
 \end{figure}
 
-But why are these particular coherence laws? Are they all necessary?
-Conversely are they, in some appropriate sense, sufficient? This is
-the so-called \emph{coherence problem}. Mac Lane, in his farewell address
-as President of the American Mathematical Society~\cite{MacLane1976} gives
-a good introduction and overview of such problems.  A more modern
-interpretation (which can nevertheless be read into Mac Lane's own
-exposition) would read as follows: given a set of equalities on abstract
-words, regarded as a rewrite system, and two means of rewriting a word
-in that language to another, is there some suitable notion of canonical
-form that expresses the essential uniqueness of the non-trivial 
-rewrites?  Note how this word-and-rewrite problem is essentially
-independent of the eventual interpretation. One must take some care,
-as there are obvious degenerate cases (involving ``trivial'' equations
-involving $0$ or $1$) which lead to non-uniqueness. The landmark
-results, first by Kelly-Mac Lane~\cite{KELLY197197} for closed
-symmetric monoidal categories, then (independently) Laplaza and
-Kelly~\cite{laplaza72,kelly74} for symmetric Rig Categories, is
-that indeed there are sound and complete coherence conditions that
-insure that all the ``obvious'' equalities between different abstract
-words in these systems give rise to commutative diagrams. The
-``obvious'' equalities come from \emph{syzygies} or
-\emph{critical pairs} of the system of equations.
+The constructs in Fig.~\ref{figh} express various properties of composition.
+The first two says that $\idc$ is a left and right identity for sequential composition.
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\end{tikzpicture}
+\end{center}
 
 \begin{figure}[tb]
 Let $c_0 : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c : t_1 \leftrightarrow t_2$:
@@ -1389,6 +1583,12 @@ Let $c_0 : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c : t_1 \left
 \caption{\label{figg}Signatures of level-2 $\Pi$-combinators: unit}
 \end{figure}
 
+The constructs in Fig.~\ref{figg} \ldots 
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\end{tikzpicture}
+\end{center}
+
 \begin{figure}[tb]
 Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
 \[\def\arraystretch{1.3}
@@ -1407,6 +1607,12 @@ Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
 \end{array}\]
 \caption{\label{figf}Signatures of level-2 $\Pi$-combinators: commutativity and associativity}
 \end{figure}
+
+The constructs in Fig.~\ref{figf} \ldots 
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\end{tikzpicture}
+\end{center}
 
 \begin{figure}[tb]
 Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, $c_3 : t_1 \leftrightarrow t_2$, and $c_4 : t_3 \leftrightarrow t_4$. \\
@@ -1434,6 +1640,12 @@ Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_
 \caption{\label{fige}Signatures of level-2 $\Pi$-combinators: functors}
 \end{figure}
 
+The constructs in Fig.~\ref{fige} \ldots 
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\end{tikzpicture}
+\end{center}
+
 \begin{figure}[tb]
 \[\def\arraystretch{1.3}
 \begin{array}{c}
@@ -1443,6 +1655,12 @@ Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_
 \end{array}\]
 \caption{\label{figd}Signatures of level-2 $\Pi$-combinators: unit and associativity}
 \end{figure}
+
+The constructs in Fig.~\ref{figd} \ldots 
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\end{tikzpicture}
+\end{center}
 
 
 \begin{figure}[tb]
@@ -1474,6 +1692,12 @@ Let $c : t_1 \leftrightarrow t_2$:
 \caption{\label{figc}Signatures of level-2 $\Pi$-combinators: zero}
 \end{figure}
 
+The constructs in Fig.~\ref{figc} \ldots 
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\end{tikzpicture}
+\end{center}
+
 \begin{figure}[tb]
 \[\def\arraystretch{1.3}
 \begin{array}{c}
@@ -1493,6 +1717,12 @@ Let $c : t_1 \leftrightarrow t_2$:
 \caption{\label{figb}Signatures of level-2 $\Pi$-combinators: associativity and distributivity}
 \end{figure}
 
+The constructs in Fig.~\ref{figb} \ldots 
+\begin{center}
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
+\end{tikzpicture}
+\end{center}
+
 \begin{figure}[tb]
 \[\def\arraystretch{1.3}
 \begin{array}{rcl}
@@ -1502,216 +1732,6 @@ Let $c : t_1 \leftrightarrow t_2$:
 \end{array}\]
 \caption{\label{figa}Signatures of level-2 $\Pi$-combinators: commutativity and distributivity}
 \end{figure}
-
-%%%%%%%%%
-\subsection{A Language of Equivalences between Type Equivalences} 
-
-As motivated in the previous section, the equivalences between type
-equivalences are perfectly modeled by the coherence conditions of weak
-Rig Groupoids. Syntactically, we take the easiest way there: simply
-make every coherence isomorphism into a programming construct. These
-constructs are collected in several figures (Fig.~\ref{figj} to
-Fig.~\ref{figa}) and are discussed next. 
-
-The constructs in Fig.~\ref{figj} capture the informal idea that all
-the different ways of associating programs are equivalent. For
-example, a program that performs $c_1$ and then $(c_2 \odot c_3)$ can
-be smoothly transformed a program that performs $(c_1 \odot c_2)$ and
-then $c_3$. The last two equivalences show how several uses of
-associativity interact together. For example, in the last equivalence
-the program on the left $\assocrt \odot \assocrt$ transforms an input
-type $((t_1 * t_2) * t_3) * t_4$ to an output type
-$t_1 * (t_2 * (t_3 * t_4))$ as follows:
-
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\node[above] (A) at (-2,0) {$t_1$}; 
-\node[above] (B) at (-1.5,0) {$t_2$}; 
-\node[above] (C) at (-1,0) {$t_3$}; 
-\node[above] (D) at (-0.5,0) {$t_4$}; 
-\draw[thick] (A) -- (-2,-1.5); 
-\draw[thick] (B) -- (-1.5,-1.5); 
-\draw[thick] (C) -- (-1,-1.5);; 
-\draw[thick] (D) -- (-0.5,-1.5); 
-\draw[red,densely dashed] (-1.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\draw[green,densely dashed] (-1.6,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
-\end{tikzpicture}
-$\leadsto$ 
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\node[above] (A) at (-2,0) {$t_1$}; 
-\node[above] (B) at (-1.5,0) {$t_2$}; 
-\node[above] (C) at (-1,0) {$t_3$}; 
-\node[above] (D) at (-0.5,0) {$t_4$}; 
-\draw[thick] (A) -- (-2,-1.5); 
-\draw[thick] (B) -- (-1.5,-1.5); 
-\draw[thick] (C) -- (-1,-1.5);; 
-\draw[thick] (D) -- (-0.5,-1.5); 
-\draw[red,densely dashed] (-1.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\draw[green,densely dashed] (-0.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\end{tikzpicture}
-$\leadsto$
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\node[above] (A) at (-2,0) {$t_1$}; 
-\node[above] (B) at (-1.5,0) {$t_2$}; 
-\node[above] (C) at (-1,0) {$t_3$}; 
-\node[above] (D) at (-0.5,0) {$t_4$}; 
-\draw[thick] (A) -- (-2,-1.5); 
-\draw[thick] (B) -- (-1.5,-1.5); 
-\draw[thick] (C) -- (-1,-1.5);; 
-\draw[thick] (D) -- (-0.5,-1.5); 
-\draw[red,densely dashed] (-0.9,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
-\draw[green,densely dashed] (-0.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\end{tikzpicture}
-\end{center}
-% \[ 
-% ((t_1 * t_2) * t_3) * t_4 \leadsto
-% (t_1 * t_2) * (t_3 * t_4) \leadsto
-% t_1 * (t_2 * (t_3 * t_4))
-% \]
-
-\noindent The program on the right
-$((\assocrt \otimes \idc) \odot \assocrt) \odot (\idc \otimes
-\assocrt)$ achieves the same end-to-end transformation using the
-following sequence of steps:
-
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\node[above] (A) at (-2,0) {$t_1$}; 
-\node[above] (B) at (-1.5,0) {$t_2$}; 
-\node[above] (C) at (-1,0) {$t_3$}; 
-\node[above] (D) at (-0.5,0) {$t_4$}; 
-\draw[thick] (A) -- (-2,-1.5); 
-\draw[thick] (B) -- (-1.5,-1.5); 
-\draw[thick] (C) -- (-1,-1.5);; 
-\draw[thick] (D) -- (-0.5,-1.5); 
-\draw[red,densely dashed] (-1.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\draw[green,densely dashed] (-1.6,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
-\end{tikzpicture}
-$\leadsto$ 
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\node[above] (A) at (-2,0) {$t_1$}; 
-\node[above] (B) at (-1.5,0) {$t_2$}; 
-\node[above] (C) at (-1,0) {$t_3$}; 
-\node[above] (D) at (-0.5,0) {$t_4$}; 
-\draw[thick] (A) -- (-2,-1.5); 
-\draw[thick] (B) -- (-1.5,-1.5); 
-\draw[thick] (C) -- (-1,-1.5);; 
-\draw[thick] (D) -- (-0.5,-1.5); 
-\draw[red,densely dashed] (-1.25,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\draw[green,densely dashed] (-1.5,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
-\end{tikzpicture}
-$\leadsto$
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\node[above] (A) at (-2,0) {$t_1$}; 
-\node[above] (B) at (-1.5,0) {$t_2$}; 
-\node[above] (C) at (-1,0) {$t_3$}; 
-\node[above] (D) at (-0.5,0) {$t_4$}; 
-\draw[thick] (A) -- (-2,-1.5); 
-\draw[thick] (B) -- (-1.5,-1.5); 
-\draw[thick] (C) -- (-1,-1.5);; 
-\draw[thick] (D) -- (-0.5,-1.5); 
-\draw[red,densely dashed] (-1.25,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\draw[green,densely dashed] (-1.0,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
-\end{tikzpicture}
-$\leadsto$
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\node[above] (A) at (-2,0) {$t_1$}; 
-\node[above] (B) at (-1.5,0) {$t_2$}; 
-\node[above] (C) at (-1,0) {$t_3$}; 
-\node[above] (D) at (-0.5,0) {$t_4$}; 
-\draw[thick] (A) -- (-2,-1.5); 
-\draw[thick] (B) -- (-1.5,-1.5); 
-\draw[thick] (C) -- (-1,-1.5);; 
-\draw[thick] (D) -- (-0.5,-1.5); 
-\draw[green,densely dashed] (-0.9,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
-\draw[red,densely dashed] (-0.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\end{tikzpicture}
-\end{center}
-% \[
-% ((t_1 * t_2) * t_3) * t_4 \leadsto
-% (t_1 * (t_2 * t_3)) * t_4 \leadsto
-% t_1 * ((t_2 * t_3) * t_4) \leadsto
-% t_1 * (t_2 * (t_3 * t_4))
-% \]
-
-\noindent The equivalence states that these two sequences of steps can be
-smoothly deformed to one another. 
-
-The constructs in Fig.~\ref{figi} explain how choice interacts with
-grouping. Intuitively, a choice nested inside a larger bundle can also
-be treated as an outer choice with the nested bundle duplicated in
-each branch. 
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\node[above] (A) at (-2,0) {$t_1$}; 
-\node[above] (B) at (-1.5,0) {$t_3$}; 
-\node[above] (C) at (-1,0) {$t_5$}; 
-\draw[thick,yellow] (-1.5,-0.25) arc[start angle=60, end angle=120, radius=0.5cm];
-\draw[thick] (A) -- (-2,-0.5); 
-\draw[thick] (B) -- (-1.5,-0.5); 
-\draw[thick] (C) -- (-1,-0.5);
-\node at (-2,-0.75) {$a$}; 
-\node at (-1.5,-0.75) {$b$}; 
-\node at (-1,-0.75) {$c$}; 
-\draw[thick] (-2,-1) -- (-2,-1.5); 
-\draw[thick] (-1.5,-1) -- (-1.5,-1.5); 
-\draw[thick] (-1,-1) -- (-1,-1.5);
-\node at (-1.5,-2) {$\dist$};
-\draw[thick] (-2.5,-2.5) -- (-2.5,-3); 
-\draw[thick] (-2,-2.5) -- (-2,-3); 
-\draw[green,densely dashed] (-2.25,-2.75) ellipse [x radius=0.4cm, y radius = 0.1cm]; 
-\draw[thick] (-1,-2.5) -- (-1,-3); 
-\draw[thick] (-0.5,-2.5) -- (-0.5,-3); 
-\draw[green,densely dashed] (-0.75,-2.75) ellipse [x radius=0.4cm, y radius = 0.1cm]; 
-\draw[thick,yellow] (-1,-2.75) arc[start angle=60, end angle=120, radius=1cm];
-\end{tikzpicture}
-\end{center}
-% ((a + b) * c) ; dist <=> dist ; ((a * c) + (b * c))
-% LHS: (t1 + t3) * t5 ~> (t2 + t4) * t6 ~> (t2 * t6) + (t4 * t6)
-% RHS: (t1 + t3) * t5 ~> (t1 * t5) + (t3 * t5) ~> (t2 * t6) + (t4 * t6)
-
-
-The constructs in Fig.~\ref{figh} \ldots 
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\end{tikzpicture}
-\end{center}
-
-The constructs in Fig.~\ref{figg} \ldots 
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\end{tikzpicture}
-\end{center}
-
-The constructs in Fig.~\ref{figf} \ldots 
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\end{tikzpicture}
-\end{center}
-
-The constructs in Fig.~\ref{fige} \ldots 
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\end{tikzpicture}
-\end{center}
-
-The constructs in Fig.~\ref{figd} \ldots 
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\end{tikzpicture}
-\end{center}
-
-The constructs in Fig.~\ref{figc} \ldots 
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\end{tikzpicture}
-\end{center}
-
-The constructs in Fig.~\ref{figb} \ldots 
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\end{tikzpicture}
-\end{center}
 
 The constructs in Fig.~\ref{figa} \ldots 
 \begin{center}
