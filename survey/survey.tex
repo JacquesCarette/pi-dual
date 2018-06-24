@@ -12,7 +12,7 @@
 \usepackage{multicol}
 \usepackage{amsmath}
 \usepackage{stmaryrd}
-\usetikzlibrary{quotes}
+\usetikzlibrary{quotes,fit,positioning}
 \tikzset{>=latex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1014,24 +1014,6 @@ that this is indeed the case. The advantage is that this lifts
 to level 2 quite cleanly.}
 
 %%%%%%%%%
-\subsection{Graphical Language}
-
-a graphical notation for programming in these models that reminiscent
-of Penrose diagrams for categories~\cite{selinger-graphical}, Geometry
-of Interaction (GoI) machines and Proof
-Nets~\cite{Mackie2011,DBLP:conf/popl/Mackie95}. In the graphical
-notation, computation is modeled by the flow of particles in a
-circuit.
-
-\amr{
-  Let’s have a geometric representation of spaces:
-- A + B means putting A next to B
-- A * B means putting A and B on two perpendicular axes and filling
-the square (volume) between them
-All the combinators would indeed have a natural action and if we have
-a few nice pictures it would be great. What do you think? }
-
-%%%%%%%%%
 \subsection{Examples}
 
 Surprising expressiveness of Pi:
@@ -1060,30 +1042,74 @@ examples:
   perhaps a larger example as well (from RC 18 paper?)
 \end{verbatim}
 
-%%%
-\subsection{Spacetime Model}
-\jc{While I really like this model, if we are going to keep it, we
-really need a much beefier introduction. This is the first mention of
-resources (and events and time). So we really should preface this by
-saying that, once we have $\Pi$, there is another \emph{completely
-different} but compatible interpretation in terms of resources. But
-we should also think of whether this fits. I actually think that it
-does fit in this paper, but perhaps not in this section. Maybe
-also move to section 5?}
+%%%%%%%%%
+\subsection{Graphical Language}
 
-To gain an intuition for resources, we think of the types as possible
-events, and of the values as consistent timelines of events. From this
-perspective, $A * B$ denotes spatial composition, where both $A$ and
-$B$ must happen in \emph{some} order, and $A + B$ denotes temporal
-composition, where exactly one of $A$ and $B$ must happen at a given
-time. The event $1$ is then trivial, and $0$ is impossible.  We
-visualize the denotation of $1$ as a point in space, and $0$ as empty
-space. The denotation of $A + B$ is the denotation of $A$ drawn on top
-of the denotation of $B$ and separated by a border, and the denotation
-of $A * B$ is just the denotation of $A$ written next to the
-denotation of $B$. Now we can formally define a consistent timeline
-recursively on the structure of a diagram:
+% \jc{While I really like this model, if we are going to keep it, we
+% really need a much beefier introduction. This is the first mention of
+% resources (and events and time). So we really should preface this by
+% saying that, once we have $\Pi$, there is another \emph{completely
+% different} but compatible interpretation in terms of resources. But
+% we should also think of whether this fits. I actually think that it
+% does fit in this paper, but perhaps not in this section. Maybe
+% also move to section 5?}
 
+The textual representation of $\Pi$ is quite cumbersome: the
+underlying principles however become quite intuitive when represented
+in a more suggestive visual notation. There exist various graphical
+notations for the monoidal categories that model $\Pi$ and related
+languages including Penrose diagrams~\cite{selinger-graphical} and
+Geometry of Interaction (GoI) machines and Proof
+Nets~\cite{Mackie2011,DBLP:conf/popl/Mackie95}. In this section, we
+propose a novel graphical representation of $\Pi$ types and
+combinators drawn from the resource usage embedded in the operational
+semantics. As suggested by the operational semantics, the type $A * B$
+can be viewed as denoting \emph{spatial composition}, where
+\emph{both} $A$ and $B$ must happen in \emph{some} order or perhaps
+simultaneously, and where $A + B$ denotes \emph{temporal composition},
+where exactly \emph{one of} $A$ and $B$ must happen at a given time.
+
+This idea leads to a resource-based interpretation of types as
+\emph{possible events} and of the values as \emph{consistent timelines
+  of events} as explained below. The event $1$ is trivial, and the
+event $0$ is impossible.  We visualize the denotation of $1$ as a
+point in space, and $0$ as empty space. The denotation of $A + B$ is
+the denotation of~$A$ drawn on top of the denotation of $B$ and
+separated by a border, and the denotation of $A * B$ is just the
+denotation of $A$ written next to the denotation of $B$.  For example,
+let $2$ be the type $1 + 1$ represented by a stack of two boxes each
+with a point inside it. The type $(2 + 2) * (2 + 2)$ would then be two
+such stacks laid next to each other. Composing further, the type
+$((2 + 2) * (2 + 2)) + ((2 + 2) * (2 + 2))$ is built by stacking the
+last two diagrams as shown below on the left:
+\begin{center}
+\hfill 
+\includegraphics[scale=0.3]{images/tall-tl-1}
+~
+\includegraphics[scale=0.3]{images/tall-tl-2}
+\hfill (*)
+\end{center}
+If we call the type on the left $A$ then the full diagram above
+represents the type $A*A$.
+
+To understand how diagrams (types) can transform through the
+evaluation of  a program, we need to reason about the equivalence of
+different diagrams. Consider for example, the two diagrams below:
+
+\begin{center}
+\hfill 
+\includegraphics[scale=0.3]{images/distrib-1}
+\qquad \qquad \qquad \qquad \qquad 
+\includegraphics[scale=0.3]{images/distrib-2}
+\hfill (**)
+\end{center}
+
+The diagram on the left represents the type $A * (B + C)$ while the
+one on the right represents the type $(A * B) + (A * C)$. These two
+types are equivalent in $\Pi$ but why are they equivalent in the
+graphical notation? We argue that they admit the same consistent
+timelines where a consistent timeline is defined recursively on the
+structure of a diagram:
 \begin{itemize}
 \item An endpoint (the denotation of $1$) has exactly one timeline
   through it.  Empty space (the denotation of $0$) has no timelines
@@ -1096,22 +1122,33 @@ recursively on the structure of a diagram:
   cells, in some order.
 \end{itemize}
 
-For example, let $2$ be the type $1 + 1$. The following would be a
-consistent timeline through the diagram for
-$((2 + 2) * (2 + 2)) + ((2 + 2) * (2 + 2))$ times itself as shown in
-the left two boxes. The right two boxes show the trade-off between
-space and time encoded in distributivity. Since a timeline must pass
-through a column in exactly one point, the two boxes on the right have
-the same timelines:
-\begin{center}
-\includegraphics[scale=0.3]{images/tall-tl-1}
-\quad
-\includegraphics[scale=0.3]{images/tall-tl-2}
-\qquad\qquad\qquad
-\includegraphics[scale=0.3]{images/distrib-1}
-\qquad
-\includegraphics[scale=0.3]{images/distrib-2}
-\end{center}
+For example, the red line in the diagram (*) represents a consistent
+timeline. For the diagrams (**), we note that any consistent timeline
+for the left diagram must go through $A$ and either one of $B$ or $C$
+and for the diagram on the right, the choice happens earlier but the
+result is the same: any consistent timeline must go through either $A$
+and $B$ or through $A$ and $C$.
+
+
+% \amr{
+%   Let’s have a geometric representation of spaces:
+% - A + B means putting A next to B
+% - A * B means putting A and B on two perpendicular axes and filling
+% the square (volume) between them
+% All the combinators would indeed have a natural action and if we have
+% a few nice pictures it would be great. What do you think? }
+
+% \newcommand{\graphzero}{}
+% \newcommand{\graphone}{\ensuremath{\bullet}}
+% \newcommand{\graphplus}[2]{\node (top) {#1}; \node [below of=top] {#2};}
+
+% \begin{center}
+% \begin{tikzpicture} %% [declare function = {plus(\x,\y) = \node (top){\x}; \node [below of=top] {\y};}]
+% \node (x) {\graphone};
+% \node (y) {\graphone};
+% %% {plus(\x,\y)}
+% \end{tikzpicture}
+% \end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data III: Reversible Programs between Reversible Programs}
