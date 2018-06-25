@@ -12,11 +12,26 @@
 \usepackage{multicol}
 \usepackage{amsmath}
 \usepackage{stmaryrd}
+\usepackage{proof}
 \usetikzlibrary{quotes,fit,positioning}
 \tikzset{>=latex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Macros
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\newcommand{\inkscape}[2][1.5]{
+\begin{center}
+\scalebox{#1}{
+\includegraphics{inkscape/#2}
+}
+\end{center}
+}
 
 \newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
 \newcommand{\mm}{\texttt{\textminus}}
@@ -1082,7 +1097,7 @@ be displayed as vertical stacks (only). Because I think that
 swap* is too hard to justify in this notation. Of course,
 if we could do things in 3D and $*$ was displayed using
 (say) depth, that would be different again.}
- 
+
 This idea leads to a resource-based interpretation of types as
 \emph{possible events} and of the values as \emph{consistent timelines
   of events} as explained below. The event $1$ is trivial, and the
@@ -1097,7 +1112,7 @@ such stacks laid next to each other. Composing further, the type
 $((2 + 2) * (2 + 2)) + ((2 + 2) * (2 + 2))$ is built by stacking the
 last two diagrams as shown below on the left:
 \begin{center}
-\hfill 
+\hfill
 \includegraphics[scale=0.3]{images/tall-tl-1}
 ~
 \includegraphics[scale=0.3]{images/tall-tl-2}
@@ -1111,9 +1126,9 @@ evaluation of  a program, we need to reason about the equivalence of
 different diagrams. Consider for example, the two diagrams below:
 
 \begin{center}
-\hfill 
+\hfill
 \includegraphics[scale=0.3]{images/distrib-1}
-\qquad \qquad \qquad \qquad \qquad 
+\qquad \qquad \qquad \qquad \qquad
 \includegraphics[scale=0.3]{images/distrib-2}
 \hfill (**)
 \end{center}
@@ -1145,7 +1160,7 @@ and $B$ or through $A$ and $C$.
 
 Other than distributity, $\Pi$ combinators simply allow us to shuffle
 the components of a stack around as well as shuffle the positions of
-components in the plane. 
+components in the plane.
 
 % \amr{
 %   Let’s have a geometric representation of spaces:
@@ -1166,6 +1181,563 @@ components in the plane.
 % %% {plus(\x,\y)}
 % \end{tikzpicture}
 % \end{center}
+
+\begin{definition}{Primitive operators of ~\ensuremath{\Pi } }
+\label{def:primitives-langRev}
+
+\[\begin{array}{rrcll}
+ \mathit{zeroe} :& 0 + b &\leftrightarrow & b &: \mathit{zeroi} \\
+ \mathit{swap}^{+} :& b_1 + b_2 &\leftrightarrow & b_2 + b_1 &: \mathit{swap}^{+} \\
+ \mathit{assocl}^{+} :& b_1 + (b_2 + b_3) &\leftrightarrow & (b_1 + b_2) + b_3 &: \mathit{assocr}^{+} \\
+ \mathit{unite} :& 1 \times b &\leftrightarrow & b &: \mathit{uniti} \\
+ \mathit{swap}^{\times } :& b_1 \times b_2 &\leftrightarrow & b_2 \times b_1 &: \mathit{swap}^{\times } \\
+ \mathit{assocl}^{\times } :& b_1 \times (b_2 \times b_3) &\leftrightarrow & (b_1 \times b_2) \times b_3 &: \mathit{assocr}^{\times } \\
+ \mathit{distrib }_{0} :& 0 \times b &\leftrightarrow & 0 &: \mathit{factor }_{0} \\
+ \mathit{distrib } :& (b_1 + b_2) \times b_3 &\leftrightarrow & (b_1 \times b_3) + (b_2 \times b_3) &: \mathit{factor } \\
+ \end{array}\]
+%subcode source isomorphisms.tex:427
+
+\end{definition}
+
+
+Each line of this table is to be read as the definition of one or two
+operators. For example, corresponding to the \textit{identity of
+  \ensuremath{\times}} isomorphism (\ensuremath{1\times b\leftrightarrow b}) we have the two operators
+\ensuremath{\mathit{unite}:1\times b\leftrightarrow b} (reading the isomorphism from left to right) and
+\ensuremath{\mathit{uniti}:b\leftrightarrow 1\times b} (reading the isomorphism from right to
+left). These operators are inverses of each other.  Each of the two
+cases of commutativity defines one operator that is its own inverse.
+
+Having defined primitive operators, we need some means of composing
+them. We construct the composition combinators out of the closure
+conditions for isomorphisms.
+
+\begin{definition}{Composition in \ensuremath{\Pi } }
+$$
+\infer{ \mathit{id} : b \leftrightarrow b}{
+	 ~
+}
+\quad
+\infer{ \mathit{sym} ~c : b_2 \leftrightarrow b_1}{
+	 c : b_1 \leftrightarrow b_2
+}
+\quad
+\infer{ c_1\fatsemi c_2 : b_1 \leftrightarrow b_3}{
+	 c_1 : b_1 \leftrightarrow b_2
+	&
+	 c_2 : b_2 \leftrightarrow b_3
+}
+$$
+$$
+\infer{ c_1 + c_2 : b_1 + b_2 \leftrightarrow b_3 + b_4}{
+	 c_1 : b_1 \leftrightarrow b_3
+	&
+	 c_2 : b_2 \leftrightarrow b_4
+}
+\quad
+\infer{ c_1 \times c_2 : b_1 \times b_2 \leftrightarrow b_3 \times b_4}{
+	 c_1 : b_1 \leftrightarrow b_3
+	&
+	 c_2 : b_2 \leftrightarrow b_4
+}
+$$
+%subcode source isomorphisms.tex:462
+\end{definition}
+
+Thus we have program constructs that witness reflexivity \ensuremath{\mathit{id}},
+symmetry \ensuremath{\mathit{sym}}, and transitivity~\ensuremath{\fatsemi} and two parallel
+composition combinators, one for sums~\ensuremath{+} and one for
+pairs~\ensuremath{\times}.
+
+
+\begin{definition}{(Syntax of \ensuremath{\Pi })}
+\label{def:langRev}
+We collect our types, values, and combinators, to get the full language
+definition.
+\[\begin{array}{rclr}
+ \mathit{value} ~\mathit{types}, b &::=& 0 ~|~ 1 ~|~ b+b ~|~ b\times b \\
+ \mathit{values}, v &::=& () ~|~ \mathit{left} ~v ~|~ \mathit{right} ~v ~|~ (v,v) \\
+ \\
+ \mathit{combinator} ~\mathit{types}, t &::=& b \leftrightarrow b \\
+ \mathit{isomorphisms}, \mathit{iso} &::=& \mathit{zeroe} ~|~ \mathit{zeroi} ~|~ \mathit{swap}^{+} ~|~ \mathit{assocl}^{+} ~|~ \mathit{assocr}^{+} \\
+ & ~|~ & \mathit{unite} ~|~ \mathit{uniti} ~|~ \mathit{swap}^{\times } ~|~ \mathit{assocl}^{\times } ~|~ \mathit{assocr}^{\times } \\
+ & ~|~ & \mathit{distrib }_{0} ~|~ \mathit{factor }_{0} ~|~ \mathit{distrib } ~|~ \mathit{factor } \\
+ \mathit{combinators}, c &::=& \mathit{iso} ~|~ \mathit{id} ~|~ \mathit{sym} ~c ~|~ c \fatsemi c ~|~ c + c ~|~ c \times c \\
+ \end{array}\]
+%subcode source isomorphisms.tex:483
+\end{definition}
+
+\begin{definition}{Operational Semantics for \ensuremath{\Pi }. }
+\label{def:operational-langRev}
+Given a program \ensuremath{c : b_1 \leftrightarrow b_2} in \ensuremath{\Pi }, we can run it by supplying
+it with a value \ensuremath{ v_1 : b_1}. The evaluation rules \ensuremath{c ~v_1 \mapsto v_2} are given below.
+
+Additive fragment:
+
+\[\begin{array}{rlcl}
+ \mathit{zeroe} & (\mathit{right} ~v) &\mapsto & v \\
+ \mathit{zeroi} & v &\mapsto & \mathit{right} ~v \\
+ \mathit{swap}^{+} & (\mathit{left} ~v) &\mapsto & \mathit{right} ~v \\
+ \mathit{swap}^{+} & (\mathit{right} ~v) &\mapsto & \mathit{left} ~v \\
+ \mathit{assocl}^{+} & (\mathit{left} ~v_1) &\mapsto & \mathit{left} ~(\mathit{left} ~v_1) \\
+ \mathit{assocl}^{+} & (\mathit{right} ~(\mathit{left} ~v_2)) &\mapsto & \mathit{left} ~(\mathit{right} ~v_2) \\
+ \mathit{assocl}^{+} & (\mathit{right} ~(\mathit{right} ~v_3)) &\mapsto & \mathit{right} ~v_3 \\
+ \mathit{assocr}^{+} & (\mathit{left} ~(\mathit{left} ~v_1)) &\mapsto & \mathit{left} ~v_1 \\
+ \mathit{assocr}^{+} & (\mathit{left} ~(\mathit{right} ~v_2)) &\mapsto & \mathit{right} ~(\mathit{left} ~v_2) \\
+ \mathit{assocr}^{+} & (\mathit{right} ~v_3) &\mapsto & \mathit{right} ~(\mathit{right} ~v_3) \\
+ \end{array}\]
+%subcode source isomorphisms.tex:504
+
+Multiplicative fragment:
+
+\[\begin{array}{rlcl}
+ \mathit{unite} & ((), v) &\mapsto & v \\
+ \mathit{uniti} & v &\mapsto & ((), v) \\
+ \mathit{swap}^{\times } & (v_1, v_2) &\mapsto & (v_2, v_1) \\
+ \mathit{assocl}^{\times } & (v_1, (v_2, v_3)) &\mapsto & ((v_1, v_2), v_3) \\
+ \mathit{assocr}^{\times } & ((v_1, v_2), v_3) &\mapsto & (v_1, (v_2, v_3)) \\
+ \end{array}\]
+%subcode source isomorphisms.tex:514
+
+Distributivity and factoring:
+
+\[\begin{array}{rlcl}
+ \mathit{distrib } & (\mathit{left} ~v_1, v_3) &\mapsto & \mathit{left} ~(v_1, v_3) \\
+ \mathit{distrib } & (\mathit{right} ~v_2, v_3) &\mapsto & \mathit{right} ~(v_2, v_3) \\
+ \mathit{factor } & (\mathit{left} ~(v_1, v_3)) &\mapsto & (\mathit{left} ~v_1, v_3) \\
+ \mathit{factor } & (\mathit{right} ~(v_2, v_3)) &\mapsto & (\mathit{right} ~v_2, v_3) \\
+ \end{array}\]
+%subcode source isomorphisms.tex:523
+
+The evaluation rules of the composition combinators are given below:
+
+$$
+\infer{ \mathit{id} ~v \mapsto v}{
+	 ~
+}
+\quad
+\infer{ (\mathit{sym} ~c) ~v_1 \mapsto v_2}{
+	 c{\mathit{^{\dagger} }} v_1 \mapsto v_2
+}
+\quad
+\infer{ (c_1\fatsemi c_2) ~v_1 \mapsto v_2}{
+	 c_1 ~v_1 \mapsto v
+	&
+	 c_2 ~v \mapsto v_2
+}
+$$
+$$
+\infer{ (c_1 + c_2) ~(\mathit{left} ~v_1) \mapsto \mathit{left} ~v_2}{
+	 c_1 ~v_1 \mapsto v_2
+}
+\quad
+\infer{ (c_1 + c_2) ~(\mathit{right} ~v_1) \mapsto \mathit{right} ~v_2}{
+	 c_2 ~v_1 \mapsto v_2
+}
+$$
+$$
+\infer{ (c_1 \times c_2) ~(v_1, v_2) \mapsto (v_3, v_4)}{
+	 c_1 ~v_1 \mapsto v_3
+	&
+	 c_2 ~v_2 \mapsto v_4
+}
+$$
+%subcode source isomorphisms.tex:546
+
+\end{definition}
+
+Since there are no values that have the type \ensuremath{0}, the reductions for
+the combinators \ensuremath{\mathit{zeroe}}, \ensuremath{\mathit{zeroi}}, \ensuremath{\mathit{distrib }_{0}} and \ensuremath{\mathit{factor }_{0}}
+omit the impossible cases. Also, the semantics of \ensuremath{\mathit{sym} ~c} are
+defined in terms of the adjoint of \ensuremath{c} (denoted by \ensuremath{c^\mathit{^{\dagger} }}),
+which we formalize below.
+
+\begin{definition}[Adjoints, \ensuremath{c^\mathit{^{\dagger} }}]
+ The adjoint of a combinator \ensuremath{c} is defined by \ensuremath{c^\mathit{^{\dagger} }} as follows:
+
+  \begin{itemize}
+  \item For primitive isomophisms \ensuremath{c}, \ensuremath{c^\mathit{^{\dagger} }} is given by its
+    isomorphic inverse operator from the table in Definition
+    \ref{def:primitives-langRev}.
+
+  \item \ensuremath{(c_1 \times c_2)^\mathit{^{\dagger} } = c_1^\mathit{^{\dagger} } \times c_2^\mathit{^{\dagger} }}
+
+  \item \ensuremath{(c_1 + c_2)^\mathit{^{\dagger} } = c_1^\mathit{^{\dagger} } + c_2^\mathit{^{\dagger} }}
+
+  \item \ensuremath{(c_1\fatsemi c_2)^\mathit{^{\dagger} } = c_2^\mathit{^{\dagger} } \fatsemi c_1^\mathit{^{\dagger} }}. (Note that the
+    order of combinators has been reversed).
+
+  \end{itemize}
+
+\end{definition}
+
+\begin{definition}[Observational Equivalence. \ensuremath{c_1=c_2}]
+\label{def:pi-eqv}
+  Combinators \ensuremath{c_1} and \ensuremath{c_2}, where \ensuremath{c_1 : b_1 \leftrightarrow b_2} and
+  \ensuremath{c_2:b_1\leftrightarrow b_2}, are observationally equivalent,\ensuremath{c_1=c_2}, iff
+
+  \ensuremath{\forall  ~v_1:b_1, v_2 : b_2. ~~ c_1 ~v_1 \mapsto v_2 \Longleftrightarrow c_2 ~v_1 \mapsto v_2}.
+\end{definition}
+
+\begin{proposition}{Canonical Isomorphism.}
+  For any type \ensuremath{b} there exists the isomorphism \ensuremath{b \leftrightarrow b^{|b|}}.
+  \begin{proof}
+    The fact that such an isomorphism exists is evident from the
+    definition of size and what it means for two types to be
+    isomorphic. While many equivalent constructions are possible
+    for any type \ensuremath{b}, one such construction is given by \ensuremath{\lbrack\!\lbrack b\rbrack\!\rbrack}:
+
+\[\begin{array}{rclr}
+ \lbrack\!\lbrack 0 \rbrack\!\rbrack & = & \mathit{id} \\
+ \lbrack\!\lbrack 1 \rbrack\!\rbrack & = & \mathit{id} \\
+ \lbrack\!\lbrack 1+b \rbrack\!\rbrack & = & \mathit{id} + \lbrack\!\lbrack b \rbrack\!\rbrack \\
+ \lbrack\!\lbrack (b_1+b_2)+b_3 \rbrack\!\rbrack & = & \mathit{assocr}^{+} \fatsemi \lbrack\!\lbrack b_1+(b_2+b_3) \rbrack\!\rbrack \\
+ \lbrack\!\lbrack b_1+b_2 \rbrack\!\rbrack & = & ( \lbrack\!\lbrack b_1 \rbrack\!\rbrack + \mathit{id}) \fatsemi \lbrack\!\lbrack b_1^{|b_1|} + b_2 \rbrack\!\rbrack \\
+ \lbrack\!\lbrack (b_1\times b_2)\times b_3 \rbrack\!\rbrack & = & \mathit{assocr}^{\times } \fatsemi \lbrack\!\lbrack b_1\times (b_2\times b_3) \rbrack\!\rbrack \\
+ \lbrack\!\lbrack (b_1+b_2)\times b_3 \rbrack\!\rbrack & = & \mathit{distrib } \fatsemi \lbrack\!\lbrack b_1\times b_3+b_2\times b_3 \rbrack\!\rbrack \\
+ \end{array}\]
+%subcode source isomorphisms.tex:598
+
+  \end{proof}
+\end{proposition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{A Graphical Language for \ensuremath{\Pi } }
+
+Combinators of \ensuremath{\Pi } can be written in terms of the operators
+described in definition \ref{def:langRev} or via a graphical language
+similar in spirit to those developed for Geometry of Interaction
+\cite{DBLP:conf/popl/Mackie95} and string diagrams for category theory
+\cite{selinger-graphical}. Modulo some conventions and shorthand we
+describe here, the wiring diagrams are equivalent to the operator
+based (syntactic) description of programs.  \ensuremath{\Pi } combinators
+expressed in this graphical language look like ``wiring
+diagrams''. Values take the form of ``particles'' that flow along the
+wires. Computation is expressed by the flow of particles.
+
+
+\begin{itemize}
+\item
+The simplest sort of diagram is the \ensuremath{\mathit{id} : b \leftrightarrow b} combinator which
+is simply represented as a wire labeled by its type \ensuremath{b}. In more
+complex diagrams, if the type of a wire is obvious from the context,
+it may be omitted.
+
+\inkscape{b-wire.pdf}
+
+\noindent
+Values flow from left to right in the graphical language of
+\ensuremath{\Pi }.  When tracing a computation, one might imagine a value
+\ensuremath{v} of type \ensuremath{b} on the wire, as shown below.
+
+\inkscape{b-wire-value.pdf}
+
+\item
+The product type \ensuremath{b_1\times b_2} may be represented both as one wire
+labeled \ensuremath{b_1\times b_2} or by two parallel wires labeled \ensuremath{b_1} and
+\ensuremath{b_2}. Both representations may be used interchangeably.
+
+\begin{multicols}{2}
+\inkscape{product-one-wire.pdf}
+\inkscape{product-two-wires.pdf}
+\end{multicols}
+
+When tracing execution using particles, one should think of one
+particle on each wire or alternatively as in folklore in the
+literature on monoidal categories as a ``wave.''
+
+\begin{multicols}{2}
+\inkscape{product-one-wire-value.pdf}
+\inkscape{product-two-wires-value.pdf}
+\end{multicols}
+
+
+\item
+Sum types may similarly be represented using using parallel wires with
+a \ensuremath{+} operator between them.
+
+\begin{multicols}{2}
+\inkscape{sum-one-wire.pdf}
+\inkscape{sum-two-wires.pdf}
+\end{multicols}
+
+\noindent
+When tracing the execution of \ensuremath{b_1+b_2} represented by one
+wire, one can think of a value of the form \ensuremath{\mathit{left} ~v_1} or \ensuremath{\mathit{right} ~v_2}
+as flowing on the wire, where \ensuremath{v_1:b_1} and \ensuremath{v_2:b_2}.  When tracing
+the execution of two additive wires, a value can reside on only one of
+the two wires.
+
+\begin{multicols}{2}
+\inkscape{sum-two-wires-left-value.pdf}
+\inkscape{sum-two-wires-right-value.pdf}
+\end{multicols}
+
+
+
+
+\item
+When representing complex types like \ensuremath{(b_1\times b_2)+b_3} some visual
+grouping of the wires may be done to aid readability. The exact type
+however will always be clarified by the context of the diagram.
+
+\inkscape{complex-type-ambiguity.pdf}
+
+\item
+Associativity is entirely skipped in the graphical language. Hence
+three parallel wires may be inferred as \ensuremath{b_1\times (b_2\times b_3)} or
+\ensuremath{(b_1\times b_2)\times b_3}, based on the context. This is much like handling of
+associativity in the graphical representations of categories.
+
+
+\inkscape{assoc.pdf}
+
+
+\item
+Commutativity is represented by crisscrossing wires.
+
+\begin{multicols}{2}
+\inkscape{swap_times.pdf}
+\inkscape{swap_plus.pdf}
+\end{multicols}
+
+
+\noindent
+When tracing the execution of \ensuremath{b_1+b_2} represented by one
+wire, one can think of a value of the form \ensuremath{\mathit{left} ~v_1} or \ensuremath{\mathit{right} ~v_2}
+as flowing on the wire, where \ensuremath{v_1:b_1} and \ensuremath{v_2:b_2}.  By visually
+tracking the flow of particles on the wires, one can verify that the
+expected types for commutativity are satisfied.
+
+\begin{multicols}{2}
+\inkscape{swap_times_value.pdf}
+\inkscape{swap_plus_value.pdf}
+\end{multicols}
+
+\item
+The morphisms that witness that \ensuremath{0} and \ensuremath{1} are the additive and
+  multiplicative units are represented as shown below. Note that since there
+  is no value of type 0, there can be no particle on a wire of type \ensuremath{0}.
+  Also since the monoidal units can be freely introduced and eliminated, in
+  many diagrams they are omitted and dealt with explicitly only when they are
+  of special interest.
+
+
+\begin{multicols}{2}
+\inkscape{uniti.pdf}
+\inkscape{unite.pdf}
+\end{multicols}
+
+\begin{multicols}{2}
+\inkscape{zeroi.pdf}
+\inkscape{zeroe.pdf}
+\end{multicols}
+
+\item
+Distributivity and factoring are represented using the dual
+boxes shown below:
+
+\begin{multicols}{2}
+\inkscape{dist.pdf}
+\inkscape{factor.pdf}
+\end{multicols}
+
+Distributivity and factoring are interesting because they represent
+interactions between sum and pair types. Distributivity should
+essentially be thought of as a multiplexer that redirects the flow of
+\ensuremath{v:b} depending on what value inhabits the type \ensuremath{b_1+b_2}, as shown
+below.
+
+\begin{multicols}{2}
+\inkscape{dist-wire-value1.pdf}
+\inkscape{dist-wire-value2.pdf}
+\end{multicols}
+
+\noindent
+Factoring is the corresponding adjoint operation.
+
+\begin{multicols}{2}
+\inkscape{factor-wire-value1.pdf}
+\inkscape{factor-wire-value2.pdf}
+\end{multicols}
+
+
+\item Combinators can be composed in series (\ensuremath{c_1 \fatsemi c_2}) or
+  parallel. Sequential (series) composition corresponds to connecting
+  the output of one combinator to the input of the next.
+
+\inkscape{c1c2_seq.pdf}
+
+There are two forms of parallel composition -- combinators
+  can be combined additively \ensuremath{c_1+ c_2} (shown on the left) or
+  multiplicatively \ensuremath{c_1\times c_2} (shown on the right).
+
+\begin{multicols}{2}
+\inkscape{c1c2_par_sum.pdf}
+\inkscape{c1c2_par_times.pdf}
+\end{multicols}
+
+
+
+\end{itemize}
+
+\noindent
+\textit{Example.} As an example consider the wiring diagram
+of the combinator \ensuremath{c} below:
+
+\ensuremath{c : b \times (1+1) \leftrightarrow b + b}
+
+\ensuremath{c = \mathit{swap}^{\times } \fatsemi \mathit{distrib } \fatsemi (\mathit{unite} + \mathit{unite})}
+
+
+\begin{center}
+\scalebox{1.5}{
+%%subcode-line{pdfimage}[diagrams/example1-crop.pdf]
+\includegraphics{inkscape/example1.pdf}
+}
+\end{center}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Expressing Programs with \ensuremath{\Pi } }
+\label{sec:langRev-examples}
+
+In this section we introduce programming in \ensuremath{\Pi } through
+several simple examples. We subsequently discuss the expressiveness of
+the language and discuss various properties.
+
+\label{examples}
+
+\paragraph*{Booleans}
+Let us start with encoding booleans. We use the type \ensuremath{1+1} to
+represent booleans with \ensuremath{\mathit{left} ~()} representing \ensuremath{\mathit{true}} and
+\ensuremath{\mathit{right}~()} representing \ensuremath{\mathit{false}}.
+Boolean negation is straightforward to define:
+
+\ensuremath{\mathit{not} : \mathit{bool} \leftrightarrow \mathit{bool}}
+
+\ensuremath{\mathit{not} = \mathit{swap}^{+}}
+
+\noindent
+It is easy to verify that \ensuremath{\mathit{not}} changes \ensuremath{\mathit{true}} to \ensuremath{\mathit{false}} and
+vice versa.
+
+\paragraph*{Bit Vectors.}
+We can represent $n$-bit words using an n-ary product of
+\ensuremath{\mathit{bool}}s. For example, we can represent a 3-bit word, \ensuremath{\mathit{word}_3},
+using the type \ensuremath{\mathit{bool}\times (\mathit{bool}\times \mathit{bool})}.  We can perform various
+operations on these 3-bit words using combinators in \ensuremath{\Pi }. For
+instance the bitwise \ensuremath{\mathit{not}} operation is the parallel composition of
+three \ensuremath{\mathit{not}} operations:
+
+\ensuremath{\mathit{not}_{\mathit{word}_3} :: \mathit{word}_3 \leftrightarrow \mathit{word}_3}
+
+\ensuremath{\mathit{not}_{\mathit{word}_3} = \mathit{not} \times (\mathit{not} \times \mathit{not})}
+
+\noindent We can express a 3-bit word reversal operation as follows:
+
+\ensuremath{\mathit{reverse} : \mathit{word}_3 \leftrightarrow \mathit{word}_3}
+
+\ensuremath{\mathit{reverse} = \mathit{swap}^{\times } \fatsemi (\mathit{swap}^{\times } \times \mathit{id})~ \fatsemi \mathit{assocr}^{\times }}
+
+\noindent We can check that \ensuremath{\mathit{reverse}} does the right thing by
+applying it to a value \ensuremath{(v_1, (v_2, v_3))} and writing out the full
+derivation tree of the reduction.  The combinator \ensuremath{\mathit{reverse}}, like
+many others we will see in this thesis, is formed by sequentially
+composing several simpler combinators. Instead of presenting the
+operation of \ensuremath{\mathit{reverse}} as a derivation tree, it is easier (purely
+for presentation reasons) to flatten the tree into a sequence of
+reductions as caused by each component. Such a sequence of reductions
+is given below:
+\[\begin{array}{rlr}
+ & (v_1, (v_2, v_3)) \\
+ \mathit{swap}^{\times } & ((v_2, v_3), v_1) \\
+ \mathit{swap}^{\times } \times \mathit{id} & ((v_3, v_2), v_1) \\
+ \mathit{assocr}^{\times } & (v_3, (v_2, v_1)) \\
+ \end{array}\]
+%subcode source isomorphisms.tex:979
+
+\noindent On the first line is the initial value. On each subsequent
+line is a fragment of the \ensuremath{\mathit{reverse}} combinator and the value that
+results from applying this combinator to the value on the previous
+line. For example, \ensuremath{\mathit{swap}^{\times }} transforms \ensuremath{(v_1, (v_2, v_3))} to
+\ensuremath{((v_2,v_3),v_1)}.  On the last line we see the expected result with
+the bits in reverse order.
+
+We can also draw out the graphical representation of the 3-bit reverse
+combinator. In the graphical representation, it is clear that the
+combinator achieves the required shuffling.
+
+\inkscape{reverse-3-bit.pdf}
+
+\paragraph*{Conditionals.}
+Even though \ensuremath{\Pi } lacks conditional expressions, they are
+expressible using the distributivity and factoring laws. The
+diagrammatic representation of \ensuremath{\mathit{distrib }} shows that it redirects the flow
+of a value \ensuremath{v:b} based on the value of another one of type
+\ensuremath{b_1+b_2}. If we choose \ensuremath{1+1} to be \ensuremath{\mathit{bool}} and apply either
+\ensuremath{c_1:b\leftrightarrow b} or \ensuremath{c_2:b\leftrightarrow b} to the value \ensuremath{v}, then we essentially
+have an `if' expression.
+
+\ensuremath{\mathit{if}_{c_1,c_2} : \mathit{bool} \times b \leftrightarrow \mathit{bool} \times b}
+
+\ensuremath{\mathit{if}_{c_1,c_2} = \mathit{distrib } \fatsemi ((\mathit{id} \times c_1) + (\mathit{id} \times c_2)) \fatsemi \mathit{factor }}
+
+
+\inkscape{if-c1-c2.pdf}
+
+
+The diagram above shows the input value of type \ensuremath{(1+1)\times b} processed
+by the distribute operator \ensuremath{\mathit{distrib }}, which converts it into a value of
+type \ensuremath{(1\times b)+(1\times b)}. In the \ensuremath{\mathit{left}} branch, which corresponds to the
+case when the boolean is \ensuremath{\mathit{true}} (i.e. the value was \ensuremath{\mathit{left} ~()}),
+the combinator~\ensuremath{c_1} is applied to the value of type~\ensuremath{b}. The right
+branch which corresponds to the boolean being \ensuremath{\mathit{false}} passes
+the value of type \ensuremath{b} through the combinator \ensuremath{c_2}.
+
+\paragraph*{Logic Gates}
+There are several universal primitives for conventional (irreversible)
+hardware circuits, such as \ensuremath{\mathit{nand}} and \ensuremath{\mathit{fanout}}. In the case
+of reversible hardware circuits, the canonical universal primitive is
+the Toffoli gate~\cite{Toffoli:1980}. The Toffoli gate takes three
+boolean inputs: if the first two inputs are \ensuremath{\mathit{true}} then the third
+bit is negated. In a traditional language, the Toffoli gate would be
+most conveniently expressed as a conditional expression like:
+
+\noindent
+\ensuremath{ \mathit{toffoli}(v_1,v_2,v_3) = \mathit{if} ~(v_1 ~\mathit{and} ~v_2) ~\mathit{then} ~(v_1, v_2, \mathit{not}(v_3)) ~\mathit{else} ~(v_1, v_2, v_3)}
+
+We will derive Toffoli gate in \ensuremath{\Pi } by first deriving a simpler
+logic gate called \ensuremath{\mathit{cnot}}.  Consider a one-armed version, \ensuremath{\mathit{if}_c},
+of the conditional derived above. If the \ensuremath{\mathit{bool}} is
+\ensuremath{\mathit{true}}, the value of type \ensuremath{b} is modified by the operator \ensuremath{c}.
+
+\begin{center}
+\scalebox{1.5}{
+%%subcode-line{pdfimage}[diagrams/if_c.pdf]
+\includegraphics{inkscape/cnot.pdf}
+}
+\end{center}
+
+
+By choosing \ensuremath{b} to be \ensuremath{\mathit{bool}} and \ensuremath{c} to be \ensuremath{\mathit{not}}, we have the
+combinator \ensuremath{\mathit{if}_{\mathit{not}} : \mathit{bool}\times \mathit{bool}\leftrightarrow \mathit{bool}\times \mathit{bool}} which negates its
+second argument if the first argument is \ensuremath{\mathit{true}}. This gate
+\ensuremath{\mathit{if}_{\mathit{not}}} is often referred to as the \ensuremath{\mathit{cnot}} gate\cite{Toffoli:1980}.
+
+If we iterate this construction once more, the resulting combinator
+\ensuremath{\mathit{if}_{\mathit{cnot}}} has type \ensuremath{\mathit{bool}\times (\mathit{bool}\times \mathit{bool})\leftrightarrow \mathit{bool}\times (\mathit{bool}\times \mathit{bool})}. The
+resulting gate checks the first argument and if it is \ensuremath{\mathit{true}},
+proceeds to check the second argument. If that is also \ensuremath{\mathit{true}} then
+it will negate the third argument. Thus \ensuremath{\mathit{if}_{\mathit{cnot}}} is the required
+Toffoli gate.
+
+\begin{center}
+\scalebox{1.6}{
+\includegraphics{inkscape/toffoli.pdf}
+}
+\end{center}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data III: Reversible Programs between Reversible Programs}
@@ -3311,4 +3883,3 @@ other programming features such as polymorphism, higher-order maps and
 inductive definitions over recursive datatypes without explicitly managing
 \ctr{Ctxt} values as we did in the \ctr{treeWalk} program.
 }
-
