@@ -1370,6 +1370,46 @@ words in these systems give rise to commutative diagrams. The
 %%%%%%%%%
 \subsection{A Language of Equivalences between Type Equivalences}
 
+As motivated in the previous section, the equivalences between type
+equivalences are perfectly modeled by the coherence conditions of weak
+Rig Groupoids. Syntactically, we take the easiest way there: simply
+make every coherence isomorphism into a programming construct. These
+constructs are collected in several figures (Fig.~\ref{figj} to
+Fig.~\ref{figa}) and are discussed next.
+
+Conveniently, the various coherence conditions can be naturally
+grouped into ``related'' laws.  Each group basically captures the
+interactions between compositions of level-1 $\Pi$ combinators.
+
+\begin{figure}[t]
+Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, $c_3 : t_1 \leftrightarrow t_2$, and $c_4 : t_3 \leftrightarrow t_4$. \\
+Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_1 \leftrightarrow t_3$, and $a_4 : t_2 \leftrightarrow t_4$.
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+\Rule{}
+  {c_1 \Leftrightarrow c_3 \quad c_2 \Leftrightarrow c_4}
+  {c_1 \oplus c_2 \Leftrightarrow c_3 \oplus c_4}
+  {}
+\qquad
+\Rule{}
+  {c_1 \Leftrightarrow c_3 \quad c_2 \Leftrightarrow c_4}
+  {c_1 \otimes c_2 \Leftrightarrow c_3 \otimes c_4}
+  {}
+\\
+  {(a_1 \odot a_3) \oplus (a_2 \odot a_4) \Leftrightarrow (a_1 \oplus a_2) \odot (a_3 \oplus a_4)}
+\\
+  {(a_1 \odot a_3) \otimes (a_2 \odot a_4) \Leftrightarrow (a_1 \otimes a_2) \odot (a_3 \otimes a_4)}
+\end{array}\]
+\caption{\label{fige}Signatures of level-2 $\Pi$-combinators: functors}
+\end{figure}
+
+Starting with the simplest constructions, the first two constructs in
+Fig.~\ref{fige} are the level-2 analogs of $+$ and $*$, which respectively
+model combinator-level choice composition and parallel composition (of
+equivalences).  These allow us to ``build up'' larger equivalences from smaller
+ones.  The next two express that both of these composition operators distribute
+over sequential composition $\odot$ (and vice versa).
+
 \begin{figure}[t]
 Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 : t_3 \leftrightarrow t_4$:
 \[\def\arraystretch{1.3}
@@ -1390,17 +1430,6 @@ Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 
 \end{array}\]
 \caption{\label{figj}Signatures of level-2 $\Pi$-combinators: associativity}
 \end{figure}
-
-As motivated in the previous section, the equivalences between type
-equivalences are perfectly modeled by the coherence conditions of weak
-Rig Groupoids. Syntactically, we take the easiest way there: simply
-make every coherence isomorphism into a programming construct. These
-constructs are collected in several figures (Fig.~\ref{figj} to
-Fig.~\ref{figa}) and are discussed next.
-
-Conveniently, the various coherence conditions can be naturally
-grouped into ``related'' laws.  Each group basically captures the
-interactions between compositions of level-1 $\Pi$ combinators.
 
 The constructs in Fig.~\ref{figj} capture the informal idea that all
 the different ways of associating programs are equivalent. The first
@@ -1601,6 +1630,10 @@ Let $c, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c', c'' : t_3 \leftrightar
 \quad
   {!\, c \odot c \Leftrightarrow \idc}
 \\
+  {\idc \oplus \, \idc \, \Leftrightarrow \idc}
+\qquad
+  {\idc \otimes \, \idc \, \Leftrightarrow \idc}
+\\
   {c \Leftrightarrow c}
 \quad
 \Rule{}
@@ -1708,43 +1741,6 @@ are equivalent, with the second saying that the reverse (i.e.
 the results of applying $!$\~) also gives equivalent programs.
 The last two say the same but for the multiplicative structure.
 
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\end{tikzpicture}
-\end{center}
-
-\begin{figure}[t]
-Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, $c_3 : t_1 \leftrightarrow t_2$, and $c_4 : t_3 \leftrightarrow t_4$. \\
-Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_1 \leftrightarrow t_3$, and $a_4 : t_2 \leftrightarrow t_4$.
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-\Rule{}
-  {c_1 \Leftrightarrow c_3 \quad c_2 \Leftrightarrow c_4}
-  {c_1 \oplus c_2 \Leftrightarrow c_3 \oplus c_4}
-  {}
-\qquad
-\Rule{}
-  {c_1 \Leftrightarrow c_3 \quad c_2 \Leftrightarrow c_4}
-  {c_1 \otimes c_2 \Leftrightarrow c_3 \otimes c_4}
-  {}
-\\
-  {\idc \oplus \, \idc \, \Leftrightarrow \idc}
-\qquad
-  {\idc \otimes \, \idc \, \Leftrightarrow \idc}
-\\
-  {(a_1 \odot a_3) \oplus (a_2 \odot a_4) \Leftrightarrow (a_1 \oplus a_2) \odot (a_3 \oplus a_4)}
-\\
-  {(a_1 \odot a_3) \otimes (a_2 \odot a_4) \Leftrightarrow (a_1 \otimes a_2) \odot (a_3 \otimes a_4)}
-\end{array}\]
-\caption{\label{fige}Signatures of level-2 $\Pi$-combinators: functors}
-\end{figure}
-
-The constructs in Fig.~\ref{fige} \ldots
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\end{tikzpicture}
-\end{center}
-
 \begin{figure}[t]
 \[\def\arraystretch{1.3}
 \begin{array}{c}
@@ -1755,11 +1751,8 @@ The constructs in Fig.~\ref{fige} \ldots
 \caption{\label{figd}Signatures of level-2 $\Pi$-combinators: unit and associativity}
 \end{figure}
 
-The constructs in Fig.~\ref{figd} \ldots
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\end{tikzpicture}
-\end{center}
+The constructs in Fig.~\ref{figd} express how unit elimination ``in the middle''
+can be expressed either as operating on the right or, (after re-association) on the left.
 
 
 \begin{figure}[t]
@@ -1791,11 +1784,8 @@ Let $c : t_1 \leftrightarrow t_2$:
 \caption{\label{figc}Signatures of level-2 $\Pi$-combinators: zero}
 \end{figure}
 
-The constructs in Fig.~\ref{figc} \ldots
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\end{tikzpicture}
-\end{center}
+The constructs in Fig.~\ref{figc} are significantly more subtle.
+\jc{WAVEFRONT}
 
 \begin{figure}[t]
 \[\def\arraystretch{1.3}
