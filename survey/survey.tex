@@ -1699,7 +1699,7 @@ the value of type \ensuremath{b} through the combinator \ensuremath{c_2}.
 There are several universal primitives for conventional (irreversible)
 hardware circuits, such as \ensuremath{\mathit{nand}} and \ensuremath{\mathit{fanout}}. In the case
 of reversible hardware circuits, the canonical universal primitive is
-the Toffoli gate~\cite{Toffoli:1980}. The Toffoli gate takes three
+the Toffoli gate~\cite{toffoli:1980}. The Toffoli gate takes three
 boolean inputs: if the first two inputs are \ensuremath{\mathit{true}} then the third
 bit is negated. In a traditional language, the Toffoli gate would be
 most conveniently expressed as a conditional expression like:
@@ -1723,7 +1723,7 @@ of the conditional derived above. If the \ensuremath{\mathit{bool}} is
 By choosing \ensuremath{b} to be \ensuremath{\mathit{bool}} and \ensuremath{c} to be \ensuremath{\mathit{not}}, we have the
 combinator \ensuremath{\mathit{if}_{\mathit{not}} : \mathit{bool}\times \mathit{bool}\leftrightarrow \mathit{bool}\times \mathit{bool}} which negates its
 second argument if the first argument is \ensuremath{\mathit{true}}. This gate
-\ensuremath{\mathit{if}_{\mathit{not}}} is often referred to as the \ensuremath{\mathit{cnot}} gate\cite{Toffoli:1980}.
+\ensuremath{\mathit{if}_{\mathit{not}}} is often referred to as the \ensuremath{\mathit{cnot}} gate\cite{toffoli:1980}.
 
 If we iterate this construction once more, the resulting combinator
 \ensuremath{\mathit{if}_{\mathit{cnot}}} has type \ensuremath{\mathit{bool}\times (\mathit{bool}\times \mathit{bool})\leftrightarrow \mathit{bool}\times (\mathit{bool}\times \mathit{bool})}. The
