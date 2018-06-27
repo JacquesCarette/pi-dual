@@ -2348,8 +2348,38 @@ Let $c : t_1 \leftrightarrow t_2$:
 \caption{\label{figc}Signatures of level-2 $\Pi$-combinators: zero}
 \end{figure}
 
-The constructs in Fig.~\ref{figc} are significantly more subtle.
-\jc{WAVEFRONT}
+The constructs in Fig.~\ref{figc} are significantly more subtle, as they
+deal with combinators involving $0$, aka an impossibility.  For example,
+\[  {(c \otimes \idc_{0}) \odot \absorbl \Leftrightarrow \absorbl \odot \idc_{0}}
+\]
+(where we have explicitly annotated the types of $\idc$ for increased clarity)
+tells us that of the two ways of transforming from $t_1 \times 0$ to $0$, 
+namely first doing some arbitrary transformation $c$ from $t_1$ to $t_2$ and
+(in parallel) leaving $0$ alone then eliminating $0$, or first eliminating $0$
+then doing the identity (at $0$), are equivalent. This is the ``naturality'' of
+$\absorbl$. One item to note is the fact that this combinator is not
+irreducible, as the $\idc$ on the right can be eliminated. But that is actually
+a property visible at an even higher level (which we will not touch in this
+paper).  The next $3$ are similarly expressing the naturality of $\absorbr$,
+$\factorzl$ and $\factorzr$.
+
+The next combinator, $\absorbr \Leftrightarrow \absorbl$,
+is particularly fascinating: while it says something simple ---
+that the two obvious ways of transforming $0 \times 0$ into $0$, namely
+absorbing either the left or right zero --- it implies something subtle.
+A straightforward proof of $\absorbl$ which proceeds by saying that
+$0 \times t$ cannot be inhabited because the first member of the pair
+cannot, is not in fact equivalent to $\absorbr$ on $0 \times 0$.
+However, if we instead define $\absorbl$ to ``transport'' the
+putative impossible first member of the pair to its (equally
+impossible) output, then these do form equivalent pairs.
+The next few in Fig.~\ref{figc} also express how $\absorbr$ and
+$\absorbl$ interact with other combinators. As seen previously,
+all of these arise as critical pairs. What is much more subtle here
+is that the types involved often are asymmetric: they do not have
+the same occurences on the left and right. Such cases are
+particularly troublesome for finding normal forms \jc{should add
+some citations here}.
 
 \begin{figure}[t]
 \[\def\arraystretch{1.3}
@@ -2370,12 +2400,6 @@ The constructs in Fig.~\ref{figc} are significantly more subtle.
 \caption{\label{figb}Signatures of level-2 $\Pi$-combinators: associativity and distributivity}
 \end{figure}
 
-The constructs in Fig.~\ref{figb} \ldots
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\end{tikzpicture}
-\end{center}
-
 \begin{figure}[t]
 \[\def\arraystretch{1.3}
 \begin{array}{rcl}
@@ -2386,11 +2410,12 @@ The constructs in Fig.~\ref{figb} \ldots
 \caption{\label{figa}Signatures of level-2 $\Pi$-combinators: commutativity and distributivity}
 \end{figure}
 
-The constructs in Fig.~\ref{figa} \ldots
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\end{tikzpicture}
-\end{center}
+The constructs in Fig.~\ref{figb} and Fig.~\ref{figa} relating associativity and
+distributivity, and commutativity and distributivity, have more in common with
+previous sets of combinators.  They do arise from non-trivial critical pairs
+of different ways of going between equivalent types. The last one of
+Fig.~\ref{figb} is particularly daunting, involving a sequence of $3$ combinators
+on the left and $6$ on the right.
 
 %%%%%%%%%
 \subsection{Operational Semantics}
