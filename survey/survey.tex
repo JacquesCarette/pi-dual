@@ -38,7 +38,6 @@
 \newcommand{\pp}{\texttt{+}}
 \newcommand{\inl}[1]{\textsf{inl}~#1}
 \newcommand{\inr}[1]{\textsf{inr}~#1}
-\newcommand{\idv}[3]{#2 \xrightarrow{#1} #3}
 \newcommand{\cp}[3]{#1\stackrel{#2}{\bullet}#3}
 \newcommand{\idt}[3]{#2 \equiv_{#1} #3}
 \newcommand{\idrt}[3]{#3 \equiv_{#1} #2}
@@ -83,6 +82,7 @@ $\displaystyle
 {\begin{array}{l}#3      \\\end{array}}$
  #4}}
 \newcommand{\jdg}[3]{#2 \proves_{#1} #3}
+\newcommand{\sem}[1]{\ensuremath{\llbracket{#1}\rrbracket}}
 
 \DeclareUnicodeCharacter{9678}{\ensuremath{\odot}}
 \DeclareUnicodeCharacter{9636}{\ensuremath{\Box}}
@@ -816,7 +816,7 @@ idempotent operations is a \emph{forgetful} operation: its input has
 two copies of $a$, but its output, only one. On the type side,
 something more subtle happens. Consider $\top \uplus \top$
 versus $\top$; the first has exactly \emph{two} proofs of inhabitation
-($\texttt{inl tt}$ and $\texttt{inr tt}$) while the second only one
+($\inl{\texttt{tt}}$ and $\inr{\texttt{tt}}$) while the second only one
 ($\texttt{tt}$). These cannot be put in bijective correspondence. Even
 though the ``payload'' \texttt{tt} is the same, forgetting
 $\texttt{inl}$ (or \texttt{inr}) throws away information -- something
@@ -1064,8 +1064,12 @@ evaluation rules \ensuremath{c ~v_1 \mapsto v_2} are given below.
 \begin{definition}{(Operational Semantics for \ensuremath{\Pi })}
 \label{def:operational-langRev}
 
-Additive fragment:
+Identity:
+\[\begin{array}{rlcl}
+ \idc & v &\mapsto & v \\
+ \end{array}\]
 
+Additive fragment:
 \[\begin{array}{rlcl}
  \identlp & (\mathit{right} ~v) &\mapsto & v \\
  \identrp & v &\mapsto & \mathit{right} ~v \\
@@ -1083,7 +1087,6 @@ Additive fragment:
 %originally: subcode source isomorphisms.tex:504
 
 Multiplicative fragment:
-
 \[\begin{array}{rlcl}
  \identlt & ((), v) &\mapsto & v \\
  \identrt & v &\mapsto & ((), v) \\
@@ -1114,10 +1117,6 @@ Distributivity and factoring:
 The evaluation rules of the composition combinators are given below:
 
 $$
-\infer{ \idc ~v \mapsto v}{
-	 ~
-}
-\quad
 \infer{ (c_1\odot c_2) ~v_1 \mapsto v_2}{
 	 c_1 ~v_1 \mapsto v
 	&
@@ -1153,56 +1152,75 @@ the purported inhabitant of $0$ given on one side is passed on to the other
 side. The reason for this choice will have to wait for Sec.~\ref{langeqeq}
 when we explain some higher-level symmetries (see Fig.~\ref{figc}).
 
-\jc{WAVEFRONT of consistency restoration}
-Also, the semantics of \ensuremath{\ !~c} are defined in terms of the adjoint
-of \ensuremath{c} (denoted by \ensuremath{c^\mathit{^{\dagger} }}),
-which we formalize below.
+As we mentioned before, $!$ is a defined combinator.
 
-\begin{definition}[Adjoints, \ensuremath{c^\mathit{^{\dagger} }}]
- The adjoint of a combinator \ensuremath{c} is defined by \ensuremath{c^\mathit{^{\dagger} }} as follows:
+\begin{definition}[Adjoint, \ensuremath{!~ c}]
+ The adjoint of a combinator \ensuremath{c} is defined as follows:
 
   \begin{itemize}
-  \item For primitive isomophisms \ensuremath{c}, \ensuremath{c^\mathit{^{\dagger} }} is given by its
-    isomorphic inverse operator from the table in Definition
-    \ref{def:primitives-langRev}.
+  \item For primitive isomophisms \ensuremath{c}, \ensuremath{!~ c} is given by its
+    inverse from Figures~\ref{pi-terms} and~\ref{more-pi}.
 
-  \item \ensuremath{(c_1 \otimes c_2)^\mathit{^{\dagger} } = c_1^\mathit{^{\dagger} } \otimes c_2^\mathit{^{\dagger} }}
+  \item \ensuremath{!(c_1 \otimes c_2) =\ !c_1 \otimes~ !c_2}
 
-  \item \ensuremath{(c_1 \oplus c_2)^\mathit{^{\dagger} } = c_1^\mathit{^{\dagger} } \oplus c_2^\mathit{^{\dagger} }}
+  \item \ensuremath{!(c_1 \oplus c_2) =\ !c_1 \oplus~ !c_2}
 
-  \item \ensuremath{(c_1\odot c_2)^\mathit{^{\dagger} } = c_2^\mathit{^{\dagger} } \odot c_1^\mathit{^{\dagger} }}. (Note that the
+  \item \ensuremath{!(c_1\odot c_2) =\ !c_2 \odot~ !c_1}. (Note that the
     order of combinators has been reversed).
 
   \end{itemize}
-
 \end{definition}
 
-\begin{definition}[Observational Equivalence. \ensuremath{c_1=c_2}]
-\label{def:pi-eqv}
-  Combinators \ensuremath{c_1} and \ensuremath{c_2}, where \ensuremath{c_1 : b_1 \leftrightarrow b_2} and
-  \ensuremath{c_2:b_1\leftrightarrow b_2}, are observationally equivalent,\ensuremath{c_1=c_2}, iff
+\noindent We can further define that two combinators are 
+\emph{observationally equivalent} if only all values of their
+common domain, they evaluate to identical values.  More precisely,
+we will say that for combinators $c_1, c_2 : b_1 \leftrightarrow b_2$,
+$c_1~=~c_2$ whenever
+\[
+  \forall  ~v_1:b_1, v_2 : b_2. ~~ c_1 ~v_1 \mapsto v_2 \text{if and only if\ } c_2 ~v_1 \mapsto v_2
+\]
 
-  \ensuremath{\forall  ~v_1:b_1, v_2 : b_2. ~~ c_1 ~v_1 \mapsto v_2 \Longleftrightarrow c_2 ~v_1 \mapsto v_2}.
+Previously we had seen that types $b$ correspond to natural numbers,
+more precisely~$|b|$, the size of $b$.  We had previously established that 
+for any natural number $n$, there is a canonical set of size $n$,
+which we denoted $[n]$. Furthermore, we can also define a
+canonical \emph{type} that size, which we will denote $\sharp b$,
+i.e. $\sharp b$ is a canonical type of size $|b|$.
+
+\begin{definition}($\sharp$). By recursion on $|b|$.  First define a
+type associated to each size. We will revert to using type notation
+for greater clarity of this definition:
+\[\begin{array}{rcl}
+  \tau~ 0 & = & \bot \\
+  \tau~ (1 + n) & = & \top \uplus \tau~ n \\
+ \end{array}\]
+\noindent so that we can define $\sharp b = \tau~ |b|$.
 \end{definition}
 
-\begin{proposition}{Canonical Isomorphism.}
-  For any type \ensuremath{b} there exists the isomorphism \ensuremath{b \leftrightarrow b^{|b|}}.
+We are now ready to go further and establish
+that there is always an equivalence between.
+
+\begin{proposition}
+  For any type \ensuremath{b} there exists an isomorphism \ensuremath{b \leftrightarrow \sharp b}.
   \begin{proof}
     The fact that such an isomorphism exists is evident from the
     definition of size and what it means for two types to be
     isomorphic. While many equivalent constructions are possible
-    for any type \ensuremath{b}, one such construction is given by \ensuremath{\lbrack\!\lbrack b\rbrack\!\rbrack}:
+    for any type \ensuremath{b}, one such construction is given by 
+    \sem{b}:
 
 \[\begin{array}{rclr}
- \lbrack\!\lbrack 0 \rbrack\!\rbrack & = & \idc \\
- \lbrack\!\lbrack 1 \rbrack\!\rbrack & = & \idc \\
- \lbrack\!\lbrack 1+b \rbrack\!\rbrack & = & \idc \oplus \lbrack\!\lbrack b \rbrack\!\rbrack \\
- \lbrack\!\lbrack (b_1+b_2)+b_3 \rbrack\!\rbrack & = & \assocrp \odot \lbrack\!\lbrack b_1+(b_2+b_3) \rbrack\!\rbrack \\
- \lbrack\!\lbrack b_1+b_2 \rbrack\!\rbrack & = & ( \lbrack\!\lbrack b_1 \rbrack\!\rbrack \oplus \idc) \odot \lbrack\!\lbrack b_1^{|b_1|} + b_2 \rbrack\!\rbrack \\
- \lbrack\!\lbrack (b_1\times b_2)\times b_3 \rbrack\!\rbrack & = & \assocrt \odot \lbrack\!\lbrack b_1\times (b_2\times b_3) \rbrack\!\rbrack \\
- \lbrack\!\lbrack (b_1+b_2)\times b_3 \rbrack\!\rbrack & = & \dist \odot \lbrack\!\lbrack b_1\times b_3+b_2\times b_3 \rbrack\!\rbrack \\
+ \sem{0} & = & \idc \\
+ \sem{1} & = & \idc \\
+ \sem{1+b} & = & \idc \oplus \sem{b} \\
+ \sem{(b_1+b_2)+b_3} & = & \assocrp \odot \sem{b_1 + (b_2 + b_3)} \\
+ \sem{b_1 + b_2} & = & (\sem{b_1} \oplus \idc) \odot \sem{ \sharp b_1 + b_2 } \\
+ \sem{0 \times b_2} & = & \absorbr \\
+ \sem{1 \times b_2} & = & \identlt \odot \sem{b_2} \\
+ \sem{(b_1\times b_2)\times b_3} & = & \assocrt \odot \sem{b_1\times (b_2\times b_3)} \\
+ \sem{(b_1+b_2)\times b_3} & = & \dist \odot \sem{b_1\times b_3+b_2\times b_3} \\
  \end{array}\]
-%subcode source isomorphisms.tex:598
+%originally subcode source isomorphisms.tex:598
 
   \end{proof}
 \end{proposition}
@@ -1216,7 +1234,7 @@ which we formalize below.
 %% when we have both we do have a wave-particle duality
 
 Combinators of \ensuremath{\Pi } can be written in terms of the operators
-described in definition \ref{def:langRev} or via a graphical language
+described previously or via a graphical language
 similar in spirit to those developed for Geometry of Interaction
 \cite{DBLP:conf/popl/Mackie95} and string diagrams for category theory
 \cite{selinger-graphical}. Modulo some conventions and shorthand we
@@ -1225,7 +1243,6 @@ based (syntactic) description of programs.  \ensuremath{\Pi } combinators
 expressed in this graphical language look like ``wiring
 diagrams''. Values take the form of ``particles'' that flow along the
 wires. Computation is expressed by the flow of particles.
-
 
 \begin{itemize}
 \item
@@ -1284,9 +1301,6 @@ the two wires.
 \inkscape{sum-two-wires-right-value.pdf}
 \end{multicols}
 
-
-
-
 \item
 When representing complex types like \ensuremath{(b_1\times b_2)+b_3} some visual
 grouping of the wires may be done to aid readability. The exact type
@@ -1298,25 +1312,23 @@ however will always be clarified by the context of the diagram.
 Associativity is entirely skipped in the graphical language. Hence
 three parallel wires may be inferred as \ensuremath{b_1\times (b_2\times b_3)} or
 \ensuremath{(b_1\times b_2)\times b_3}, based on the context. This is much like handling of
-associativity in the graphical representations of categories.
-
+associativity in the graphical representations of categories as well as
+that for monoidal categories.
 
 \inkscape{assoc.pdf}
 
-
-\item
-Commutativity is represented by crisscrossing wires.
+\item Commutativity is represented by crisscrossing wires.
 
 \begin{multicols}{2}
 \inkscape{swap_times.pdf}
 \inkscape{swap_plus.pdf}
 \end{multicols}
 
-
 \noindent
-When tracing the execution of \ensuremath{b_1+b_2} represented by one
-wire, one can think of a value of the form \ensuremath{\mathit{left} ~v_1} or \ensuremath{\mathit{right} ~v_2}
-as flowing on the wire, where \ensuremath{v_1:b_1} and \ensuremath{v_2:b_2}.  By visually
+When tracing the execution of \ensuremath{b_1+b_2} represented by one wire, one
+can think of a value of the form \ensuremath{\mathit{left} ~v_1} or
+\ensuremath{\mathit{right} ~v_2} as flowing on the wire, where
+\ensuremath{v_1:b_1} and \ensuremath{v_2:b_2}.  By visually
 tracking the flow of particles on the wires, one can verify that the
 expected types for commutativity are satisfied.
 
@@ -1329,10 +1341,10 @@ expected types for commutativity are satisfied.
 The morphisms that witness that \ensuremath{0} and \ensuremath{1} are the additive and
   multiplicative units are represented as shown below. Note that since there
   is no value of type 0, there can be no particle on a wire of type \ensuremath{0}.
-  Also since the monoidal units can be freely introduced and eliminated, in
+  Also since the monoidal units can be freely introduced and eliminated, sometimes
+  they are omitted.  However, as this is in fact dangerous, as explained by
   many diagrams they are omitted and dealt with explicitly only when they are
   of special interest.
-
 
 \begin{multicols}{2}
 \inkscape{uniti.pdf}
@@ -1372,7 +1384,6 @@ Factoring is the corresponding adjoint operation.
 \inkscape{factor-wire-value2.pdf}
 \end{multicols}
 
-
 \item Combinators can be composed in series (\ensuremath{c_1 \odot c_2}) or
   parallel. Sequential (series) composition corresponds to connecting
   the output of one combinator to the input of the next.
@@ -1388,8 +1399,6 @@ There are two forms of parallel composition -- combinators
 \inkscape{c1c2_par_times.pdf}
 \end{multicols}
 
-
-
 \end{itemize}
 
 \noindent
@@ -1397,10 +1406,7 @@ There are two forms of parallel composition -- combinators
 of the combinator \ensuremath{c} below:
 
 \ensuremath{c : b \times (1+1) \leftrightarrow b + b}
-
 \ensuremath{c = \swapt \odot \dist \odot (\identlt + \identlt)}
-
-
 \begin{center}
 \scalebox{1.5}{
 %%subcode-line{pdfimage}[diagrams/example1-crop.pdf]
@@ -1408,6 +1414,7 @@ of the combinator \ensuremath{c} below:
 }
 \end{center}
 
+\jc{WAVEFRONT of consistency pass}
 The textual representation of $\Pi$ is quite cumbersome: the
 underlying principles however become quite intuitive when represented
 in a more suggestive visual notation. There exist various graphical
@@ -1430,6 +1437,7 @@ description (both although perhaps concurrently, and exactly one of)
 is better. In section 3 we called them sequential, choice and
 parallel. We should be consistent.}
 
+\begin{comment}
 \jc{An additional ``problem'' is that since our circuits have a
 left-to-right orientation, $A * B$ drawn as boxes left-to-right
 gives an implicit ordering that is going to be hard to ignore.
@@ -1504,7 +1512,7 @@ and $B$ or through $A$ and $C$.
 Other than distributity, $\Pi$ combinators simply allow us to shuffle
 the components of a stack around as well as shuffle the positions of
 components in the plane.
-
+\end{comment}
 % \amr{
 %   Let’s have a geometric representation of spaces:
 % - A + B means putting A next to B
