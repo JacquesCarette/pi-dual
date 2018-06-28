@@ -72,7 +72,7 @@
 \newcommand{\factor}{\mathit{factor}}
 \newcommand{\distl}{\mathit{distl}}
 \newcommand{\factorl}{\mathit{factorl}}
-\newcommand{\distz}{\mathit{absorbr}}
+%% \newcommand{\distz}{\mathit{absorbr}}
 \newcommand{\iso}{\leftrightarrow}
 \newcommand{\proves}{\vdash}
 \newcommand{\idc}{\mathit{id}\!\!\leftrightarrow}
@@ -838,7 +838,7 @@ information content must be preserved.
 \swapt :&  A \times B & \simeq & B \times A &: \swapt \\
 \assoclt :&  A \times (B \times C) & \simeq & (A \times B) \times C &: \assocrt \\
 \\
-\distz :&~ \bot \times A & \simeq & \bot ~ &: \factorzl \\
+\absorbr :&~ \bot \times A & \simeq & \bot ~ &: \factorzl \\
 \dist :&~ (A \uplus B) \times C & \simeq & (A \times C) \uplus (B \times C)~ &: \factor
 \end{array}
 \]
@@ -891,7 +891,7 @@ they are identical after evaluation), unlike that for types.
 \swapt :&  t_1 * t_2 & \iso & t_2 * t_1 &: \swapt \\
 \assoclt :&  t_1 * (t_2 * t_3) & \iso & (t_1 * t_2) * t_3 &: \assocrt \\
 \\
-\distz :&~ 0 * t & \iso & 0 ~ &: \factorzl \\
+\absorbr :&~ 0 * t & \iso & 0 ~ &: \factorzl \\
 \dist :&~ (t_1 + t_2) * t_3 & \iso & (t_1 * t_3) + (t_2 * t_3)~ &: \factor
 \end{array}
 \]
@@ -985,8 +985,6 @@ $\identlp$ and $\assoclp$ are identity operations: the underlying representation
 are not merely isomorphic, they are definitionally equal.
 In other words, the passage to $\Nat$ erases some structural information.
 
-\jc{it would be nice to have a picture or two here}
-
 \begin{figure}[t]
 \[
 \Rule{}
@@ -1014,7 +1012,33 @@ at ``higher levels'' (see next section) is also lost. Since the
 extra burden of language definition and of proofs is quite low, we
 prefer the structural symmetry over a minimalistic language definition.
 
-\amr{sound and complete isomorphisms for finite types}
+\begin{figure}[t]
+\[
+\begin{array}{rrcll}
+\identlsp :&  t + 0 & \iso & t &: \identrsp \\
+\identlst :&  t * 1 & \iso & t &: \identrst \\
+\\
+\absorbl :&~ t * 0 & \iso & 0 ~ &: \factorzr \\
+\distl :&~ t_1 * (t_2 + t_3) & \iso & (t_1 * t_2) + (t_1 * t_3)~ &: \factorl
+\end{array}
+\]
+\caption{Additional $\Pi$-terms.}
+\label{more-pi}
+\end{figure}
+
+We also make a second design decision, which is to make the $\Pi$
+language itself symmetric in another sense: we want both left
+and right introduction/elimination rules for units, $0$ absorption
+and distributivity. Specifically, we add the $\Pi$-terms of
+Fig.~\ref{more-pi} to our language. These are redundant because
+of $\swapp$ and $\swapt$, but will later enable shorter programs
+and more elegant presentation of program transformations.
+
+This set of isomorphisms is known to be sound and
+complete~\cite{Fiore:2004,fiore-remarks} for isomorphisms
+of finite types.  Furthermore, it is also universal
+for hardware combinational
+circuits~\cite{James:2012:IE:2103656.2103667}.
 
 %%%%%%%%%
 \subsection{Operational Semantics}
