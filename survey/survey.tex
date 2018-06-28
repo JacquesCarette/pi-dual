@@ -50,28 +50,28 @@
 \newcommand{\rinv}{r!}
 \newcommand{\invinv}{!!}
 \newcommand{\assoc}{\circ}
-\newcommand{\identlp}{\mathit{unite}_+\mathit{l}}
-\newcommand{\identrp}{\mathit{uniti}_+\mathit{l}}
-\newcommand{\identlsp}{\mathit{unite}_+\mathit{r}}
-\newcommand{\identrsp}{\mathit{uniti}_+\mathit{r}}
-\newcommand{\swapp}{\mathit{swap}_+}
-\newcommand{\assoclp}{\mathit{assocl}_+}
-\newcommand{\assocrp}{\mathit{assocr}_+}
-\newcommand{\identlt}{\mathit{unite}_*\mathit{l}}
-\newcommand{\identrt}{\mathit{uniti}_*\mathit{l}}
-\newcommand{\identlst}{\mathit{unite}_*\mathit{r}}
-\newcommand{\identrst}{\mathit{uniti}_*\mathit{r}}
-\newcommand{\swapt}{\mathit{swap}_*}
-\newcommand{\assoclt}{\mathit{assocl}_*}
-\newcommand{\assocrt}{\mathit{assocr}_*}
-\newcommand{\absorbr}{\mathit{absorbr}}
-\newcommand{\absorbl}{\mathit{absorbl}}
-\newcommand{\factorzr}{\mathit{factorzr}}
-\newcommand{\factorzl}{\mathit{factorzl}}
-\newcommand{\dist}{\mathit{dist}}
-\newcommand{\factor}{\mathit{factor}}
-\newcommand{\distl}{\mathit{distl}}
-\newcommand{\factorl}{\mathit{factorl}}
+\newcommand{\identlp}{\ensuremath{\mathit{unite}_+\mathit{l}}}
+\newcommand{\identrp}{\ensuremath{\mathit{uniti}_+\mathit{l}}}
+\newcommand{\identlsp}{\ensuremath{\mathit{unite}_+\mathit{r}}}
+\newcommand{\identrsp}{\ensuremath{\mathit{uniti}_+\mathit{r}}}
+\newcommand{\swapp}{\ensuremath{\mathit{swap}_+}}
+\newcommand{\assoclp}{\ensuremath{\mathit{assocl}_+}}
+\newcommand{\assocrp}{\ensuremath{\mathit{assocr}_+}}
+\newcommand{\identlt}{\ensuremath{\mathit{unite}_*\mathit{l}}}
+\newcommand{\identrt}{\ensuremath{\mathit{uniti}_*\mathit{l}}}
+\newcommand{\identlst}{\ensuremath{\mathit{unite}_*\mathit{r}}}
+\newcommand{\identrst}{\ensuremath{\mathit{uniti}_*\mathit{r}}}
+\newcommand{\swapt}{\ensuremath{\mathit{swap}_*}}
+\newcommand{\assoclt}{\ensuremath{\mathit{assocl}_*}}
+\newcommand{\assocrt}{\ensuremath{\mathit{assocr}_*}}
+\newcommand{\absorbr}{\ensuremath{\mathit{absorbr}}}
+\newcommand{\absorbl}{\ensuremath{\mathit{absorbl}}}
+\newcommand{\factorzr}{\ensuremath{\mathit{factorzr}}}
+\newcommand{\factorzl}{\ensuremath{\mathit{factorzl}}}
+\newcommand{\dist}{\ensuremath{\mathit{dist}}}
+\newcommand{\factor}{\ensuremath{\mathit{factor}}}
+\newcommand{\distl}{\ensuremath{\mathit{distl}}}
+\newcommand{\factorl}{\ensuremath{\mathit{factorl}}}
 %% \newcommand{\distz}{\mathit{absorbr}}
 \newcommand{\iso}{\leftrightarrow}
 \newcommand{\proves}{\vdash}
@@ -1043,42 +1043,34 @@ circuits~\cite{James:2012:IE:2103656.2103667}.
 %%%%%%%%%
 \subsection{Operational Semantics}
 
-\jc{One operational semantics is explicit, such as the eval and
-evalB we've written many times (for example in PiEqui.agda in
-this repo). But in my opinion, the right way to do it is the
-\texttt{c2equiv} combinator in the same file, which interprets
-every combinator as a type equivalence, which can then just be
-run. \texttt{lemma0} and \texttt{lemma1} in the same file show
-that this is indeed the case. The advantage is that this lifts
-to level 2 quite cleanly.}
+\jc{The notation here is somewhat inconsistent with the above,
+mainly in the notation for values.}
 
-\begin{definition}{(Syntax of \ensuremath{\Pi })}
+To give an operational semantics to $\Pi$, we are mainly missing
+a notation for \emph{values}.
+
+\begin{definition}{(Syntax of values of \ensuremath{\Pi })}
 \label{def:langRev}
-We collect our types, values, and combinators, to get the full language
-definition.
 \[\begin{array}{rclr}
- \mathit{value} ~\mathit{types}, b &::=& 0 ~|~ 1 ~|~ b+b ~|~ b\times b \\
  \mathit{values}, v &::=& () ~|~ \mathit{left} ~v ~|~ \mathit{right} ~v ~|~ (v,v) \\
- \\
- \mathit{combinator} ~\mathit{types}, t &::=& b \leftrightarrow b \\
- \mathit{isomorphisms}, \mathit{iso} &::=& \identlp ~|~ \identrp ~|~ \swapp ~|~ \assoclp ~|~ \assocrp \\
- & ~|~ & \identlt ~|~ \identrt ~|~ \swapt ~|~ \assoclt ~|~ \assocrt \\
- & ~|~ & \absorbr ~|~ \factorzl ~|~ \dist ~|~ \factor \\
- \mathit{combinators}, c &::=& \mathit{iso} ~|~ \idc ~|~ \ !~c ~|~ c \odot c ~|~ c \oplus c ~|~ c \otimes c \\
  \end{array}\]
 %subcode source isomorphisms.tex:483
 \end{definition}
 
-\begin{definition}{Operational Semantics for \ensuremath{\Pi }. }
+Given a program \ensuremath{c : b_1 \leftrightarrow b_2} in \ensuremath{\Pi },
+we can run it by supplying it with a value \ensuremath{ v_1 : b_1}. The
+evaluation rules \ensuremath{c ~v_1 \mapsto v_2} are given below.
+
+\begin{definition}{(Operational Semantics for \ensuremath{\Pi })}
 \label{def:operational-langRev}
-Given a program \ensuremath{c : b_1 \leftrightarrow b_2} in \ensuremath{\Pi }, we can run it by supplying
-it with a value \ensuremath{ v_1 : b_1}. The evaluation rules \ensuremath{c ~v_1 \mapsto v_2} are given below.
 
 Additive fragment:
 
 \[\begin{array}{rlcl}
  \identlp & (\mathit{right} ~v) &\mapsto & v \\
  \identrp & v &\mapsto & \mathit{right} ~v \\
+ \identlsp & (\mathit{left} ~v) &\mapsto & v \\
+ \identrsp & v &\mapsto & \mathit{left} ~v \\
  \swapp & (\mathit{left} ~v) &\mapsto & \mathit{right} ~v \\
  \swapp & (\mathit{right} ~v) &\mapsto & \mathit{left} ~v \\
  \assoclp & (\mathit{left} ~v_1) &\mapsto & \mathit{left} ~(\mathit{left} ~v_1) \\
@@ -1088,38 +1080,42 @@ Additive fragment:
  \assocrp & (\mathit{left} ~(\mathit{right} ~v_2)) &\mapsto & \mathit{right} ~(\mathit{left} ~v_2) \\
  \assocrp & (\mathit{right} ~v_3) &\mapsto & \mathit{right} ~(\mathit{right} ~v_3) \\
  \end{array}\]
-%subcode source isomorphisms.tex:504
+%originally: subcode source isomorphisms.tex:504
 
 Multiplicative fragment:
 
 \[\begin{array}{rlcl}
  \identlt & ((), v) &\mapsto & v \\
  \identrt & v &\mapsto & ((), v) \\
+ \identlst & (v, ()) &\mapsto & v \\
+ \identrst & v &\mapsto & (v, ()) \\
  \swapt & (v_1, v_2) &\mapsto & (v_2, v_1) \\
  \assoclt & (v_1, (v_2, v_3)) &\mapsto & ((v_1, v_2), v_3) \\
  \assocrt & ((v_1, v_2), v_3) &\mapsto & (v_1, (v_2, v_3)) \\
+ \absorbr & (v_1, v_2) & \mapsto & v_1 \\
  \end{array}\]
-%subcode source isomorphisms.tex:514
+%originally: subcode source isomorphisms.tex:514
 
 Distributivity and factoring:
 
 \[\begin{array}{rlcl}
  \dist & (\mathit{left} ~v_1, v_3) &\mapsto & \mathit{left} ~(v_1, v_3) \\
  \dist & (\mathit{right} ~v_2, v_3) &\mapsto & \mathit{right} ~(v_2, v_3) \\
+ \distl & (v_1, \mathit{left} ~v_2) &\mapsto & \mathit{left} ~(v_1, v_2) \\
+ \distl & (v_1, \mathit{right} ~v_3) &\mapsto & \mathit{right} ~(v_1, v_3) \\
  \factor & (\mathit{left} ~(v_1, v_3)) &\mapsto & (\mathit{left} ~v_1, v_3) \\
  \factor & (\mathit{right} ~(v_2, v_3)) &\mapsto & (\mathit{right} ~v_2, v_3) \\
+ \factorl & (\mathit{left} ~(v_1, v_2)) &\mapsto & (v_1, \mathit{left} ~v_2) \\
+ \factorl & (\mathit{right} ~(v_1, v_3)) &\mapsto & (v_1, \mathit{right} ~v_3) \\
+ \absorbl & (v_1 , v_2) & \mapsto & v_2 \\
  \end{array}\]
-%subcode source isomorphisms.tex:523
+%originally: subcode source isomorphisms.tex:523
 
 The evaluation rules of the composition combinators are given below:
 
 $$
 \infer{ \idc ~v \mapsto v}{
 	 ~
-}
-\quad
-\infer{ (\ !~c) ~v_1 \mapsto v_2}{
-	 c{\mathit{^{\dagger} }} v_1 \mapsto v_2
 }
 \quad
 \infer{ (c_1\odot c_2) ~v_1 \mapsto v_2}{
@@ -1149,9 +1145,17 @@ $$
 \end{definition}
 
 Since there are no values that have the type \ensuremath{0}, the reductions for
-the combinators \ensuremath{\identlp}, \ensuremath{\identrp}, \ensuremath{\absorbr} and \ensuremath{\factorzl}
-omit the impossible cases. Also, the semantics of \ensuremath{\ !~c} are
-defined in terms of the adjoint of \ensuremath{c} (denoted by \ensuremath{c^\mathit{^{\dagger} }}),
+the combinators \identlp, \identrp, \identlsp, \identrsp omit the impossible
+cases. \factorzr and \factorzl likewise do not appear as they have not
+possible cases at all. However, \absorbr and \absorbl are treated slightly
+differently: rather than \emph{eagerly} assuming they are impossible,
+the purported inhabitant of $0$ given on one side is passed on to the other
+side. The reason for this choice will have to wait for Sec.~\ref{langeqeq}
+when we explain some higher-level symmetries (see Fig.~\ref{figc}).
+
+\jc{WAVEFRONT of consistency restoration}
+Also, the semantics of \ensuremath{\ !~c} are defined in terms of the adjoint
+of \ensuremath{c} (denoted by \ensuremath{c^\mathit{^{\dagger} }}),
 which we formalize below.
 
 \begin{definition}[Adjoints, \ensuremath{c^\mathit{^{\dagger} }}]
@@ -1589,6 +1593,16 @@ components in the plane.
 % pairs~\ensuremath{\times}.
 
 %%%%%%%%%
+\subsection{Denotational Semantics}
+
+\jc{
+\texttt{c2equiv} combinator in the same file, which interprets
+every combinator as a type equivalence, which can then just be
+run. \texttt{lemma0} and \texttt{lemma1} in the same file show
+that this is indeed the case. The advantage is that this lifts
+to level 2 quite cleanly.}
+
+%%%%%%%%%
 \subsection{Examples}
 
 Surprising expressiveness of Pi:
@@ -1957,6 +1971,7 @@ words in these systems give rise to commutative diagrams. The
 
 %%%%%%%%%
 \subsection{A Language of Equivalences between Type Equivalences}
+\label{langeqeq}
 
 As motivated in the previous section, the equivalences between type
 equivalences are perfectly modeled by the coherence conditions of weak
