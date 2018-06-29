@@ -1042,6 +1042,7 @@ circuits~\cite{James:2012:IE:2103656.2103667}.
 
 %%%%%%%%%
 \subsection{Operational Semantics}
+\label{sec:opsem}
 
 \jc{The notation here is somewhat inconsistent with the above,
 mainly in the notation for values.}
@@ -1237,7 +1238,7 @@ Combinators of \ensuremath{\Pi } can be written in terms of the operators
 described previously or via a graphical language
 similar in spirit to those developed for Geometry of Interaction
 \cite{DBLP:conf/popl/Mackie95} and string diagrams for category theory
-\cite{selinger-graphical}. Modulo some conventions and shorthand we
+\cite{BLUTE1996229,selinger-graphical}. Modulo some conventions and shorthand we
 describe here, the wiring diagrams are equivalent to the operator
 based (syntactic) description of programs.  \ensuremath{\Pi } combinators
 expressed in this graphical language look like ``wiring
@@ -1404,38 +1405,19 @@ There are two forms of parallel composition -- combinators
 \noindent
 \textit{Example.} As an example consider the wiring diagram
 of the combinator \ensuremath{c} below:
+\begin{flalign*}
+& \begin{aligned}
+c & : & b \times (1+1) \leftrightarrow b + b \\
+c & = & \swapt \odot \dist \odot (\identlt + \identlt) \\
+\end{aligned} &&
+\end{flalign*}
 
-\ensuremath{c : b \times (1+1) \leftrightarrow b + b}
-\ensuremath{c = \swapt \odot \dist \odot (\identlt + \identlt)}
 \begin{center}
 \scalebox{1.5}{
 %%subcode-line{pdfimage}[diagrams/example1-crop.pdf]
 \includegraphics{inkscape/example1.pdf}
 }
 \end{center}
-
-\jc{WAVEFRONT of consistency pass}
-The textual representation of $\Pi$ is quite cumbersome: the
-underlying principles however become quite intuitive when represented
-in a more suggestive visual notation. There exist various graphical
-notations for the monoidal categories that model $\Pi$ and related
-languages including Penrose diagrams~\cite{selinger-graphical} and
-Geometry of Interaction (GoI) machines and Proof
-Nets~\cite{Mackie2011,DBLP:conf/popl/Mackie95}. In this section, we
-propose a novel graphical representation of $\Pi$ types and
-combinators drawn from the resource usage embedded in the operational
-semantics. As suggested by the operational semantics, the type $A * B$
-can be viewed as denoting \emph{spatial composition}, where
-\emph{both} $A$ and $B$ must happen in \emph{some} order or perhaps
-simultaneously, and where $A + B$ denotes \emph{temporal composition},
-where exactly \emph{one of} $A$ and $B$ must happen at a given time.
-\jc{I think the temporal aspect is stretching things too far. Could we
-call it ``choice composition''? (Or something better). To me spatial
-composition somehow seems like sequential composition (i.e. composition
-in time), which is definitely not what we want. I think the informal
-description (both although perhaps concurrently, and exactly one of)
-is better. In section 3 we called them sequential, choice and
-parallel. We should be consistent.}
 
 \begin{comment}
 \jc{An additional ``problem'' is that since our circuits have a
@@ -1603,12 +1585,42 @@ components in the plane.
 %%%%%%%%%
 \subsection{Denotational Semantics}
 
-\jc{
-\texttt{c2equiv} combinator in the same file, which interprets
-every combinator as a type equivalence, which can then just be
-run. \texttt{lemma0} and \texttt{lemma1} in the same file show
-that this is indeed the case. The advantage is that this lifts
-to level 2 quite cleanly.}
+Figure~\ref{type-isos} introduces our desired denotational
+semantices, and section~\ref{sec:opsem} a direct definition
+of an operational semantics. One obvious question arises:
+do these correspond? 
+
+We can certainly associate to each $\Pi$ combinator an
+equivalence between the denotation of each type%
+\footnote{This is extracted from the Agda formalization
+of this work, which has been reported on in~\cite{Carette2016}.}:
+\begin{code}\hspace*{-4mm}
+\>\AgdaFunction{c2equiv} \AgdaSymbol{:} \AgdaSymbol{\{}\AgdaBound{t₁}
+\AgdaBound{t₂} \AgdaSymbol{:} \AgdaDatatype{U}\AgdaSymbol{\}} \AgdaSymbol{→}
+\AgdaSymbol{(}\AgdaBound{c} \AgdaSymbol{:} \AgdaBound{t₁} \AgdaDatatype{⟷}
+\AgdaBound{t₂}\AgdaSymbol{)} \AgdaSymbol{→} \AgdaFunction{⟦} \AgdaBound{t₁}
+\AgdaFunction{⟧} \AgdaFunction{≃} \AgdaFunction{⟦} \AgdaBound{t₂}
+\AgdaFunction{⟧}%
+\end{code}
+
+\noindent And as such an equivalence contains a function as
+its first component, we can compare if our operational
+semantics and denotational semantics match.  And they do:
+\begin{code}\hspace*{-4mm}
+\>\AgdaFunction{lemma0} \AgdaSymbol{:} \<[10]%
+\>[10]\AgdaSymbol{\{}\AgdaBound{t₁} \AgdaBound{t₂} \AgdaSymbol{:}
+\AgdaDatatype{U}\AgdaSymbol{\}} \AgdaSymbol{→} \AgdaSymbol{(}\AgdaBound{c}
+\AgdaSymbol{:} \AgdaBound{t₁} \AgdaDatatype{⟷} \AgdaBound{t₂}\AgdaSymbol{)}
+\AgdaSymbol{→} \AgdaSymbol{(}\AgdaBound{v} \AgdaSymbol{:} \AgdaFunction{⟦}
+\AgdaBound{t₁} \AgdaFunction{⟧}\AgdaSymbol{)} \AgdaSymbol{→}
+\AgdaFunction{eval} \AgdaBound{c} \AgdaBound{v} \AgdaDatatype{≡}
+\AgdaField{proj₁} \AgdaSymbol{(}\AgdaFunction{c2equiv}
+\AgdaBound{c}\AgdaSymbol{)} \AgdaBound{v}\<%
+\end{code}
+
+\noindent We can similarly hand-write a backwards evaluator,
+prove that it is indeed a proper backwards evaluator, and
+finally show that it agrees with the reverse equivalence.
 
 %%%%%%%%%
 \subsection{Examples}
