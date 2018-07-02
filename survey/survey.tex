@@ -1734,11 +1734,12 @@ Even though \ensuremath{\Pi } lacks conditional expressions, they are
 expressible using the distributivity and factoring laws. The
 diagrammatic representation of \ensuremath{\dist} shows that it redirects the flow
 of a value \ensuremath{v:b} based on the value of another one of type
-\ensuremath{b_1+b_2}. If we choose \ensuremath{1+1} to be \ensuremath{\mathit{bool}} and apply either
-\ensuremath{c_1:b\leftrightarrow b} or \ensuremath{c_2:b\leftrightarrow b} to the value \ensuremath{v}, then we essentially
-have an `if' expression.
+\ensuremath{b_1+b_2}. If we choose \ensuremath{1+1} to be
+\ensuremath{\mathit{bool}} and apply either \ensuremath{c_1:b_1\leftrightarrow
+b_2} or \ensuremath{c_2:b_1\leftrightarrow b_2} to the value \ensuremath{v},
+then we essentially have an `if' expression.
 
-\ensuremath{\mathit{if}_{c_1,c_2} : \mathit{bool} \times b \leftrightarrow \mathit{bool} \times b}
+\ensuremath{\mathit{if}_{c_1,c_2} : \mathit{bool} \times b_1 \leftrightarrow \mathit{bool} \times b_2}
 
 \ensuremath{\mathit{if}_{c_1,c_2} = \dist \odot ((\idc \times c_1) + (\idc \times c_2)) \odot \factor}
 
@@ -1746,13 +1747,15 @@ have an `if' expression.
 \inkscape{if-c1-c2.pdf}
 
 
-The diagram above shows the input value of type \ensuremath{(1+1)\times b} processed
-by the distribute operator \ensuremath{\dist}, which converts it into a value of
-type \ensuremath{(1\times b)+(1\times b)}. In the \ensuremath{\mathit{left}} branch, which corresponds to the
-case when the boolean is \ensuremath{\mathit{true}} (i.e. the value was \ensuremath{\mathit{left} ~()}),
-the combinator~\ensuremath{c_1} is applied to the value of type~\ensuremath{b}. The right
+The diagram above shows the input value of type \ensuremath{(1+1)\times b_2}
+processed by the distribute operator \ensuremath{\dist}, which converts it into
+a value of type \ensuremath{(1\times b_2)+(1\times b_2)}. In the
+\ensuremath{\mathit{left}} branch, which corresponds to the
+case when the boolean is \ensuremath{\mathit{true}} (i.e. the value was
+\ensuremath{\mathit{left} ~()}), the combinator~\ensuremath{c_1} is applied to
+the value of type~\ensuremath{b_1}. The right
 branch which corresponds to the boolean being \ensuremath{\mathit{false}} passes
-the value of type \ensuremath{b} through the combinator \ensuremath{c_2}.
+the value of type \ensuremath{b_1} through the combinator \ensuremath{c_2}.
 
 \paragraph*{Logic Gates}
 There are several universal primitives for conventional (irreversible)
@@ -2378,7 +2381,7 @@ In other words, they arise as critical pairs.  For example,
 the first expresses that the two ways of going from
 $\left(A \oplus B\right) \oplus C$ to $B \oplus \left(C \oplus A\right)$
 are equivalent, with the second saying that the reverse (i.e.
-the results of applying $!$\~) also gives equivalent programs.
+the results of applying $!$\,) also gives equivalent programs.
 The last two say the same but for the multiplicative structure.
 
 \begin{figure}[t]
