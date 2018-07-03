@@ -2077,6 +2077,11 @@ In other words, it expresses the type-level associativity of $+$ is
 properly reflected by the properties of $\oplus$.
 The last two equivalences show how composition of associativity combinators
 interact together. 
+
+\jc{Say that the bottom line in Fig.~\ref{figj} is actually the
+pentagon diagram of monoidal categories. Draw it, and label it
+using our combinators instead of the usual ones.}
+
 \begin{comment}
 For example, the last equivalence captures the idea that the
 program $\assocrt \odot \assocrt$ transforms an input of
@@ -2199,17 +2204,6 @@ intuition based on them of why these can be smoothly deformed into one another.
 All the ``pictures'' I can come up with [via purely formal reasoning] sit in at least
 5 dimensions -- one for each of the wires, and another to give room to maneuver.}
 \end{comment}
-
-\jc{need to find some combinators whose diagrams can help illustrate 
-the ideas further. Enough so that the next paragraph makes sense.}
-
-\noindent This of course gives rise to a \emph{critical pair} in words over the
-level-1 language, as both of these programs are between the same types.
-Since neither of these involve either trivial types (like $0$ or $1$) nor
-twists (i.e. automorphisms) on the types themselves, coherence requires that
-these in fact be equivalent programs.  One interpretation is that
-\emph{outermost} re-associations is the same as \emph{innermost}
-re-associations.
 
 \begin{figure}[t]
 Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, and $c_3 : t_5 \leftrightarrow t_6$:
@@ -2499,11 +2493,13 @@ on the left and $6$ on the right.
 %%%%%%%%%
 \subsection{Operational Semantics}
 
-We can do for the level-2 combinators the same as was done for level-1:
-create a programming language with these combinators as fundamental
-constants, typed by level-1 combinators. But we can do more, as these
-new combinators are exactly rewrites for level-1 programs.  Thus,
-it is possible to create
+\jc{Maybe interpret the next level as simply term rewriting?
+We already know the start and end, but if we also have a whole
+sequence of `trans', then we can reconstruct the whole thing
+from that. In other words, the example below could be
+reconstructed from the start, end and the program itself,
+erasing all of the lhs annotations, which are merely there for
+humans to track.}
 
 %%%%%%%%%
 % \subsection{Graphical Language}
@@ -2816,6 +2812,9 @@ finally re-associate to get the result.
 \end{samepage}
 
 \renewcommand{\AgdaIndentSpace}{\AgdaSpace{}$\;\;$}
+
+\jc{The above is, up to uses of assoc, a linear notation for a
+commutative diagram. So draw it.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Further Thoughts and Conclusions}
