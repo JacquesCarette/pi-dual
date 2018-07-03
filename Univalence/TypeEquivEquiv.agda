@@ -3,7 +3,7 @@
 module TypeEquivEquiv where
 
 open import Equiv
-  using (refl∼; sym∼; trans∼; sym≃; 
+  using (refl∼; sym∼; trans∼; sym≃;
     _⊎≃_; id≃; _≃_; _●_; _×≃_; qinv; gg;
     β⊎₁; β⊎₂; β₁; β₂; cong∘l; cong∘r; cong₂∘; β×₁; β×₂)
 open import TypeEquiv
@@ -21,16 +21,16 @@ open import Data.Sum using (_⊎_)
 open import Data.Product using (_,_; _×_; proj₁)
 open import Function using (_∘_)
 
-open import Data.Sum.Properties
+open import Data.Sum.Properties2
   using (id⊎id∼id; ⊎∘∼∘⊎; _⊎∼_;
     unite₊-coh; uniti₊-coh; unite₊′-coh; uniti₊′-coh;
     assocr₊-wf; assocl₊-wf;
     triangle⊎-left; triangle⊎-right;
     pentagon⊎-right; pentagon⊎-left;
-    swap₊-coh; unite₊-swap-coh-left; unite₊-swap-coh-right; 
+    swap₊-coh; unite₊-swap-coh-left; unite₊-swap-coh-right;
     hexagon⊎-right; hexagon⊎-left)
 
-open import Data.Product.Properties
+open import Data.Product.Properties2
   using (id×id∼id; ×∘∼∘×; _×∼_;
     unite⋆-coh; uniti⋆-coh; unite⋆′-coh; uniti⋆′-coh;
     assocr⋆-wf; assocl⋆-wf;
@@ -68,7 +68,7 @@ private
 ⊎●≋●⊎ : {A B C D E F : Set} →
   {f : A ≃ C} {g : B ≃ D} {h : C ≃ E} {i : D ≃ F} →
   (h ● f) ⊎≃ (i ● g) ≋ (h ⊎≃ i) ● (f ⊎≃ g)
-⊎●≋●⊎ = 
+⊎●≋●⊎ =
   eq (β⊎₁ ⊙ β₁ ⊎∼ β₁ ⊙ ⊎∘∼∘⊎ ⊙ ! cong₂∘ β⊎₁ β⊎₁ ⊙ ! β₁)
      (β⊎₂ ⊙ β₂ ⊎∼ β₂ ⊙ ⊎∘∼∘⊎ ⊙ ! cong₂∘ β⊎₂ β⊎₂ ⊙ ! β₂)
 
@@ -76,7 +76,7 @@ private
 
 _⊎≋_ : {A B C D : Set} {f h : A ≃ B} {g i : C ≃ D} → f ≋ h → g ≋ i →
   f ⊎≃ g ≋ h ⊎≃ i
-f≋h ⊎≋ g≋i = 
+f≋h ⊎≋ g≋i =
   eq (β⊎₁ ⊙ (f≡ f≋h) ⊎∼ (f≡ g≋i) ⊙ ! β⊎₁)
      (β⊎₂ ⊙ (g≡ f≋h) ⊎∼ (g≡ g≋i) ⊙ ! β⊎₂)
   where open _≋_
@@ -89,7 +89,7 @@ sym≃-distrib⊎ : ∀ {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
   sym≃ (f ⊎≃ g) ≋ sym≃ f ⊎≃ sym≃ g
 sym≃-distrib⊎ = -- note how the proof mixes ₁ and ₂ !
   eq (β⊎₂ ⊙ ! β⊎₁) (β⊎₁ ⊙ ! β⊎₂)
-  
+
 -- Use '-nat' to signify that operation induces a
 -- natural transformation, and that the induced operation
 -- satisfies the naturality condition thus encoded
@@ -97,13 +97,13 @@ sym≃-distrib⊎ = -- note how the proof mixes ₁ and ₂ !
 unite₊-nat : ∀ {A B} {f : A ≃ B} {g : ⊥ ≃ ⊥} →
   unite₊equiv ● (g ⊎≃ f) ≋ f ● unite₊equiv
 unite₊-nat {g = g} =
-  eq (β₁ ⊙ cong∘l (proj₁ unite₊equiv) β⊎₁ ⊙ unite₊-coh ⊙ ! β₁) 
+  eq (β₁ ⊙ cong∘l (proj₁ unite₊equiv) β⊎₁ ⊙ unite₊-coh ⊙ ! β₁)
        (β₂ ⊙ cong∘r (gg unite₊equiv) β⊎₂ ⊙ uniti₊-coh {g = gg g} ⊙ ! β₂)
 
 uniti₊-nat : ∀ {A B} {f : A ≃ B} {g : ⊥ ≃ ⊥} →
   uniti₊equiv ● f ≋ (g ⊎≃ f) ● uniti₊equiv
-uniti₊-nat {g = g} =  
-  eq (β₁ ⊙ ! uniti₊-coh {g = proj₁ g} ⊙ ! cong∘r (proj₁ uniti₊equiv) β⊎₁ ⊙ ! β₁) 
+uniti₊-nat {g = g} =
+  eq (β₁ ⊙ ! uniti₊-coh {g = proj₁ g} ⊙ ! cong∘r (proj₁ uniti₊equiv) β⊎₁ ⊙ ! β₁)
        (β₂ ⊙ ! unite₊-coh ⊙ ! cong∘l (gg uniti₊equiv) β⊎₂ ⊙ ! β₂)
 
 unite₊′-nat : ∀ {A B} {f : A ≃ B} {g : ⊥ ≃ ⊥} →
@@ -115,7 +115,7 @@ unite₊′-nat {g = g} =
 uniti₊′-nat : ∀ {A B} {f : A ≃ B} {g : ⊥ ≃ ⊥} →
   uniti₊′equiv ● f ≋ (f ⊎≃ g) ● uniti₊′equiv
 uniti₊′-nat {g = g} =
-  eq (β₁ ⊙ ! uniti₊′-coh {g = proj₁ g} ⊙ ! cong∘r (proj₁ uniti₊′equiv) β⊎₁ ⊙ ! β₁) 
+  eq (β₁ ⊙ ! uniti₊′-coh {g = proj₁ g} ⊙ ! cong∘r (proj₁ uniti₊′equiv) β⊎₁ ⊙ ! β₁)
        (β₂ ⊙ ! unite₊′-coh ⊙ ! cong∘l (gg uniti₊′equiv) β⊎₂ ⊙ ! β₂)
 
 assocr₊-nat : ∀ {A B C D E F : Set} →
@@ -185,7 +185,7 @@ swap₊-nat =
 -- also called 'triangle', but better to call it 'unit coherence'
 unite₊l-coh : {A : Set} →
   unite₊equiv {A} ≋ unite₊′equiv ● swap₊equiv
-unite₊l-coh = 
+unite₊l-coh =
   eq (unite₊-swap-coh-right ⊙ ! β₁) (unite₊-swap-coh-left ⊙ ! β₂)
 
 -- often called 'hexagon'
@@ -233,10 +233,10 @@ id×id≋id = eq (β×₁ ⊙ id×id∼id) (β×₂ ⊙ id×id∼id)
 ×●≋●× : {A B C D E F : Set} →
   {f : A ≃ C} {g : B ≃ D} {h : C ≃ E} {i : D ≃ F} →
   (h ● f) ×≃ (i ● g) ≋ (h ×≃ i) ● (f ×≃ g)
-×●≋●× {f = f , qinv f⁻¹ _ _} {g , qinv g⁻¹ _ _} {h , qinv h⁻¹ _ _} {i , qinv i⁻¹ _ _} = 
+×●≋●× {f = f , qinv f⁻¹ _ _} {g , qinv g⁻¹ _ _} {h , qinv h⁻¹ _ _} {i , qinv i⁻¹ _ _} =
   eq (β×₁ ⊙ β₁ ×∼ β₁ ⊙ (×∘∼∘× {f = f} {g} {h} {i}) ⊙ ! cong₂∘ β×₁ β×₁ ⊙ ! β₁)
      (β×₂ ⊙ β₂ ×∼ β₂ ⊙ (×∘∼∘× {f = h⁻¹} {i⁻¹} {f⁻¹} {g⁻¹}) ⊙ ! cong₂∘ β×₂ β×₂ ⊙ ! β₂)
-     
+
 _×≋_ :  ∀ {A B C D : Set} {f g : A ≃ B} {h i : C ≃ D} →
   f ≋ g → h ≋ i → f ×≃ h ≋ g ×≃ i
 e₁ ×≋ e₂ = eq (β×₁ ⊙ (f≡ e₁) ×∼ (f≡ e₂) ⊙ ! β×₁)
@@ -260,13 +260,13 @@ uniti⋆-nat : ∀ {A B} {f : A ≃ B} {g : ⊤ ≃ ⊤} →
 uniti⋆-nat = -- flip-sym≋ unite⋆-nat
   eq (β₁ ⊙ ! uniti⋆-coh ⊙ ! cong∘r (proj₁ uniti⋆equiv) β×₁ ⊙ ! β₁)
      (β₂ ⊙ ! unite⋆-coh ⊙ ! cong∘l (gg uniti⋆equiv) β×₂ ⊙ ! β₂)
-  
+
 unite⋆′-nat : ∀ {A B} {f : A ≃ B} {g : ⊤ ≃ ⊤} →
   unite⋆′equiv ● (f ×≃ g) ≋ f ● unite⋆′equiv
 unite⋆′-nat = -- eq unite⋆′-coh uniti⋆′-coh
   eq (β₁ ⊙ cong∘l (proj₁ unite⋆′equiv) β×₁ ⊙ unite⋆′-coh ⊙ ! β₁)
      (β₂ ⊙ cong∘r (gg unite⋆′equiv) β×₂ ⊙ uniti⋆′-coh ⊙ ! β₂)
-  
+
 uniti⋆′-nat : ∀ {A B} {f : A ≃ B} {g : ⊤ ≃ ⊤} →
   uniti⋆′equiv ● f ≋ (f ×≃ g) ● uniti⋆′equiv
 uniti⋆′-nat = -- flip-sym≋ unite⋆′-nat
@@ -330,7 +330,7 @@ assocr⋆-coh =
     (β₂ ⊙ pentagon×-left ⊙
      ! (β₂ ⊙ cong₂∘ β₂ β×₂ ⊙
         cong∘r (gg assocr⋆equiv ∘ (gg id≃ ×→ gg assocr⋆equiv)) β×₂))
-        
+
 swap⋆-nat : {A B C D : Set} {f : A ≃ C} {g : B ≃ D} →
   swap⋆equiv ● (f ×≃ g) ≋ (g ×≃ f) ● swap⋆equiv
 swap⋆-nat =
@@ -342,7 +342,7 @@ swap⋆-nat =
 -- also called 'triangle', but better to call it 'unit coherence'
 unite⋆l-coh : {A : Set} →
   unite⋆equiv {A} ≋ unite⋆′equiv ● swap⋆equiv
-unite⋆l-coh = 
+unite⋆l-coh =
   eq (unite⋆-swap-coh-right ⊙ ! β₁) (unite⋆-swap-coh-left ⊙ ! β₂)
 
 -- often called 'hexagon'
@@ -399,7 +399,7 @@ distl-nat {A} {B} {C} {D} {E} {F} {f} {g} {h} = -- eq distl-coh factorl-coh
       --
      (β₂ ⊙ cong∘r factorlDEF (β×₂ {f = f} {g ⊎≃ h} ⊙ (refl∼ ×∼ β⊎₂)) ⊙
       factorl-coh ⊙
-      ! (β₂ ⊙ cong∘l factorlABC (β⊎₂ {f = f ×≃ g} {f ×≃ h} ⊙ (β×₂ ⊎∼ β×₂))))     
+      ! (β₂ ⊙ cong∘l factorlABC (β⊎₂ {f = f ×≃ g} {f ×≃ h} ⊙ (β×₂ ⊎∼ β×₂))))
 
 factorl-nat : {A B C D E F : Set} →
   {f : A ≃ D} {g : B ≃ E} {h : C ≃ F} →
@@ -414,7 +414,7 @@ factorl-nat {A} {B} {C} {D} {E} {F} {f} {g} {h} = -- flip-sym≋ distl-nat
       ! (β₁ ⊙ cong∘r factorlABC (β×₁ ⊙ (refl∼ ×∼ β⊎₁)) ))
      --
      (β₂ ⊙ cong∘r distlDEF (β⊎₂ {f = f ×≃ g} {f ×≃ h} ⊙ (β×₂ ⊎∼ β×₂)) ⊙
-     sym∼ distl-coh ⊙ 
+     sym∼ distl-coh ⊙
      ! (β₂ ⊙ cong∘l distlABC (β×₂ {f = f} {g ⊎≃ h} ⊙ (refl∼ ×∼ β⊎₂))))
 
 dist-nat : {A B C D E F : Set} →
@@ -431,7 +431,7 @@ dist-nat {A} {B} {C} {D} {E} {F} {f} {g} {h} = -- eq dist-coh factor-coh
       --
      (β₂ ⊙ cong∘r factorDEF (β×₂ {f = f ⊎≃ g} {h} ⊙ (β⊎₂ ×∼ refl∼)) ⊙
       factor-coh ⊙
-      ! (β₂ ⊙ cong∘l factorABC (β⊎₂ {f = f ×≃ h} {g ×≃ h} ⊙ (β×₂ ⊎∼ β×₂))))     
+      ! (β₂ ⊙ cong∘l factorABC (β⊎₂ {f = f ×≃ h} {g ×≃ h} ⊙ (β×₂ ⊎∼ β×₂))))
 
 factor-nat : {A B C D E F : Set} →
   {f : A ≃ D} {g : B ≃ E} {h : C ≃ F} →
@@ -446,7 +446,7 @@ factor-nat {A} {B} {C} {D} {E} {F} {f} {g} {h} = -- flip-sym≋ dist-nat
       ! (β₁ ⊙ cong∘r factorABC (β×₁ ⊙ (β⊎₁ ×∼ refl∼)) ))
      --
      (β₂ ⊙ cong∘r distDEF (β⊎₂ {f = f ×≃ h} {g ×≃ h} ⊙ (β×₂ ⊎∼ β×₂)) ⊙
-     sym∼ dist-coh ⊙ 
+     sym∼ dist-coh ⊙
      ! (β₂ ⊙ cong∘l distABC (β×₂ {f = f ⊎≃ g} {h} ⊙ (β⊎₂ ×∼ refl∼))))
 
 -- note how we don't use id≃ but an arbitrary ⊥ ≃ ⊥.
@@ -476,7 +476,7 @@ distz-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
 distz-nat {f = (f , qinv h _ _)} {(_ , qinv g _ _)} =
   eq (β₁ ⊙ cong∘l (proj₁ distzequiv) β×₁ ⊙ distz-coh {f = f} ⊙ ! β₁)
      (β₂ ⊙ cong∘r (gg distzequiv) β×₂ ⊙ factorz-coh {f = h} {g} ⊙ ! β₂)
-     
+
 factorz-nat : {A B : Set} → {f : A ≃ B} → {g : ⊥ ≃ ⊥} →
   factorzequiv ● g ≋ (g ×≃ f) ● factorzequiv
 factorz-nat {f = (f , qinv f⁻¹ _ _)} {g , _} =
@@ -516,9 +516,9 @@ A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D : {A B C D : Set} →
   distlequiv ● assocl⋆equiv {A} {B} {C ⊎ D} ≋
   (assocl⋆equiv ⊎≃ assocl⋆equiv) ● distlequiv ● (id≃ ×≃ distlequiv)
 A×B×[C⊎D]≃[A×B]×C⊎[A×B]×D =
-  eq (β₁ ⊙ A×B×[C⊎D]→[A×B]×C⊎[A×B]×D ⊙ 
+  eq (β₁ ⊙ A×B×[C⊎D]→[A×B]×C⊎[A×B]×D ⊙
       ! (β₁ ⊙ cong₂∘ β⊎₁ (β₁ ⊙ cong∘l (proj₁ distlequiv) β×₁)))
-     (β₂ ⊙ [A×B]×C⊎[A×B]×D→A×B×[C⊎D] ⊙ 
+     (β₂ ⊙ [A×B]×C⊎[A×B]×D→A×B×[C⊎D] ⊙
       ! (β₂ ⊙ cong₂∘ (β₂ ⊙ cong∘r (gg distlequiv) β×₂) β⊎₂))
 
 0×0≃0 : distzequiv ≋ distzrequiv
@@ -549,7 +549,7 @@ A×0≃0 = eq (A×0→0 ⊙ ! β₁) (0→A×0 ⊙ ! β₂)
        ! (β₂ ⊙ cong∘r factorzA (β₂ ⊙ cong∘l (gg assocl⋆equiv) β×₂)))
 
 A×0×B≃0 : {A B : Set} →
-  distzrequiv ● (id≃ ×≃ distzequiv)  ≋ 
+  distzrequiv ● (id≃ ×≃ distzequiv)  ≋
   distzequiv ● (distzrequiv ×≃ id≃) ● assocl⋆equiv {A} {⊥} {B}
 A×0×B≃0 =
   eq (β₁ ⊙ cong∘l (proj₁ distzrequiv) β×₁ ⊙ A×0×B→0 ⊙
@@ -576,9 +576,9 @@ A×[0+B]≃A×B =
 [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D : {A B C D : Set} →
   assocl₊equiv ● (distequiv ⊎≃ distequiv) ● distlequiv ≋
   (assocl₊equiv ⊎≃ id≃) ● ((id≃ ⊎≃ swap₊equiv) ⊎≃ id≃) ●
-     (assocr₊equiv ⊎≃ id≃) ● assocl₊equiv ● 
+     (assocr₊equiv ⊎≃ id≃) ● assocl₊equiv ●
         (distlequiv ⊎≃ distlequiv) ● distequiv {A} {B} {C ⊎ D}
-[A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D = 
+[A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]⊎B×D =
   eq (β₁ ⊙ cong∘l (proj₁ assocl₊equiv)
                   (β₁ ⊙ cong∘r (proj₁ distlequiv) β⊎₁) ⊙
       [A⊎B]×[C⊎D]→[[A×C⊎B×C]⊎A×D]⊎B×D ⊙
@@ -621,7 +621,7 @@ A×[0+B]≃A×B =
   (g ⊎≃ id≃) ● (id≃ ⊎≃ f) ≋ (id≃ ⊎≃ f) ● (g ⊎≃ id≃)
 [g+1]●[1+f]≋[1+f]●[g+1] = trans≋ [g+1]●[1+f]≋g+f (sym≋ [1+f]●[g+1]≋g+f)
 
--- 
+--
 
 [g*1]●[1*f]≋g*f : {A B C D : Set} {f : A ≃ B} {g : C ≃ D} →
   (g ×≃ id≃) ● (id≃ ×≃ f) ≋ g ×≃ f

@@ -6,12 +6,12 @@ open import Data.Empty
 open import Data.Unit
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; Σ; _,_; proj₁; proj₂)
-open import Relation.Binary.PropositionalEquality 
+open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; cong; cong₂)
 open import Function using (_∘_; id)
 
 open import Equiv
-open import EquivEquiv 
+open import EquivEquiv
 open _≋_
 open import TypeEquiv as TE
 open import TypeEquivEquiv
@@ -20,15 +20,15 @@ open import PiU
 open import PiLevel0
 open import PiLevel1
 
--- open import Data.Sum.Properties
--- open import Data.SumProd.Properties
+open import Data.Sum.Properties2
+open import Data.SumProd.Properties
 
 ------------------------------------------------------------------------------
 -- A combinator t₁ ⟷ t₂ denotes an equivalence to types
 -- note how we don't have to look at the types at all.
 
-⟦_⟧ : U → Set 
-⟦ ZERO ⟧        = ⊥ 
+⟦_⟧ : U → Set
+⟦ ZERO ⟧        = ⊥
 ⟦ ONE ⟧         = ⊤
 ⟦ PLUS t₁ t₂ ⟧  = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
 ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
@@ -241,7 +241,6 @@ lemma1 (c₀ ⊕ c₁) (inj₂ y) = trans (cong inj₂ (lemma1 c₁ y)) (sym (β
 lemma1 (c₀ ⊗ c₁) (x , y) = trans (cong₂ _,_ (lemma1 c₀ x) (lemma1 c₁ y)) (sym (β×₂ (x , y)))
 
 -- and with reverse
-
 !≡sym≃ : {t₁ t₂ : U} → (c : t₁ ⟷ t₂) →
   c2equiv (! c) ≋ sym≃ (c2equiv c)
 !≡sym≃ unite₊l = id≋
@@ -282,7 +281,7 @@ right-inv : {t₁ t₂ : U} (c : t₁ ⟷ t₂) →
 right-inv c =
   let p = c2equiv c in
   trans≋ (id≋ EquivEquiv.◎ (!≡sym≃ c)) (rinv≋ p)
-  
+
 ----------------------------------------------------------
 
 cc2equiv : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) →
@@ -418,7 +417,7 @@ cc2equiv fully-distribute⇔r = sym≋ [A⊎B]×[C⊎D]≃[[A×C⊎B×C]⊎A×D]
 
 ping-pong : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) →
   evalB c₂ ∘ eval c₁ ∼ id
-ping-pong {c₁ = c₁} {c₂} ce = 
+ping-pong {c₁ = c₁} {c₂} ce =
   trans∼ (cong₂∘ (lemma1 c₂) (lemma0 c₁)) (
   trans∼ (cong∘r (proj₁ (c2equiv c₁)) (_≋_.f≡ (flip≋ (cc2equiv (2! ce))) )) (
   trans∼(sym∼ β₁)
