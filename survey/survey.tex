@@ -2078,9 +2078,22 @@ properly reflected by the properties of $\oplus$.
 The last two equivalences show how composition of associativity combinators
 interact together. 
 
-\jc{Say that the bottom line in Fig.~\ref{figj} is actually the
-pentagon diagram of monoidal categories. Draw it, and label it
-using our combinators instead of the usual ones.}
+The bottom line in Fig.~\ref{figj} is actually a linear
+restatement of the famous ``pentagon diagram'' stating a
+particular coherence condition for monoidal categories~\cite{KELLY197197}.
+To make the relation between $\Pi$ as a language and the
+language of category theory, the figure below
+the same morphism but in categorical terms.
+
+\begin{center}
+\begin{tikzcd}[column sep=normal]
+   & (A \times (B \times C)) \times D \arrow [dr, "\assocrt"] & \\
+((A \times B) \times C) \times D \arrow [ur, "\assocrt \otimes \mathit{id}\leftrightarrow"] 
+   \arrow [d, "\assocrt"] & 
+       & A \times ((B \times C) \times D) \arrow [d, "\mathit{id}\leftrightarrow \otimes \assocrt" ]\\
+(A \times B) \times (C \times D) \arrow [rr, "\assocrt"] & & A \times (B \times (C \times D))
+\end{tikzcd}
+\end{center}
 
 \begin{comment}
 For example, the last equivalence captures the idea that the
