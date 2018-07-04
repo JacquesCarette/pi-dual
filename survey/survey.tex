@@ -10,7 +10,6 @@
 \usepackage{tikz-cd}
 \usepackage{listings}
 \usepackage{multicol}
-\usepackage{amsmath}
 \usepackage{stmaryrd}
 \usepackage{proof}
 \usetikzlibrary{quotes,fit,positioning}
@@ -2538,13 +2537,53 @@ on the left and $6$ on the right.
 %%%%%%%%%
 \subsection{Operational Semantics}
 
-\jc{Maybe interpret the next level as simply term rewriting?
-We already know the start and end, but if we also have a whole
-sequence of `trans', then we can reconstruct the whole thing
-from that. In other words, the example below could be
-reconstructed from the start, end and the program itself,
-erasing all of the lhs annotations, which are merely there for
-humans to track.}
+There are two different interpretations for an operational semantics
+for the language of equivalences:
+\begin{enumerate}
+\item Mimicking closely the one in the previous section, and
+thus finding explicit homotopies between the functions induced
+by the operational semantics of the level-1 combinators.
+\item Treating things more syntactically, and interpreting
+the combinators as program transformations.
+\end{enumerate}
+A previous paper~\cite{Carette2016} explores the first interpretation
+in depth. There one can find a definition of ``equivalences of
+equivalences'', which as the base of that interpretation.
+
+Here we will focus instead of the syntactic interpretation as
+program transformers. This results in a function
+\begin{flalign*}
+\mathit{eval}_1\,:\,\ \left\{ t_1\, t_2\,:\,U\right\}
+  \left\{ c_1\, c_2\,:\, t_1\,\leftrightarrow\,t_2\right\}
+  (ce\,\,c_1 \Leftrightarrow\,c_2) \rightarrow (t_1\,\leftrightarrow\,t_2) \\
+\end{flalign*}
+This function is ``deeply dependent'': given the type of the
+rewrite $ce$ to apply, both the input $c_1$ and output $c_2$ are
+almost entirely determined!  Let us take for example the
+second combinator in Fig.~\ref{figi}:
+\[
+  {(c_1 \otimes (c_2 \oplus c_3)) \odot \distl \Leftrightarrow \distl \odot ((c_1 \otimes c_2) \oplus (c_1 \otimes c_3))}
+\]
+\noindent which we can name \AgdaInductiveConstructor{distl⇔l}.
+Interpreting this as a rewrite from the program on the left to the
+one on the right requires ``pattern matching'' on the left
+structure which contains $3$ arbitrary combinators, from which
+we can \emph{reconstruct} the program on the right. Rewrites
+such as \AgdaInductiveConstructor{distl⇔l} are one-step rewrites,
+in the same way that \distl is a constant of the base term language
+of $\Pi$.  There is one additional wrinkle. There is naturally
+an opposite combinator, which interprets the above from right
+to left; let us call it \AgdaInductiveConstructor{distl⇔r}. It
+would appear to require \emph{non-linear pattern-matching}
+since the right-hand-side contains $c_1$ twice. That is however not
+the case! The definition of \AgdaInductiveConstructor{distl⇔r} has
+$5$ implicit arguments, $3$ of which are $c_1, c_2$, and $c_3$,
+which then completely force the ``shape'' of the overall pattern.
+Thus the mere mention of \AgdaInductiveConstructor{distl⇔r} is
+enough to resolve the apparent use of a non-linear pattern.
+This is why $\mathit{eval}_1$ was called ``deeply dependent''
+above: once the name of the combinator is given, the rest
+follows.
 
 %%%%%%%%%
 % \subsection{Graphical Language}
