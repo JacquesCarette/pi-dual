@@ -497,8 +497,7 @@ languages~\cite{Yokoyama:2008:PRP,Mu:2004:ILRC,abramsky2005structural,DiPierro:2
 
 In previous work, Carette, Bowman, James, and
 Sabry~\cite{rc2011,James:2012:IE:2103656.2103667,Carette2016}
-introduced the~$\Pi$ family of reversible languages based on type
-isomorphisms and commutative semiring identities. As motivated above,
+introduced the~$\Pi$ family of typed reversible languages.  As motivated above,
 the starting point for this development is the physical principle of
 ``conservation of
 information''~\cite{Hey:1999:FCE:304763,fredkin1982conservative} and
@@ -511,45 +510,17 @@ circuits~\cite{James:2012:IE:2103656.2103667} and the extension with
 recursive types and trace
 operators~\cite{Hasegawa:1997:RCS:645893.671607} is a Turing-complete
 reversible language~\cite{James:2012:IE:2103656.2103667,rc2011}. While
-at first sight, $\Pi$ might appear \emph{ad hoc}, it really arises
+at first sight, $\Pi$ too might appear \emph{ad hoc}, it really arises
 naturally from an ``extended'' view of the Curry-Howard
 correspondence~\cite{Carette2016}: rather than looking at mere
 \emph{inhabitation} as the main source of analogy between logic and
 computation, \emph{type equivalences} becomes the source of analogy.
-This allows one to see an analogy between algebra and reversible
-computation.  Furthermore, this works at multiple levels: that of
-$1$-algebra (types form a semiring under isomorphism), but also
-$2$-algebra (types and equivalences form a weak Rig Groupoid).  In
-other words, by taking ``weak Rig Groupoid'' as the starting
-semantics, one naturally gets $\Pi$ as the syntax for the language of
-proofs of isomorphisms -- in the same way that many terms of the
-$\lambda$-calculus arise from Cartesian Closed Categories.
-
-
-% \amr{We should also have a quick survey of other works in reversible
-% computation? Most of the other work tries to start from well known
-% models of computation or well known programming languages, and then
-% adapts them to be reversible. Pi is different in that it starts from
-% the semantic implications of reversibility. Then, because it adds
-% types, rather than control-flow (or even data-flow) as its next layer
-% of ``understanding,'' this leads to equivalences, isomorphisms, etc.
-% This then leads, quite naturally, to finding that the ``proof
-% language'' of semirings (and Rig Groupoids at level 2) is actually a
-% programming language. And it is Pi. This is a neat twist on
-% Curry-Howard because CH is about \textbf{inhabitation} only. But with
-% ``conservation of information'' as the basis, a different kind of
-% correspondence arises; in fact, this one may well be an actual
-% isomorphism.}
-
-% \jc{I think it would be fair to have a \textit{quick} survey
-% of other works. The most important aspect would be to draw out that
-% they all start from known models of computation and then attempt to
-% make them reversible.  Our originality is to start from the semantics
-% of reversibility (even further back, preservation of information)
-% and derive a programming language purposefully designed to denote
-% exactly that. Having said that, I am not in a good position to
-% write such a survey, being the least knowledgeable of all 3 of us
-% of this general area.}
+Taking inspiration from the fact that many terms of the $\lambda$-calculus
+arise from Cartesian Closed Categories including, most importantly,
+a variety of propositional equalities and computation rules,
+allows us to pursue that analogy further. Some of the details
+of this development will be motivated and explained in the
+present paper.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data I: Finite Sets}
