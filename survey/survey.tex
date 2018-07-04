@@ -2550,6 +2550,8 @@ A previous paper~\cite{Carette2016} explores the first interpretation
 in depth. There one can find a definition of ``equivalences of
 equivalences'', which as the base of that interpretation.
 
+\newcommand{\evalone}{\ensuremath{\mathit{eval}_1}}
+
 Here we will focus instead of the syntactic interpretation as
 program transformers. This results in a function
 \begin{flalign*}
@@ -2581,9 +2583,53 @@ $5$ implicit arguments, $3$ of which are $c_1, c_2$, and $c_3$,
 which then completely force the ``shape'' of the overall pattern.
 Thus the mere mention of \AgdaInductiveConstructor{distl⇔r} is
 enough to resolve the apparent use of a non-linear pattern.
-This is why $\mathit{eval}_1$ was called ``deeply dependent''
+This is why \evalone was called ``deeply dependent''
 above: once the name of the combinator is given, the rest
 follows.
+
+\newcommand{\transLR}{\AgdaInductiveConstructor{trans⇔}}
+If all expressible transformations were single-step only, this
+would hardly justify calling this an ``operational semantics'',
+as we would hardly have a programming language. However, this level
+of $\Pi$ has combinators as well: two are in
+Fig.~\ref{fige} and two are in Fig.~\ref{figh}. The most interesting
+one is ``sequential composition'', which is the middle one at the 
+bottom of Fig.~\ref{figh}. Since $\Leftrightarrow$ represents
+an equivalence, sequential composition in this context is the
+same as transitivity of equivalences, as thus we have chosen to
+name this \transLR. When evaluating \transLR, we could cheat:
+we know that the eventual answer must be, and we could just 
+return that. But this is not operational in any real sense, as
+that skips over the intermediate steps. We would like to be able
+to ``trace'' the rewrite. Thus the evaluation of
+$\transLR r_0 r_1$ where $r_0 : c_0 \leftrightarrow c_1$ and
+$r_1 : c_1 \leftrightarrow c_2$
+should apply \evalone to both $r_0$ and $r_1$. Furthermore,
+after applying $r_0$, we should be able to witness that the result
+is indeed $c_1$, so that we may continue. This last requirement
+forces us to define a new function, mutually recursively with
+\evalone, for this task:
+\begin{flalign*}
+\mathit{exact}\,:\,\ \left\{ t_1\, t_2\,:\,U\right\}
+  \left\{ c_1\, c_2\,:\, t_1\,\leftrightarrow\,t_2\right\}
+  (ce\,\,c_1 \Leftrightarrow\,c_2) \rightarrow \evalone\, ce \equiv c_2 \\
+\end{flalign*}
+\noindent If we are careful in our construction of \evalone, the
+definition of $\mathit{exact}$ is quite straightforward, i.e.
+almost all cases are \AgdaInductiveConstructor{refl}.
+
+This then lets us define the $\transLR r_0 r_1$ case properly: we
+first evaluate $r_0$ and get a result combinator, witness that this result
+type is indeed exactly what we expect, and proceed to evaluate $r_1$
+where we specific that the $r_1$'s left-hand side must be
+$\evalone r_0$; we can use \AgdaKeyword{rewrite} to make this match
+$c_2$ ``on the nose'' (otherwise the call would be ill-typed).
+This then forces us to use \AgdaKeyword{rewrite} also in the
+implementation of the \transLR case in $\mathit{exact}$ before
+the proof is indeed just \AgdaInductiveConstructor{refl}.
+
+The other three combinators are much simpler, as simple
+recursive calls are sufficient.
 
 %%%%%%%%%
 % \subsection{Graphical Language}
