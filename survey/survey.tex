@@ -219,7 +219,7 @@ physicists more than forty years ago as the following two quotes
 testify:
 
 \begin{quote}
-  \textbf{Toffoli 1980~\cite{toffoli:1980}:} Mathematical models of
+  \textbf{Toffoli 1980~\cite{Toffoli:1980}:} Mathematical models of
   computation are abstract constructions, by their nature unfettered
   by physical laws. However, if these models are to give indications
   that are relevant to concrete computing, they must somehow capture,
@@ -227,7 +227,7 @@ testify:
   restrictions to which all concrete computing processes are
   subjected.
 
-  \textbf{Feynman 1982~\cite{springerlink:10.1007/bf02650179}:}
+  \textbf{Feynman 1982~\cite{springerlink:10.1007/BF02650179}:}
   Another thing that has been suggested early was that natural laws
   are reversible, but that computer rules are not. But this turned out
   to be false; the computer rules can be reversible, and it has been a
@@ -302,7 +302,7 @@ logic. Hence the fact that conventional logic operations such as
 conjunction and disjunction were logically irreversible and hence lose
 information was not a concern. Landauer's observation implied however
 that ideas in each field have consequences for the
-other~\cite{bennett:1973:lrc,bennett1985fundamental,bennett2010notes,bennett2003notes,baker:1992:nft,baez2011physics,dblp:conf/csfw/malacarias12}. To
+other~\cite{bennett:1973:lrc,bennett1985fundamental,bennett2010notes,bennett2003notes,Baker:1992:NFT,baez2011physics,dblp:conf/csfw/malacarias12}. To
 really appreciate this fact, we delve deeper into the origin of our
 computational models and argue that they are essentially reflections
 of contemporary laws of physics.
@@ -465,30 +465,91 @@ start from current models of computation involving irreversible
 operations and try to find various ways to \emph{patch things up} so
 as to be reversible.
 
-\amr{We should also have a quick survey of other works in reversible
-computation? Most of the other work tries to start from well known
-models of computation or well known programming languages, and then
-adapts them to be reversible. Pi is different in that it starts from
-the semantic implications of reversibility. Then, because it adds
-types, rather than control-flow (or even data-flow) as its next layer
-of ``understanding,'' this leads to equivalences, isomorphisms, etc.
-This then leads, quite naturally, to finding that the ``proof
-language'' of semirings (and Rig Groupoids at level 2) is actually a
-programming language. And it is Pi. This is a neat twist on
-Curry-Howard because CH is about \textbf{inhabitation} only. But with
-``conservation of information'' as the basis, a different kind of
-correspondence arises; in fact, this one may well be an actual
-isomorphism.}
+\paragraph*{Reversible Programming Languages.} The practice of
+programming languages is replete with \emph{ad hoc} instances of
+reversible computations: database transactions, mechanisms for data
+provenance, checkpoints, stack and exception traces, logs, backups,
+rollback recoveries, version control systems, reverse engineering,
+software transactional memories, continuations, backtracking search,
+and multiple-level ``undo'' features in commercial applications. In
+the early nineties, Baker~\cite{Baker:1992:LLL,Baker:1992:NFT} argued
+for a systematic, first-class, treatment of reversibility. But
+intensive research in full-fledged reversible models of computations
+and reversible programming languages was only sparked by the discovery
+of deep connections between physics and
+computation~\cite{Landauer:1961,PhysRevA.32.3266,Toffoli:1980,bennett1985fundamental,Frank:1999:REC:930275},
+and by the potential for efficient quantum
+computation~\cite{springerlink:10.1007/BF02650179}.
 
-\jc{I think it would be fair to have a \textit{quick} survey
-of other works. The most important aspect would be to draw out that
-they all start from known models of computation and then attempt to
-make them reversible.  Our originality is to start from the semantics
-of reversibility (even further back, preservation of information)
-and derive a programming language purposefully designed to denote
-exactly that. Having said that, I am not in a good position to
-write such a survey, being the least knowledgeable of all 3 of us
-of this general area.}
+The early developments of reversible programming languages started
+with a conventional programming language, e.g., an extended
+$\lambda$-calculus, and either
+\begin{enumerate}
+\item extended the language with a history
+mechanism~\cite{vanTonder:2004,Kluge:1999:SEMCD,lorenz,danos2004reversible}, or
+\item imposed constraints on the control flow constructs to make them
+reversible~\cite{Yokoyama:2007:RPL:1244381.1244404}.
+\end{enumerate}
+More modern approaches recognize that reversible programming languages require
+a fresh approach and should be designed from first principles without the
+detour via conventional irreversible
+languages~\cite{Yokoyama:2008:PRP,Mu:2004:ILRC,abramsky2005structural,DiPierro:2006:RCL:1166042.1166047}.
+
+In previous work, Carette, Bowman, James, and
+Sabry~\cite{rc2011,James:2012:IE:2103656.2103667,Carette2016}
+introduced the~$\Pi$ family of reversible languages based on type
+isomorphisms and commutative semiring identities. As motivated above,
+the starting point for this development is the physical principle of
+``conservation of
+information''~\cite{Hey:1999:FCE:304763,fredkin1982conservative} and
+the family of languages is designed to embrace that principle by
+requiring all computations to preserve information. 
+
+The fragment without
+recursive types is universal for reversible boolean
+circuits~\cite{James:2012:IE:2103656.2103667} and the extension with
+recursive types and trace
+operators~\cite{Hasegawa:1997:RCS:645893.671607} is a Turing-complete
+reversible language~\cite{James:2012:IE:2103656.2103667,rc2011}. While
+at first sight, $\Pi$ might appear \emph{ad hoc}, it really arises
+naturally from an ``extended'' view of the Curry-Howard
+correspondence~\cite{Carette2016}: rather than looking at mere
+\emph{inhabitation} as the main source of analogy between logic and
+computation, \emph{type equivalences} becomes the source of analogy.
+This allows one to see an analogy between algebra and reversible
+computation.  Furthermore, this works at multiple levels: that of
+$1$-algebra (types form a semiring under isomorphism), but also
+$2$-algebra (types and equivalences form a weak Rig Groupoid).  In
+other words, by taking ``weak Rig Groupoid'' as the starting
+semantics, one naturally gets $\Pi$ as the syntax for the language of
+proofs of isomorphisms -- in the same way that many terms of the
+$\lambda$-calculus arise from Cartesian Closed Categories.
+
+
+% \amr{We should also have a quick survey of other works in reversible
+% computation? Most of the other work tries to start from well known
+% models of computation or well known programming languages, and then
+% adapts them to be reversible. Pi is different in that it starts from
+% the semantic implications of reversibility. Then, because it adds
+% types, rather than control-flow (or even data-flow) as its next layer
+% of ``understanding,'' this leads to equivalences, isomorphisms, etc.
+% This then leads, quite naturally, to finding that the ``proof
+% language'' of semirings (and Rig Groupoids at level 2) is actually a
+% programming language. And it is Pi. This is a neat twist on
+% Curry-Howard because CH is about \textbf{inhabitation} only. But with
+% ``conservation of information'' as the basis, a different kind of
+% correspondence arises; in fact, this one may well be an actual
+% isomorphism.}
+
+% \jc{I think it would be fair to have a \textit{quick} survey
+% of other works. The most important aspect would be to draw out that
+% they all start from known models of computation and then attempt to
+% make them reversible.  Our originality is to start from the semantics
+% of reversibility (even further back, preservation of information)
+% and derive a programming language purposefully designed to denote
+% exactly that. Having said that, I am not in a good position to
+% write such a survey, being the least knowledgeable of all 3 of us
+% of this general area.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data I: Finite Sets}
@@ -1761,7 +1822,7 @@ the value of type \ensuremath{b_1} through the combinator \ensuremath{c_2}.
 There are several universal primitives for conventional (irreversible)
 hardware circuits, such as \ensuremath{\mathit{nand}} and \ensuremath{\mathit{fanout}}. In the case
 of reversible hardware circuits, the canonical universal primitive is
-the Toffoli gate~\cite{toffoli:1980}. The Toffoli gate takes three
+the Toffoli gate~\cite{Toffoli:1980}. The Toffoli gate takes three
 boolean inputs: if the first two inputs are \ensuremath{\mathit{true}} then the third
 bit is negated. In a traditional language, the Toffoli gate would be
 most conveniently expressed as a conditional expression like:
@@ -1785,7 +1846,7 @@ of the conditional derived above. If the \ensuremath{\mathit{bool}} is
 By choosing \ensuremath{b} to be \ensuremath{\mathit{bool}} and \ensuremath{c} to be \ensuremath{\mathit{not}}, we have the
 combinator \ensuremath{\mathit{if}_{\mathit{not}} : \mathit{bool}\times \mathit{bool}\leftrightarrow \mathit{bool}\times \mathit{bool}} which negates its
 second argument if the first argument is \ensuremath{\mathit{true}}. This gate
-\ensuremath{\mathit{if}_{\mathit{not}}} is often referred to as the \ensuremath{\mathit{cnot}} gate\cite{toffoli:1980}.
+\ensuremath{\mathit{if}_{\mathit{not}}} is often referred to as the \ensuremath{\mathit{cnot}} gate\cite{Toffoli:1980}.
 
 If we iterate this construction once more, the resulting combinator
 \ensuremath{\mathit{if}_{\mathit{cnot}}} has type \ensuremath{\mathit{bool}\times (\mathit{bool}\times \mathit{bool})\leftrightarrow \mathit{bool}\times (\mathit{bool}\times \mathit{bool})}. The
