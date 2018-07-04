@@ -2640,13 +2640,12 @@ recursive calls are sufficient.
 % same blocks the same number of times. ??
 
 %%%%%%%%%
-\subsection{Examples}
+\subsection{Example}
 
-We illustrate our methodology using a small example. Consider a
-circuit that takes an input type consisting of three values
+We can now illustrate how this all works with a small example.
+Consider a circuit that takes an input type consisting of three values
 \Tree [ {\small a} [ {\small b} {\small c} ] ]~
-and swaps the leftmost value with the rightmost value
-to produce
+and swaps the leftmost value with the rightmost value to produce
 \Tree [ {\small c} [ {\small b} {\small a} ] ]~.
 We can implement two such circuits using our Agda library for $\Pi$:
 
@@ -2730,7 +2729,17 @@ The second implementation rewrites the incoming values as follows:
 \]
 \noindent The two circuits are extensionally equal. Using the level-2
 isomorphisms we can \emph{explicitly} construct a sequence of
-rewriting steps that transforms the second circuit to the first.  The proof
+rewriting steps that transforms the second circuit to the first.  
+
+We write such proofs in an equational style: in the left column, we have
+the current combinator which is equivalent to the first one, and in
+the right column, the justification for that equivalence. The
+joining combinator is syntactic sugar for \transLR.  The transformation
+could be written (using \transLR) by just giving all the pieces in
+the right hand column --- but such transformations are very hard for
+humans to understand and follow.
+
+The proof
 can be read as follows: the first three lines ``refocus'' from a right-associated
 isomorphism onto the (left-associated) composition of the first $3$ isomorphisms;
 then apply a complex rewrite on these (the ``hexagon'' coherence condition
