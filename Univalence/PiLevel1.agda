@@ -477,18 +477,18 @@ mutual
   eval₁ : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) → (t₁ ⟷ t₂)
   eval₁ (assoc◎l {c₁ = c₁} {c₂} {c₃}) = (c₁ ◎ c₂) ◎ c₃
   eval₁ (assoc◎r {c₁ = c₁} {c₂} {c₃}) = c₁ ◎ (c₂ ◎ c₃)
-  eval₁ (assocl⊕l {c₁ = c₁} {c₂} {c₃}) =  assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃)
-  eval₁ assocl⊕r = {!!}
-  eval₁ assocl⊗l = {!!}
-  eval₁ assocl⊗r = {!!}
-  eval₁ assocr⊕r = {!!}
-  eval₁ assocr⊗l = {!!}
-  eval₁ assocr⊗r = {!!}
-  eval₁ assocr⊕l = {!!}
-  eval₁ dist⇔l = {!!}
-  eval₁ dist⇔r = {!!}
-  eval₁ distl⇔l = {!!}
-  eval₁ distl⇔r = {!!}
+  eval₁ (assocl⊕l {c₁ = c₁} {c₂} {c₃}) = assocl₊ ◎ ((c₁ ⊕ c₂) ⊕ c₃)
+  eval₁ (assocl⊕r {c₁ = c₁} {c₂} {c₃}) = (c₁ ⊕ (c₂ ⊕ c₃)) ◎ assocl₊
+  eval₁ (assocl⊗l {c₁ = c₁} {c₂} {c₃}) = assocl⋆ ◎ ((c₁ ⊗ c₂) ⊗ c₃)
+  eval₁ (assocl⊗r {c₁ = c₁} {c₂} {c₃}) = (c₁ ⊗ (c₂ ⊗ c₃)) ◎ assocl⋆
+  eval₁ (assocr⊕r {c₁ = c₁} {c₂} {c₃}) = assocr₊ ◎ (c₁ ⊕ (c₂ ⊕ c₃))
+  eval₁ (assocr⊗l {c₁ = c₁} {c₂} {c₃}) = ((c₁ ⊗ c₂) ⊗ c₃) ◎ assocr⋆
+  eval₁ (assocr⊗r {c₁ = c₁} {c₂} {c₃}) = assocr⋆ ◎(c₁ ⊗ (c₂ ⊗ c₃))
+  eval₁ (assocr⊕l {c₁ = c₁} {c₂} {c₃}) = ((c₁ ⊕ c₂) ⊕ c₃) ◎ assocr₊
+  eval₁ (dist⇔l {a = c₁} {c₂} {c₃}) = dist ◎ ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃))
+  eval₁ (dist⇔r {a = c₁} {c₂} {c₃}) = ((c₁ ⊕ c₂) ⊗ c₃) ◎ dist
+  eval₁ (distl⇔l {a = c₁} {c₂} {c₃}) = distl ◎ ((c₁ ⊗ c₂) ⊕ (c₁ ⊗ c₃))
+  eval₁ (distl⇔r {a = c₁} {c₂} {c₃}) = (c₁ ⊗ (c₂ ⊕ c₃)) ◎ distl
   eval₁ factor⇔l = {!!}
   eval₁ factor⇔r = {!!}
   eval₁ factorl⇔l = {!!}
@@ -597,18 +597,18 @@ mutual
   exact assoc◎l = refl
   exact assoc◎r = refl
   exact assocl⊕l = refl
-  exact assocl⊕r = {!!}
-  exact assocl⊗l = {!!}
-  exact assocl⊗r = {!!}
-  exact assocr⊕r = {!!}
-  exact assocr⊗l = {!!}
-  exact assocr⊗r = {!!}
-  exact assocr⊕l = {!!}
-  exact dist⇔l = {!!}
-  exact dist⇔r = {!!}
-  exact distl⇔l = {!!}
-  exact distl⇔r = {!!}
-  exact factor⇔l = {!!}
+  exact assocl⊕r = refl
+  exact assocl⊗l = refl
+  exact assocl⊗r = refl
+  exact assocr⊕r = refl
+  exact assocr⊗l = refl
+  exact assocr⊗r = refl
+  exact assocr⊕l = refl
+  exact dist⇔l = refl
+  exact dist⇔r = refl
+  exact distl⇔l = refl
+  exact distl⇔r = refl
+  exact factor⇔l = refl
   exact factor⇔r = {!!}
   exact factorl⇔l = {!!}
   exact factorl⇔r = {!!}
@@ -640,8 +640,8 @@ mutual
   exact unitir⋆⇔r = {!!}
   exact swapl⋆⇔ = {!!}
   exact swapr⋆⇔ = {!!}
-  exact id⇔ = {!!}
-  exact (trans⇔ ce ce₁) = {!!}
+  exact id⇔ = refl
+  exact (trans⇔ ce ce₁) rewrite exact ce | exact ce₁ = refl
   exact (ce ⊡ ce₁) rewrite exact ce | exact ce₁ = refl
   exact (resp⊕⇔ ce ce₁) = {!!}
   exact (resp⊗⇔ ce ce₁) = {!!}
