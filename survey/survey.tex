@@ -2976,19 +2976,19 @@ we get that \AgdaFunction{swap{-}fl2⇔swap{-}fl1} represents
 \begin{tikzcd}[column sep=normal, row sep=small]
  && (a+c)+b \arrow [r, "\swapp \oplus\idd", ""{name=U, below}] & (c+a)+b \arrow [dr, "\assocrp"] && \\
  & a+(c+b) \arrow [ur, "\assoclp"] & & & c+(a+b) \arrow [dr, "\idd\oplus\swapp"] &  \\
-a+(b+c) \arrow [ur, "\idd\oplus\swapp"] \arrow [rr, "\assoclp\odot\swapp"] 
-  \arrow [ddrr, "\assoclp\odot\swapp"]
-  \arrow [dddrr, swap, "\assoclp\odot\swapp"]
-    &&
+a+(b+c) \arrow [ur, "\idd\oplus\swapp"] \arrow [r, "\assoclp"]
+  \arrow [dr, "\assoclp"]
+  \arrow [ddr, swap, "\assoclp"]
+    & (a+b)+c \arrow [r, "\swapp"] &
     c+(a+b) \arrow [r, swap, "\assoclp", ""{name=D, above}] 
     & |[alias=Z]| (c+a)+b \arrow [r, "\assocrp"] &c+(a+b) \arrow [r, "\idd\oplus\swapp"] & c+(b+a) \\
- &&&&& \\
- & & c+(a+b) \arrow [rr, swap, "\idd", ""{name=DD, above}]
+ & (a+b)+c \arrow [dr, "\swapp"] &&&& \\
+ & (a+b)+c \arrow [dr, swap, "\swapp"] & c+(a+b) \arrow [rr, swap, "\idd", ""{name=DD, above}]
              \arrow [d, Rightarrow, "\idf\, \mathit{idl}\odot{l}"] && 
-    c+(a+b) \arrow [ruu, swap, "\idd\oplus\swapp"] & \\
+    c+(a+b) \arrow [ruu, "\idd\oplus\swapp"] & \\
  && c+(a+b) \arrow [rrruuu, bend right = 30, swap, "\idd\oplus\swapp"] && \\
  \arrow[Rightarrow, from=U, to=D, "\mathit{hexagon}\oplus{r}\, \boxdot\, \idf"]
- \arrow[Rightarrow, from=Z, to=DD, "\idf\boxdot\mathit{linv}\odot{l}\,\boxdot\,\idf"]
+ \arrow[Rightarrow, from=Z, to=DD, swap, "\idf\boxdot\mathit{linv}\odot{l}\,\boxdot\,\idf"]
 \end{tikzcd}
 
 \noindent For some, the above diagram will be clearer --- it is only three layers
