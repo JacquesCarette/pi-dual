@@ -2643,7 +2643,7 @@ recursive calls are sufficient.
 % same blocks the same number of times. ??
 
 %%%%%%%%%
-\subsection{Example}
+\subsection{Example}\label{sec:level2-example}
 
 We can now illustrate how this all works with a small example.
 Consider a circuit that takes an input type consisting of three values
@@ -2955,8 +2955,51 @@ finally re-associate to get the result.
 
 \renewcommand{\AgdaIndentSpace}{\AgdaSpace{}$\;\;$}
 
-% \jc{The above is, up to uses of assoc, a linear notation for a
-% commutative diagram. So draw it.}
+\subsection{Internal Language}
+
+Recalling that the $\lambda$-calculus arises as the internal language
+of Cartesian Closed Categories (Elliott~\cite{Elliott-2017} gives a particularly
+readable account of this), we can think of $\Pi$ in similar terms, but
+for symmetric Rig Groupoids instead. For example, we can ask what does
+the derivation in Sec.~\ref{sec:level2-example} represent? It is
+actually a ``linear'' representation of a 2-categorial commutative
+diagram! In fact, it is a painfully verbose version thereof, as it
+includes many \emph{refocusing} steps because our language does not
+build associativity into its syntax. Categorical diagrams usually do.
+Thus if we rewrite the example in diagrammatic form, eliding all uses
+of associativity, but keeping explicit uses of identity transformations,
+we get that \AgdaFunction{swap{-}fl2⇔swap{-}fl1} represents
+
+\newcommand{\idd}{\mathit{id}\leftrightarrow}
+\newcommand{\idf}{\mathit{id}\Leftrightarrow}
+
+\begin{tikzcd}[column sep=normal, row sep=small]
+ && (a+c)+b \arrow [r, "\swapp \oplus\idd", ""{name=U, below}] & (c+a)+b \arrow [dr, "\assocrp"] && \\
+ & a+(c+b) \arrow [ur, "\assoclp"] & & & c+(a+b) \arrow [dr, "\idd\oplus\swapp"] &  \\
+a+(b+c) \arrow [ur, "\idd\oplus\swapp"] \arrow [rr, "\assoclp\odot\swapp"] 
+  \arrow [ddrr, "\assoclp\odot\swapp"]
+  \arrow [dddrr, swap, "\assoclp\odot\swapp"]
+    &&
+    c+(a+b) \arrow [r, swap, "\assoclp", ""{name=D, above}] 
+    & |[alias=Z]| (c+a)+b \arrow [r, "\assocrp"] &c+(a+b) \arrow [r, "\idd\oplus\swapp"] & c+(b+a) \\
+ &&&&& \\
+ & & c+(a+b) \arrow [rr, swap, "\idd", ""{name=DD, above}]
+             \arrow [d, Rightarrow, "\idf\, \mathit{idl}\odot{l}"] && 
+    c+(a+b) \arrow [ruu, swap, "\idd\oplus\swapp"] & \\
+ && c+(a+b) \arrow [rrruuu, bend right = 30, swap, "\idd\oplus\swapp"] && \\
+ \arrow[Rightarrow, from=U, to=D, "\mathit{hexagon}\oplus{r}\, \boxdot\, \idf"]
+ \arrow[Rightarrow, from=Z, to=DD, "\idf\boxdot\mathit{linv}\odot{l}\,\boxdot\,\idf"]
+\end{tikzcd}
+
+\noindent For some, the above diagram will be clearer --- it is only three layers
+high rather than nine! Others will prefer the more programmatic feel of the
+original definition.
+
+We would be remiss in letting the reader believe that the above is ``the''
+categorical diagram that would be found in categorical textbooks. Rather,
+congruence would be used to elide the $\idf$. The various arrows would also
+be named differently --- our \assoclp is often named $\alpha$,
+\assocrp is $\alpha^{-1}$, $\swapp$ is $B$ (always with subscripts).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Further Thoughts and Conclusions}
