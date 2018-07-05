@@ -939,18 +939,19 @@ they are identical after evaluation), unlike that for types.
 \end{figure}
 
 We now have in our hands our desired denotational semantics for types.
-We want to create a programming language, which we call $\Pi$, such that the
-types and type combinators map to $\bot, \top, \uplus, \times$, and
-such that we have ground terms whose denotation are all $16$ type
-isomorphisms of Fig.~\ref{type-isos}. This is rather
-straightforward, as we can simply do this literally. To make the
-analogy with commutative semirings stand out even more, we will use
-$0, 1, +$, and $\times$ at the type level, and will denote
-``equivalence'' by $\iso$.  Thus Fig.~\ref{pi-terms} shows the
-``constants'' of the language. Note how we have continued with
-the spirit of Curry-Howard: the terms of $\Pi$ are \emph{proof terms},
-but rather than being witnesses of inhabitation, they are witnesses of
-equivalences. Thus we get an unexpected programming language design:
+We want to create a programming language, which we call $\Pi$, such
+that the types and type combinators map to
+$\bot, \top, \uplus, \times$, and such that we have ground terms whose
+denotation are all $16$ type isomorphisms of
+Fig.~\ref{type-isos}. This is rather straightforward, as we can simply
+do this literally. To make the analogy with commutative semirings
+stand out even more, we will use $0, 1, +$, and $*$ at the type level,
+and will denote ``equivalence'' by $\iso$.  Thus Fig.~\ref{pi-terms}
+shows the ``constants'' of the language. Note how we have continued
+with the spirit of Curry-Howard: the terms of $\Pi$ are \emph{proof
+  terms}, but rather than being witnesses of inhabitation, they are
+witnesses of equivalences. Thus we get an unexpected programming
+language design:
 
 \begin{center}
 \fbox{
@@ -1083,8 +1084,8 @@ circuits~\cite{James:2012:IE:2103656.2103667}.
 \subsection{Operational Semantics}
 \label{sec:opsem}
 
-\jc{The notation here is somewhat inconsistent with the above,
-mainly in the notation for values.}
+% \jc{The notation here is somewhat inconsistent with the above,
+% mainly in the notation for values.}
 
 To give an operational semantics to $\Pi$, we are mainly missing
 a notation for \emph{values}.
@@ -1198,7 +1199,7 @@ As we mentioned before, $!$ is a defined combinator.
  The adjoint of a combinator \ensuremath{c} is defined as follows:
 
   \begin{itemize}
-  \item For primitive isomophisms \ensuremath{c}, \ensuremath{!~ c} is given by its
+  \item For primitive isomorphisms \ensuremath{c}, \ensuremath{!~ c} is given by its
     inverse from Figures~\ref{pi-terms} and~\ref{more-pi}.
 
   \item \ensuremath{!(c_1 \otimes c_2) =\ !c_1 \otimes~ !c_2}
@@ -1255,10 +1256,10 @@ that there is always an equivalence between.
  \sem{1+b} & = & \idc \oplus \sem{b} \\
  \sem{(b_1+b_2)+b_3} & = & \assocrp \odot \sem{b_1 + (b_2 + b_3)} \\
  \sem{b_1 + b_2} & = & (\sem{b_1} \oplus \idc) \odot \sem{ \sharp b_1 + b_2 } \\
- \sem{0 \times b_2} & = & \absorbr \\
- \sem{1 \times b_2} & = & \identlt \odot \sem{b_2} \\
- \sem{(b_1\times b_2)\times b_3} & = & \assocrt \odot \sem{b_1\times (b_2\times b_3)} \\
- \sem{(b_1+b_2)\times b_3} & = & \dist \odot \sem{b_1\times b_3+b_2\times b_3} \\
+ \sem{0 * b_2} & = & \absorbr \\
+ \sem{1 * b_2} & = & \identlt \odot \sem{b_2} \\
+ \sem{(b_1 * b_2) * b_3} & = & \assocrt \odot \sem{b_1 * (b_2 * b_3)} \\
+ \sem{(b_1+b_2) * b_3} & = & \dist \odot \sem{b_1 * b_3+b_2 * b_3} \\
  \end{array}\]
 %originally subcode source isomorphisms.tex:598
 
@@ -1273,16 +1274,17 @@ that there is always an equivalence between.
 %% for a sum monoidal this is particle-style
 %% when we have both we do have a wave-particle duality
 
-Combinators of \ensuremath{\Pi } can be written in terms of the operators
-described previously or via a graphical language
-similar in spirit to those developed for Geometry of Interaction
-\cite{DBLP:conf/popl/Mackie95} and string diagrams for category theory
-\cite{BLUTE1996229,selinger-graphical}. Modulo some conventions and shorthand we
-describe here, the wiring diagrams are equivalent to the operator
-based (syntactic) description of programs.  \ensuremath{\Pi } combinators
-expressed in this graphical language look like ``wiring
-diagrams''. Values take the form of ``particles'' that flow along the
-wires. Computation is expressed by the flow of particles.
+Combinators of \ensuremath{\Pi } can be written in terms of the
+operators described previously or via a graphical language similar in
+spirit to those developed for Geometry of Interaction
+\cite{DBLP:conf/popl/Mackie95} and string diagrams for category
+theory~\cite{BLUTE1996229,selinger-graphical}. Modulo some conventions
+and shorthand we describe here, the wiring diagrams are equivalent to
+the operator based (syntactic) description of programs.
+\ensuremath{\Pi } combinators expressed in this graphical language
+look like ``wiring diagrams''. Values take the form of ``particles''
+that flow along the wires. Computation is expressed by the flow of
+particles.
 
 \begin{itemize}
 \item
@@ -1301,8 +1303,8 @@ Values flow from left to right in the graphical language of
 \inkscape{b-wire-value.pdf}
 
 \item
-The product type \ensuremath{b_1\times b_2} may be represented both as one wire
-labeled \ensuremath{b_1\times b_2} or by two parallel wires labeled \ensuremath{b_1} and
+The product type \ensuremath{b_1 * b_2} may be represented both as one wire
+labeled \ensuremath{b_1 * b_2} or by two parallel wires labeled \ensuremath{b_1} and
 \ensuremath{b_2}. Both representations may be used interchangeably.
 
 \begin{multicols}{2}
@@ -1342,7 +1344,7 @@ the two wires.
 \end{multicols}
 
 \item
-When representing complex types like \ensuremath{(b_1\times b_2)+b_3} some visual
+When representing complex types like \ensuremath{(b_1 * b_2)+b_3} some visual
 grouping of the wires may be done to aid readability. The exact type
 however will always be clarified by the context of the diagram.
 
@@ -1350,8 +1352,8 @@ however will always be clarified by the context of the diagram.
 
 \item
 Associativity is entirely skipped in the graphical language. Hence
-three parallel wires may be inferred as \ensuremath{b_1\times (b_2\times b_3)} or
-\ensuremath{(b_1\times b_2)\times b_3}, based on the context. This is much like handling of
+three parallel wires may be inferred as \ensuremath{b_1 * (b_2 * b_3)} or
+\ensuremath{(b_1 * b_2) * b_3}, based on the context. This is much like handling of
 associativity in the graphical representations of categories as well as
 that for monoidal categories.
 
@@ -1432,7 +1434,7 @@ Factoring is the corresponding adjoint operation.
 
 There are two forms of parallel composition -- combinators
   can be combined additively \ensuremath{c_1+ c_2} (shown on the left) or
-  multiplicatively \ensuremath{c_1\times c_2} (shown on the right).
+  multiplicatively \ensuremath{c_1 * c_2} (shown on the right).
 
 \begin{multicols}{2}
 \inkscape{c1c2_par_sum.pdf}
@@ -1446,7 +1448,7 @@ There are two forms of parallel composition -- combinators
 of the combinator \ensuremath{c} below:
 \begin{flalign*}
 & \begin{aligned}
-c & : & b \times (1+1) \leftrightarrow b + b \\
+c & : & b * (1+1) \leftrightarrow b + b \\
 c & = & \swapt \odot \dist \odot (\identlt + \identlt) \\
 \end{aligned} &&
 \end{flalign*}
@@ -1530,7 +1532,7 @@ and for the diagram on the right, the choice happens earlier but the
 result is the same: any consistent timeline must go through either $A$
 and $B$ or through $A$ and $C$.
 
-Other than distributity, $\Pi$ combinators simply allow us to shuffle
+Other than distributivity, $\Pi$ combinators simply allow us to shuffle
 the components of a stack around as well as shuffle the positions of
 components in the plane.
 \end{comment}
@@ -1625,7 +1627,7 @@ components in the plane.
 \subsection{Denotational Semantics}
 
 Figure~\ref{type-isos} introduces our desired denotational
-semantices, and section~\ref{sec:opsem} a direct definition
+semantics, and section~\ref{sec:opsem} a direct definition
 of an operational semantics. One obvious question arises:
 do these correspond? 
 
@@ -1663,8 +1665,12 @@ finally show that it agrees with the reverse equivalence.
 
 %%%%%%%%%
 \subsection{Examples}
+\label{sec:langRev-examples}
+\label{examples}
 
-Surprising expressiveness of Pi:
+At first, it is not immediately clear that a programming language
+in which information is preserved could model choice. We recall a
+quote by Minsky communicating this concern:
 
 \begin{quote}
   Ed Fredkin pursued the idea that information must be finite in
@@ -1677,26 +1683,22 @@ Surprising expressiveness of Pi:
   quite immune to objections like that; indeed, they fuel him with
   energy. Soon he went on to assume that information processing must
   also be reversible — and invented what’s now called the Fredkin
-  gate. (Minsky 1999)
+  gate~\cite{Hey:1999:FCE:304763}. 
 \end{quote}
 
-\begin{verbatim}
-examples:
-  (1 + 1) x ((1 + 1) x b) = (b+b) + (b+b)
-  conditionals
-  toffoli
-  fredkin
-  revisit adder example from Sec 2
-  perhaps a larger example as well (from RC 18 paper?)
-\end{verbatim}
+% \begin{verbatim}
+% examples:
+%   (1 + 1) x ((1 + 1) x b) = (b+b) + (b+b)
+%   conditionals
+%   toffoli
+%   fredkin
+%   revisit adder example from Sec 2
+%   perhaps a larger example as well (from RC 18 paper?)
+% \end{verbatim}
 
-\label{sec:langRev-examples}
-
-In this section we introduce programming in \ensuremath{\Pi } through
-several simple examples. We subsequently discuss the expressiveness of
-the language and discuss various properties.
-
-\label{examples}
+We will however show that one can program all logical gates in
+$\Pi$. We will start with a few simply examples and then discuss the
+expressiveness of the language and discuss various properties.
 
 \paragraph*{Booleans}
 Let us start with encoding booleans. We use the type \ensuremath{1+1} to
@@ -1715,20 +1717,20 @@ vice versa.
 \paragraph*{Bit Vectors.}
 We can represent $n$-bit words using an n-ary product of
 \ensuremath{\mathit{bool}}s. For example, we can represent a 3-bit word, \ensuremath{\mathit{word}_3},
-using the type \ensuremath{\mathit{bool}\times (\mathit{bool}\times \mathit{bool})}.  We can perform various
+using the type \ensuremath{\mathit{bool} * (\mathit{bool} *  \mathit{bool})}.  We can perform various
 operations on these 3-bit words using combinators in \ensuremath{\Pi }. For
 instance the bitwise \ensuremath{\mathit{not}} operation is the parallel composition of
 three \ensuremath{\mathit{not}} operations:
 
 \ensuremath{\mathit{not}_{\mathit{word}_3} :: \mathit{word}_3 \leftrightarrow \mathit{word}_3}
 
-\ensuremath{\mathit{not}_{\mathit{word}_3} = \mathit{not} \times (\mathit{not} \times \mathit{not})}
+\ensuremath{\mathit{not}_{\mathit{word}_3} = \mathit{not}  *  (\mathit{not}  *  \mathit{not})}
 
 \noindent We can express a 3-bit word reversal operation as follows:
 
 \ensuremath{\mathit{reverse} : \mathit{word}_3 \leftrightarrow \mathit{word}_3}
 
-\ensuremath{\mathit{reverse} = \swapt \odot (\swapt \times \idc)~ \odot \assocrt}
+\ensuremath{\mathit{reverse} = \swapt \odot (\swapt  *  \idc)~ \odot \assocrt}
 
 \noindent We can check that \ensuremath{\mathit{reverse}} does the right thing by
 applying it to a value \ensuremath{(v_1, (v_2, v_3))} and writing out the full
@@ -1742,7 +1744,7 @@ is given below:
 \[\begin{array}{rlr}
  & (v_1, (v_2, v_3)) \\
  \swapt & ((v_2, v_3), v_1) \\
- \swapt \times \idc & ((v_3, v_2), v_1) \\
+ \swapt  *  \idc & ((v_3, v_2), v_1) \\
  \assocrt & (v_3, (v_2, v_1)) \\
  \end{array}\]
 %subcode source isomorphisms.tex:979
@@ -1770,17 +1772,17 @@ of a value \ensuremath{v:b} based on the value of another one of type
 b_2} or \ensuremath{c_2:b_1\leftrightarrow b_2} to the value \ensuremath{v},
 then we essentially have an `if' expression.
 
-\ensuremath{\mathit{if}_{c_1,c_2} : \mathit{bool} \times b_1 \leftrightarrow \mathit{bool} \times b_2}
+\ensuremath{\mathit{if}_{c_1,c_2} : \mathit{bool}  *  b_1 \leftrightarrow \mathit{bool}  *  b_2}
 
-\ensuremath{\mathit{if}_{c_1,c_2} = \dist \odot ((\idc \times c_1) + (\idc \times c_2)) \odot \factor}
+\ensuremath{\mathit{if}_{c_1,c_2} = \dist \odot ((\idc  *  c_1) + (\idc  *  c_2)) \odot \factor}
 
 
 \inkscape{if-c1-c2.pdf}
 
 
-The diagram above shows the input value of type \ensuremath{(1+1)\times b_2}
+The diagram above shows the input value of type \ensuremath{(1+1) *  b_2}
 processed by the distribute operator \ensuremath{\dist}, which converts it into
-a value of type \ensuremath{(1\times b_2)+(1\times b_2)}. In the
+a value of type \ensuremath{(1 *  b_2)+(1 *  b_2)}. In the
 \ensuremath{\mathit{left}} branch, which corresponds to the
 case when the boolean is \ensuremath{\mathit{true}} (i.e. the value was
 \ensuremath{\mathit{left} ~()}), the combinator~\ensuremath{c_1} is applied to
@@ -1814,12 +1816,12 @@ of the conditional derived above. If the \ensuremath{\mathit{bool}} is
 
 
 By choosing \ensuremath{b} to be \ensuremath{\mathit{bool}} and \ensuremath{c} to be \ensuremath{\mathit{not}}, we have the
-combinator \ensuremath{\mathit{if}_{\mathit{not}} : \mathit{bool}\times \mathit{bool}\leftrightarrow \mathit{bool}\times \mathit{bool}} which negates its
+combinator \ensuremath{\mathit{if}_{\mathit{not}} : \mathit{bool} *  \mathit{bool}\leftrightarrow \mathit{bool} *  \mathit{bool}} which negates its
 second argument if the first argument is \ensuremath{\mathit{true}}. This gate
 \ensuremath{\mathit{if}_{\mathit{not}}} is often referred to as the \ensuremath{\mathit{cnot}} gate\cite{Toffoli:1980}.
 
 If we iterate this construction once more, the resulting combinator
-\ensuremath{\mathit{if}_{\mathit{cnot}}} has type \ensuremath{\mathit{bool}\times (\mathit{bool}\times \mathit{bool})\leftrightarrow \mathit{bool}\times (\mathit{bool}\times \mathit{bool})}. The
+\ensuremath{\mathit{if}_{\mathit{cnot}}} has type \ensuremath{\mathit{bool} *  (\mathit{bool} *  \mathit{bool})\leftrightarrow \mathit{bool} *  (\mathit{bool} *  \mathit{bool})}. The
 resulting gate checks the first argument and if it is \ensuremath{\mathit{true}},
 proceeds to check the second argument. If that is also \ensuremath{\mathit{true}} then
 it will negate the third argument. Thus \ensuremath{\mathit{if}_{\mathit{cnot}}} is the required
@@ -2243,11 +2245,11 @@ $\leadsto$
 % t_1 * (t_2 * (t_3 * t_4))
 % \]
 
-\jc{I am not a big fan of these pictures -- mainly because I can't give any
-intuition based on them of why these can be smoothly deformed into one another.
-All the ``pictures'' I can come up with [via purely formal reasoning] sit in at least
-5 dimensions -- one for each of the wires, and another to give room to maneuver.}
-\end{comment}
+% \jc{I am not a big fan of these pictures -- mainly because I can't give any
+% intuition based on them of why these can be smoothly deformed into one another.
+% All the ``pictures'' I can come up with [via purely formal reasoning] sit in at least
+% 5 dimensions -- one for each of the wires, and another to give room to maneuver.}
+% \end{comment}
 
 \begin{figure}[t]
 Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, and $c_3 : t_5 \leftrightarrow t_6$:
@@ -2470,7 +2472,7 @@ deal with combinators involving $0$, aka an impossibility.  For example,
 \[  {(c \otimes \idc_{0}) \odot \absorbl \Leftrightarrow \absorbl \odot \idc_{0}}
 \]
 (where we have explicitly annotated the types of $\idc$ for increased clarity)
-tells us that of the two ways of transforming from $t_1 \times 0$ to $0$, 
+tells us that of the two ways of transforming from $t_1  *  0$ to $0$, 
 namely first doing some arbitrary transformation $c$ from $t_1$ to $t_2$ and
 (in parallel) leaving $0$ alone then eliminating $0$, or first eliminating $0$
 then doing the identity (at $0$), are equivalent. This is the ``naturality'' of
@@ -2480,23 +2482,24 @@ a property visible at an even higher level (which we will not touch in this
 paper).  The next $3$ are similarly expressing the naturality of $\absorbr$,
 $\factorzl$ and $\factorzr$.
 
-The next combinator, $\absorbr \Leftrightarrow \absorbl$,
-is particularly fascinating: while it says something simple ---
-that the two obvious ways of transforming $0 \times 0$ into $0$, namely
-absorbing either the left or right zero --- it implies something subtle.
-A straightforward proof of $\absorbl$ which proceeds by saying that
-$0 \times t$ cannot be inhabited because the first member of the pair
-cannot, is not in fact equivalent to $\absorbr$ on $0 \times 0$.
-However, if we instead define $\absorbl$ to ``transport'' the
-putative impossible first member of the pair to its (equally
-impossible) output, then these do form equivalent pairs.
-The next few in Fig.~\ref{figc} also express how $\absorbr$ and
-$\absorbl$ interact with other combinators. As seen previously,
-all of these arise as critical pairs. What is much more subtle here
-is that the types involved often are asymmetric: they do not have
-the same occurences on the left and right. Such cases are
-particularly troublesome for finding normal forms \jc{should add
-some citations here}.
+The next combinator, $\absorbr \Leftrightarrow \absorbl$, is
+particularly fascinating: while it says something simple --- that the
+two obvious ways of transforming $0 * 0$ into $0$, namely absorbing
+either the left or right zero --- it implies something subtle.  A
+straightforward proof of $\absorbl$ which proceeds by saying that
+$0 * t$ cannot be inhabited because the first member of the pair
+cannot, is not in fact equivalent to $\absorbr$ on $0 * 0$.  However,
+if we instead define $\absorbl$ to ``transport'' the putative
+impossible first member of the pair to its (equally impossible)
+output, then these do form equivalent pairs.  The next few in
+Fig.~\ref{figc} also express how $\absorbr$ and $\absorbl$ interact
+with other combinators. As seen previously, all of these arise as
+critical pairs. What is much more subtle here is that the types
+involved often are asymmetric: they do not have the same occurrences
+on the left and right. Such cases are particularly troublesome for
+finding normal forms. 
+
+%% \jc{should add some citations here}.
 
 \begin{figure}[t]
 \[\def\arraystretch{1.3}
@@ -2952,8 +2955,8 @@ finally re-associate to get the result.
 
 \renewcommand{\AgdaIndentSpace}{\AgdaSpace{}$\;\;$}
 
-\jc{The above is, up to uses of assoc, a linear notation for a
-commutative diagram. So draw it.}
+% \jc{The above is, up to uses of assoc, a linear notation for a
+% commutative diagram. So draw it.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Further Thoughts and Conclusions}
