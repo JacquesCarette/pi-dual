@@ -2972,8 +2972,8 @@ we get that \AgdaFunction{swap{-}fl2⇔swap{-}fl1} represents
 
 \newcommand{\idd}{\mathit{id}\leftrightarrow}
 \newcommand{\idf}{\mathit{id}\Leftrightarrow}
-
-\begin{tikzcd}[column sep=normal, row sep=small]
+\vspace*{3mm}
+\begin{tikzcd}[column sep=normal, row sep=normal]
  && (a+c)+b \arrow [r, "\swapp \oplus\idd", ""{name=U, below}] & (c+a)+b \arrow [dr, "\assocrp"] && \\
  & a+(c+b) \arrow [ur, "\assoclp"] & & & c+(a+b) \arrow [dr, "\idd\oplus\swapp"] &  \\
 a+(b+c) \arrow [ur, "\idd\oplus\swapp"] \arrow [r, "\assoclp"]
@@ -2986,7 +2986,7 @@ a+(b+c) \arrow [ur, "\idd\oplus\swapp"] \arrow [r, "\assoclp"]
  & (a+b)+c \arrow [dr, swap, "\swapp"] & c+(a+b) \arrow [rr, swap, "\idd", ""{name=DD, above}]
              \arrow [d, Rightarrow, "\idf\, \mathit{idl}\odot{l}"] && 
     c+(a+b) \arrow [ruu, "\idd\oplus\swapp"] & \\
- && c+(a+b) \arrow [rrruuu, bend right = 30, swap, "\idd\oplus\swapp"] && \\
+ && c+(a+b) \arrow [rrruuu, bend right = 40, swap, "\idd\oplus\swapp"] && \\
  \arrow[Rightarrow, from=U, to=D, "\mathit{hexagon}\oplus{r}\, \boxdot\, \idf"]
  \arrow[Rightarrow, from=Z, to=DD, swap, "\idf\boxdot\mathit{linv}\odot{l}\,\boxdot\,\idf"]
 \end{tikzcd}
@@ -2997,9 +2997,34 @@ original definition.
 
 We would be remiss in letting the reader believe that the above is ``the''
 categorical diagram that would be found in categorical textbooks. Rather,
-congruence would be used to elide the $\idf$. The various arrows would also
-be named differently --- our \assoclp is often named $\alpha$,
+congruence would be used to elide the $\idf$. Furthermore, the various arrows
+would also be named differently --- our \assoclp is often named $\alpha$,
 \assocrp is $\alpha^{-1}$, $\swapp$ is $B$ (always with subscripts).
+And the two steps needed to remove inverses (i.e. first cancelling
+inverse arrows, then removing the resulting identity arrow ``in context'')
+are often combined into one. Here we'll simply name this operation 
+$\mathit{cancel}$, which could be programmed as a defined function over
+$\Pi$ level-2.  The result would then be the much simpler
+
+\vspace*{3mm}
+\begin{tikzcd}[column sep=normal, row sep=normal]
+ & a+(c+b) \arrow [r, "\assoclp", ""{name=U, below}] & (a+c)+b \arrow [rd, "\swapp\oplus\idd"] & & & \\
+a+(b+c) \arrow [ur, "\idd\oplus\swapp"] \arrow [dr, "\assoclp"]
+  & & & (c+a)+b \arrow [r, "\assocrp", ""{name=UU, below}] & c+(a+b) \arrow [r, "\idd\oplus\swapp"] & c+(b+a) \\
+ & (a+b)+c \arrow [r, swap, "\swapp", ""{name=D, above}] & c+(a+b) \arrow [ur, "\assoclp"] 
+  \arrow [urrr, swap, "\idd\oplus\swapp", ""{name=DD,above}] & & & & \\
+ \arrow[Rightarrow, from=U, to=D, "\mathit{hexagon}\oplus{r}"]
+ \arrow[Rightarrow, from=UU, to=DD, "\mathit{cancel}"]
+\end{tikzcd}
+
+In other words, each (non-refocusing) line of the proof of
+\AgdaFunction{swap{-}fl2⇔swap{-}fl1}\; is a complete path 
+from left to right in each diagram above, and the annotation
+on the right-hand-side becomes the natural transformation (denoted
+by vertical $\Rightarrow$) justifying the move to the next line.
+The first diagram uses lines $1,4,7,8$ in full; the second
+diagram collapses $7$ and $8$ into one, as well as not duplicating
+parts which are related by $\idf$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Further Thoughts and Conclusions}
