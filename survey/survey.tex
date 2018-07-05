@@ -2075,7 +2075,7 @@ Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_
 
 Starting with the simplest constructions, the first two constructs in
 Fig.~\ref{fige} are the level-2 analogs of $+$ and $*$, which respectively
-model combinator-level choice composition and parallel composition (of
+model level-1 choice composition and parallel composition (of
 equivalences).  These allow us to ``build up'' larger equivalences from smaller
 ones.  The next two express that both of these composition operators distribute
 over sequential composition $\odot$ (and vice versa).
@@ -2106,7 +2106,7 @@ the different ways of associating programs are equivalent. The first
 says that sequential composition itself ($\odot$) is associative.
 The next $4$ capture how
 the $\oplus$ and $\otimes$ combinators ``commute'' with re-association.
-In other words, it expresses the type-level associativity of $+$ is
+In other words, it expresses that the type-level associativity of $+$ is
 properly reflected by the properties of $\oplus$.
 The last two equivalences show how composition of associativity combinators
 interact together. 
@@ -2268,7 +2268,7 @@ Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, and $c_3 :
 
 The constructs in Fig.~\ref{figi} are the basic coherence for
 $\dist$, $\distl$, $\factor$ and $\factorl$: the type-level distribution
-and factoring has to commute with the combinator-level $\oplus$ and $\otimes$.
+and factoring has to commute with the level-1 $\oplus$ and $\otimes$.
 
 \begin{comment}
 \begin{center}
@@ -2414,7 +2414,7 @@ Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
 \end{figure}
 
 The first two equivalences in Fig.~\ref{figf} reflect the basic
-coherence between type-level swapping and and the level-2 combinator
+coherence between level-0 swapping and the level-1 combinator
 actions. The next four arise because of interactions between
 (additive and multiplicative) level-1 associativity and swapping.
 In other words, they arise as critical pairs.  For example,
@@ -2593,7 +2593,7 @@ follows.
 \newcommand{\transLR}{\AgdaInductiveConstructor{trans⇔}}
 If all expressible transformations were single-step only, this
 would hardly justify calling this an ``operational semantics'',
-as we would hardly have a programming language. However, this level
+as we would hardly have a programming language. However, level-2
 of $\Pi$ has combinators as well: two are in
 Fig.~\ref{fige} and two are in Fig.~\ref{figh}. The most interesting
 one is ``sequential composition'', which is the middle one at the 
