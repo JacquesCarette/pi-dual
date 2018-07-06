@@ -1384,9 +1384,8 @@ The morphisms that witness that \ensuremath{0} and \ensuremath{1} are the additi
   multiplicative units are represented as shown below. Note that since there
   is no value of type 0, there can be no particle on a wire of type \ensuremath{0}.
   Also since the monoidal units can be freely introduced and eliminated, sometimes
-  they are omitted.  However, as this is in fact dangerous, as explained by
-  many diagrams they are omitted and dealt with explicitly only when they are
-  of special interest.
+  they are omitted.  However, as this is in fact dangerous, as explained
+  by~\cite{BLUTE1996229}, we will err on the side of including them.
 
 \begin{multicols}{2}
 \inkscape{uniti.pdf}
@@ -1685,16 +1684,6 @@ quote by Minsky communicating this concern:
   also be reversible — and invented what’s now called the Fredkin
   gate~\cite{Hey:1999:FCE:304763}. 
 \end{quote}
-
-% \begin{verbatim}
-% examples:
-%   (1 + 1) x ((1 + 1) x b) = (b+b) + (b+b)
-%   conditionals
-%   toffoli
-%   fredkin
-%   revisit adder example from Sec 2
-%   perhaps a larger example as well (from RC 18 paper?)
-% \end{verbatim}
 
 We will however show that one can program all logical gates in
 $\Pi$. We will start with a few simply examples and then discuss the
@@ -2035,6 +2024,10 @@ insure that all the ``obvious'' equalities between different abstract
 words in these systems give rise to commutative diagrams. The
 ``obvious'' equalities come from \emph{syzygies} or
 \emph{critical pairs} of the system of equations.
+The problem is far from trivial --- Fiore et al.~\cite{Fiore-2008}
+document some publications where the coherence set is in
+fact incorrect. They furthermore give a quite general algorithm
+to derive such coherence conditions.
 
 %%%%%%%%%
 \subsection{A Language of Equivalences between Type Equivalences}
@@ -2497,7 +2490,9 @@ with other combinators. As seen previously, all of these arise as
 critical pairs. What is much more subtle here is that the types
 involved often are asymmetric: they do not have the same occurrences
 on the left and right. Such cases are particularly troublesome for
-finding normal forms. 
+finding normal forms. Laplaza~\cite{laplaza72} certainly comments on this,
+but in mostly terse and technical terms. Blute et al.~\cite{BLUTE1996229}
+offer much more intuitive explanations.
 
 %% \jc{should add some citations here}.
 
