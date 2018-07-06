@@ -489,14 +489,14 @@ mutual
   eval₁ (dist⇔r {a = c₁} {c₂} {c₃}) = ((c₁ ⊕ c₂) ⊗ c₃) ◎ dist
   eval₁ (distl⇔l {a = c₁} {c₂} {c₃}) = distl ◎ ((c₁ ⊗ c₂) ⊕ (c₁ ⊗ c₃))
   eval₁ (distl⇔r {a = c₁} {c₂} {c₃}) = (c₁ ⊗ (c₂ ⊕ c₃)) ◎ distl
-  eval₁ factor⇔l = {!!}
-  eval₁ factor⇔r = {!!}
-  eval₁ factorl⇔l = {!!}
-  eval₁ factorl⇔r = {!!}
-  eval₁ idl◎l = {!!}
-  eval₁ idl◎r = {!!}
-  eval₁ idr◎l = {!!}
-  eval₁ idr◎r = {!!}
+  eval₁ (factor⇔l {a = c₁} {c₂} {c₃}) = factor ◎ ((c₁ ⊕ c₂) ⊗ c₃)
+  eval₁ (factor⇔r {a = c₁} {c₂} {c₃}) = ((c₁ ⊗ c₃) ⊕ (c₂ ⊗ c₃)) ◎ factor
+  eval₁ (factorl⇔l {a = c₁} {c₂} {c₃}) = factorl ◎ (c₁ ⊗ (c₂ ⊕ c₃))
+  eval₁ (factorl⇔r {a = c₁} {c₂} {c₃}) = ((c₁ ⊗ c₂) ⊕ (c₁ ⊗ c₃)) ◎ factorl
+  eval₁ (idl◎l {c = c}) = c
+  eval₁ (idl◎r {c = c}) = id⟷ ◎ c
+  eval₁ (idr◎l {c = c}) = c
+  eval₁ (idr◎r {c = c}) = c ◎ id⟷
   eval₁ linv◎l = {!!}
   eval₁ linv◎r = {!!}
   eval₁ rinv◎l = {!!}
@@ -609,13 +609,13 @@ mutual
   exact distl⇔l = refl
   exact distl⇔r = refl
   exact factor⇔l = refl
-  exact factor⇔r = {!!}
-  exact factorl⇔l = {!!}
-  exact factorl⇔r = {!!}
-  exact idl◎l = {!!}
-  exact idl◎r = {!!}
-  exact idr◎l = {!!}
-  exact idr◎r = {!!}
+  exact factor⇔r = refl
+  exact factorl⇔l = refl
+  exact factorl⇔r = refl
+  exact idl◎l = refl
+  exact idl◎r = refl
+  exact idr◎l = refl
+  exact idr◎r = refl
   exact linv◎l = {!!}
   exact linv◎r = {!!}
   exact rinv◎l = {!!}
