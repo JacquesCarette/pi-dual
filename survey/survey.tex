@@ -34,8 +34,8 @@
 \newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
 \newcommand{\mm}{\texttt{\textminus}}
 \newcommand{\pp}{\texttt{+}}
-\newcommand{\inl}[1]{\textsf{inl}~#1}
-\newcommand{\inr}[1]{\textsf{inr}~#1}
+\newcommand{\inleft}[1]{\textsf{left}~#1}
+\newcommand{\inright}[1]{\textsf{right}~#1}
 \newcommand{\cp}[3]{#1\stackrel{#2}{\bullet}#3}
 \newcommand{\idt}[3]{#2 \equiv_{#1} #3}
 \newcommand{\idrt}[3]{#3 \equiv_{#1} #2}
@@ -475,7 +475,7 @@ the starting point for this development is the physical principle of
 ``conservation of
 information''~\cite{Hey:1999:FCE:304763,fredkin1982conservative} and
 the family of languages is designed to embrace that principle by
-requiring all computations to preserve information. 
+requiring all computations to preserve information.
 
 The fragment without
 recursive types is universal for reversible boolean
@@ -828,15 +828,15 @@ of the ``problem.'' In logic, we have that $\land$ and $\lor$ are both
 where $\forall a. a * a = a$. And it should be clear that an
 idempotent operations is a \emph{forgetful} operation: its input has
 two copies of $a$, but its output, only one. On the type side,
-something more subtle happens. Consider $\top \uplus \top$
-versus $\top$; the first has exactly \emph{two} proofs of inhabitation
-($\inl{\texttt{tt}}$ and $\inr{\texttt{tt}}$) while the second only one
-($\texttt{tt}$). These cannot be put in bijective correspondence. Even
-though the ``payload'' \texttt{tt} is the same, forgetting
-$\texttt{inl}$ (or \texttt{inr}) throws away information -- something
-we have expressly disallowed.  Yes, this should remind you of
-Maxwell's daemon: even though the data is the same, they are tagged
-differently, and these tags are indeed information, and their
+something more subtle happens. Consider $\top \uplus \top$ versus
+$\top$; the first has exactly \emph{two} proofs of inhabitation
+($\inleft{\texttt{tt}}$ and $\inright{\texttt{tt}}$) while the second
+only one ($\texttt{tt}$). These cannot be put in bijective
+correspondence. Even though the ``payload'' \texttt{tt} is the same,
+forgetting $\texttt{left}$ (or \texttt{right}) throws away information
+-- something we have expressly disallowed.  Yes, this should remind
+you of Maxwell's daemon: even though the data is the same, they are
+tagged differently, and these tags are indeed information, and their
 information content must be preserved.
 
 \begin{figure}[t]
@@ -969,7 +969,7 @@ $c_1$ first, then $c_2$, and is the usual notion of composition -- and
 corresponds to $\fatsemi$ of the language of permutations of
 Sec.~\ref{sec:dataone}. The construction $c_1 \oplus c_2$ chooses to
 perform $c_1$ or $c_2$ depending on whether the input is labelled
-$\textsf{inl}$ or $\textsf{inr}$ respectively. Finally the
+$\textsf{left}$ or $\textsf{right}$ respectively. Finally the
 construction $c_1 \otimes c_2$ operates on a product structure, and
 applies $c_1$ to the first component and $c_2$ to the second. The
 language of permutations lacked the ability to combine permutations by
@@ -1213,7 +1213,7 @@ for greater clarity of this definition:
 
 We are now ready to go further and establish
 that there is always an equivalence between a type and the canonical
-type of the same size. 
+type of the same size.
 
 \begin{proposition}
   For any type \ensuremath{b} there exists an isomorphism \ensuremath{b \leftrightarrow \sharp\, b}.
@@ -1221,7 +1221,7 @@ type of the same size.
     The fact that such an isomorphism exists is evident from the
     definition of size and what it means for two types to be
     isomorphic. While many equivalent constructions are possible
-    for any type \ensuremath{b}, one such construction is given by 
+    for any type \ensuremath{b}, one such construction is given by
     \sem{b}:
 
 \[\begin{array}{rclr}
@@ -1416,7 +1416,7 @@ There are two forms of parallel composition -- combinators
 of the combinator \ensuremath{c} below:
 \[\begin{array}{rcl}
 c & : & b * (1+1) \leftrightarrow b + b \\
-c & = & \swapt \odot \dist \odot (\identlt \oplus \identlt) 
+c & = & \swapt \odot \dist \odot (\identlt \oplus \identlt)
 \end{array}\]
 
 \begin{center}
@@ -1485,7 +1485,7 @@ quote by Minsky communicating this concern:
   quite immune to objections like that; indeed, they fuel him with
   energy. Soon he went on to assume that information processing must
   also be reversible — and invented what’s now called the Fredkin
-  gate~\cite{Hey:1999:FCE:304763}. 
+  gate~\cite{Hey:1999:FCE:304763}.
 \end{quote}
 
 We will however show that one can program all logical gates in
@@ -1887,7 +1887,7 @@ the $\oplus$ and $\otimes$ combinators ``commute'' with re-association.
 In other words, it expresses that the type-level associativity of $+$ is
 properly reflected by the properties of $\oplus$.
 The last two equivalences show how composition of associativity combinators
-interact together. 
+interact together.
 
 The bottom line in Fig.~\ref{figj} is actually a linear
 restatement of the famous ``pentagon diagram'' stating a
@@ -1899,8 +1899,8 @@ the same morphism but in categorical terms.
 \begin{center}
 \begin{tikzcd}[column sep=normal]
    & (A \times (B \times C)) \times D \arrow [dr, "\assocrt"] & \\
-((A \times B) \times C) \times D \arrow [ur, "\assocrt \otimes \mathit{id}\leftrightarrow"] 
-   \arrow [d, "\assocrt"] & 
+((A \times B) \times C) \times D \arrow [ur, "\assocrt \otimes \mathit{id}\leftrightarrow"]
+   \arrow [d, "\assocrt"] &
        & A \times ((B \times C) \times D) \arrow [d, "\mathit{id}\leftrightarrow \otimes \assocrt" ]\\
 (A \times B) \times (C \times D) \arrow [rr, "\assocrt"] & & A \times (B \times (C \times D))
 \end{tikzcd}
@@ -2096,7 +2096,7 @@ deal with combinators involving $0$, aka an impossibility.  For example,
 \[  {(c \otimes \idc_{0}) \odot \absorbl \Leftrightarrow \absorbl \odot \idc_{0}}
 \]
 (where we have explicitly annotated the types of $\idc$ for increased clarity)
-tells us that of the two ways of transforming from $t_1  *\  0$ to $0$, 
+tells us that of the two ways of transforming from $t_1  *\  0$ to $0$,
 namely first doing some arbitrary transformation $c$ from $t_1$ to $t_2$ and
 (in parallel) leaving $0$ alone then eliminating $0$, or first eliminating $0$
 then doing the identity (at $0$), are equivalent. This is the ``naturality'' of
@@ -2220,12 +2220,12 @@ would hardly justify calling this an ``operational semantics,''
 as we would hardly have a programming language. However, level-2
 of $\Pi$ has combinators as well: two are in
 Fig.~\ref{fige} and two are in Fig.~\ref{figh}. The most interesting
-one is ``sequential composition,'' which is the middle one at the 
+one is ``sequential composition,'' which is the middle one at the
 bottom of Fig.~\ref{figh}. Since $\Leftrightarrow$ represents
 an equivalence, sequential composition in this context is the
 same as transitivity of equivalences, as thus we have chosen to
 name this \transLR. When evaluating \transLR, we could cheat:
-we know that the eventual answer must be, and we could just 
+we know that the eventual answer must be, and we could just
 return that. But this is not operational in any real sense, as
 that skips over the intermediate steps. We would like to be able
 to ``trace'' the rewrite. Thus the evaluation of
@@ -2347,7 +2347,7 @@ The second implementation rewrites the incoming values as follows:
 \]
 \noindent The two circuits are extensionally equal. Using the level-2
 isomorphisms we can \emph{explicitly} construct a sequence of
-rewriting steps that transforms the second circuit to the first.  
+rewriting steps that transforms the second circuit to the first.
 
 We write such proofs in an equational style: in the left column, we have
 the current combinator which is equivalent to the first one, and in
@@ -2369,7 +2369,7 @@ finally re-associate to get the result.
 \setlength\mathindent{0.5em}
 
 \medskip
-{\footnotesize 
+{\footnotesize
 \begin{samepage}
 \begin{code}%
 \>[0]\AgdaFunction{swap{-}fl2⇔swap{-}fl1}\AgdaSpace{}%
@@ -2598,11 +2598,11 @@ a+(b+c) \arrow [ur, "\idd\oplus\swapp"] \arrow [r, "\assoclp"]
   \arrow [dr, "\assoclp"]
   \arrow [ddr, swap, "\assoclp"]
     & (a+b)+c \arrow [r, "\swapp"] &
-    c+(a+b) \arrow [r, swap, "\assoclp", ""{name=D, above}] 
+    c+(a+b) \arrow [r, swap, "\assoclp", ""{name=D, above}]
     & |[alias=Z]| (c+a)+b \arrow [r, "\assocrp"] &c+(a+b) \arrow [r, "\idd\oplus\swapp"] & c+(b+a) \\
  & (a+b)+c \arrow [dr, "\swapp"] &&&& \\
  & (a+b)+c \arrow [dr, swap, "\swapp"] & c+(a+b) \arrow [rr, swap, "\idd", ""{name=DD, above}]
-             \arrow [d, Rightarrow, "\idf\, \mathit{idl}\odot{l}"] && 
+             \arrow [d, Rightarrow, "\idf\, \mathit{idl}\odot{l}"] &&
     c+(a+b) \arrow [ruu, "\idd\oplus\swapp"] & \\
  && c+(a+b) \arrow [rrruuu, bend right = 40, swap, "\idd\oplus\swapp"] && \\
  \arrow[Rightarrow, from=U, to=D, "\mathit{hexagon}\oplus{r}\, \boxdot\, \idf"]
@@ -2620,7 +2620,7 @@ would also be named differently --- our \assoclp\ is often named $\alpha$,
 \assocrp\ is $\alpha^{-1}$, $\swapp$ is $B$ (always with subscripts).
 And the two steps needed to remove inverses (i.e. first cancelling
 inverse arrows, then removing the resulting identity arrow ``in context'')
-are often combined into one. Here we'll simply name this operation 
+are often combined into one. Here we'll simply name this operation
 $\mathit{cancel}$, which could be programmed as a defined function over
 $\Pi$ level-2.  The result would then be the much simpler
 
@@ -2629,14 +2629,14 @@ $\Pi$ level-2.  The result would then be the much simpler
  & a+(c+b) \arrow [r, "\assoclp", ""{name=U, below}] & (a+c)+b \arrow [rd, "\swapp\oplus\idd"] & & & \\
 a+(b+c) \arrow [ur, "\idd\oplus\swapp"] \arrow [dr, "\assoclp"]
   & & & (c+a)+b \arrow [r, "\assocrp", ""{name=UU, below}] & c+(a+b) \arrow [r, "\idd\oplus\swapp"] & c+(b+a) \\
- & (a+b)+c \arrow [r, swap, "\swapp", ""{name=D, above}] & c+(a+b) \arrow [ur, "\assoclp"] 
+ & (a+b)+c \arrow [r, swap, "\swapp", ""{name=D, above}] & c+(a+b) \arrow [ur, "\assoclp"]
   \arrow [urrr, swap, "\idd\oplus\swapp", ""{name=DD,above}] & & & & \\
  \arrow[Rightarrow, from=U, to=D, "\mathit{hexagon}\oplus{r}"]
  \arrow[Rightarrow, from=UU, to=DD, "\mathit{cancel}"]
 \end{tikzcd}
 
 In other words, each (non-refocusing) line of the proof of
-\AgdaFunction{swap{-}fl2⇔swap{-}fl1}\; is a complete path 
+\AgdaFunction{swap{-}fl2⇔swap{-}fl1}\; is a complete path
 from left to right in each diagram above, and the annotation
 on the right-hand-side becomes the natural transformation (denoted
 by vertical $\Rightarrow$) justifying the move to the next line.
