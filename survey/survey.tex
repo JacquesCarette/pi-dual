@@ -34,6 +34,8 @@
 \newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
 \newcommand{\mm}{\texttt{\textminus}}
 \newcommand{\pp}{\texttt{+}}
+\newcommand{\sumtype}{+}
+\newcommand{\prodtype}{\times}
 \newcommand{\inleft}[1]{\textsf{left}~#1}
 \newcommand{\inright}[1]{\textsf{right}~#1}
 \newcommand{\cp}[3]{#1\stackrel{#2}{\bullet}#3}
@@ -45,20 +47,20 @@
 \newcommand{\rinv}{r!}
 \newcommand{\invinv}{!!}
 \newcommand{\assoc}{\circ}
-\newcommand{\identlp}{\ensuremath{\mathit{unite}_+\mathit{l}}}
-\newcommand{\identrp}{\ensuremath{\mathit{uniti}_+\mathit{l}}}
-\newcommand{\identlsp}{\ensuremath{\mathit{unite}_+\mathit{r}}}
-\newcommand{\identrsp}{\ensuremath{\mathit{uniti}_+\mathit{r}}}
-\newcommand{\swapp}{\ensuremath{\mathit{swap}_+}}
-\newcommand{\assoclp}{\ensuremath{\mathit{assocl}_+}}
-\newcommand{\assocrp}{\ensuremath{\mathit{assocr}_+}}
-\newcommand{\identlt}{\ensuremath{\mathit{unite}_*\mathit{l}}}
-\newcommand{\identrt}{\ensuremath{\mathit{uniti}_*\mathit{l}}}
-\newcommand{\identlst}{\ensuremath{\mathit{unite}_*\mathit{r}}}
-\newcommand{\identrst}{\ensuremath{\mathit{uniti}_*\mathit{r}}}
-\newcommand{\swapt}{\ensuremath{\mathit{swap}_*}}
-\newcommand{\assoclt}{\ensuremath{\mathit{assocl}_*}}
-\newcommand{\assocrt}{\ensuremath{\mathit{assocr}_*}}
+\newcommand{\identlp}{\ensuremath{\mathit{unite}_{\sumtype}\mathit{l}}}
+\newcommand{\identrp}{\ensuremath{\mathit{uniti}_{\sumtype}\mathit{l}}}
+\newcommand{\identlsp}{\ensuremath{\mathit{unite}_{\sumtype}\mathit{r}}}
+\newcommand{\identrsp}{\ensuremath{\mathit{uniti}_{\sumtype}\mathit{r}}}
+\newcommand{\swapp}{\ensuremath{\mathit{swap}_{\sumtype}}}
+\newcommand{\assoclp}{\ensuremath{\mathit{assocl}_{\sumtype}}}
+\newcommand{\assocrp}{\ensuremath{\mathit{assocr}_{\sumtype}}}
+\newcommand{\identlt}{\ensuremath{\mathit{unite}_{\prodtype}\mathit{l}}}
+\newcommand{\identrt}{\ensuremath{\mathit{uniti}_{\prodtype}\mathit{l}}}
+\newcommand{\identlst}{\ensuremath{\mathit{unite}_{\prodtype}\mathit{r}}}
+\newcommand{\identrst}{\ensuremath{\mathit{uniti}_{\prodtype}\mathit{r}}}
+\newcommand{\swapt}{\ensuremath{\mathit{swap}_{\prodtype}}}
+\newcommand{\assoclt}{\ensuremath{\mathit{assocl}_{\prodtype}}}
+\newcommand{\assocrt}{\ensuremath{\mathit{assocr}_{\prodtype}}}
 \newcommand{\absorbr}{\ensuremath{\mathit{absorbr}}}
 \newcommand{\absorbl}{\ensuremath{\mathit{absorbl}}}
 \newcommand{\factorzr}{\ensuremath{\mathit{factorzr}}}
@@ -821,6 +823,9 @@ constructive statement: there are indeed functions
 $f : A \uplus A \rightarrow A$ and $g : A \rightarrow A \uplus A$;
 however, they are not inverses.
 
+%% \roshan{Use something else other than $*$ here to talk about
+%%   idempotence.}
+
 So mere inhabitation falls far short of our goals of being able to
 smoothly deform from one type to another. Let us thus analyze the crux
 of the ``problem.'' In logic, we have that $\land$ and $\lor$ are both
@@ -897,16 +902,16 @@ they are identical after evaluation), unlike that for types.
 \begin{array}{rrcll}
 \idc :& t & \iso & t &: \idc \\
 \\
-\identlp :&  0 + t & \iso & t &: \identrp \\
-\swapp :&  t_1 + t_2 & \iso & t_2 + t_1 &: \swapp \\
-\assoclp :&  t_1 + (t_2 + t_3) & \iso & (t_1 + t_2) + t_3 &: \assocrp \\
+\identlp :&  0 \sumtype t & \iso & t &: \identrp \\
+\swapp :&  t_1 \sumtype t_2 & \iso & t_2 \sumtype t_1 &: \swapp \\
+\assoclp :&  t_1 \sumtype (t_2 \sumtype t_3) & \iso & (t_1 \sumtype t_2) \sumtype t_3 &: \assocrp \\
 \\
-\identlt :&  1 * t & \iso & t &: \identrt \\
-\swapt :&  t_1 * t_2 & \iso & t_2 * t_1 &: \swapt \\
-\assoclt :&  t_1 * (t_2 * t_3) & \iso & (t_1 * t_2) * t_3 &: \assocrt \\
+\identlt :&  1 {\prodtype} t & \iso & t &: \identrt \\
+\swapt :&  t_1 {\prodtype} t_2 & \iso & t_2 {\prodtype} t_1 &: \swapt \\
+\assoclt :&  t_1 {\prodtype} (t_2 {\prodtype} t_3) & \iso & (t_1 {\prodtype} t_2) {\prodtype} t_3 &: \assocrt \\
 \\
-\absorbr :&~ 0 * t & \iso & 0 ~ &: \factorzl \\
-\dist :&~ (t_1 + t_2) * t_3 & \iso & (t_1 * t_3) + (t_2 * t_3)~ &: \factor
+\absorbr :&~ 0 {\prodtype} t & \iso & 0 ~ &: \factorzl \\
+\dist :&~ (t_1 \sumtype t_2) {\prodtype} t_3 & \iso & (t_1 {\prodtype} t_3) \sumtype (t_2 {\prodtype} t_3)~ &: \factor
 \end{array}
 \]
 \caption{$\Pi$-terms.}
@@ -920,7 +925,7 @@ $\bot, \top, \uplus, \times$, and such that we have ground terms whose
 denotation are all $16$ type isomorphisms of
 Fig.~\ref{type-isos}. This is rather straightforward, as we can simply
 do this literally. To make the analogy with commutative semirings
-stand out even more, we will use $0, 1, +$, and $*$ at the type level,
+stand out even more, we will use $0, 1, \sumtype$, and ${\prodtype}$ at the type level,
 and will denote ``equivalence'' by $\iso$.  Thus Fig.~\ref{pi-terms}
 shows the ``constants'' of the language. Note how we have continued
 with the spirit of Curry-Howard: the terms of $\Pi$ are \emph{proof
@@ -929,10 +934,8 @@ witnesses of equivalences. Thus we get an unexpected programming
 language design:
 
 \begin{center}
-\fbox{
-The proof terms denoting
-commutative semiring equivalences
-induce the terms of $\Pi$.}
+\fbox{ The proof terms denoting commutative semiring equivalences
+  induce the terms of $\Pi$.}
 \end{center}
 \vspace*{3mm}
 
@@ -945,13 +948,13 @@ induce the terms of $\Pi$.}
 \qquad
 \Rule{}
 {\jdg{}{}{c_1 : t_1 \iso t_2} \quad \vdash c_2 : t_3 \iso t_4}
-{\jdg{}{}{c_1 \oplus c_2 : t_1 + t_3 \iso t_2 + t_4}}
+{\jdg{}{}{c_1 \oplus c_2 : t_1 \sumtype t_3 \iso t_2 \sumtype t_4}}
 {}
 \]
 \[
 \Rule{}
 {\jdg{}{}{c_1 : t_1 \iso t_2} \quad \vdash c_2 : t_3 \iso t_4}
-{\jdg{}{}{c_1 \otimes c_2 : t_1 * t_3 \iso t_2 * t_4}}
+{\jdg{}{}{c_1 \otimes c_2 : t_1 {\prodtype} t_3 \iso t_2 {\prodtype} t_4}}
 {}
 \]
 \caption{$\Pi$-combinators.}
@@ -977,16 +980,21 @@ taking sums and products, which led to the awkward non-compositional
 programming style illustrated in the full adder
 example~(Eq.~\ref{eq:adder}).
 
-Thus the denotation of the $\Pi$ terms \emph{should} be permutations. But
-given types $A$ and $B$ denoting $\fin{m}$ and~$\fin{n}$ respectively,
-what are $A \uplus B$ and $A \times B$ ?  They correspond exactly to
-$\fin{m+n}$ and $\fin{m*n}$!  Geometrically, this corresponds to
-concatenation for $A + B$, i.e. lining up the elements of $A$ first,
-and then those of~$B$. For $A * B$, one can picture this as
-lining up the elements of $A$ horizontally, those of $B$ vertically
-and perpendicular to those of $A$, and filling in the square with
-pairs of elements from $A$ and $B$; if one re-numbers these sequentially,
-reading row-wise, this gives an enumeration of $\fin{m*n}$.
+%% \roshan{Mixing types and numberix $+$ is super confusing. Let's use a
+%%   block font of some sort for the numeric cases. There are only a few
+%%   of them.}
+
+Thus the denotation of the $\Pi$ terms \emph{should} be
+permutations. But given types $A$ and $B$ denoting $\fin{m}$
+and~$\fin{n}$ respectively, what are $A \uplus B$ and $A \times B$ ?
+They correspond exactly to $\fin{m+n}$ and $\fin{m*n}$!
+Geometrically, this corresponds to concatenation for $A + B$,
+i.e. lining up the elements of $A$ first, and then those of~$B$. For
+$A * B$, one can picture this as lining up the elements of $A$
+horizontally, those of $B$ vertically and perpendicular to those of
+$A$, and filling in the square with pairs of elements from $A$ and
+$B$; if one re-numbers these sequentially, reading row-wise, this
+gives an enumeration of $\fin{m*n}$.
 
 From here, it is easy to see what, for example, $c_1 \oplus c_2$ must be,
 operationally: from a permutation on $\fin{m}$ and another on $\fin{n}$,
@@ -1031,11 +1039,11 @@ prefer the structural symmetry over a minimalistic language definition.
 \begin{figure}[t]
 \[
 \begin{array}{rrcll}
-\identlsp :&  t + 0 & \iso & t &: \identrsp \\
-\identlst :&  t * 1 & \iso & t &: \identrst \\
+\identlsp :&  t \sumtype 0 & \iso & t &: \identrsp \\
+\identlst :&  t {\prodtype} 1 & \iso & t &: \identrst \\
 \\
-\absorbl :&~ t * 0 & \iso & 0 ~ &: \factorzr \\
-\distl :&~ t_1 * (t_2 + t_3) & \iso & (t_1 * t_2) + (t_1 * t_3)~ &: \factorl
+\absorbl :&~ t {\prodtype} 0 & \iso & 0 ~ &: \factorzr \\
+\distl :&~ t_1 {\prodtype} (t_2 \sumtype t_3) & \iso & (t_1 {\prodtype} t_2) \sumtype (t_1 {\prodtype} t_3)~ &: \factorl
 \end{array}
 \]
 \caption{Additional $\Pi$-terms.}
@@ -1201,6 +1209,10 @@ canonical set of size $n$, which we denoted $[n]$. Furthermore, we can
 also define a canonical \emph{type} of that size, which we will denote
 $\sharp\, b$, i.e. $\sharp\, b$ is a canonical type of size $|b|$.
 
+%% \roshan{Mixing types and numberix $+$ is super confusing. Let's use a
+%%   block font of some sort for the numeric cases. There are only a few
+%%   of them.}
+
 \begin{definition}($\sharp$). By recursion on $|b|$.  First define a
 type associated to each size. We will revert to using type notation
 for greater clarity of this definition:
@@ -1227,13 +1239,13 @@ type of the same size.
 \[\begin{array}{rclr}
  \sem{0} & = & \idc \\
  \sem{1} & = & \idc \\
- \sem{1+b} & = & \idc \oplus\ \sem{b} \\
- \sem{(b_1+b_2)+b_3} & = & \assocrp \odot \sem{b_1 + (b_2 + b_3)} \\
- \sem{b_1 + b_2} & = & (\sem{b_1} \oplus \idc) \odot \sem{ \sharp\, b_1 + b_2 } \\
- \sem{0 * b_2} & = & \absorbr \\
- \sem{1 * b_2} & = & \identlt \odot \sem{b_2} \\
- \sem{(b_1 * b_2) * b_3} & = & \assocrt \odot \sem{b_1 * (b_2 * b_3)} \\
- \sem{(b_1+b_2) * b_3} & = & \dist \odot \sem{b_1 * b_3+b_2 * b_3} \\
+ \sem{1{\sumtype}b} & = & \idc \oplus\ \sem{b} \\
+ \sem{(b_1{\sumtype}b_2){\sumtype}b_3} & = & \assocrp \odot \sem{b_1 {\sumtype} (b_2 {\sumtype} b_3)} \\
+ \sem{b_1 {\sumtype} b_2} & = & (\sem{b_1} \oplus \idc) \odot \sem{ \sharp\, b_1 {\sumtype} b_2 } \\
+ \sem{0 {\prodtype} b_2} & = & \absorbr \\
+ \sem{1 {\prodtype} b_2} & = & \identlt \odot \sem{b_2} \\
+ \sem{(b_1 {\prodtype} b_2) {\prodtype} b_3} & = & \assocrt \odot \sem{b_1 {\prodtype} (b_2 {\prodtype} b_3)} \\
+ \sem{(b_1{\sumtype}b_2) {\prodtype} b_3} & = & \dist \odot \sem{b_1 {\prodtype} b_3{\sumtype}b_2 {\prodtype} b_3} \\
  \end{array}\]
 %originally subcode source isomorphisms.tex:598
 
@@ -1272,7 +1284,7 @@ Values flow from left to right in the graphical language of
 \inkscape{b-wire-value.pdf}
 
 \item
-The product type \ensuremath{b_1 * b_2} may be represented both as one wire
+The product type \ensuremath{b_1 {\prodtype} b_2} may be represented both as one wire
 labeled \ensuremath{b_1 \times b_2} or by two parallel wires labeled \ensuremath{b_1} and
 \ensuremath{b_2}. Both representations may be used interchangeably.
 
@@ -1293,7 +1305,7 @@ literature on monoidal categories as a ``wave.''
 
 \item
 Sum types may similarly be represented using using parallel wires with
-a \ensuremath{+} operator between them.
+a \ensuremath{{\sumtype}} operator between them.
 
 \begin{multicols}{2}
 \inkscape{sum-one-wire.pdf}
@@ -1301,7 +1313,7 @@ a \ensuremath{+} operator between them.
 \end{multicols}
 
 \noindent
-When tracing the execution of \ensuremath{b_1+b_2} represented by one
+When tracing the execution of \ensuremath{b_1{\sumtype}b_2} represented by one
 wire, one can think of a value of the form \ensuremath{\mathit{left} ~v_1} or \ensuremath{\mathit{right} ~v_2}
 as flowing on the wire, where \ensuremath{v_1:b_1} and \ensuremath{v_2:b_2}.  When tracing
 the execution of two additive wires, a value can reside on only one of
@@ -1313,7 +1325,7 @@ the two wires.
 \end{multicols}
 
 \item
-When representing complex types like \ensuremath{(b_1 * b_2)+b_3} some visual
+When representing complex types like \ensuremath{(b_1 {\prodtype} b_2){\sumtype}b_3} some visual
 grouping of the wires may be done to aid readability. The exact type
 however will always be clarified by the context of the diagram.
 
@@ -1321,8 +1333,8 @@ however will always be clarified by the context of the diagram.
 
 \item
 Associativity is entirely skipped in the graphical language. Hence
-three parallel wires may be inferred as \ensuremath{b_1 * (b_2 * b_3)} or
-\ensuremath{(b_1 * b_2) * b_3}, based on the context. This is much like handling of
+three parallel wires may be inferred as \ensuremath{b_1 {\prodtype} (b_2 {\prodtype} b_3)} or
+\ensuremath{(b_1 {\prodtype} b_2) {\prodtype} b_3}, based on the context. This is much like handling of
 associativity in the graphical representations of categories as well as
 that for monoidal categories.
 
@@ -1336,7 +1348,7 @@ that for monoidal categories.
 \end{multicols}
 
 \noindent
-When tracing the execution of \ensuremath{b_1+b_2} represented by one wire, one
+When tracing the execution of \ensuremath{b_1{\sumtype}b_2} represented by one wire, one
 can think of a value of the form \ensuremath{\mathit{left} ~v_1} or
 \ensuremath{\mathit{right} ~v_2} as flowing on the wire, where
 \ensuremath{v_1:b_1} and \ensuremath{v_2:b_2}.  By visually
@@ -1378,7 +1390,7 @@ boxes shown below:
 Distributivity and factoring are interesting because they represent
 interactions between sum and pair types. Distributivity should
 essentially be thought of as a multiplexer that redirects the flow of
-\ensuremath{v:b} depending on what value inhabits the type \ensuremath{b_1+b_2}, as shown
+\ensuremath{v:b} depending on what value inhabits the type \ensuremath{b_1{\sumtype}b_2}, as shown
 below.
 
 \begin{multicols}{2}
@@ -1415,7 +1427,7 @@ There are two forms of parallel composition -- combinators
 \textit{Example.} As an example consider the wiring diagram
 of the combinator \ensuremath{c} below:
 \[\begin{array}{rcl}
-c & : & b * (1+1) \leftrightarrow b + b \\
+c & : & b {\prodtype} (1{\sumtype}1) \leftrightarrow b {\sumtype} b \\
 c & = & \swapt \odot \dist \odot (\identlt \oplus \identlt)
 \end{array}\]
 
@@ -1493,7 +1505,7 @@ $\Pi$. We will start with a few simple examples and then discuss the
 expressiveness of the language and its properties.
 
 \paragraph*{Booleans}
-Let us start with encoding booleans. We use the type \ensuremath{1+1} to
+Let us start with encoding booleans. We use the type \ensuremath{1{\sumtype}1} to
 represent booleans with \ensuremath{\mathit{left} ~()} representing \ensuremath{\mathit{true}} and
 \ensuremath{\mathit{right}~()} representing \ensuremath{\mathit{false}}.
 Boolean negation is straightforward to define:
@@ -1509,14 +1521,14 @@ vice versa.
 \paragraph*{Bit Vectors.}
 We can represent $n$-bit words using an n-ary product of
 \ensuremath{\mathit{bool}}s. For example, we can represent a 3-bit word, \ensuremath{\mathit{word}_3},
-using the type \ensuremath{\mathit{bool} * (\mathit{bool} *  \mathit{bool})}.  We can perform various
+using the type \ensuremath{\mathit{bool} {\prodtype} (\mathit{bool} {\prodtype}  \mathit{bool})}.  We can perform various
 operations on these 3-bit words using combinators in \ensuremath{\Pi }. For
 instance the bitwise \ensuremath{\mathit{not}} operation is the parallel composition of
 three \ensuremath{\mathit{not}} operations:
 
 \ensuremath{\mathit{not}_{\mathit{word}_3} :: \mathit{word}_3 \leftrightarrow \mathit{word}_3}
 
-\ensuremath{\mathit{not}_{\mathit{word}_3} = \mathit{not}  *  (\mathit{not}  *  \mathit{not})}
+\ensuremath{\mathit{not}_{\mathit{word}_3} = \mathit{not}  {\prodtype}  (\mathit{not}  {\prodtype}  \mathit{not})}
 
 \noindent We can express a 3-bit word reversal operation as follows:
 
@@ -1559,22 +1571,22 @@ Even though \ensuremath{\Pi } lacks conditional expressions, they are
 expressible using the distributivity and factoring laws. The
 diagrammatic representation of \ensuremath{\dist} shows that it redirects the flow
 of a value \ensuremath{v:b} based on the value of another one of type
-\ensuremath{b_1+b_2}. If we choose \ensuremath{1+1} to be
+\ensuremath{b_1{\sumtype}b_2}. If we choose \ensuremath{1{\sumtype}1} to be
 \ensuremath{\mathit{bool}} and apply either \ensuremath{c_1:b_1\leftrightarrow
 b_2} or \ensuremath{c_2:b_1\leftrightarrow b_2} to the value \ensuremath{v},
 then we essentially have an `if' expression.
 
-\ensuremath{\mathit{if}_{c_1,c_2} : \mathit{bool}  *  b_1 \leftrightarrow \mathit{bool}  *  b_2}
+\ensuremath{\mathit{if}_{c_1,c_2} : \mathit{bool}  {\prodtype}  b_1 \leftrightarrow \mathit{bool}  {\prodtype}  b_2}
 
-\ensuremath{\mathit{if}_{c_1,c_2} = \dist \odot ((\idc  \otimes\  c_1) + (\idc \otimes\  c_2)) \odot \factor}
+\ensuremath{\mathit{if}_{c_1,c_2} = \dist \odot ((\idc  \otimes\  c_1) {\sumtype} (\idc \otimes\  c_2)) \odot \factor}
 
 
 \inkscape{if-c1-c2.pdf}
 
 
-The diagram above shows the input value of type \ensuremath{(1+1) *  b_2}
+The diagram above shows the input value of type \ensuremath{(1{\sumtype}1) {\prodtype}  b_2}
 processed by the distribute operator \ensuremath{\dist}, which converts it into
-a value of type \ensuremath{(1 *  b_2)+(1 *  b_2)}. In the
+a value of type \ensuremath{(1 {\prodtype}  b_2){\sumtype}(1 {\prodtype}  b_2)}. In the
 \ensuremath{\mathit{left}} branch, which corresponds to the
 case when the boolean is \ensuremath{\mathit{true}} (i.e. the value was
 \ensuremath{\mathit{left} ~()}), the combinator~\ensuremath{c_1} is applied to
@@ -1608,12 +1620,12 @@ of the conditional derived above. If the \ensuremath{\mathit{bool}} is
 
 
 By choosing \ensuremath{b} to be \ensuremath{\mathit{bool}} and \ensuremath{c} to be \ensuremath{\mathit{not}}, we have the
-combinator \ensuremath{\mathit{if}_{\mathit{not}} : \mathit{bool} *  \mathit{bool}\leftrightarrow \mathit{bool} *  \mathit{bool}} which negates its
+combinator \ensuremath{\mathit{if}_{\mathit{not}} : \mathit{bool} {\prodtype}  \mathit{bool}\leftrightarrow \mathit{bool} {\prodtype}  \mathit{bool}} which negates its
 second argument if the first argument is \ensuremath{\mathit{true}}. This gate
 \ensuremath{\mathit{if}_{\mathit{not}}} is often referred to as the \ensuremath{\mathit{cnot}} gate\cite{Toffoli:1980}.
 
 If we iterate this construction once more, the resulting combinator
-\ensuremath{\mathit{if}_{\mathit{cnot}}} has type \ensuremath{\mathit{bool} *  (\mathit{bool} *  \mathit{bool})\leftrightarrow \mathit{bool} *  (\mathit{bool} *  \mathit{bool})}. The
+\ensuremath{\mathit{if}_{\mathit{cnot}}} has type \ensuremath{\mathit{bool} {\prodtype}  (\mathit{bool} {\prodtype}  \mathit{bool})\leftrightarrow \mathit{bool} {\prodtype}  (\mathit{bool} {\prodtype}  \mathit{bool})}. The
 resulting gate checks the first argument and if it is \ensuremath{\mathit{true}},
 proceeds to check the second argument. If that is also \ensuremath{\mathit{true}} then
 it will negate the third argument. Thus \ensuremath{\mathit{if}_{\mathit{cnot}}} is the required
