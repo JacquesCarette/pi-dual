@@ -497,101 +497,109 @@ mutual
   eval₁ (idl◎r {c = c}) = id⟷ ◎ c
   eval₁ (idr◎l {c = c}) = c
   eval₁ (idr◎r {c = c}) = c ◎ id⟷
-  eval₁ linv◎l = {!!}
-  eval₁ linv◎r = {!!}
-  eval₁ rinv◎l = {!!}
-  eval₁ rinv◎r = {!!}
-  eval₁ unite₊l⇔l = {!!}
-  eval₁ unite₊l⇔r = {!!}
-  eval₁ uniti₊l⇔l = {!!}
-  eval₁ uniti₊l⇔r = {!!}
-  eval₁ unite₊r⇔l = {!!}
-  eval₁ unite₊r⇔r = {!!}
-  eval₁ uniti₊r⇔l = {!!}
-  eval₁ uniti₊r⇔r = {!!}
-  eval₁ swapl₊⇔ = {!!}
-  eval₁ swapr₊⇔ = {!!}
-  eval₁ unitel⋆⇔l = {!!}
-  eval₁ uniter⋆⇔l = {!!}
-  eval₁ unitil⋆⇔l = {!!}
-  eval₁ unitir⋆⇔l = {!!}
-  eval₁ unitel⋆⇔r = {!!}
-  eval₁ uniter⋆⇔r = {!!}
-  eval₁ unitil⋆⇔r = {!!}
-  eval₁ unitir⋆⇔r = {!!}
-  eval₁ swapl⋆⇔ = {!!}
-  eval₁ swapr⋆⇔ = {!!}
+  eval₁ (linv◎l {c = c}) = id⟷
+  eval₁ (linv◎r {c = c}) = c ◎ ! c
+  eval₁ (rinv◎l {c = c}) = id⟷
+  eval₁ (rinv◎r {c = c}) = ! c ◎ c
+  eval₁ (unite₊l⇔l {c₁ = c₁} {c₂}) = (c₁ ⊕ c₂) ◎ unite₊l
+  eval₁ (unite₊l⇔r {c₁ = c₁} {c₂}) = unite₊l ◎ c₂
+  eval₁ (uniti₊l⇔l {c₁ = c₁} {c₂}) = c₂ ◎ uniti₊l
+  eval₁ (uniti₊l⇔r {c₁ = c₁} {c₂}) = uniti₊l ◎ (c₁ ⊕ c₂)
+  eval₁ (unite₊r⇔l {c₁ = c₁} {c₂}) = (c₂ ⊕ c₁) ◎ unite₊r
+  eval₁ (unite₊r⇔r {c₁ = c₁} {c₂}) = unite₊r ◎ c₂
+  eval₁ (uniti₊r⇔l {c₁ = c₁} {c₂}) = c₂ ◎ uniti₊r
+  eval₁ (uniti₊r⇔r {c₁ = c₁} {c₂}) = uniti₊r ◎ (c₂ ⊕ c₁)
+  eval₁ (swapl₊⇔  {c₁ = c₁} {c₂}) = (c₂ ⊕ c₁) ◎ swap₊
+  eval₁ (swapr₊⇔  {c₁ = c₁} {c₂}) = swap₊ ◎ (c₁ ⊕ c₂)
+  eval₁ (unitel⋆⇔l {c₁ = c₁} {c₂}) = (c₁ ⊗ c₂) ◎ unite⋆l
+  eval₁ (uniter⋆⇔l {c₁ = c₁} {c₂}) = unite⋆l ◎ c₂
+  eval₁ (unitil⋆⇔l {c₁ = c₁} {c₂}) = c₂ ◎ uniti⋆l
+  eval₁ (unitir⋆⇔l {c₁ = c₁} {c₂}) = uniti⋆l ◎ (c₁ ⊗ c₂)
+  eval₁ (unitel⋆⇔r {c₁ = c₁} {c₂}) = (c₂ ⊗ c₁) ◎ unite⋆r
+  eval₁ (uniter⋆⇔r {c₁ = c₁} {c₂}) = unite⋆r ◎ c₂
+  eval₁ (unitil⋆⇔r {c₁ = c₁} {c₂}) = c₂ ◎ uniti⋆r
+  eval₁ (unitir⋆⇔r {c₁ = c₁} {c₂}) = uniti⋆r ◎ (c₂ ⊗ c₁)
+  eval₁ (swapl⋆⇔ {c₁ = c₁} {c₂}) = (c₂ ⊗ c₁) ◎ swap⋆
+  eval₁ (swapr⋆⇔ {c₁ = c₁} {c₂}) = swap⋆ ◎ (c₁ ⊗ c₂)
   eval₁ (id⇔ {c = c}) = c
   eval₁ (trans⇔ {t₁} {t₂} {c₁} {c₂} {c₃} ce ce₁) with eval₁ ce | exact ce
   ... | cc | refl =  eval₁ {c₁ = cc} {c₃} ce₁
   eval₁ (_⊡_ {c₁ = c₁} {c₂} {c₃} {c₄} ce₀ ce₁) =
-     let r₀ = eval₁ ce₀ in
+    let r₀ = eval₁ ce₀ in
     let r₁ = eval₁ ce₁ in
     r₀ ◎ r₁
-  eval₁ (resp⊕⇔ ce ce₁) = {!!}
-  eval₁ (resp⊗⇔ ce ce₁) = {!!}
-  eval₁ id⟷⊕id⟷⇔ = {!!}
-  eval₁ split⊕-id⟷ = {!!}
-  eval₁ hom⊕◎⇔ = {!!}
-  eval₁ hom◎⊕⇔ = {!!}
-  eval₁ id⟷⊗id⟷⇔ = {!!}
-  eval₁ split⊗-id⟷ = {!!}
-  eval₁ hom⊗◎⇔ = {!!}
-  eval₁ hom◎⊗⇔ = {!!}
-  eval₁ triangle⊕l = {!!}
-  eval₁ triangle⊕r = {!!}
-  eval₁ triangle⊗l = {!!}
-  eval₁ triangle⊗r = {!!}
-  eval₁ pentagon⊕l = {!!}
-  eval₁ pentagon⊕r = {!!}
-  eval₁ pentagon⊗l = {!!}
-  eval₁ pentagon⊗r = {!!}
-  eval₁ unite₊l-coh-l = {!!}
-  eval₁ unite₊l-coh-r = {!!}
-  eval₁ unite⋆l-coh-l = {!!}
-  eval₁ unite⋆l-coh-r = {!!}
-  eval₁ hexagonr⊕l = {!!}
-  eval₁ hexagonr⊕r = {!!}
-  eval₁ hexagonl⊕l = {!!}
-  eval₁ hexagonl⊕r = {!!}
-  eval₁ hexagonr⊗l = {!!}
-  eval₁ hexagonr⊗r = {!!}
-  eval₁ hexagonl⊗l = {!!}
-  eval₁ hexagonl⊗r = {!!}
-  eval₁ absorbl⇔l = {!!}
-  eval₁ absorbl⇔r = {!!}
-  eval₁ absorbr⇔l = {!!}
-  eval₁ absorbr⇔r = {!!}
-  eval₁ factorzl⇔l = {!!}
-  eval₁ factorzl⇔r = {!!}
-  eval₁ factorzr⇔l = {!!}
-  eval₁ factorzr⇔r = {!!}
-  eval₁ swap₊distl⇔l = {!!}
-  eval₁ swap₊distl⇔r = {!!}
-  eval₁ dist-swap⋆⇔l = {!!}
-  eval₁ dist-swap⋆⇔r = {!!}
-  eval₁ assocl₊-dist-dist⇔l = {!!}
-  eval₁ assocl₊-dist-dist⇔r = {!!}
-  eval₁ assocl⋆-distl⇔l = {!!}
-  eval₁ assocl⋆-distl⇔r = {!!}
-  eval₁ absorbr0-absorbl0⇔ = {!!}
-  eval₁ absorbl0-absorbr0⇔ = {!!}
-  eval₁ absorbr⇔distl-absorb-unite = {!!}
-  eval₁ distl-absorb-unite⇔absorbr = {!!}
-  eval₁ unite⋆r0-absorbr1⇔ = {!!}
-  eval₁ absorbr1-unite⋆r-⇔ = {!!}
-  eval₁ absorbl≡swap⋆◎absorbr = {!!}
-  eval₁ swap⋆◎absorbr≡absorbl = {!!}
-  eval₁ absorbr⇔[assocl⋆◎[absorbr⊗id⟷]]◎absorbr = {!!}
-  eval₁ [assocl⋆◎[absorbr⊗id⟷]]◎absorbr⇔absorbr = {!!}
-  eval₁ [id⟷⊗absorbr]◎absorbl⇔assocl⋆◎[absorbl⊗id⟷]◎absorbr = {!!}
-  eval₁ assocl⋆◎[absorbl⊗id⟷]◎absorbr⇔[id⟷⊗absorbr]◎absorbl = {!!}
-  eval₁ elim⊥-A[0⊕B]⇔l = {!!}
-  eval₁ elim⊥-A[0⊕B]⇔r = {!!}
-  eval₁ elim⊥-1[A⊕B]⇔l = {!!}
-  eval₁ elim⊥-1[A⊕B]⇔r = {!!}
-  eval₁ fully-distribute⇔l = {!!}
-  eval₁ fully-distribute⇔r = {!!}
+  eval₁ (resp⊕⇔ ce₀ ce₁) =
+    let r₀ = eval₁ ce₀ in
+    let r₁ = eval₁ ce₁ in
+    r₀ ⊕ r₁
+  eval₁ (resp⊗⇔ ce₀ ce₁) =
+    let r₀ = eval₁ ce₀ in
+    let r₁ = eval₁ ce₁ in
+    r₀ ⊗ r₁
+  eval₁ id⟷⊕id⟷⇔ = id⟷
+  eval₁ split⊕-id⟷ = id⟷ ⊕ id⟷
+  eval₁ (hom⊕◎⇔ {c₁ = c₁} {c₂} {c₃} {c₄}) = (c₁ ⊕ c₂) ◎ (c₃ ⊕ c₄)
+  eval₁ (hom◎⊕⇔ {c₁ = c₁} {c₂} {c₃} {c₄}) = (c₁ ◎ c₃) ⊕ (c₂ ◎ c₄)
+  eval₁ id⟷⊗id⟷⇔ = id⟷
+  eval₁ split⊗-id⟷ = id⟷ ⊗ id⟷
+  eval₁ (hom⊗◎⇔ {c₁ = c₁} {c₂} {c₃} {c₄}) = (c₁ ⊗ c₂) ◎ (c₃ ⊗ c₄)
+  eval₁ (hom◎⊗⇔ {c₁ = c₁} {c₂} {c₃} {c₄}) = (c₁ ◎ c₃) ⊗ (c₂ ◎ c₄)
+  eval₁ triangle⊕l = assocr₊ ◎ (id⟷ ⊕ unite₊l)
+  eval₁ triangle⊕r = unite₊r ⊕ id⟷
+  eval₁ triangle⊗l = assocr⋆ ◎ (id⟷ ⊗ unite⋆l)
+  eval₁ triangle⊗r = unite⋆r ⊗ id⟷
+  eval₁ pentagon⊕l = ((assocr₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ assocr₊)
+  eval₁ pentagon⊕r = assocr₊ ◎ assocr₊
+  eval₁ pentagon⊗l = ((assocr⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ assocr⋆)
+  eval₁ pentagon⊗r = assocr⋆ ◎ assocr⋆
+  eval₁ unite₊l-coh-l = swap₊ ◎ unite₊r
+  eval₁ unite₊l-coh-r = unite₊l
+  eval₁ unite⋆l-coh-l = swap⋆ ◎ unite⋆r
+  eval₁ unite⋆l-coh-r = unite⋆l
+  eval₁ hexagonr⊕l = ((swap₊ ⊕ id⟷) ◎ assocr₊) ◎ (id⟷ ⊕ swap₊)
+  eval₁ hexagonr⊕r = (assocr₊ ◎ swap₊) ◎ assocr₊
+  eval₁ hexagonl⊕l = ((id⟷ ⊕ swap₊) ◎ assocl₊) ◎ (swap₊ ⊕ id⟷)
+  eval₁ hexagonl⊕r = (assocl₊ ◎ swap₊) ◎ assocl₊
+  eval₁ hexagonr⊗l = ((swap⋆ ⊗ id⟷) ◎ assocr⋆) ◎ (id⟷ ⊗ swap⋆)
+  eval₁ hexagonr⊗r = (assocr⋆ ◎ swap⋆) ◎ assocr⋆
+  eval₁ hexagonl⊗l = ((id⟷ ⊗ swap⋆) ◎ assocl⋆) ◎ (swap⋆ ⊗ id⟷)
+  eval₁ hexagonl⊗r = (assocl⋆ ◎ swap⋆) ◎ assocl⋆
+  eval₁ absorbl⇔l = absorbl ◎ id⟷
+  eval₁ (absorbl⇔r {c₁ = c₁}) = (c₁ ⊗ id⟷) ◎ absorbl
+  eval₁ absorbr⇔l = absorbr ◎ id⟷
+  eval₁ (absorbr⇔r {c₁ = c₁}) = (id⟷ ⊗ c₁) ◎ absorbr
+  eval₁ (factorzl⇔l {c₁ = c₁}) = factorzl ◎ (id⟷ ⊗ c₁)
+  eval₁ (factorzl⇔r {c₁ = c₁}) = id⟷ ◎ factorzl
+  eval₁ (factorzr⇔l {c₁ = c₁}) = factorzr ◎ (c₁ ⊗ id⟷)
+  eval₁ (factorzr⇔r {c₁ = c₁}) = id⟷ ◎ factorzr
+  eval₁ swap₊distl⇔l = distl ◎ swap₊
+  eval₁ swap₊distl⇔r = (id⟷ ⊗ swap₊) ◎ distl
+  eval₁ dist-swap⋆⇔l = swap⋆ ◎ distl
+  eval₁ dist-swap⋆⇔r = dist ◎ (swap⋆ ⊕ swap⋆)
+  eval₁ assocl₊-dist-dist⇔l = (dist ◎ (id⟷ ⊕ dist)) ◎ assocl₊
+  eval₁ assocl₊-dist-dist⇔r = ((assocl₊ ⊗ id⟷) ◎ dist) ◎ (dist ⊕ id⟷)
+  eval₁ assocl⋆-distl⇔l = ((id⟷ ⊗ distl) ◎ distl) ◎ (assocl⋆ ⊕ assocl⋆)
+  eval₁ assocl⋆-distl⇔r = assocl⋆ ◎ distl
+  eval₁ absorbr0-absorbl0⇔ = absorbl
+  eval₁ absorbl0-absorbr0⇔ = absorbr
+  eval₁ absorbr⇔distl-absorb-unite = (distl ◎ (absorbr ⊕ absorbr)) ◎ unite₊l
+  eval₁ distl-absorb-unite⇔absorbr = absorbr
+  eval₁ unite⋆r0-absorbr1⇔ = absorbr
+  eval₁ absorbr1-unite⋆r-⇔ = unite⋆r
+  eval₁ absorbl≡swap⋆◎absorbr = swap⋆ ◎ absorbr
+  eval₁ swap⋆◎absorbr≡absorbl = absorbl
+  eval₁ absorbr⇔[assocl⋆◎[absorbr⊗id⟷]]◎absorbr = (assocl⋆ ◎ (absorbr ⊗ id⟷)) ◎ absorbr
+  eval₁ [assocl⋆◎[absorbr⊗id⟷]]◎absorbr⇔absorbr = absorbr
+  eval₁ [id⟷⊗absorbr]◎absorbl⇔assocl⋆◎[absorbl⊗id⟷]◎absorbr = (assocl⋆ ◎ (absorbl ⊗ id⟷)) ◎ absorbr
+  eval₁ assocl⋆◎[absorbl⊗id⟷]◎absorbr⇔[id⟷⊗absorbr]◎absorbl = (id⟷ ⊗ absorbr) ◎ absorbl
+  eval₁ elim⊥-A[0⊕B]⇔l = (distl ◎ (absorbl ⊕ id⟷)) ◎ unite₊l
+  eval₁ elim⊥-A[0⊕B]⇔r = id⟷ ⊗ unite₊l
+  eval₁ elim⊥-1[A⊕B]⇔l = distl ◎ (unite⋆l ⊕ unite⋆l)
+  eval₁ elim⊥-1[A⊕B]⇔r = unite⋆l
+  eval₁ fully-distribute⇔l = ((((dist ◎ (distl ⊕ distl)) ◎ assocl₊) ◎ (assocr₊ ⊕ id⟷)) ◎
+                                ((id⟷ ⊕ swap₊) ⊕ id⟷))
+                               ◎ (assocl₊ ⊕ id⟷)
+  eval₁ fully-distribute⇔r = (distl ◎ (dist ⊕ dist)) ◎ assocl₊
 
   exact : {t₁ t₂ : U} {c₁ c₂ : t₁ ⟷ t₂} (ce : c₁ ⇔ c₂) → eval₁ ce ≡ c₂
   exact assoc◎l = refl
@@ -616,94 +624,94 @@ mutual
   exact idl◎r = refl
   exact idr◎l = refl
   exact idr◎r = refl
-  exact linv◎l = {!!}
-  exact linv◎r = {!!}
-  exact rinv◎l = {!!}
-  exact rinv◎r = {!!}
-  exact unite₊l⇔l = {!!}
-  exact unite₊l⇔r = {!!}
-  exact uniti₊l⇔l = {!!}
-  exact uniti₊l⇔r = {!!}
-  exact unite₊r⇔l = {!!}
-  exact unite₊r⇔r = {!!}
-  exact uniti₊r⇔l = {!!}
-  exact uniti₊r⇔r = {!!}
-  exact swapl₊⇔ = {!!}
-  exact swapr₊⇔ = {!!}
-  exact unitel⋆⇔l = {!!}
-  exact uniter⋆⇔l = {!!}
-  exact unitil⋆⇔l = {!!}
-  exact unitir⋆⇔l = {!!}
-  exact unitel⋆⇔r = {!!}
-  exact uniter⋆⇔r = {!!}
-  exact unitil⋆⇔r = {!!}
-  exact unitir⋆⇔r = {!!}
-  exact swapl⋆⇔ = {!!}
-  exact swapr⋆⇔ = {!!}
+  exact linv◎l = refl
+  exact linv◎r = refl
+  exact rinv◎l = refl
+  exact rinv◎r = refl
+  exact unite₊l⇔l = refl
+  exact unite₊l⇔r = refl
+  exact uniti₊l⇔l = refl
+  exact uniti₊l⇔r = refl
+  exact unite₊r⇔l = refl
+  exact unite₊r⇔r = refl
+  exact uniti₊r⇔l = refl
+  exact uniti₊r⇔r = refl
+  exact swapl₊⇔ = refl
+  exact swapr₊⇔ = refl
+  exact unitel⋆⇔l = refl
+  exact uniter⋆⇔l = refl
+  exact unitil⋆⇔l = refl
+  exact unitir⋆⇔l = refl
+  exact unitel⋆⇔r = refl
+  exact uniter⋆⇔r = refl
+  exact unitil⋆⇔r = refl
+  exact unitir⋆⇔r = refl
+  exact swapl⋆⇔ = refl
+  exact swapr⋆⇔ = refl
   exact id⇔ = refl
   exact (trans⇔ ce ce₁) rewrite exact ce | exact ce₁ = refl
   exact (ce ⊡ ce₁) rewrite exact ce | exact ce₁ = refl
-  exact (resp⊕⇔ ce ce₁) = {!!}
-  exact (resp⊗⇔ ce ce₁) = {!!}
-  exact id⟷⊕id⟷⇔ = {!!}
-  exact split⊕-id⟷ = {!!}
-  exact hom⊕◎⇔ = {!!}
-  exact hom◎⊕⇔ = {!!}
-  exact id⟷⊗id⟷⇔ = {!!}
-  exact split⊗-id⟷ = {!!}
-  exact hom⊗◎⇔ = {!!}
-  exact hom◎⊗⇔ = {!!}
-  exact triangle⊕l = {!!}
-  exact triangle⊕r = {!!}
-  exact triangle⊗l = {!!}
-  exact triangle⊗r = {!!}
-  exact pentagon⊕l = {!!}
-  exact pentagon⊕r = {!!}
-  exact pentagon⊗l = {!!}
-  exact pentagon⊗r = {!!}
-  exact unite₊l-coh-l = {!!}
-  exact unite₊l-coh-r = {!!}
-  exact unite⋆l-coh-l = {!!}
-  exact unite⋆l-coh-r = {!!}
-  exact hexagonr⊕l = {!!}
-  exact hexagonr⊕r = {!!}
-  exact hexagonl⊕l = {!!}
-  exact hexagonl⊕r = {!!}
-  exact hexagonr⊗l = {!!}
-  exact hexagonr⊗r = {!!}
-  exact hexagonl⊗l = {!!}
-  exact hexagonl⊗r = {!!}
-  exact absorbl⇔l = {!!}
-  exact absorbl⇔r = {!!}
-  exact absorbr⇔l = {!!}
-  exact absorbr⇔r = {!!}
-  exact factorzl⇔l = {!!}
-  exact factorzl⇔r = {!!}
-  exact factorzr⇔l = {!!}
-  exact factorzr⇔r = {!!}
-  exact swap₊distl⇔l = {!!}
-  exact swap₊distl⇔r = {!!}
-  exact dist-swap⋆⇔l = {!!}
-  exact dist-swap⋆⇔r = {!!}
-  exact assocl₊-dist-dist⇔l = {!!}
-  exact assocl₊-dist-dist⇔r = {!!}
-  exact assocl⋆-distl⇔l = {!!}
-  exact assocl⋆-distl⇔r = {!!}
-  exact absorbr0-absorbl0⇔ = {!!}
-  exact absorbl0-absorbr0⇔ = {!!}
-  exact absorbr⇔distl-absorb-unite = {!!}
-  exact distl-absorb-unite⇔absorbr = {!!}
-  exact unite⋆r0-absorbr1⇔ = {!!}
-  exact absorbr1-unite⋆r-⇔ = {!!}
-  exact absorbl≡swap⋆◎absorbr = {!!}
-  exact swap⋆◎absorbr≡absorbl = {!!}
-  exact absorbr⇔[assocl⋆◎[absorbr⊗id⟷]]◎absorbr = {!!}
-  exact [assocl⋆◎[absorbr⊗id⟷]]◎absorbr⇔absorbr = {!!}
-  exact [id⟷⊗absorbr]◎absorbl⇔assocl⋆◎[absorbl⊗id⟷]◎absorbr = {!!}
-  exact assocl⋆◎[absorbl⊗id⟷]◎absorbr⇔[id⟷⊗absorbr]◎absorbl = {!!}
-  exact elim⊥-A[0⊕B]⇔l = {!!}
-  exact elim⊥-A[0⊕B]⇔r = {!!}
-  exact elim⊥-1[A⊕B]⇔l = {!!}
-  exact elim⊥-1[A⊕B]⇔r = {!!}
-  exact fully-distribute⇔l = {!!}
-  exact fully-distribute⇔r = {!!}
+  exact (resp⊕⇔ ce ce₁) rewrite exact ce | exact ce₁ = refl
+  exact (resp⊗⇔ ce ce₁) rewrite exact ce | exact ce₁ = refl
+  exact id⟷⊕id⟷⇔ = refl
+  exact split⊕-id⟷ = refl
+  exact hom⊕◎⇔ = refl
+  exact hom◎⊕⇔ = refl
+  exact id⟷⊗id⟷⇔ = refl
+  exact split⊗-id⟷ = refl
+  exact hom⊗◎⇔ = refl
+  exact hom◎⊗⇔ = refl
+  exact triangle⊕l = refl
+  exact triangle⊕r = refl
+  exact triangle⊗l = refl
+  exact triangle⊗r = refl
+  exact pentagon⊕l = refl
+  exact pentagon⊕r = refl
+  exact pentagon⊗l = refl
+  exact pentagon⊗r = refl
+  exact unite₊l-coh-l = refl
+  exact unite₊l-coh-r = refl
+  exact unite⋆l-coh-l = refl
+  exact unite⋆l-coh-r = refl
+  exact hexagonr⊕l = refl
+  exact hexagonr⊕r = refl
+  exact hexagonl⊕l = refl
+  exact hexagonl⊕r = refl
+  exact hexagonr⊗l = refl
+  exact hexagonr⊗r = refl
+  exact hexagonl⊗l = refl
+  exact hexagonl⊗r = refl
+  exact absorbl⇔l = refl
+  exact absorbl⇔r = refl
+  exact absorbr⇔l = refl
+  exact absorbr⇔r = refl
+  exact factorzl⇔l = refl
+  exact factorzl⇔r = refl
+  exact factorzr⇔l = refl
+  exact factorzr⇔r = refl
+  exact swap₊distl⇔l = refl
+  exact swap₊distl⇔r = refl
+  exact dist-swap⋆⇔l = refl
+  exact dist-swap⋆⇔r = refl
+  exact assocl₊-dist-dist⇔l = refl
+  exact assocl₊-dist-dist⇔r = refl
+  exact assocl⋆-distl⇔l = refl
+  exact assocl⋆-distl⇔r = refl
+  exact absorbr0-absorbl0⇔ = refl
+  exact absorbl0-absorbr0⇔ = refl
+  exact absorbr⇔distl-absorb-unite = refl
+  exact distl-absorb-unite⇔absorbr = refl
+  exact unite⋆r0-absorbr1⇔ = refl
+  exact absorbr1-unite⋆r-⇔ = refl
+  exact absorbl≡swap⋆◎absorbr = refl
+  exact swap⋆◎absorbr≡absorbl = refl
+  exact absorbr⇔[assocl⋆◎[absorbr⊗id⟷]]◎absorbr = refl
+  exact [assocl⋆◎[absorbr⊗id⟷]]◎absorbr⇔absorbr = refl
+  exact [id⟷⊗absorbr]◎absorbl⇔assocl⋆◎[absorbl⊗id⟷]◎absorbr = refl
+  exact assocl⋆◎[absorbl⊗id⟷]◎absorbr⇔[id⟷⊗absorbr]◎absorbl = refl
+  exact elim⊥-A[0⊕B]⇔l = refl
+  exact elim⊥-A[0⊕B]⇔r = refl
+  exact elim⊥-1[A⊕B]⇔l = refl
+  exact elim⊥-1[A⊕B]⇔r = refl
+  exact fully-distribute⇔l = refl
+  exact fully-distribute⇔r = refl
