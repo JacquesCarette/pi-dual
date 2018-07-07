@@ -34,8 +34,13 @@
 \newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
 \newcommand{\mm}{\texttt{\textminus}}
 \newcommand{\pp}{\texttt{+}}
+
+\newcommand{\presumtype}{\uplus}
+\newcommand{\preprodtype}{*}
 \newcommand{\sumtype}{+}
 \newcommand{\prodtype}{\times}
+
+
 \newcommand{\inleft}[1]{\textsf{left}~#1}
 \newcommand{\inright}[1]{\textsf{right}~#1}
 \newcommand{\cp}[3]{#1\stackrel{#2}{\bullet}#3}
@@ -640,20 +645,20 @@ Instead of spaces (aka discrete sets) consisting solely of
 unstructured isolated points, we now investigate structured spaces
 built from sums and products of elementary spaces. This structure
 corresponds to the building blocks of type theory which are: the empty
-type ($\bot$), the unit type ($\top$), the sum type ($\uplus$), and
-the product ($\times$) type. Before getting into the formal theory,
-let's consider possible deformations on the space $(\top \uplus \bot)
-\times (\top \uplus \top)$. This space is the product of two
-subspaces: the subspace $(\top \uplus \bot)$ which itself is the sum
+type ($\bot$), the unit type ($\top$), the sum type ($\presumtype$), and
+the product ($\preprodtype$) type. Before getting into the formal theory,
+let's consider possible deformations on the space $(\top \presumtype \bot)
+\preprodtype (\top \presumtype \top)$. This space is the product of two
+subspaces: the subspace $(\top \presumtype \bot)$ which itself is the sum
 of the space~$\top$ containing one element $\texttt{tt}$ and the empty
-space $\bot$ and the subspace $(\top \uplus \top)$ which is the sum of
+space $\bot$ and the subspace $(\top \presumtype \top)$ which is the sum of
 two spaces each containing the one element $\texttt{tt}$. First, as
 discussed in the previous section, any deformation of this space must
 at least preserve the number of elements: we can neither create nor
 destroy points during any continuous deformation. Seeing that the
 number of elements in our example space is 2, a reasonable hypothesis
 is that we can deform the space above to any other space with 2
-elements such as $\top \uplus \top$ or $\top \uplus (\top \uplus
+elements such as $\top \presumtype \top$ or $\top \presumtype (\top \presumtype
 \bot)$. What this really means is that we are treating the sum and
 product structure as malleable. For example, imagining a product
 structure as arranged in a grid; by ``stretching'' we can turn it
@@ -677,8 +682,8 @@ structure of types has a nice correspondence (Curry-Howard) to logic:
 Logic & Types \\ \hline
 $\false$ & $\bot$ \\
 $\true$ & $\top$ \\
-$\land$ & $\times$ \\
-$\lor$ & $\uplus$ \\
+$\land$ & $\preprodtype$ \\
+$\lor$ & $\presumtype$ \\
 \end{tabular}
 \end{center}
 
@@ -728,13 +733,13 @@ items). Our next instinct would be to similarly replace $=$ with a
 type $A \equiv B$ that asserts that $A$ and $B$ are
 \emph{propositionally equal}, i.e. reduce to equivalent type-denoting
 expressions under the rules of the host type system.  This is however
-not true: the proposition $A \times B \equiv B \times A$ is not
+not true: the proposition $A \preprodtype B \equiv B \preprodtype A$ is not
 normally\footnote{Except in univalent type theory where equivalent
   types are identified.} provable for arbitrary types $A$ and $B$. But
-it should be clear that $A \times B$ and $B \times A$ contain
+it should be clear that $A \preprodtype B$ and $B \preprodtype A$ contain
 equivalent information. In other words, we would like to be able to
-witness that $A \times B$ can be reversibly deformed into
-$B \times A$, and vice-versa, which motivates the introduction of type
+witness that $A \preprodtype B$ can be reversibly deformed into
+$B \preprodtype A$, and vice-versa, which motivates the introduction of type
 \emph{equivalences}. To do this, we need a few important auxiliary
 concepts.
 
@@ -790,16 +795,24 @@ $\alpha : f \circ g \sim \mathrm{id}_B$ and
 $\beta : h \circ f \sim \mathrm{id}_A$.
 \end{defn}
 
+%% \roshan{This is a poor sentence. We have 4 or 5 definitions back to
+%%   back and have given very little intuition as to how or why they
+%%   are relevant and then we go on to say this:}
+
 \noindent We can then replace quasi-inverse with bi-invertibility in
 the definition of type equivalence. The differences will not matter to
 us here.
+
+%% \roshan{More on the above: Let us either explain what the point is
+%%   OR simply not suggest that we could be making a point, which we
+%%   then choose not to.}
 
 We are now in position to describe the commutative
 semiring structure for types. After replacing the set $R$ with a
 universe $U$, we also replace the algebraic use of $=$ in
 Def.~\ref{def:rig} by the type equivalence relation $\simeq$. With
-this change, we can indeed prove that types (with $\bot, \top, \uplus,
-\times$) form a commutative semiring. The reader familiar with
+this change, we can indeed prove that types (with $\bot, \top, \presumtype,
+\preprodtype$) form a commutative semiring. The reader familiar with
 universal algebra should pause and ponder a bit about what we have
 done. We have lifted \emph{equality} from being in the signature of
 the ambient logic and instead put it in the signature of the algebraic
@@ -812,15 +825,15 @@ intensional versus extensional equality go back to Frege and Russell.
 
 If we revisit the Curry-Howard correspondence, we notice one
 more issue. In logic, it is true that $A \lor A = A$ and
-$A \land A = A$. However, neither $A \uplus A$ nor $A \times A$ are
+$A \land A = A$. However, neither $A \presumtype A$ nor $A \preprodtype A$ are
 equivalent to $A$. They are however \emph{equi-inhabited}. This is
 a fancy way of saying
-\[ A \uplus A \ \text{is inhabited} \qquad \Leftrightarrow \qquad A \
+\[ A \presumtype A \ \text{is inhabited} \qquad \Leftrightarrow \qquad A \
   \text{is inhabited} \] The above is the real \textit{essence} of the
 Curry-Howard correspondence.  In other words, classical Curry-Howard
 tells us about \emph{logical equivalence} of types. This is even a
 constructive statement: there are indeed functions
-$f : A \uplus A \rightarrow A$ and $g : A \rightarrow A \uplus A$;
+$f : A \presumtype A \rightarrow A$ and $g : A \rightarrow A \presumtype A$;
 however, they are not inverses.
 
 So mere inhabitation falls far short of our goals of being able to
@@ -830,7 +843,7 @@ of the ``problem.'' In logic, we have that $\land$ and $\lor$ are both
 where $\forall a. a \circ a = a$. And it should be clear that an
 idempotent operations is a \emph{forgetful} operation: its input has
 two copies of $a$, but its output, only one. On the type side,
-something more subtle happens. Consider $\top \uplus \top$ versus
+something more subtle happens. Consider $\top \presumtype \top$ versus
 $\top$; the first has exactly \emph{two} proofs of inhabitation
 ($\inleft{\texttt{tt}}$ and $\inright{\texttt{tt}}$) while the second
 only one ($\texttt{tt}$). These cannot be put in bijective
@@ -844,41 +857,60 @@ information content must be preserved.
 \begin{figure}[t]
 \[
 \begin{array}{rrcll}
-\idc :& A & \simeq & A &: \idc \\
+& A & \simeq & A &\\
 \\
-\identlp :&  \bot \uplus A & \simeq & A &: \identrp \\
-\swapp :&  A \uplus B & \simeq & B \uplus A &: \swapp \\
-\assoclp :&  A \uplus (B \uplus C) & \simeq & (A \uplus B) \uplus C &: \assocrp \\
+&  \bot \presumtype A & \simeq & A &\\
+&  A \presumtype B & \simeq & B \presumtype A &\\
+&  A \presumtype (B \presumtype C) & \simeq & (A \presumtype B) \presumtype C &\\
 \\
-\identlt :&  \top \times A & \simeq & A &: \identrt \\
-\swapt :&  A \times B & \simeq & B \times A &: \swapt \\
-\assoclt :&  A \times (B \times C) & \simeq & (A \times B) \times C &: \assocrt \\
+&  \top \preprodtype A & \simeq & A &\\
+&  A \preprodtype B & \simeq & B \preprodtype A &\\
+&  A \preprodtype (B \preprodtype C) & \simeq & (A \preprodtype B) \preprodtype C &\\
 \\
-\absorbr :&~ \bot \times A & \simeq & \bot ~ &: \factorzl \\
-\dist :&~ (A \uplus B) \times C & \simeq & (A \times C) \uplus (B \times C)~ &: \factor
+& \bot \preprodtype A & \simeq & \bot &\\
+& (A \presumtype B) \preprodtype C & \simeq & (A \preprodtype C) \presumtype (B \preprodtype C) &
 \end{array}
 \]
 \caption{Type isomorphisms.}
 \label{type-isos}
 \end{figure}
 
+%% \begin{figure}[t]
+%% \[
+%% \begin{array}{rrcll}
+%% \idc :& A & \simeq & A &: \idc \\
+%% \\
+%% \identlp :&  \bot \presumtype A & \simeq & A &: \identrp \\
+%% \swapp :&  A \presumtype B & \simeq & B \presumtype A &: \swapp \\
+%% \assoclp :&  A \presumtype (B \presumtype C) & \simeq & (A \presumtype B) \presumtype C &: \assocrp \\
+%% \\
+%% \identlt :&  \top \preprodtype A & \simeq & A &: \identrt \\
+%% \swapt :&  A \preprodtype B & \simeq & B \preprodtype A &: \swapt \\
+%% \assoclt :&  A \preprodtype (B \preprodtype C) & \simeq & (A \preprodtype B) \preprodtype C &: \assocrt \\
+%% \\
+%% \absorbr :&~ \bot \preprodtype A & \simeq & \bot ~ &: \factorzl \\
+%% \dist :&~ (A \presumtype B) \preprodtype C & \simeq & (A \preprodtype C) \presumtype (B \preprodtype C)~ &: \factor
+%% \end{array}
+%% \]
+%% \caption{Type isomorphisms.}
+%% \label{type-isos}
+%% \end{figure}
+
 Nevertheless, the Curry-Howard correspondence still has some force. We
-know that the inhabitants of types formed with with
-$\bot, \top, \uplus, \times$ form a commutative semiring. What we want
+know that the inhabitants of types formed with with $\bot, \top,
+\presumtype, \preprodtype$ form a commutative semiring. What we want
 to know is, which types are equivalent? From a commutative semiring
 perspective, this amounts to asking what terms are equal.  We have a
 set of generators for those equations, namely those in
 Def.~\ref{def:rig}. What we thus need is to create $8$ pairs of
 mutually inverse functions which witness these identities.  For
-concreteness, we show the signatures in Fig.~\ref{type-isos}.  As
-these all come in symmetric pairs (some of which are self-symmetric),
-we give names for both directions.
+concreteness, we show the signatures in Fig.~\ref{type-isos}.
 
 From category theory, we are informed of the following privilege
 enjoyed by the natural numbers~$\Nat$:
 \begin{thm}
-The semiring $\left(\Nat, 0, 1, +, \cdot\right)$ is \emph{initial}
-in the category of semirings and semiring homomorphisms.
+  The semiring $\left(\Nat, 0, 1, +, \cdot\right)$ is \emph{initial}
+  in the category of semirings and semiring homomorphisms.
 \end{thm}
 \noindent In other words, for any semiring $S$, there is a homomorphism
 from $\Nat$ into $S$. But $\Nat$ is also the ``counting'' semiring,
@@ -886,10 +918,10 @@ which formalizes the notion of cardinality of finite discrete sets.
 
 The previous section on finite sets, along with the reasoning above,
 thus leads us to posit that the correct denotational semantics for
-finite discrete types is that of the semiring
-$\left(\Nat, 0, 1, +, \cdot\right)$. It is worth noting that equality
-in this semiring is intensional (i.e. two things are equal if and only if
-they are identical after evaluation), unlike that for types.
+finite discrete types is that of the semiring $\left(\Nat, 0, 1, +,
+\cdot\right)$. It is worth noting that equality in this semiring is
+intensional (i.e. two things are equal if and only if they are
+identical after evaluation), unlike that for types.
 
 %%%%%%%%%
 \subsection{A Language of Type Equivalences}
@@ -917,18 +949,19 @@ they are identical after evaluation), unlike that for types.
 
 We now have in our hands our desired denotational semantics for types.
 We want to create a programming language, which we call $\Pi$, such
-that the types and type combinators map to
-$\bot, \top, \uplus, \times$, and such that we have ground terms whose
-denotation are all $16$ type isomorphisms of
-Fig.~\ref{type-isos}. This is rather straightforward, as we can simply
-do this literally. To make the analogy with commutative semirings
-stand out even more, we will use $0, 1, \sumtype$, and ${\prodtype}$ at the type level,
-and will denote ``equivalence'' by $\iso$.  Thus Fig.~\ref{pi-terms}
-shows the ``constants'' of the language. Note how we have continued
-with the spirit of Curry-Howard: the terms of $\Pi$ are \emph{proof
-  terms}, but rather than being witnesses of inhabitation, they are
-witnesses of equivalences. Thus we get an unexpected programming
-language design:
+that the types and type combinators map to $\bot, \top, \presumtype,
+\preprodtype$, and such that we have ground terms whose denotation are
+all $16$ type isomorphisms of Fig.~\ref{type-isos}. This is rather
+straightforward, as we can simply do this literally. To make the
+analogy with commutative semirings stand out even more, we will use
+$0, 1, \sumtype$, and ${\prodtype}$ at the type level, and will denote
+``equivalence'' by $\iso$.  Thus Fig.~\ref{pi-terms} shows the
+``constants'' of the language.  As these all come in symmetric pairs
+(some of which are self-symmetric), we give names for both directions.
+Note how we have continued with the spirit of Curry-Howard: the terms
+of $\Pi$ are \emph{proof terms}, but rather than being witnesses of
+inhabitation, they are witnesses of equivalences. Thus we get an
+unexpected programming language design:
 
 \begin{center}
 \fbox{ The proof terms denoting commutative semiring equivalences
@@ -983,7 +1016,7 @@ example~(Eq.~\ref{eq:adder}).
 
 Thus the denotation of the $\Pi$ terms \emph{should} be
 permutations. But given types $A$ and $B$ denoting $\fin{m}$
-and~$\fin{n}$ respectively, what are $A \uplus B$ and $A \times B$ ?
+and~$\fin{n}$ respectively, what are $A \presumtype B$ and $A \preprodtype B$ ?
 They correspond exactly to $\fin{m+n}$ and $\fin{m*n}$!
 Geometrically, this corresponds to concatenation for $A + B$,
 i.e. lining up the elements of $A$ first, and then those of~$B$. For
@@ -1210,12 +1243,13 @@ $\sharp\, b$, i.e. $\sharp\, b$ is a canonical type of size $|b|$.
 %%   block font of some sort for the numeric cases. There are only a few
 %%   of them.}
 
-\begin{definition}($\sharp$). By recursion on $|b|$.  First define a
-type associated to each size. We will revert to using type notation
-for greater clarity of this definition:
+\begin{definition}($\sharp$).
+  By recursion on $|b|$.  First define $\tau$ that maps numeric sizes
+  to their corresponding types. We will revert to using type notation
+  for greater clarity of this definition:
 \[\begin{array}{rcl}
   \tau~ (0) & = & \bot \\
-  \tau~ (1 + n) & = & \top \uplus \tau~ (n) \\
+  \tau~ (1 + n) & = & \top \presumtype \tau~ (n) \\
  \end{array}\]
 \noindent so that we can define $\sharp\, b = \tau~ |b|$.
 \end{definition}
@@ -1282,7 +1316,7 @@ Values flow from left to right in the graphical language of
 
 \item
 The product type \ensuremath{b_1 {\prodtype} b_2} may be represented both as one wire
-labeled \ensuremath{b_1 \times b_2} or by two parallel wires labeled \ensuremath{b_1} and
+labeled \ensuremath{b_1 \prodtype b_2} or by two parallel wires labeled \ensuremath{b_1} and
 \ensuremath{b_2}. Both representations may be used interchangeably.
 
 \begin{multicols}{2}
