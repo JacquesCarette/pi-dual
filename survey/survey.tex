@@ -5,7 +5,6 @@
 \usepackage{amssymb,amsthm,amsmath}
 \usepackage{fullpage}
 \usepackage{url}
-\usepackage{comment}
 \usepackage{tikz}
 \usepackage{tikz-cd}
 \usepackage{listings}
@@ -35,33 +34,38 @@
 \newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
 \newcommand{\mm}{\texttt{\textminus}}
 \newcommand{\pp}{\texttt{+}}
-\newcommand{\inl}[1]{\textsf{inl}~#1}
-\newcommand{\inr}[1]{\textsf{inr}~#1}
+
+\newcommand{\presumtype}{\uplus}
+\newcommand{\preprodtype}{*}
+\newcommand{\sumtype}{+}
+\newcommand{\prodtype}{\times}
+
+
+\newcommand{\inleft}[1]{\textsf{left}~#1}
+\newcommand{\inright}[1]{\textsf{right}~#1}
 \newcommand{\cp}[3]{#1\stackrel{#2}{\bullet}#3}
 \newcommand{\idt}[3]{#2 \equiv_{#1} #3}
 \newcommand{\idrt}[3]{#3 \equiv_{#1} #2}
 \newcommand{\refl}[1]{\textsf{refl}~#1}
-%% \newcommand{\lid}{\textsf{lid}}
 \newcommand{\alt}{~|~}
-%% \newcommand{\rid}{\textsf{rid}}
 \newcommand{\linv}{l!}
 \newcommand{\rinv}{r!}
 \newcommand{\invinv}{!!}
 \newcommand{\assoc}{\circ}
-\newcommand{\identlp}{\ensuremath{\mathit{unite}_+\mathit{l}}}
-\newcommand{\identrp}{\ensuremath{\mathit{uniti}_+\mathit{l}}}
-\newcommand{\identlsp}{\ensuremath{\mathit{unite}_+\mathit{r}}}
-\newcommand{\identrsp}{\ensuremath{\mathit{uniti}_+\mathit{r}}}
-\newcommand{\swapp}{\ensuremath{\mathit{swap}_+}}
-\newcommand{\assoclp}{\ensuremath{\mathit{assocl}_+}}
-\newcommand{\assocrp}{\ensuremath{\mathit{assocr}_+}}
-\newcommand{\identlt}{\ensuremath{\mathit{unite}_*\mathit{l}}}
-\newcommand{\identrt}{\ensuremath{\mathit{uniti}_*\mathit{l}}}
-\newcommand{\identlst}{\ensuremath{\mathit{unite}_*\mathit{r}}}
-\newcommand{\identrst}{\ensuremath{\mathit{uniti}_*\mathit{r}}}
-\newcommand{\swapt}{\ensuremath{\mathit{swap}_*}}
-\newcommand{\assoclt}{\ensuremath{\mathit{assocl}_*}}
-\newcommand{\assocrt}{\ensuremath{\mathit{assocr}_*}}
+\newcommand{\identlp}{\ensuremath{\mathit{unite}_{\sumtype}\mathit{l}}}
+\newcommand{\identrp}{\ensuremath{\mathit{uniti}_{\sumtype}\mathit{l}}}
+\newcommand{\identlsp}{\ensuremath{\mathit{unite}_{\sumtype}\mathit{r}}}
+\newcommand{\identrsp}{\ensuremath{\mathit{uniti}_{\sumtype}\mathit{r}}}
+\newcommand{\swapp}{\ensuremath{\mathit{swap}_{\sumtype}}}
+\newcommand{\assoclp}{\ensuremath{\mathit{assocl}_{\sumtype}}}
+\newcommand{\assocrp}{\ensuremath{\mathit{assocr}_{\sumtype}}}
+\newcommand{\identlt}{\ensuremath{\mathit{unite}_{\prodtype}\mathit{l}}}
+\newcommand{\identrt}{\ensuremath{\mathit{uniti}_{\prodtype}\mathit{l}}}
+\newcommand{\identlst}{\ensuremath{\mathit{unite}_{\prodtype}\mathit{r}}}
+\newcommand{\identrst}{\ensuremath{\mathit{uniti}_{\prodtype}\mathit{r}}}
+\newcommand{\swapt}{\ensuremath{\mathit{swap}_{\prodtype}}}
+\newcommand{\assoclt}{\ensuremath{\mathit{assocl}_{\prodtype}}}
+\newcommand{\assocrt}{\ensuremath{\mathit{assocr}_{\prodtype}}}
 \newcommand{\absorbr}{\ensuremath{\mathit{absorbr}}}
 \newcommand{\absorbl}{\ensuremath{\mathit{absorbl}}}
 \newcommand{\factorzr}{\ensuremath{\mathit{factorzr}}}
@@ -70,7 +74,6 @@
 \newcommand{\factor}{\ensuremath{\mathit{factor}}}
 \newcommand{\distl}{\ensuremath{\mathit{distl}}}
 \newcommand{\factorl}{\ensuremath{\mathit{factorl}}}
-%% \newcommand{\distz}{\mathit{absorbr}}
 \newcommand{\iso}{\leftrightarrow}
 \newcommand{\proves}{\vdash}
 \newcommand{\idc}{\mathit{id}\!\!\leftrightarrow}
@@ -129,7 +132,7 @@ McMaster University \qquad\qquad Google \qquad\qquad Indiana University}
   about which primitive operations are realizable on a physical
   computing device. The consensus is that these primitive operations
   include logical operations like conjunction, disjunction and
-  negation, as well as reading and writing to a large collection to
+  negation, as well as reading and writing to a large collection of
   memory locations. This perspective conforms to a macro-level view of
   physics and indeed these operations are realizable using macro-level
   devices involving thousands of electrons. This point of view is
@@ -168,28 +171,7 @@ McMaster University \qquad\qquad Google \qquad\qquad Indiana University}
   We conclude with some possible generalizations inspired by homotopy
   type theory and survey several open directions for further research.
 
-%%  Something about Theseus?
 \end{abstract}
-
-% * Reversibility intro / motivation as we  have now more or less
-
-% * Thesis statement: programs are reversible deformations on data /
-%    spaces, almost necessarily by definition
-
-% * Focus now is on data
-
-% * If data is plain finite sets, programs become permutations (deformations on finite sets).
-
-% * If data is structured trees, we get Pi.
-
-% * Explain Pi with examples.
-
-% * If data is itself deformations-on-finite-sets, then the
-%   deformations between them become something quite
-%   interesting. Explain Pi level 2 with examples.
-
-% * Conclude with thoughts regarding other kinds of data that can be
-%   plugged in into that story.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Reversibility, the Missing Principle}
@@ -214,8 +196,7 @@ possible quantum computing revolution in sight and with unprecedented
 explosion in embedded computers and cyber-physical systems, there are
 reasons to re-think this foundational question again. In fact, the
 calls to re-think this foundational question have been proclaimed by
-physicists more than forty years ago as the following two quotes
-testify:
+physicists almost forty years ago as the following two quotes testify:
 
 \begin{quote}
   \textbf{Toffoli 1980~\cite{Toffoli:1980}:} Mathematical models of
@@ -501,7 +482,7 @@ the starting point for this development is the physical principle of
 ``conservation of
 information''~\cite{Hey:1999:FCE:304763,fredkin1982conservative} and
 the family of languages is designed to embrace that principle by
-requiring all computations to preserve information. 
+requiring all computations to preserve information.
 
 The fragment without
 recursive types is universal for reversible boolean
@@ -569,7 +550,7 @@ We will refer to $\fin{n}$ as the canonical set with $n$ elements.
 Bijections on \fin{n} have a specific name: permutations. As is
 well-known, permutations can be generated by sequential compositions of
 transpositions. Thus we can create a small language for writing
-permutations on $\fin{n}$ as
+permutations on $\fin{n}$ as:
 \[\begin{array}{rcl}
 p^n &::=& \mathit{id} ~\mid~ \mathit{swap}~i~j ~\mid~ p^n \fatsemi p^n
   \end{array}\]
@@ -625,7 +606,7 @@ reversibility. There are four outputs: the first two are identical to
 the incoming bits $A$ and $B$ and are considered ``garbage.'' The
 third bit $S$ is the sum and the last bit $C_o$ is the outgoing carry
 bit. In the notation used to describe the circuit, the $\times$ denotes
-boolean negation, the dots are control bits. In our reversible
+boolean negation and the dots are control bits. In our reversible
 language, we can express this circuit as the following permutation of
 type $[2^4] \rightarrow [2^4]$:
 
@@ -664,20 +645,20 @@ Instead of spaces (aka discrete sets) consisting solely of
 unstructured isolated points, we now investigate structured spaces
 built from sums and products of elementary spaces. This structure
 corresponds to the building blocks of type theory which are: the empty
-type ($\bot$), the unit type ($\top$), the sum type ($\uplus$), and
-the product ($\times$) type. Before getting into the formal theory,
-let's consider possible deformations on the space $(\top \uplus \bot)
-\times (\top \uplus \top)$. This space is the product of two
-subspaces: the subspace $(\top \uplus \bot)$ which itself is the sum
+type ($\bot$), the unit type ($\top$), the sum type ($\presumtype$), and
+the product ($\preprodtype$) type. Before getting into the formal theory,
+let's consider possible deformations on the space $(\top \presumtype \bot)
+\preprodtype (\top \presumtype \top)$. This space is the product of two
+subspaces: the subspace $(\top \presumtype \bot)$ which itself is the sum
 of the space~$\top$ containing one element $\texttt{tt}$ and the empty
-space $\bot$ and the subspace $(\top \uplus \top)$ which is the sum of
+space $\bot$ and the subspace $(\top \presumtype \top)$ which is the sum of
 two spaces each containing the one element $\texttt{tt}$. First, as
 discussed in the previous section, any deformation of this space must
 at least preserve the number of elements: we can neither create nor
 destroy points during any continuous deformation. Seeing that the
 number of elements in our example space is 2, a reasonable hypothesis
 is that we can deform the space above to any other space with 2
-elements such as $\top \uplus \top$ or $\top \uplus (\top \uplus
+elements such as $\top \presumtype \top$ or $\top \presumtype (\top \presumtype
 \bot)$. What this really means is that we are treating the sum and
 product structure as malleable. For example, imagining a product
 structure as arranged in a grid; by ``stretching'' we can turn it
@@ -701,8 +682,8 @@ structure of types has a nice correspondence (Curry-Howard) to logic:
 Logic & Types \\ \hline
 $\false$ & $\bot$ \\
 $\true$ & $\top$ \\
-$\land$ & $\times$ \\
-$\lor$ & $\uplus$ \\
+$\land$ & $\preprodtype$ \\
+$\lor$ & $\presumtype$ \\
 \end{tabular}
 \end{center}
 
@@ -739,7 +720,7 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 \end{defn}
 
 \begin{prop}
-The structure $\left(\Nat, \false, \true, \lor, \land\right)$
+The structure $\left(\{\false,\true\}, \false, \true, \lor, \land\right)$
 is a commutative semiring.
 \end{prop}
 
@@ -749,17 +730,18 @@ put together into a ``set.''  This can be fixed if we replace the set
 $R$ with a universe $U$, and replace the set membership $0 \in R$ with
 the typing judgement $\bot : U$ (and similarly for the other
 items). Our next instinct would be to similarly replace $=$ with a
-type $A \equiv B$ that asserts that $A$ and $B$ are \emph{propositionally
-equal}, i.e. reduce to equivalent type-denoting expressions under the rules of
-the host type system.  This is however not true: the
-proposition $A \times B \equiv B \times A$ is not
+type $A \equiv B$ that asserts that $A$ and $B$ are
+\emph{propositionally equal}, i.e. reduce to equivalent type-denoting
+expressions under the rules of the host type system.  This is however
+not true: the proposition $A \preprodtype B \equiv B \preprodtype A$ is not
 normally\footnote{Except in univalent type theory where equivalent
-types are identified.} provable for arbitrary types $A$ and $B$. But
-it should be clear that $A \times B$ and $B \times A$ contain
+  types are identified.} provable for arbitrary types $A$ and $B$. But
+it should be clear that $A \preprodtype B$ and $B \preprodtype A$ contain
 equivalent information. In other words, we would like to be able to
-witness that $A \times B$ can be reversibly deformed into $B \times
-A$, and vice-versa. Which motivates the introduction of type \emph{equivalences}. To
-do this, we need a few important auxiliary concepts.
+witness that $A \preprodtype B$ can be reversibly deformed into
+$B \preprodtype A$, and vice-versa, which motivates the introduction of type
+\emph{equivalences}. To do this, we need a few important auxiliary
+concepts.
 
 \begin{defn}[Propositional Equivalence]\label{def:propeq}
 Two expressions $a, b$ of type $A$ are \emph{propositionally
@@ -767,13 +749,13 @@ equal} if their normal forms are equivalent under the rules
 of the host type system.
 \end{defn}
 
-In Martin-L\"{o}f Type Theory, normal forms mean $\beta$-reduced
-$\eta$ long terms under $\alpha$-equivalence. In other words,
-expressions are evaluated as much as possible ($\beta$-reduced),
-all functions are fully applied ($\eta$ long), and the exact names
-of bound variables are irrelevant ($\alpha$-equivalence). Note that
-the above definition applies equally well to expressions that denote
-values and expressions that denote types.
+In Martin-L\"{o}f Type Theory, normal forms mean $\beta\eta$-long
+normal forms under $\alpha$-equivalence. In other words, expressions
+are evaluated as much as possible ($\beta$-reduced), all functions are
+fully applied ($\eta$-long), and the exact names of bound variables
+are irrelevant ($\alpha$-equivalence). Note that the above definition
+applies equally well to expressions that denote values and expressions
+that denote types.
 
 \begin{defn}[Homotopy]
 \label{def:homotopy}
@@ -813,16 +795,24 @@ $\alpha : f \circ g \sim \mathrm{id}_B$ and
 $\beta : h \circ f \sim \mathrm{id}_A$.
 \end{defn}
 
+%% \roshan{This is a poor sentence. We have 4 or 5 definitions back to
+%%   back and have given very little intuition as to how or why they
+%%   are relevant and then we go on to say this:}
+
 \noindent We can then replace quasi-inverse with bi-invertibility in
 the definition of type equivalence. The differences will not matter to
 us here.
+
+%% \roshan{More on the above: Let us either explain what the point is
+%%   OR simply not suggest that we could be making a point, which we
+%%   then choose not to.}
 
 We are now in position to describe the commutative
 semiring structure for types. After replacing the set $R$ with a
 universe $U$, we also replace the algebraic use of $=$ in
 Def.~\ref{def:rig} by the type equivalence relation $\simeq$. With
-this change, we can indeed prove that types (with $\bot, \top, \uplus,
-\times$) form a commutative semiring. The reader familiar with
+this change, we can indeed prove that types (with $\bot, \top, \presumtype,
+\preprodtype$) form a commutative semiring. The reader familiar with
 universal algebra should pause and ponder a bit about what we have
 done. We have lifted \emph{equality} from being in the signature of
 the ambient logic and instead put it in the signature of the algebraic
@@ -835,73 +825,92 @@ intensional versus extensional equality go back to Frege and Russell.
 
 If we revisit the Curry-Howard correspondence, we notice one
 more issue. In logic, it is true that $A \lor A = A$ and
-$A \land A = A$. However, neither $A \uplus A$ nor $A \times A$ are
+$A \land A = A$. However, neither $A \presumtype A$ nor $A \preprodtype A$ are
 equivalent to $A$. They are however \emph{equi-inhabited}. This is
 a fancy way of saying
-\[ A \uplus A \ \text{is inhabited} \qquad \Leftrightarrow \qquad A \
+\[ A \presumtype A \ \text{is inhabited} \qquad \Leftrightarrow \qquad A \
   \text{is inhabited} \] The above is the real \textit{essence} of the
 Curry-Howard correspondence.  In other words, classical Curry-Howard
 tells us about \emph{logical equivalence} of types. This is even a
 constructive statement: there are indeed functions
-$f : A \uplus A \rightarrow A$ and $g : A \rightarrow A \uplus A$;
+$f : A \presumtype A \rightarrow A$ and $g : A \rightarrow A \presumtype A$;
 however, they are not inverses.
 
 So mere inhabitation falls far short of our goals of being able to
 smoothly deform from one type to another. Let us thus analyze the crux
 of the ``problem.'' In logic, we have that $\land$ and $\lor$ are both
-\emph{idempotent}: this is the property of any binary operation $*$
-where $\forall a. a * a = a$. And it should be clear that an
+\emph{idempotent}: this is the property of any binary operation $\circ$
+where $\forall a. a \circ a = a$. And it should be clear that an
 idempotent operations is a \emph{forgetful} operation: its input has
 two copies of $a$, but its output, only one. On the type side,
-something more subtle happens. Consider $\top \uplus \top$
-versus $\top$; the first has exactly \emph{two} proofs of inhabitation
-($\inl{\texttt{tt}}$ and $\inr{\texttt{tt}}$) while the second only one
-($\texttt{tt}$). These cannot be put in bijective correspondence. Even
-though the ``payload'' \texttt{tt} is the same, forgetting
-$\texttt{inl}$ (or \texttt{inr}) throws away information -- something
-we have expressly disallowed.  Yes, this should remind you of
-Maxwell's daemon: even though the data is the same, they are tagged
-differently, and these tags are indeed information, and their
+something more subtle happens. Consider $\top \presumtype \top$ versus
+$\top$; the first has exactly \emph{two} proofs of inhabitation
+($\inleft{\texttt{tt}}$ and $\inright{\texttt{tt}}$) while the second
+only one ($\texttt{tt}$). These cannot be put in bijective
+correspondence. Even though the ``payload'' \texttt{tt} is the same,
+forgetting $\texttt{left}$ (or \texttt{right}) throws away information
+-- something we have expressly disallowed.  Yes, this should remind
+you of Maxwell's daemon: even though the data is the same, they are
+tagged differently, and these tags are indeed information, and their
 information content must be preserved.
 
 \begin{figure}[t]
 \[
 \begin{array}{rrcll}
-\idc :& A & \simeq & A &: \idc \\
+& A & \simeq & A &\\
 \\
-\identlp :&  \bot \uplus A & \simeq & A &: \identrp \\
-\swapp :&  A \uplus B & \simeq & B \uplus A &: \swapp \\
-\assoclp :&  A \uplus (B \uplus C) & \simeq & (A \uplus B) \uplus C &: \assocrp \\
+&  \bot \presumtype A & \simeq & A &\\
+&  A \presumtype B & \simeq & B \presumtype A &\\
+&  A \presumtype (B \presumtype C) & \simeq & (A \presumtype B) \presumtype C &\\
 \\
-\identlt :&  \top \times A & \simeq & A &: \identrt \\
-\swapt :&  A \times B & \simeq & B \times A &: \swapt \\
-\assoclt :&  A \times (B \times C) & \simeq & (A \times B) \times C &: \assocrt \\
+&  \top \preprodtype A & \simeq & A &\\
+&  A \preprodtype B & \simeq & B \preprodtype A &\\
+&  A \preprodtype (B \preprodtype C) & \simeq & (A \preprodtype B) \preprodtype C &\\
 \\
-\absorbr :&~ \bot \times A & \simeq & \bot ~ &: \factorzl \\
-\dist :&~ (A \uplus B) \times C & \simeq & (A \times C) \uplus (B \times C)~ &: \factor
+& \bot \preprodtype A & \simeq & \bot &\\
+& (A \presumtype B) \preprodtype C & \simeq & (A \preprodtype C) \presumtype (B \preprodtype C) &
 \end{array}
 \]
 \caption{Type isomorphisms.}
 \label{type-isos}
 \end{figure}
 
+%% \begin{figure}[t]
+%% \[
+%% \begin{array}{rrcll}
+%% \idc :& A & \simeq & A &: \idc \\
+%% \\
+%% \identlp :&  \bot \presumtype A & \simeq & A &: \identrp \\
+%% \swapp :&  A \presumtype B & \simeq & B \presumtype A &: \swapp \\
+%% \assoclp :&  A \presumtype (B \presumtype C) & \simeq & (A \presumtype B) \presumtype C &: \assocrp \\
+%% \\
+%% \identlt :&  \top \preprodtype A & \simeq & A &: \identrt \\
+%% \swapt :&  A \preprodtype B & \simeq & B \preprodtype A &: \swapt \\
+%% \assoclt :&  A \preprodtype (B \preprodtype C) & \simeq & (A \preprodtype B) \preprodtype C &: \assocrt \\
+%% \\
+%% \absorbr :&~ \bot \preprodtype A & \simeq & \bot ~ &: \factorzl \\
+%% \dist :&~ (A \presumtype B) \preprodtype C & \simeq & (A \preprodtype C) \presumtype (B \preprodtype C)~ &: \factor
+%% \end{array}
+%% \]
+%% \caption{Type isomorphisms.}
+%% \label{type-isos}
+%% \end{figure}
+
 Nevertheless, the Curry-Howard correspondence still has some force. We
-know that the inhabitants of types formed with with
-$\bot, \top, \uplus, \times$ form a commutative semiring. What we want
+know that the inhabitants of types formed with with $\bot, \top,
+\presumtype, \preprodtype$ form a commutative semiring. What we want
 to know is, which types are equivalent? From a commutative semiring
 perspective, this amounts to asking what terms are equal.  We have a
 set of generators for those equations, namely those in
 Def.~\ref{def:rig}. What we thus need is to create $8$ pairs of
 mutually inverse functions which witness these identities.  For
-concreteness, we show the signatures in Fig.~\ref{type-isos}.  As
-these all come in symmetric pairs (some of which are self-symmetric),
-we give names for both directions.
+concreteness, we show the signatures in Fig.~\ref{type-isos}.
 
 From category theory, we are informed of the following privilege
 enjoyed by the natural numbers~$\Nat$:
 \begin{thm}
-The semiring $\left(\Nat, 0, 1, +, \cdot\right)$ is \emph{initial}
-in the category of semirings and semiring homomorphisms.
+  The semiring $\left(\Nat, 0, 1, +, \cdot\right)$ is \emph{initial}
+  in the category of semirings and semiring homomorphisms.
 \end{thm}
 \noindent In other words, for any semiring $S$, there is a homomorphism
 from $\Nat$ into $S$. But $\Nat$ is also the ``counting'' semiring,
@@ -909,10 +918,10 @@ which formalizes the notion of cardinality of finite discrete sets.
 
 The previous section on finite sets, along with the reasoning above,
 thus leads us to posit that the correct denotational semantics for
-finite discrete types is that of the semiring
-$\left(\Nat, 0, 1, +, \cdot\right)$. It is worth noting that equality
-in this semiring is intensional (i.e. two things are equal if and only if
-they are identical after evaluation), unlike that for types.
+finite discrete types is that of the semiring $\left(\Nat, 0, 1, +,
+\cdot\right)$. It is worth noting that equality in this semiring is
+intensional (i.e. two things are equal if and only if they are
+identical after evaluation), unlike that for types.
 
 %%%%%%%%%
 \subsection{A Language of Type Equivalences}
@@ -922,16 +931,16 @@ they are identical after evaluation), unlike that for types.
 \begin{array}{rrcll}
 \idc :& t & \iso & t &: \idc \\
 \\
-\identlp :&  0 + t & \iso & t &: \identrp \\
-\swapp :&  t_1 + t_2 & \iso & t_2 + t_1 &: \swapp \\
-\assoclp :&  t_1 + (t_2 + t_3) & \iso & (t_1 + t_2) + t_3 &: \assocrp \\
+\identlp :&  0 \sumtype t & \iso & t &: \identrp \\
+\swapp :&  t_1 \sumtype t_2 & \iso & t_2 \sumtype t_1 &: \swapp \\
+\assoclp :&  t_1 \sumtype (t_2 \sumtype t_3) & \iso & (t_1 \sumtype t_2) \sumtype t_3 &: \assocrp \\
 \\
-\identlt :&  1 * t & \iso & t &: \identrt \\
-\swapt :&  t_1 * t_2 & \iso & t_2 * t_1 &: \swapt \\
-\assoclt :&  t_1 * (t_2 * t_3) & \iso & (t_1 * t_2) * t_3 &: \assocrt \\
+\identlt :&  1 {\prodtype} t & \iso & t &: \identrt \\
+\swapt :&  t_1 {\prodtype} t_2 & \iso & t_2 {\prodtype} t_1 &: \swapt \\
+\assoclt :&  t_1 {\prodtype} (t_2 {\prodtype} t_3) & \iso & (t_1 {\prodtype} t_2) {\prodtype} t_3 &: \assocrt \\
 \\
-\absorbr :&~ 0 * t & \iso & 0 ~ &: \factorzl \\
-\dist :&~ (t_1 + t_2) * t_3 & \iso & (t_1 * t_3) + (t_2 * t_3)~ &: \factor
+\absorbr :&~ 0 {\prodtype} t & \iso & 0 ~ &: \factorzl \\
+\dist :&~ (t_1 \sumtype t_2) {\prodtype} t_3 & \iso & (t_1 {\prodtype} t_3) \sumtype (t_2 {\prodtype} t_3)~ &: \factor
 \end{array}
 \]
 \caption{$\Pi$-terms.}
@@ -940,24 +949,23 @@ they are identical after evaluation), unlike that for types.
 
 We now have in our hands our desired denotational semantics for types.
 We want to create a programming language, which we call $\Pi$, such
-that the types and type combinators map to
-$\bot, \top, \uplus, \times$, and such that we have ground terms whose
-denotation are all $16$ type isomorphisms of
-Fig.~\ref{type-isos}. This is rather straightforward, as we can simply
-do this literally. To make the analogy with commutative semirings
-stand out even more, we will use $0, 1, +$, and $*$ at the type level,
-and will denote ``equivalence'' by $\iso$.  Thus Fig.~\ref{pi-terms}
-shows the ``constants'' of the language. Note how we have continued
-with the spirit of Curry-Howard: the terms of $\Pi$ are \emph{proof
-  terms}, but rather than being witnesses of inhabitation, they are
-witnesses of equivalences. Thus we get an unexpected programming
-language design:
+that the types and type combinators map to $\bot, \top, \presumtype,
+\preprodtype$, and such that we have ground terms whose denotation are
+all $16$ type isomorphisms of Fig.~\ref{type-isos}. This is rather
+straightforward, as we can simply do this literally. To make the
+analogy with commutative semirings stand out even more, we will use
+$0, 1, \sumtype$, and ${\prodtype}$ at the type level, and will denote
+``equivalence'' by $\iso$.  Thus Fig.~\ref{pi-terms} shows the
+``constants'' of the language.  As these all come in symmetric pairs
+(some of which are self-symmetric), we give names for both directions.
+Note how we have continued with the spirit of Curry-Howard: the terms
+of $\Pi$ are \emph{proof terms}, but rather than being witnesses of
+inhabitation, they are witnesses of equivalences. Thus we get an
+unexpected programming language design:
 
 \begin{center}
-\fbox{
-The proof terms denoting
-commutative semiring equivalences
-induce the terms of $\Pi$.}
+\fbox{ The proof terms denoting commutative semiring equivalences
+  induce the terms of $\Pi$.}
 \end{center}
 \vspace*{3mm}
 
@@ -970,13 +978,13 @@ induce the terms of $\Pi$.}
 \qquad
 \Rule{}
 {\jdg{}{}{c_1 : t_1 \iso t_2} \quad \vdash c_2 : t_3 \iso t_4}
-{\jdg{}{}{c_1 \oplus c_2 : t_1 + t_3 \iso t_2 + t_4}}
+{\jdg{}{}{c_1 \oplus c_2 : t_1 \sumtype t_3 \iso t_2 \sumtype t_4}}
 {}
 \]
 \[
 \Rule{}
 {\jdg{}{}{c_1 : t_1 \iso t_2} \quad \vdash c_2 : t_3 \iso t_4}
-{\jdg{}{}{c_1 \otimes c_2 : t_1 * t_3 \iso t_2 * t_4}}
+{\jdg{}{}{c_1 \otimes c_2 : t_1 {\prodtype} t_3 \iso t_2 {\prodtype} t_4}}
 {}
 \]
 \caption{$\Pi$-combinators.}
@@ -994,23 +1002,29 @@ $c_1$ first, then $c_2$, and is the usual notion of composition -- and
 corresponds to $\fatsemi$ of the language of permutations of
 Sec.~\ref{sec:dataone}. The construction $c_1 \oplus c_2$ chooses to
 perform $c_1$ or $c_2$ depending on whether the input is labelled
-$\textsf{inl}$ or $\textsf{inr}$ respectively. Finally the
+$\textsf{left}$ or $\textsf{right}$ respectively. Finally the
 construction $c_1 \otimes c_2$ operates on a product structure, and
 applies $c_1$ to the first component and $c_2$ to the second. The
 language of permutations lacked the ability to combine permutations by
 taking sums and products, which led to the awkward non-compositional
-programming style illustrated in the full adder example~\ref{eq:adder}.
+programming style illustrated in the full adder
+example~(Eq.~\ref{eq:adder}).
 
-Thus the denotation of the $\Pi$ terms \emph{should} be permutations. But
-given types $A$ and $B$ denoting $\fin{m}$ and $\fin{n}$ respectively,
-what are $A \uplus B$ and $A \times B$ ?  They correspond exactly to
-$\fin{m+n}$ and $\fin{m*n}$!  Geometrically, this corresponds to
-concatenation for $A + B$, i.e. lining up the elements of $A$ first,
-and then those of $B$. For $A * B$, one can picture this as
-lining up the elements of $A$ horizontally, those of $B$ vertically
-and perpendicular to those of $A$, and filling in the square with
-pairs of elements from $A$ and $B$; if one re-numbers these sequentially,
-reading row-wise, this gives an enumeration of $\fin{m*n}$.
+%% \roshan{Mixing types and numberix $+$ is super confusing. Let's use a
+%%   block font of some sort for the numeric cases. There are only a few
+%%   of them.}
+
+Thus the denotation of the $\Pi$ terms \emph{should} be
+permutations. But given types $A$ and $B$ denoting $\fin{m}$
+and~$\fin{n}$ respectively, what are $A \presumtype B$ and $A \preprodtype B$ ?
+They correspond exactly to $\fin{m+n}$ and $\fin{m*n}$!
+Geometrically, this corresponds to concatenation for $A + B$,
+i.e. lining up the elements of $A$ first, and then those of~$B$. For
+$A * B$, one can picture this as lining up the elements of $A$
+horizontally, those of $B$ vertically and perpendicular to those of
+$A$, and filling in the square with pairs of elements from $A$ and
+$B$; if one re-numbers these sequentially, reading row-wise, this
+gives an enumeration of $\fin{m*n}$.
 
 From here, it is easy to see what, for example, $c_1 \oplus c_2$ must be,
 operationally: from a permutation on $\fin{m}$ and another on $\fin{n}$,
@@ -1055,11 +1069,11 @@ prefer the structural symmetry over a minimalistic language definition.
 \begin{figure}[t]
 \[
 \begin{array}{rrcll}
-\identlsp :&  t + 0 & \iso & t &: \identrsp \\
-\identlst :&  t * 1 & \iso & t &: \identrst \\
+\identlsp :&  t \sumtype 0 & \iso & t &: \identrsp \\
+\identlst :&  t {\prodtype} 1 & \iso & t &: \identrst \\
 \\
-\absorbl :&~ t * 0 & \iso & 0 ~ &: \factorzr \\
-\distl :&~ t_1 * (t_2 + t_3) & \iso & (t_1 * t_2) + (t_1 * t_3)~ &: \factorl
+\absorbl :&~ t {\prodtype} 0 & \iso & 0 ~ &: \factorzr \\
+\distl :&~ t_1 {\prodtype} (t_2 \sumtype t_3) & \iso & (t_1 {\prodtype} t_2) \sumtype (t_1 {\prodtype} t_3)~ &: \factorl
 \end{array}
 \]
 \caption{Additional $\Pi$-terms.}
@@ -1083,9 +1097,6 @@ circuits~\cite{James:2012:IE:2103656.2103667}.
 %%%%%%%%%
 \subsection{Operational Semantics}
 \label{sec:opsem}
-
-% \jc{The notation here is somewhat inconsistent with the above,
-% mainly in the notation for values.}
 
 To give an operational semantics to $\Pi$, we are mainly missing
 a notation for \emph{values}.
@@ -1184,14 +1195,15 @@ $$
 
 \end{definition}
 
-Since there are no values that have the type \ensuremath{0}, the reductions for
-the combinators \identlp, \identrp, \identlsp, \identrsp omit the impossible
-cases. \factorzr and \factorzl likewise do not appear as they have not
-possible cases at all. However, \absorbr and \absorbl are treated slightly
-differently: rather than \emph{eagerly} assuming they are impossible,
-the purported inhabitant of $0$ given on one side is passed on to the other
-side. The reason for this choice will have to wait for Sec.~\ref{langeqeq}
-when we explain some higher-level symmetries (see Fig.~\ref{figc}).
+Since there are no values that have the type \ensuremath{0}, the
+reductions for the combinators \identlp, \identrp, \identlsp, and
+\identrsp\ omit the impossible cases. \factorzr\ and \factorzl\
+likewise do not appear as they have no possible cases at all. However,
+\absorbr\ and \absorbl\ are treated slightly differently: rather than
+\emph{eagerly} assuming they are impossible, the purported inhabitant
+of $0$ given on one side is passed on to the other side. The reason
+for this choice will have to wait for Sec.~\ref{langeqeq} when we
+explain some higher-level symmetries (see Fig.~\ref{figc}).
 
 As we mentioned before, $!$ is a defined combinator.
 
@@ -1200,7 +1212,7 @@ As we mentioned before, $!$ is a defined combinator.
 
   \begin{itemize}
   \item For primitive isomorphisms \ensuremath{c}, \ensuremath{!~ c} is given by its
-    inverse from Figures~\ref{pi-terms} and~\ref{more-pi}.
+    inverse from Figs.~\ref{pi-terms} and~\ref{more-pi}.
 
   \item \ensuremath{!(c_1 \otimes c_2) =\ !c_1 \otimes~ !c_2}
 
@@ -1212,54 +1224,59 @@ As we mentioned before, $!$ is a defined combinator.
   \end{itemize}
 \end{definition}
 
-\noindent We can further define that two combinators are 
-\emph{observationally equivalent} if only all values of their
-common domain, they evaluate to identical values.  More precisely,
-we will say that for combinators $c_1, c_2 : b_1 \leftrightarrow b_2$,
-$c_1~=~c_2$ whenever
+\noindent We can further define that two combinators are
+\emph{observationally equivalent} if on all values of their common
+domain, they evaluate to identical values.  More precisely, we will
+say that for combinators $c_1, c_2 : b_1 \leftrightarrow b_2$,
+$c_1~=~c_2$ whenever:
 \[
-  \forall  ~v_1:b_1, v_2 : b_2. ~~ c_1 ~v_1 \mapsto v_2 \text{if and only if\ } c_2 ~v_1 \mapsto v_2
+  \forall  ~v_1:b_1, v_2 : b_2. ~~ c_1 ~v_1 \mapsto v_2 ~\text{if and only if\ } c_2 ~v_1 \mapsto v_2
 \]
 
-Previously we had seen that types $b$ correspond to natural numbers,
-more precisely~$|b|$, the size of $b$.  We had previously established that 
-for any natural number $n$, there is a canonical set of size $n$,
-which we denoted $[n]$. Furthermore, we can also define a
-canonical \emph{type} that size, which we will denote $\sharp b$,
-i.e. $\sharp b$ is a canonical type of size $|b|$.
+Each type $b$ has a size $|b|$ defined in the obvious way. We had
+previously established that for any natural number $n$, there is a
+canonical set of size $n$, which we denoted $[n]$. Furthermore, we can
+also define a canonical \emph{type} of that size, which we will denote
+$\sharp\, b$, i.e. $\sharp\, b$ is a canonical type of size $|b|$.
 
-\begin{definition}($\sharp$). By recursion on $|b|$.  First define a
-type associated to each size. We will revert to using type notation
-for greater clarity of this definition:
+%% \roshan{Mixing types and numberix $+$ is super confusing. Let's use a
+%%   block font of some sort for the numeric cases. There are only a few
+%%   of them.}
+
+\begin{definition}($\sharp$).
+  By recursion on $|b|$.  First define $\tau$ that maps numeric sizes
+  to their corresponding types. We will revert to using type notation
+  for greater clarity of this definition:
 \[\begin{array}{rcl}
-  \tau~ 0 & = & \bot \\
-  \tau~ (1 + n) & = & \top \uplus \tau~ n \\
+  \tau~ (0) & = & \bot \\
+  \tau~ (1 + n) & = & \top \presumtype \tau~ (n) \\
  \end{array}\]
-\noindent so that we can define $\sharp b = \tau~ |b|$.
+\noindent so that we can define $\sharp\, b = \tau~ |b|$.
 \end{definition}
 
 We are now ready to go further and establish
-that there is always an equivalence between.
+that there is always an equivalence between a type and the canonical
+type of the same size.
 
 \begin{proposition}
-  For any type \ensuremath{b} there exists an isomorphism \ensuremath{b \leftrightarrow \sharp b}.
+  For any type \ensuremath{b} there exists an isomorphism \ensuremath{b \leftrightarrow \sharp\, b}.
   \begin{proof}
     The fact that such an isomorphism exists is evident from the
     definition of size and what it means for two types to be
     isomorphic. While many equivalent constructions are possible
-    for any type \ensuremath{b}, one such construction is given by 
+    for any type \ensuremath{b}, one such construction is given by
     \sem{b}:
 
 \[\begin{array}{rclr}
  \sem{0} & = & \idc \\
  \sem{1} & = & \idc \\
- \sem{1+b} & = & \idc \oplus \sem{b} \\
- \sem{(b_1+b_2)+b_3} & = & \assocrp \odot \sem{b_1 + (b_2 + b_3)} \\
- \sem{b_1 + b_2} & = & (\sem{b_1} \oplus \idc) \odot \sem{ \sharp b_1 + b_2 } \\
- \sem{0 * b_2} & = & \absorbr \\
- \sem{1 * b_2} & = & \identlt \odot \sem{b_2} \\
- \sem{(b_1 * b_2) * b_3} & = & \assocrt \odot \sem{b_1 * (b_2 * b_3)} \\
- \sem{(b_1+b_2) * b_3} & = & \dist \odot \sem{b_1 * b_3+b_2 * b_3} \\
+ \sem{1{\sumtype}b} & = & \idc \oplus\ \sem{b} \\
+ \sem{(b_1{\sumtype}b_2){\sumtype}b_3} & = & \assocrp \odot \sem{b_1 {\sumtype} (b_2 {\sumtype} b_3)} \\
+ \sem{b_1 {\sumtype} b_2} & = & (\sem{b_1} \oplus \idc) \odot \sem{ \sharp\, b_1 {\sumtype} b_2 } \\
+ \sem{0 {\prodtype} b_2} & = & \absorbr \\
+ \sem{1 {\prodtype} b_2} & = & \identlt \odot \sem{b_2} \\
+ \sem{(b_1 {\prodtype} b_2) {\prodtype} b_3} & = & \assocrt \odot \sem{b_1 {\prodtype} (b_2 {\prodtype} b_3)} \\
+ \sem{(b_1{\sumtype}b_2) {\prodtype} b_3} & = & \dist \odot \sem{b_1 {\prodtype} b_3{\sumtype}b_2 {\prodtype} b_3} \\
  \end{array}\]
 %originally subcode source isomorphisms.tex:598
 
@@ -1269,11 +1286,6 @@ that there is always an equivalence between.
 %%%%%%%%%
 \subsection{Graphical Language}
 
-%% Random idea:
-%% for a product monoidal this is wave-style
-%% for a sum monoidal this is particle-style
-%% when we have both we do have a wave-particle duality
-
 Combinators of \ensuremath{\Pi } can be written in terms of the
 operators described previously or via a graphical language similar in
 spirit to those developed for Geometry of Interaction
@@ -1282,7 +1294,7 @@ theory~\cite{BLUTE1996229,selinger-graphical}. Modulo some conventions
 and shorthand we describe here, the wiring diagrams are equivalent to
 the operator based (syntactic) description of programs.
 \ensuremath{\Pi } combinators expressed in this graphical language
-look like ``wiring diagrams''. Values take the form of ``particles''
+look like ``wiring diagrams.'' Values take the form of ``particles''
 that flow along the wires. Computation is expressed by the flow of
 particles.
 
@@ -1303,8 +1315,8 @@ Values flow from left to right in the graphical language of
 \inkscape{b-wire-value.pdf}
 
 \item
-The product type \ensuremath{b_1 * b_2} may be represented both as one wire
-labeled \ensuremath{b_1 * b_2} or by two parallel wires labeled \ensuremath{b_1} and
+The product type \ensuremath{b_1 {\prodtype} b_2} may be represented both as one wire
+labeled \ensuremath{b_1 \prodtype b_2} or by two parallel wires labeled \ensuremath{b_1} and
 \ensuremath{b_2}. Both representations may be used interchangeably.
 
 \begin{multicols}{2}
@@ -1324,7 +1336,7 @@ literature on monoidal categories as a ``wave.''
 
 \item
 Sum types may similarly be represented using using parallel wires with
-a \ensuremath{+} operator between them.
+a \ensuremath{{\sumtype}} operator between them.
 
 \begin{multicols}{2}
 \inkscape{sum-one-wire.pdf}
@@ -1332,7 +1344,7 @@ a \ensuremath{+} operator between them.
 \end{multicols}
 
 \noindent
-When tracing the execution of \ensuremath{b_1+b_2} represented by one
+When tracing the execution of \ensuremath{b_1{\sumtype}b_2} represented by one
 wire, one can think of a value of the form \ensuremath{\mathit{left} ~v_1} or \ensuremath{\mathit{right} ~v_2}
 as flowing on the wire, where \ensuremath{v_1:b_1} and \ensuremath{v_2:b_2}.  When tracing
 the execution of two additive wires, a value can reside on only one of
@@ -1344,7 +1356,7 @@ the two wires.
 \end{multicols}
 
 \item
-When representing complex types like \ensuremath{(b_1 * b_2)+b_3} some visual
+When representing complex types like \ensuremath{(b_1 {\prodtype} b_2){\sumtype}b_3} some visual
 grouping of the wires may be done to aid readability. The exact type
 however will always be clarified by the context of the diagram.
 
@@ -1352,8 +1364,8 @@ however will always be clarified by the context of the diagram.
 
 \item
 Associativity is entirely skipped in the graphical language. Hence
-three parallel wires may be inferred as \ensuremath{b_1 * (b_2 * b_3)} or
-\ensuremath{(b_1 * b_2) * b_3}, based on the context. This is much like handling of
+three parallel wires may be inferred as \ensuremath{b_1 {\prodtype} (b_2 {\prodtype} b_3)} or
+\ensuremath{(b_1 {\prodtype} b_2) {\prodtype} b_3}, based on the context. This is much like handling of
 associativity in the graphical representations of categories as well as
 that for monoidal categories.
 
@@ -1367,7 +1379,7 @@ that for monoidal categories.
 \end{multicols}
 
 \noindent
-When tracing the execution of \ensuremath{b_1+b_2} represented by one wire, one
+When tracing the execution of \ensuremath{b_1{\sumtype}b_2} represented by one wire, one
 can think of a value of the form \ensuremath{\mathit{left} ~v_1} or
 \ensuremath{\mathit{right} ~v_2} as flowing on the wire, where
 \ensuremath{v_1:b_1} and \ensuremath{v_2:b_2}.  By visually
@@ -1409,7 +1421,7 @@ boxes shown below:
 Distributivity and factoring are interesting because they represent
 interactions between sum and pair types. Distributivity should
 essentially be thought of as a multiplexer that redirects the flow of
-\ensuremath{v:b} depending on what value inhabits the type \ensuremath{b_1+b_2}, as shown
+\ensuremath{v:b} depending on what value inhabits the type \ensuremath{b_1{\sumtype}b_2}, as shown
 below.
 
 \begin{multicols}{2}
@@ -1432,8 +1444,8 @@ Factoring is the corresponding adjoint operation.
 \inkscape{c1c2_seq.pdf}
 
 There are two forms of parallel composition -- combinators
-  can be combined additively \ensuremath{c_1+ c_2} (shown on the left) or
-  multiplicatively \ensuremath{c_1 * c_2} (shown on the right).
+  can be combined additively \ensuremath{c_1 \oplus\ c_2} (shown on the left) or
+  multiplicatively \ensuremath{c_1 \otimes c_2} (shown on the right).
 
 \begin{multicols}{2}
 \inkscape{c1c2_par_sum.pdf}
@@ -1445,12 +1457,10 @@ There are two forms of parallel composition -- combinators
 \noindent
 \textit{Example.} As an example consider the wiring diagram
 of the combinator \ensuremath{c} below:
-\begin{flalign*}
-& \begin{aligned}
-c & : & b * (1+1) \leftrightarrow b + b \\
-c & = & \swapt \odot \dist \odot (\identlt + \identlt) \\
-\end{aligned} &&
-\end{flalign*}
+\[\begin{array}{rcl}
+c & : & b {\prodtype} (1{\sumtype}1) \leftrightarrow b {\sumtype} b \\
+c & = & \swapt \odot \dist \odot (\identlt \oplus \identlt)
+\end{array}\]
 
 \begin{center}
 \scalebox{1.5}{
@@ -1459,181 +1469,17 @@ c & = & \swapt \odot \dist \odot (\identlt + \identlt) \\
 }
 \end{center}
 
-\begin{comment}
-\jc{An additional ``problem'' is that since our circuits have a
-left-to-right orientation, $A * B$ drawn as boxes left-to-right
-gives an implicit ordering that is going to be hard to ignore.
-I'm starting to think that the diagrams in the MO answer might
-be better: use a colour (or like in Selinger's paper, at the
-very end), symbols in the nodes that split.  So both would
-be displayed as vertical stacks (only). Because I think that
-swap* is too hard to justify in this notation. Of course,
-if we could do things in 3D and $*$ was displayed using
-(say) depth, that would be different again.}
-
-This idea leads to a resource-based interpretation of types as
-\emph{possible events} and of the values as \emph{consistent timelines
-  of events} as explained below. The event $1$ is trivial, and the
-event $0$ is impossible.  We visualize the denotation of $1$ as a
-point in space, and $0$ as empty space. The denotation of $A + B$ is
-the denotation of~$A$ drawn on top of the denotation of $B$ and
-separated by a border, and the denotation of $A * B$ is just the
-denotation of $A$ written next to the denotation of $B$.  For example,
-let $2$ be the type $1 + 1$ represented by a stack of two boxes each
-with a point inside it. The type $(2 + 2) * (2 + 2)$ would then be two
-such stacks laid next to each other. Composing further, the type
-$((2 + 2) * (2 + 2)) + ((2 + 2) * (2 + 2))$ is built by stacking the
-last two diagrams as shown below on the left:
-\begin{center}
-\hfill
-\includegraphics[scale=0.3]{images/tall-tl-1}
-~
-\includegraphics[scale=0.3]{images/tall-tl-2}
-\hfill (*)
-\end{center}
-If we call the type on the left $A$ then the full diagram above
-represents the type $A*A$.
-
-To understand how diagrams (types) can transform through the
-evaluation of  a program, we need to reason about the equivalence of
-different diagrams. Consider for example, the two diagrams below:
-
-\begin{center}
-\hfill
-\includegraphics[scale=0.3]{images/distrib-1}
-\qquad \qquad \qquad \qquad \qquad
-\includegraphics[scale=0.3]{images/distrib-2}
-\hfill (**)
-\end{center}
-
-The diagram on the left represents the type $A * (B + C)$ while the
-one on the right represents the type $(A * B) + (A * C)$. These two
-types are equivalent in $\Pi$ but why are they equivalent in the
-graphical notation? We argue that they admit the same consistent
-timelines where a consistent timeline is defined recursively on the
-structure of a diagram:
-\begin{itemize}
-\item An endpoint (the denotation of $1$) has exactly one timeline
-  through it.  Empty space (the denotation of $0$) has no timelines
-  through it.
-\item A timeline through a stack of alternatives
-  $A_1 + A_2 + \cdots + A_n$ is a timeline through exactly one of the
-  possible alternatives.
-\item A timeline through a spatial composition of cells
-  $A_1 * A_2 * \cdots * A_n$ is a timeline through \emph{all} of the
-  cells, in some order.
-\end{itemize}
-
-For example, the red line in the diagram (*) represents a consistent
-timeline. For the diagrams (**), we note that any consistent timeline
-for the left diagram must go through $A$ and either one of $B$ or $C$
-and for the diagram on the right, the choice happens earlier but the
-result is the same: any consistent timeline must go through either $A$
-and $B$ or through $A$ and $C$.
-
-Other than distributivity, $\Pi$ combinators simply allow us to shuffle
-the components of a stack around as well as shuffle the positions of
-components in the plane.
-\end{comment}
-% \amr{
-%   Let’s have a geometric representation of spaces:
-% - A + B means putting A next to B
-% - A * B means putting A and B on two perpendicular axes and filling
-% the square (volume) between them
-% All the combinators would indeed have a natural action and if we have
-% a few nice pictures it would be great. What do you think? }
-
-% \newcommand{\graphzero}{}
-% \newcommand{\graphone}{\ensuremath{\bullet}}
-% \newcommand{\graphplus}[2]{\node (top) {#1}; \node [below of=top] {#2};}
-
-% \begin{center}
-% \begin{tikzpicture} %% [declare function = {plus(\x,\y) = \node (top){\x}; \node [below of=top] {\y};}]
-% \node (x) {\graphone};
-% \node (y) {\graphone};
-% %% {plus(\x,\y)}
-% \end{tikzpicture}
-% \end{center}
-
-% \begin{definition}{Primitive operators of ~\ensuremath{\Pi } }
-% \label{def:primitives-langRev}
-
-% \[\begin{array}{rrcll}
-%  \identlp :& 0 + b &\leftrightarrow & b &: \identrp \\
-%  \swapp :& b_1 + b_2 &\leftrightarrow & b_2 + b_1 &: \swapp \\
-%  \assoclp :& b_1 + (b_2 + b_3) &\leftrightarrow & (b_1 + b_2) + b_3 &: \assocrp \\
-%  \identlt :& 1 \times b &\leftrightarrow & b &: \identrt \\
-%  \swapt :& b_1 \times b_2 &\leftrightarrow & b_2 \times b_1 &: \swapt \\
-%  \assoclt :& b_1 \times (b_2 \times b_3) &\leftrightarrow & (b_1 \times b_2) \times b_3 &: \assocrt \\
-%  \absorbr :& 0 \times b &\leftrightarrow & 0 &: \factorzl \\
-%  \dist :& (b_1 + b_2) \times b_3 &\leftrightarrow & (b_1 \times b_3) + (b_2 \times b_3) &: \factor \\
-%  \end{array}\]
-% %subcode source isomorphisms.tex:427
-
-% \end{definition}
-
-
-% Each line of this table is to be read as the definition of one or two
-% operators. For example, corresponding to the \textit{identity of
-%   \ensuremath{\times}} isomorphism (\ensuremath{1\times b\leftrightarrow b}) we have the two operators
-% \ensuremath{\identlt:1\times b\leftrightarrow b} (reading the isomorphism from left to right) and
-% \ensuremath{\identrt:b\leftrightarrow 1\times b} (reading the isomorphism from right to
-% left). These operators are inverses of each other.  Each of the two
-% cases of commutativity defines one operator that is its own inverse.
-
-% Having defined primitive operators, we need some means of composing
-% them. We construct the composition combinators out of the closure
-% conditions for isomorphisms.
-
-% \begin{definition}{Composition in \ensuremath{\Pi } }
-% $$
-% \infer{ \idc : b \leftrightarrow b}{
-% 	 ~
-% }
-% \quad
-% \infer{ \ !~c : b_2 \leftrightarrow b_1}{
-% 	 c : b_1 \leftrightarrow b_2
-% }
-% \quad
-% \infer{ c_1\odot c_2 : b_1 \leftrightarrow b_3}{
-% 	 c_1 : b_1 \leftrightarrow b_2
-% 	&
-% 	 c_2 : b_2 \leftrightarrow b_3
-% }
-% $$
-% $$
-% \infer{ c_1 + c_2 : b_1 + b_2 \leftrightarrow b_3 + b_4}{
-% 	 c_1 : b_1 \leftrightarrow b_3
-% 	&
-% 	 c_2 : b_2 \leftrightarrow b_4
-% }
-% \quad
-% \infer{ c_1 \times c_2 : b_1 \times b_2 \leftrightarrow b_3 \times b_4}{
-% 	 c_1 : b_1 \leftrightarrow b_3
-% 	&
-% 	 c_2 : b_2 \leftrightarrow b_4
-% }
-% $$
-% %subcode source isomorphisms.tex:462
-% \end{definition}
-
-% Thus we have program constructs that witness reflexivity \ensuremath{\idc},
-% symmetry \ensuremath{\mathit{sym}}, and transitivity~\ensuremath{\odot} and two parallel
-% composition combinators, one for sums~\ensuremath{+} and one for
-% pairs~\ensuremath{\times}.
-
 %%%%%%%%%
 \subsection{Denotational Semantics}
 
-Figure~\ref{type-isos} introduces our desired denotational
-semantics, and section~\ref{sec:opsem} a direct definition
-of an operational semantics. One obvious question arises:
-do these correspond? 
+Fig.~\ref{type-isos} introduces our desired denotational semantics,
+and Sec.~\ref{sec:opsem} is a direct definition of an operational
+semantics. One obvious question arises: do these correspond?
 
 We can certainly associate to each $\Pi$ combinator an
 equivalence between the denotation of each type%
 \footnote{This is extracted from the Agda formalization
-of this work, which has been reported on in~\cite{Carette2016}.}:
+of this work, which has been reported on in a previous paper~\cite{Carette2016}.}:
 \begin{code}\hspace*{-4mm}
 \>\AgdaFunction{c2equiv} \AgdaSymbol{:} \AgdaSymbol{\{}\AgdaBound{t₁}
 \AgdaBound{t₂} \AgdaSymbol{:} \AgdaDatatype{U}\AgdaSymbol{\}} \AgdaSymbol{→}
@@ -1682,15 +1528,15 @@ quote by Minsky communicating this concern:
   quite immune to objections like that; indeed, they fuel him with
   energy. Soon he went on to assume that information processing must
   also be reversible — and invented what’s now called the Fredkin
-  gate~\cite{Hey:1999:FCE:304763}. 
+  gate~\cite{Hey:1999:FCE:304763}.
 \end{quote}
 
 We will however show that one can program all logical gates in
-$\Pi$. We will start with a few simply examples and then discuss the
-expressiveness of the language and discuss various properties.
+$\Pi$. We will start with a few simple examples and then discuss the
+expressiveness of the language and its properties.
 
 \paragraph*{Booleans}
-Let us start with encoding booleans. We use the type \ensuremath{1+1} to
+Let us start with encoding booleans. We use the type \ensuremath{1{\sumtype}1} to
 represent booleans with \ensuremath{\mathit{left} ~()} representing \ensuremath{\mathit{true}} and
 \ensuremath{\mathit{right}~()} representing \ensuremath{\mathit{false}}.
 Boolean negation is straightforward to define:
@@ -1706,25 +1552,25 @@ vice versa.
 \paragraph*{Bit Vectors.}
 We can represent $n$-bit words using an n-ary product of
 \ensuremath{\mathit{bool}}s. For example, we can represent a 3-bit word, \ensuremath{\mathit{word}_3},
-using the type \ensuremath{\mathit{bool} * (\mathit{bool} *  \mathit{bool})}.  We can perform various
+using the type \ensuremath{\mathit{bool} {\prodtype} (\mathit{bool} {\prodtype}  \mathit{bool})}.  We can perform various
 operations on these 3-bit words using combinators in \ensuremath{\Pi }. For
 instance the bitwise \ensuremath{\mathit{not}} operation is the parallel composition of
 three \ensuremath{\mathit{not}} operations:
 
 \ensuremath{\mathit{not}_{\mathit{word}_3} :: \mathit{word}_3 \leftrightarrow \mathit{word}_3}
 
-\ensuremath{\mathit{not}_{\mathit{word}_3} = \mathit{not}  *  (\mathit{not}  *  \mathit{not})}
+\ensuremath{\mathit{not}_{\mathit{word}_3} = \mathit{not}  {\prodtype}  (\mathit{not}  {\prodtype}  \mathit{not})}
 
 \noindent We can express a 3-bit word reversal operation as follows:
 
 \ensuremath{\mathit{reverse} : \mathit{word}_3 \leftrightarrow \mathit{word}_3}
 
-\ensuremath{\mathit{reverse} = \swapt \odot (\swapt  *  \idc)~ \odot \assocrt}
+\ensuremath{\mathit{reverse} = \swapt \odot (\swapt  \otimes  \idc)~ \odot \assocrt}
 
 \noindent We can check that \ensuremath{\mathit{reverse}} does the right thing by
 applying it to a value \ensuremath{(v_1, (v_2, v_3))} and writing out the full
 derivation tree of the reduction.  The combinator \ensuremath{\mathit{reverse}}, like
-many others we will see in this thesis, is formed by sequentially
+many others we will see in this paper, is formed by sequentially
 composing several simpler combinators. Instead of presenting the
 operation of \ensuremath{\mathit{reverse}} as a derivation tree, it is easier (purely
 for presentation reasons) to flatten the tree into a sequence of
@@ -1733,7 +1579,7 @@ is given below:
 \[\begin{array}{rlr}
  & (v_1, (v_2, v_3)) \\
  \swapt & ((v_2, v_3), v_1) \\
- \swapt  *  \idc & ((v_3, v_2), v_1) \\
+ \swapt \otimes  \idc & ((v_3, v_2), v_1) \\
  \assocrt & (v_3, (v_2, v_1)) \\
  \end{array}\]
 %subcode source isomorphisms.tex:979
@@ -1756,22 +1602,22 @@ Even though \ensuremath{\Pi } lacks conditional expressions, they are
 expressible using the distributivity and factoring laws. The
 diagrammatic representation of \ensuremath{\dist} shows that it redirects the flow
 of a value \ensuremath{v:b} based on the value of another one of type
-\ensuremath{b_1+b_2}. If we choose \ensuremath{1+1} to be
+\ensuremath{b_1{\sumtype}b_2}. If we choose \ensuremath{1{\sumtype}1} to be
 \ensuremath{\mathit{bool}} and apply either \ensuremath{c_1:b_1\leftrightarrow
 b_2} or \ensuremath{c_2:b_1\leftrightarrow b_2} to the value \ensuremath{v},
 then we essentially have an `if' expression.
 
-\ensuremath{\mathit{if}_{c_1,c_2} : \mathit{bool}  *  b_1 \leftrightarrow \mathit{bool}  *  b_2}
+\ensuremath{\mathit{if}_{c_1,c_2} : \mathit{bool}  {\prodtype}  b_1 \leftrightarrow \mathit{bool}  {\prodtype}  b_2}
 
-\ensuremath{\mathit{if}_{c_1,c_2} = \dist \odot ((\idc  *  c_1) + (\idc  *  c_2)) \odot \factor}
+\ensuremath{\mathit{if}_{c_1,c_2} = \dist \odot ((\idc  \otimes\  c_1) {\sumtype} (\idc \otimes\  c_2)) \odot \factor}
 
 
 \inkscape{if-c1-c2.pdf}
 
 
-The diagram above shows the input value of type \ensuremath{(1+1) *  b_2}
+The diagram above shows the input value of type \ensuremath{(1{\sumtype}1) {\prodtype}  b_2}
 processed by the distribute operator \ensuremath{\dist}, which converts it into
-a value of type \ensuremath{(1 *  b_2)+(1 *  b_2)}. In the
+a value of type \ensuremath{(1 {\prodtype}  b_2){\sumtype}(1 {\prodtype}  b_2)}. In the
 \ensuremath{\mathit{left}} branch, which corresponds to the
 case when the boolean is \ensuremath{\mathit{true}} (i.e. the value was
 \ensuremath{\mathit{left} ~()}), the combinator~\ensuremath{c_1} is applied to
@@ -1805,12 +1651,12 @@ of the conditional derived above. If the \ensuremath{\mathit{bool}} is
 
 
 By choosing \ensuremath{b} to be \ensuremath{\mathit{bool}} and \ensuremath{c} to be \ensuremath{\mathit{not}}, we have the
-combinator \ensuremath{\mathit{if}_{\mathit{not}} : \mathit{bool} *  \mathit{bool}\leftrightarrow \mathit{bool} *  \mathit{bool}} which negates its
+combinator \ensuremath{\mathit{if}_{\mathit{not}} : \mathit{bool} {\prodtype}  \mathit{bool}\leftrightarrow \mathit{bool} {\prodtype}  \mathit{bool}} which negates its
 second argument if the first argument is \ensuremath{\mathit{true}}. This gate
 \ensuremath{\mathit{if}_{\mathit{not}}} is often referred to as the \ensuremath{\mathit{cnot}} gate\cite{Toffoli:1980}.
 
 If we iterate this construction once more, the resulting combinator
-\ensuremath{\mathit{if}_{\mathit{cnot}}} has type \ensuremath{\mathit{bool} *  (\mathit{bool} *  \mathit{bool})\leftrightarrow \mathit{bool} *  (\mathit{bool} *  \mathit{bool})}. The
+\ensuremath{\mathit{if}_{\mathit{cnot}}} has type \ensuremath{\mathit{bool} {\prodtype}  (\mathit{bool} {\prodtype}  \mathit{bool})\leftrightarrow \mathit{bool} {\prodtype}  (\mathit{bool} {\prodtype}  \mathit{bool})}. The
 resulting gate checks the first argument and if it is \ensuremath{\mathit{true}},
 proceeds to check the second argument. If that is also \ensuremath{\mathit{true}} then
 it will negate the third argument. Thus \ensuremath{\mathit{if}_{\mathit{cnot}}} is the required
@@ -1846,17 +1692,12 @@ consisting of two deformations between the types $A + B$ and $C+D$:
 \begin{center}
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
   \draw[>=latex,<->,double,red,thick] (2.25,-1.2) -- (2.25,-2.9) ;
-%%  \node at (3.3,-2) {$\mathit{swapl}_{+\Leftrightarrow}$} ;
-%%  \node at (2.5,-1.3) {$((c_2~\oplus~c_1)~\odot~\mathit{swap}_{+})$};
-%%  \node at (2.5,-2.7) {$(\mathit{swap}_{+}~\odot~(c_1~\oplus~c_2))$};
-%  \draw (-2,-2) ellipse (0.5cm and 1cm);
   \draw[fill] (-2,-1.5) circle [radius=0.025];
   \node[below] at (-2.1,-1.5) {$A$};
   \node[below] at (-2.1,-1.9) {$+$};
   \draw[fill] (-2,-2.5) circle [radius=0.025];
   \node[below] at (-2.1,-2.5) {$B$};
 
-%  \draw (6.5,-2) ellipse (0.5cm and 1cm);
   \draw[fill] (6.5,-1.5) circle [radius=0.025];
   \node[below] at (6.7,-1.5) {$C$};
   \node[below] at (6.7,-1.9) {$+$};
@@ -1887,21 +1728,9 @@ consisting of two deformations between the types $A + B$ and $C+D$:
   \draw     (2,-4.5) -- (2.5,-4.5)   ;
 
   \path (1.5,0.5) node (tc1) [func] {$c_1$};
-  %\draw     (1,0.9)  -- (2,0.9) -- (2,0.1) -- (1,0.1) -- cycle ;
-  %\node at (1.5,0.5) {$c_1$};
-
   \path (1.5,-0.5) node (tc2) [func] {$c_2$};
-  %\draw     (1,-0.1)  -- (2,-0.1) -- (2,-0.9) -- (1,-0.9) -- cycle ;
-  %\node at (1.5,-0.5) {$c_2$};
-
   \path (3,-4.5) node (bc1) [func] {$c_1$};
-  %\draw     (2.5,-4.1)  -- (3.5,-4.1) -- (3.5,-4.9) -- (2.5,-4.9) -- cycle ;
-  %\node at (3,-4.5) {$c_1$};
-
   \path (3,-3.5) node (bc2) [func] {$c_2$};
-  %\draw     (2.5,-3.1)  -- (3.5,-3.1) -- (3.5,-3.9) -- (2.5,-3.9) -- cycle ;
-  % \node at (3,-3.5) {$c_2$};
-
 \end{tikzpicture}
 \end{center}
 The top path is the $\Pi$ program
@@ -1948,7 +1777,7 @@ discussed in this section) as being at level-2.
 %%%%%%%%%
 \subsection{A Model of Equivalences between Type Equivalences}
 
-Previously we saw how we could take the proof terms of commutative semirings
+Previously we saw how we could take the proof terms of commutative semiring
 equivalences as our starting point for $\Pi$. What we need
 now is to understand how \emph{proofs} of algebraic identities should be
 considered equivalent. Classical algebra does not help, as proofs
@@ -1963,26 +1792,24 @@ indistinguishable, we posit that there may in fact be many.
 This consequences of this one decision are enough to show that
 types can be modeled by groupoids.
 
-Thus, rather than looking at (untyped) commutative semirings,
-we should look at a \emph{typed} version. This process frequently
-goes by the moniker of ``categorification.''  We want a categorical
-algebra, where the basic objects are groupoids (to model our types),
-and where there is a natural notion of $+$ and $*$.  At first,
-we hit what seems like a serious stumbling block: the category of
-all groupoids, \Gpd, does not have either co-products
-nor products. However, we don't want to work internally in
-\Gpd -- we want operations
-\emph{on} groupoids. In other words, we want something akin to
-symmetric monoidal categories, but with two interacting
-monoidal structures.  Luckily, this already exists: the categorical
-analog to (commutative) semirings are (symmetric) Rig
-Categories~\cite{laplaza72,kelly74}.
-This straightforwardly generalizes to symmetric Rig Groupoids.
+Thus, rather than looking at (untyped) commutative semirings, we
+should look at a \emph{typed} version. This process frequently goes by
+the moniker of ``categorification.''  We want a categorical algebra,
+where the basic objects are groupoids (to model our types), and where
+there is a natural notion of $+$ and $*$.  At first, we hit what seems
+like a serious stumbling block: the category of all groupoids, \Gpd,
+have neither co-products nor products. However, we don't want to work
+internally in \Gpd -- we want operations \emph{on} groupoids. In other
+words, we want something akin to symmetric monoidal categories, but
+with two interacting monoidal structures.  Luckily, this already
+exists: the categorical analog to (commutative) semirings are
+(symmetric) Rig Categories~\cite{laplaza72,kelly74}.  This
+straightforwardly generalizes to symmetric Rig Groupoids.
 
 How does this help? Coherence conditions! Symmetric monoidal categories,
 to start somewhere simple, do not just introduce natural transformations
 like the associator $\alpha$ and the left and right unitors ($\lambda$
-and $\rho$ respectively), but also coherence conditions that these must satisfy.
+and~$\rho$ respectively), but also coherence conditions that these must satisfy.
 Looking, for example, at just the additive fragment of $\Pi$ (i.e. with just $0$,
 $1$ and $+$ for the types, $\odot$ and $\oplus$ as combinators, and
 only the terms so expressible), the sub-language would correspond,
@@ -2067,11 +1894,12 @@ Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_
 \end{figure}
 
 Starting with the simplest constructions, the first two constructs in
-Fig.~\ref{fige} are the level-2 analogs of $+$ and $*$, which respectively
-model level-1 choice composition and parallel composition (of
-equivalences).  These allow us to ``build up'' larger equivalences from smaller
-ones.  The next two express that both of these composition operators distribute
-over sequential composition $\odot$ (and vice versa).
+Fig.~\ref{fige} are the level-2 analogs of~$+$ and~$*$, which
+respectively model level-1 choice composition and parallel composition
+(of equivalences).  These allow us to ``build up'' larger equivalences
+from smaller ones.  The next two express that both of these
+composition operators distribute over sequential composition $\odot$
+(and vice versa).
 
 \begin{figure}[t]
 Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 : t_3 \leftrightarrow t_4$:
@@ -2102,147 +1930,24 @@ the $\oplus$ and $\otimes$ combinators ``commute'' with re-association.
 In other words, it expresses that the type-level associativity of $+$ is
 properly reflected by the properties of $\oplus$.
 The last two equivalences show how composition of associativity combinators
-interact together. 
+interact together.
 
 The bottom line in Fig.~\ref{figj} is actually a linear
 restatement of the famous ``pentagon diagram'' stating a
 particular coherence condition for monoidal categories~\cite{KELLY197197}.
 To make the relation between $\Pi$ as a language and the
-language of category theory, the figure below
+language of category theory, the figure below displays
 the same morphism but in categorical terms.
 
 \begin{center}
 \begin{tikzcd}[column sep=normal]
    & (A \times (B \times C)) \times D \arrow [dr, "\assocrt"] & \\
-((A \times B) \times C) \times D \arrow [ur, "\assocrt \otimes \mathit{id}\leftrightarrow"] 
-   \arrow [d, "\assocrt"] & 
+((A \times B) \times C) \times D \arrow [ur, "\assocrt \otimes \mathit{id}\leftrightarrow"]
+   \arrow [d, "\assocrt"] &
        & A \times ((B \times C) \times D) \arrow [d, "\mathit{id}\leftrightarrow \otimes \assocrt" ]\\
 (A \times B) \times (C \times D) \arrow [rr, "\assocrt"] & & A \times (B \times (C \times D))
 \end{tikzcd}
 \end{center}
-
-\begin{comment}
-For example, the last equivalence captures the idea that the
-program $\assocrt \odot \assocrt$ transforms an input of
-type $((t_1 * t_2) * t_3) * t_4$ to an output of type
-$t_1 * (t_2 * (t_3 * t_4))$ as follows:
-
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]
-\node[above] (A) at (-2,0) {$t_1$};
-\node[above] (B) at (-1.5,0) {$t_2$};
-\node[above] (C) at (-1,0) {$t_3$};
-\node[above] (D) at (-0.5,0) {$t_4$};
-\draw[thick] (A) -- (-2,-1.5);
-\draw[thick] (B) -- (-1.5,-1.5);
-\draw[thick] (C) -- (-1,-1.5);;
-\draw[thick] (D) -- (-0.5,-1.5);
-\draw[red,densely dashed] (-1.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\draw[green,densely dashed] (-1.6,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
-\end{tikzpicture}
-$\leadsto$
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]
-\node[above] (A) at (-2,0) {$t_1$};
-\node[above] (B) at (-1.5,0) {$t_2$};
-\node[above] (C) at (-1,0) {$t_3$};
-\node[above] (D) at (-0.5,0) {$t_4$};
-\draw[thick] (A) -- (-2,-1.5);
-\draw[thick] (B) -- (-1.5,-1.5);
-\draw[thick] (C) -- (-1,-1.5);;
-\draw[thick] (D) -- (-0.5,-1.5);
-\draw[red,densely dashed] (-1.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\draw[green,densely dashed] (-0.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\end{tikzpicture}
-$\leadsto$
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]
-\node[above] (A) at (-2,0) {$t_1$};
-\node[above] (B) at (-1.5,0) {$t_2$};
-\node[above] (C) at (-1,0) {$t_3$};
-\node[above] (D) at (-0.5,0) {$t_4$};
-\draw[thick] (A) -- (-2,-1.5);
-\draw[thick] (B) -- (-1.5,-1.5);
-\draw[thick] (C) -- (-1,-1.5);;
-\draw[thick] (D) -- (-0.5,-1.5);
-\draw[red,densely dashed] (-0.9,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
-\draw[green,densely dashed] (-0.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\end{tikzpicture}
-\end{center}
-% \[
-% ((t_1 * t_2) * t_3) * t_4 \leadsto
-% (t_1 * t_2) * (t_3 * t_4) \leadsto
-% t_1 * (t_2 * (t_3 * t_4))
-% \]
-
-\noindent The program on the right
-$((\assocrt \otimes \idc) \odot \assocrt) \odot (\idc \otimes
-\assocrt)$ achieves the same end-to-end transformation using the
-following sequence of steps:
-
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]]
-\node[above] (A) at (-2,0) {$t_1$};
-\node[above] (B) at (-1.5,0) {$t_2$};
-\node[above] (C) at (-1,0) {$t_3$};
-\node[above] (D) at (-0.5,0) {$t_4$};
-\draw[thick] (A) -- (-2,-1.5);
-\draw[thick] (B) -- (-1.5,-1.5);
-\draw[thick] (C) -- (-1,-1.5);;
-\draw[thick] (D) -- (-0.5,-1.5);
-\draw[red,densely dashed] (-1.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\draw[green,densely dashed] (-1.6,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
-\end{tikzpicture}
-$\leadsto$
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]]
-\node[above] (A) at (-2,0) {$t_1$};
-\node[above] (B) at (-1.5,0) {$t_2$};
-\node[above] (C) at (-1,0) {$t_3$};
-\node[above] (D) at (-0.5,0) {$t_4$};
-\draw[thick] (A) -- (-2,-1.5);
-\draw[thick] (B) -- (-1.5,-1.5);
-\draw[thick] (C) -- (-1,-1.5);;
-\draw[thick] (D) -- (-0.5,-1.5);
-\draw[red,densely dashed] (-1.25,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\draw[green,densely dashed] (-1.5,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
-\end{tikzpicture}
-$\leadsto$
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]]
-\node[above] (A) at (-2,0) {$t_1$};
-\node[above] (B) at (-1.5,0) {$t_2$};
-\node[above] (C) at (-1,0) {$t_3$};
-\node[above] (D) at (-0.5,0) {$t_4$};
-\draw[thick] (A) -- (-2,-1.5);
-\draw[thick] (B) -- (-1.5,-1.5);
-\draw[thick] (C) -- (-1,-1.5);;
-\draw[thick] (D) -- (-0.5,-1.5);
-\draw[red,densely dashed] (-1.25,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\draw[green,densely dashed] (-1.0,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
-\end{tikzpicture}
-$\leadsto$
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8},baseline=(current bounding box.center)]]
-\node[above] (A) at (-2,0) {$t_1$};
-\node[above] (B) at (-1.5,0) {$t_2$};
-\node[above] (C) at (-1,0) {$t_3$};
-\node[above] (D) at (-0.5,0) {$t_4$};
-\draw[thick] (A) -- (-2,-1.5);
-\draw[thick] (B) -- (-1.5,-1.5);
-\draw[thick] (C) -- (-1,-1.5);;
-\draw[thick] (D) -- (-0.5,-1.5);
-\draw[green,densely dashed] (-0.9,-0.75) ellipse [x radius=0.85cm, y radius = 0.2cm];
-\draw[red,densely dashed] (-0.75,-0.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\end{tikzpicture}
-\end{center}
-% \[
-% ((t_1 * t_2) * t_3) * t_4 \leadsto
-% (t_1 * (t_2 * t_3)) * t_4 \leadsto
-% t_1 * ((t_2 * t_3) * t_4) \leadsto
-% t_1 * (t_2 * (t_3 * t_4))
-% \]
-
-% \jc{I am not a big fan of these pictures -- mainly because I can't give any
-% intuition based on them of why these can be smoothly deformed into one another.
-% All the ``pictures'' I can come up with [via purely formal reasoning] sit in at least
-% 5 dimensions -- one for each of the wires, and another to give room to maneuver.}
-% \end{comment}
 
 \begin{figure}[t]
 Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, and $c_3 : t_5 \leftrightarrow t_6$:
@@ -2262,37 +1967,6 @@ Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, and $c_3 :
 The constructs in Fig.~\ref{figi} are the basic coherence for
 $\dist$, $\distl$, $\factor$ and $\factorl$: the type-level distribution
 and factoring has to commute with the level-1 $\oplus$ and $\otimes$.
-
-\begin{comment}
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-\node[above] (A) at (-2,0) {$t_1$};
-\node[above] (B) at (-1.5,0) {$t_3$};
-\node[above] (C) at (-1,0) {$t_5$};
-\draw[thick,yellow] (-1.5,-0.25) arc[start angle=60, end angle=120, radius=0.5cm];
-\draw[thick] (A) -- (-2,-0.5);
-\draw[thick] (B) -- (-1.5,-0.5);
-\draw[thick] (C) -- (-1,-0.5);
-\node at (-2,-0.75) {$a$};
-\node at (-1.5,-0.75) {$b$};
-\node at (-1,-0.75) {$c$};
-\draw[thick] (-2,-1) -- (-2,-1.5);
-\draw[thick] (-1.5,-1) -- (-1.5,-1.5);
-\draw[thick] (-1,-1) -- (-1,-1.5);
-\node at (-1.5,-2) {$\dist$};
-\draw[thick] (-2.5,-2.5) -- (-2.5,-3);
-\draw[thick] (-2,-2.5) -- (-2,-3);
-\draw[green,densely dashed] (-2.25,-2.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\draw[thick] (-1,-2.5) -- (-1,-3);
-\draw[thick] (-0.5,-2.5) -- (-0.5,-3);
-\draw[green,densely dashed] (-0.75,-2.75) ellipse [x radius=0.4cm, y radius = 0.1cm];
-\draw[thick,yellow] (-1,-2.75) arc[start angle=60, end angle=120, radius=1cm];
-\end{tikzpicture}
-\end{center}
-% ((a + b) * c) ; dist <=> dist ; ((a * c) + (b * c))
-% LHS: (t1 + t3) * t5 ~> (t2 + t4) * t6 ~> (t2 * t6) + (t4 * t6)
-% RHS: (t1 + t3) * t5 ~> (t1 * t5) + (t3 * t5) ~> (t2 * t6) + (t4 * t6)
-\end{comment}
 
 \begin{figure}[t]
 Let $c_0, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c_4, c_5 : t_3 \leftrightarrow t_4$:
@@ -2408,14 +2082,14 @@ Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
 
 The first two equivalences in Fig.~\ref{figf} reflect the basic
 coherence between level-0 swapping and the level-1 combinator
-actions. The next four arise because of interactions between
-(additive and multiplicative) level-1 associativity and swapping.
-In other words, they arise as critical pairs.  For example,
-the first expresses that the two ways of going from
-$\left(A \oplus B\right) \oplus C$ to $B \oplus \left(C \oplus A\right)$
-are equivalent, with the second saying that the reverse (i.e.
-the results of applying $!$\,) also gives equivalent programs.
-The last two say the same but for the multiplicative structure.
+actions. The next four arise because of interactions between (additive
+and multiplicative) level-1 associativity and swapping.  In other
+words, they arise as critical pairs.  For example, the first expresses
+that the two ways of going from $\left(A \oplus B\right) \oplus C$ to
+$B \oplus \left(C \oplus A\right)$ are equivalent, with the second
+saying that the reverse (i.e.  the results of applying $!$\,) also
+gives equivalent programs.  The last two say the same but for the
+multiplicative structure.
 
 \begin{figure}[t]
 \[\def\arraystretch{1.3}
@@ -2465,7 +2139,7 @@ deal with combinators involving $0$, aka an impossibility.  For example,
 \[  {(c \otimes \idc_{0}) \odot \absorbl \Leftrightarrow \absorbl \odot \idc_{0}}
 \]
 (where we have explicitly annotated the types of $\idc$ for increased clarity)
-tells us that of the two ways of transforming from $t_1  *  0$ to $0$, 
+tells us that of the two ways of transforming from $t_1  *\  0$ to $0$,
 namely first doing some arbitrary transformation $c$ from $t_1$ to $t_2$ and
 (in parallel) leaving $0$ alone then eliminating $0$, or first eliminating $0$
 then doing the identity (at $0$), are equivalent. This is the ``naturality'' of
@@ -2478,7 +2152,7 @@ $\factorzl$ and $\factorzr$.
 The next combinator, $\absorbr \Leftrightarrow \absorbl$, is
 particularly fascinating: while it says something simple --- that the
 two obvious ways of transforming $0 * 0$ into $0$, namely absorbing
-either the left or right zero --- it implies something subtle.  A
+either the left or right $0$ --- it implies something subtle.  A
 straightforward proof of $\absorbl$ which proceeds by saying that
 $0 * t$ cannot be inhabited because the first member of the pair
 cannot, is not in fact equivalent to $\absorbr$ on $0 * 0$.  However,
@@ -2493,8 +2167,6 @@ on the left and right. Such cases are particularly troublesome for
 finding normal forms. Laplaza~\cite{laplaza72} certainly comments on this,
 but in mostly terse and technical terms. Blute et al.~\cite{BLUTE1996229}
 offer much more intuitive explanations.
-
-%% \jc{should add some citations here}.
 
 \begin{figure}[t]
 \[\def\arraystretch{1.3}
@@ -2538,9 +2210,9 @@ on the left and $6$ on the right.
 There are two different interpretations for an operational semantics
 for the language of equivalences:
 \begin{enumerate}
-\item Mimicking closely the one in the previous section, and
-thus finding explicit homotopies between the functions induced
-by the operational semantics of the level-1 combinators.
+\item Mimicking closely the one in Sec.~\ref{sec:opsem}, and thus
+  finding explicit homotopies between the functions induced by the
+  operational semantics of the level-1 combinators.
 \item Treating things more syntactically, and interpreting
 the combinators as program transformations.
 \end{enumerate}
@@ -2551,7 +2223,7 @@ equivalences'', which as the base of that interpretation.
 \newcommand{\evalone}{\ensuremath{\mathit{eval}_1}}
 
 Here we will focus instead of the syntactic interpretation as
-program transformers. This results in a function
+program transformers. This results in a function:
 \begin{flalign*}
 \mathit{eval}_1\,:\,\ \left\{ t_1\, t_2\,:\,U\right\}
   \left\{ c_1\, c_2\,:\, t_1\,\leftrightarrow\,t_2\right\}
@@ -2570,7 +2242,7 @@ one on the right requires ``pattern matching'' on the left
 structure which contains $3$ arbitrary combinators, from which
 we can \emph{reconstruct} the program on the right. Rewrites
 such as \AgdaInductiveConstructor{distl⇔l} are one-step rewrites,
-in the same way that \distl is a constant of the base term language
+in the same way that \distl\ is a constant of the base term language
 of $\Pi$.  There is one additional wrinkle. There is naturally
 an opposite combinator, which interprets the above from right
 to left; let us call it \AgdaInductiveConstructor{distl⇔r}. It
@@ -2581,28 +2253,28 @@ $5$ implicit arguments, $3$ of which are $c_1, c_2$, and $c_3$,
 which then completely force the ``shape'' of the overall pattern.
 Thus the mere mention of \AgdaInductiveConstructor{distl⇔r} is
 enough to resolve the apparent use of a non-linear pattern.
-This is why \evalone was called ``deeply dependent''
+This is why \evalone\ was called ``deeply dependent''
 above: once the name of the combinator is given, the rest
 follows.
 
 \newcommand{\transLR}{\AgdaInductiveConstructor{trans⇔}}
 If all expressible transformations were single-step only, this
-would hardly justify calling this an ``operational semantics'',
+would hardly justify calling this an ``operational semantics,''
 as we would hardly have a programming language. However, level-2
 of $\Pi$ has combinators as well: two are in
 Fig.~\ref{fige} and two are in Fig.~\ref{figh}. The most interesting
-one is ``sequential composition'', which is the middle one at the 
+one is ``sequential composition,'' which is the middle one at the
 bottom of Fig.~\ref{figh}. Since $\Leftrightarrow$ represents
 an equivalence, sequential composition in this context is the
 same as transitivity of equivalences, as thus we have chosen to
 name this \transLR. When evaluating \transLR, we could cheat:
-we know that the eventual answer must be, and we could just 
+we know that the eventual answer must be, and we could just
 return that. But this is not operational in any real sense, as
 that skips over the intermediate steps. We would like to be able
 to ``trace'' the rewrite. Thus the evaluation of
-$\transLR r_0 r_1$ where $r_0 : c_0 \leftrightarrow c_1$ and
+$\transLR~r_0~r_1$ where $r_0 : c_0 \leftrightarrow c_1$ and
 $r_1 : c_1 \leftrightarrow c_2$
-should apply \evalone to both $r_0$ and $r_1$. Furthermore,
+should apply \evalone\ to both $r_0$ and $r_1$. Furthermore,
 after applying $r_0$, we should be able to witness that the result
 is indeed $c_1$, so that we may continue. This last requirement
 forces us to define a new function, mutually recursively with
@@ -2613,29 +2285,20 @@ forces us to define a new function, mutually recursively with
   (ce\,\,c_1 \Leftrightarrow\,c_2) \rightarrow \evalone\, ce \equiv c_2 \\
 \end{flalign*}
 \noindent If we are careful in our construction of \evalone, the
-definition of $\mathit{exact}$ is quite straightforward, i.e.
-almost all cases are \AgdaInductiveConstructor{refl}.
+definition of $\mathit{exact}$ is quite straightforward, i.e.  almost
+all cases are immediately provable by reflexivity.
 
-This then lets us define the $\transLR r_0 r_1$ case properly: we
-first evaluate $r_0$ and get a result combinator, witness that this result
-type is indeed exactly what we expect, and proceed to evaluate $r_1$
-where we specific that the $r_1$'s left-hand side must be
-$\evalone r_0$; we can use \AgdaKeyword{rewrite} to make this match
-$c_2$ ``on the nose'' (otherwise the call would be ill-typed).
-This then forces us to use \AgdaKeyword{rewrite} also in the
-implementation of the \transLR case in $\mathit{exact}$ before
-the proof is indeed just \AgdaInductiveConstructor{refl}.
+This then lets us define the $\transLR~r_0~r_1$ case properly: we
+first evaluate $r_0$ and get a result combinator, witness that this
+result type is indeed exactly what we expect, and proceed to evaluate
+$r_1$ where we specify that the $r_1$'s left-hand side must be
+$\evalone\ r_0$; we can use the Agda keyword \AgdaKeyword{rewrite} to
+make this match $c_2$ ``on the nose'' (otherwise the call would be
+ill-typed).  This then forces us to use \AgdaKeyword{rewrite} also in
+the implementation of the \transLR\ case in $\mathit{exact}$.
 
 The other three combinators are much simpler, as simple
 recursive calls are sufficient.
-
-%%%%%%%%%
-% \subsection{Graphical Language}
-% 
-% Idea: thinking in the 3D way; we have collections of towers of
-% blocks. Every 1-combinator involves touching some blocks, swapping
-% them around, etc. Two 1-combinators are equivalent if they touch the
-% same blocks the same number of times. ??
 
 %%%%%%%%%
 \subsection{Example}\label{sec:level2-example}
@@ -2727,7 +2390,7 @@ The second implementation rewrites the incoming values as follows:
 \]
 \noindent The two circuits are extensionally equal. Using the level-2
 isomorphisms we can \emph{explicitly} construct a sequence of
-rewriting steps that transforms the second circuit to the first.  
+rewriting steps that transforms the second circuit to the first.
 
 We write such proofs in an equational style: in the left column, we have
 the current combinator which is equivalent to the first one, and in
@@ -2748,6 +2411,8 @@ finally re-associate to get the result.
 \renewcommand{\AgdaIndentSpace}{\;\;}
 \setlength\mathindent{0.5em}
 
+\medskip
+{\footnotesize
 \begin{samepage}
 \begin{code}%
 \>[0]\AgdaFunction{swap{-}fl2⇔swap{-}fl1}\AgdaSpace{}%
@@ -2947,6 +2612,7 @@ finally re-associate to get the result.
 \AgdaOperator{\AgdaFunction{▤}}\AgdaSymbol{)}\<%
 \end{code}
 \end{samepage}
+}
 
 \renewcommand{\AgdaIndentSpace}{\AgdaSpace{}$\;\;$}
 
@@ -2975,11 +2641,11 @@ a+(b+c) \arrow [ur, "\idd\oplus\swapp"] \arrow [r, "\assoclp"]
   \arrow [dr, "\assoclp"]
   \arrow [ddr, swap, "\assoclp"]
     & (a+b)+c \arrow [r, "\swapp"] &
-    c+(a+b) \arrow [r, swap, "\assoclp", ""{name=D, above}] 
+    c+(a+b) \arrow [r, swap, "\assoclp", ""{name=D, above}]
     & |[alias=Z]| (c+a)+b \arrow [r, "\assocrp"] &c+(a+b) \arrow [r, "\idd\oplus\swapp"] & c+(b+a) \\
  & (a+b)+c \arrow [dr, "\swapp"] &&&& \\
  & (a+b)+c \arrow [dr, swap, "\swapp"] & c+(a+b) \arrow [rr, swap, "\idd", ""{name=DD, above}]
-             \arrow [d, Rightarrow, "\idf\, \mathit{idl}\odot{l}"] && 
+             \arrow [d, Rightarrow, "\idf\, \mathit{idl}\odot{l}"] &&
     c+(a+b) \arrow [ruu, "\idd\oplus\swapp"] & \\
  && c+(a+b) \arrow [rrruuu, bend right = 40, swap, "\idd\oplus\swapp"] && \\
  \arrow[Rightarrow, from=U, to=D, "\mathit{hexagon}\oplus{r}\, \boxdot\, \idf"]
@@ -2993,11 +2659,11 @@ original definition.
 We would be remiss in letting the reader believe that the above is ``the''
 categorical diagram that would be found in categorical textbooks. Rather,
 congruence would be used to elide the $\idf$. Furthermore, the various arrows
-would also be named differently --- our \assoclp is often named $\alpha$,
-\assocrp is $\alpha^{-1}$, $\swapp$ is $B$ (always with subscripts).
+would also be named differently --- our \assoclp\ is often named $\alpha$,
+\assocrp\ is $\alpha^{-1}$, $\swapp$ is $B$ (always with subscripts).
 And the two steps needed to remove inverses (i.e. first cancelling
 inverse arrows, then removing the resulting identity arrow ``in context'')
-are often combined into one. Here we'll simply name this operation 
+are often combined into one. Here we'll simply name this operation
 $\mathit{cancel}$, which could be programmed as a defined function over
 $\Pi$ level-2.  The result would then be the much simpler
 
@@ -3006,14 +2672,14 @@ $\Pi$ level-2.  The result would then be the much simpler
  & a+(c+b) \arrow [r, "\assoclp", ""{name=U, below}] & (a+c)+b \arrow [rd, "\swapp\oplus\idd"] & & & \\
 a+(b+c) \arrow [ur, "\idd\oplus\swapp"] \arrow [dr, "\assoclp"]
   & & & (c+a)+b \arrow [r, "\assocrp", ""{name=UU, below}] & c+(a+b) \arrow [r, "\idd\oplus\swapp"] & c+(b+a) \\
- & (a+b)+c \arrow [r, swap, "\swapp", ""{name=D, above}] & c+(a+b) \arrow [ur, "\assoclp"] 
+ & (a+b)+c \arrow [r, swap, "\swapp", ""{name=D, above}] & c+(a+b) \arrow [ur, "\assoclp"]
   \arrow [urrr, swap, "\idd\oplus\swapp", ""{name=DD,above}] & & & & \\
  \arrow[Rightarrow, from=U, to=D, "\mathit{hexagon}\oplus{r}"]
  \arrow[Rightarrow, from=UU, to=DD, "\mathit{cancel}"]
 \end{tikzcd}
 
 In other words, each (non-refocusing) line of the proof of
-\AgdaFunction{swap{-}fl2⇔swap{-}fl1}\; is a complete path 
+\AgdaFunction{swap{-}fl2⇔swap{-}fl1}\; is a complete path
 from left to right in each diagram above, and the annotation
 on the right-hand-side becomes the natural transformation (denoted
 by vertical $\Rightarrow$) justifying the move to the next line.
