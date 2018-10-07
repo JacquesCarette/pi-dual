@@ -2,9 +2,9 @@
 
 module Pi0Examples where
 
-open import PiU using (U; ZERO; ONE; PLUS; TIMES) 
+open import PiU using (U; ZERO; ONE; PLUS; TIMES)
 open import PiLevel0
-  using (_⟷_; 
+  using (_⟷_;
          unite₊l; uniti₊l; unite₊r; uniti₊r; swap₊; assocl₊; assocr₊;
          unite⋆l; uniti⋆l; unite⋆r; uniti⋆r; swap⋆; assocl⋆; assocr⋆;
          absorbr; absorbl; factorzr; factorzl;
@@ -15,7 +15,7 @@ open import PiLevel0
 -- Example circuits on booleans
 
 BOOL : U
-BOOL  = PLUS ONE ONE 
+BOOL  = PLUS ONE ONE
 
 BOOL² : U
 BOOL² = TIMES BOOL BOOL
@@ -23,11 +23,11 @@ BOOL² = TIMES BOOL BOOL
 -- Nicer syntax that shows intermediate values instead of the above
 -- point-free notation of permutations
 
-infixr 2  _⟷⟨_⟩_   
-infix  2  _□       
+infixr 2  _⟷⟨_⟩_
+infix  3  _□
 
-_⟷⟨_⟩_ : (t₁ : U) {t₂ : U} {t₃ : U} → 
-          (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃) 
+_⟷⟨_⟩_ : (t₁ : U) {t₂ : U} {t₃ : U} →
+          (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
 _ ⟷⟨ α ⟩ β = α ◎ β
 
 _□ : (t : U) → {t : U} → (t ⟷ t)
@@ -38,7 +38,7 @@ foldBool = id⟷
 unfoldBool = id⟷
 
 ------------------------------------------------------------------------------
--- Many ways of negating a BOOL. 
+-- Many ways of negating a BOOL.
 
 NOT : BOOL ⟷ BOOL
 NOT = unfoldBool ◎ swap₊ ◎ foldBool
@@ -47,9 +47,9 @@ NOT = unfoldBool ◎ swap₊ ◎ foldBool
 NEG1 NEG2 NEG3 NEG4 NEG5 : BOOL ⟷ BOOL
 NEG1 = unfoldBool ◎ swap₊ ◎ foldBool
 -- spec: (false , true) ∷ (true , false) ∷ []
-NEG2 = id⟷ ◎ NOT 
+NEG2 = id⟷ ◎ NOT
 -- spec: (false , true) ∷ (true , false) ∷ []
-NEG3 = NOT ◎ NOT ◎ NOT 
+NEG3 = NOT ◎ NOT ◎ NOT
 -- spec: (false , true) ∷ (true , false) ∷ []
 NEG4 = NOT ◎ id⟷
 -- spec: (false , true) ∷ (true , false) ∷ []
@@ -73,7 +73,7 @@ CNOT = TIMES BOOL BOOL
        TIMES BOOL BOOL □
   where x = ONE; y = ONE
 
--- spec: 
+-- spec:
 -- ((false , false) , false , false) ∷
 -- ((false , true)  , false , true)  ∷
 -- ((true  , false) , true  , true)  ∷
@@ -82,12 +82,12 @@ CNOT = TIMES BOOL BOOL
 -- TOFFOLI
 
 TOFFOLI : TIMES BOOL BOOL² ⟷ TIMES BOOL BOOL²
-TOFFOLI = TIMES BOOL BOOL² 
+TOFFOLI = TIMES BOOL BOOL²
             ⟷⟨ unfoldBool ⊗ id⟷ ⟩
-          TIMES (PLUS x y) BOOL² 
+          TIMES (PLUS x y) BOOL²
             ⟷⟨ dist ⟩
           PLUS (TIMES x BOOL²) (TIMES y BOOL²)
-            ⟷⟨ id⟷ ⊕ (id⟷ ⊗ CNOT) ⟩ 
+            ⟷⟨ id⟷ ⊕ (id⟷ ⊗ CNOT) ⟩
           PLUS (TIMES x BOOL²) (TIMES y BOOL²)
             ⟷⟨ factor ⟩
           TIMES (PLUS x y) BOOL²
@@ -106,7 +106,7 @@ TOFFOLI = TIMES BOOL BOOL²
 -- ((true  , true  , true)  , true  , true  , false) ∷ []
 
 -- Swaps for the type 1+(1+1)
--- We have three values in the type 1+(1+1) 
+-- We have three values in the type 1+(1+1)
 -- Let's call them a, b, and c
 -- There 6 permutations. Using the swaps below we can express every permutation:
 -- a b c id⟷
@@ -116,44 +116,44 @@ TOFFOLI = TIMES BOOL BOOL²
 -- c a b ROTR
 -- c b a SWAP13
 
-SWAP12 SWAP23 SWAP13 ROTL ROTR : 
+SWAP12 SWAP23 SWAP13 ROTL ROTR :
   PLUS ONE (PLUS ONE ONE) ⟷ PLUS ONE (PLUS ONE ONE)
 SWAP12 = assocl₊ ◎ (swap₊ ⊕ id⟷) ◎ assocr₊
--- spec: 
+-- spec:
 -- (inj₁ tt        , inj₂ (inj₁ tt)) ∷
--- (inj₂ (inj₁ tt) , inj₁ tt)        ∷ 
+-- (inj₂ (inj₁ tt) , inj₁ tt)        ∷
 -- (inj₂ (inj₂ tt) , inj₂ (inj₂ tt)) ∷ []
 SWAP23 = id⟷ ⊕ swap₊
--- spec: 
+-- spec:
 -- (inj₁ tt        , inj₁ tt)        ∷
 -- (inj₂ (inj₁ tt) , inj₂ (inj₂ tt)) ∷
 -- (inj₂ (inj₂ tt) , inj₂ (inj₁ tt)) ∷ []
-SWAP13 = SWAP23 ◎ SWAP12 ◎ SWAP23 
--- spec: 
+SWAP13 = SWAP23 ◎ SWAP12 ◎ SWAP23
+-- spec:
 -- (inj₁ tt        , inj₂ (inj₂ tt)) ∷
--- (inj₂ (inj₁ tt) , inj₂ (inj₁ tt)) ∷ 
+-- (inj₂ (inj₁ tt) , inj₂ (inj₁ tt)) ∷
 -- (inj₂ (inj₂ tt) , inj₁ tt)        ∷ []
 ROTR   = SWAP12 ◎ SWAP23
--- spec: 
+-- spec:
 -- (inj₁ tt        , inj₂ (inj₂ tt)) ∷
--- (inj₂ (inj₁ tt) , inj₁ tt)        ∷ 
+-- (inj₂ (inj₁ tt) , inj₁ tt)        ∷
 -- (inj₂ (inj₂ tt) , inj₂ (inj₁ tt)) ∷ []
 ROTL   = SWAP13 ◎ SWAP23
--- spec: 
+-- spec:
 -- (inj₁ tt        , inj₂ (inj₁ tt)) ∷
--- (inj₂ (inj₁ tt) , inj₂ (inj₂ tt)) ∷ 
+-- (inj₂ (inj₁ tt) , inj₂ (inj₂ tt)) ∷
 -- (inj₂ (inj₂ tt) , inj₁ tt)        ∷ []
 
 -- The Peres gate is a universal gate: it takes three inputs a, b, and c, and
 -- produces a, a xor b, (a and b) xor c
 
 PERES : TIMES (TIMES BOOL BOOL) BOOL ⟷ TIMES (TIMES BOOL BOOL) BOOL
-PERES = (id⟷ ⊗ NOT) ◎ assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎ 
-        TOFFOLI ◎ 
-        (id⟷ ⊗ (NOT ⊗ id⟷)) ◎ 
-        TOFFOLI ◎ 
-        (id⟷ ⊗ swap⋆) ◎ (id⟷ ⊗ (NOT ⊗ id⟷)) ◎ 
-        TOFFOLI ◎ 
+PERES = (id⟷ ⊗ NOT) ◎ assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎
+        TOFFOLI ◎
+        (id⟷ ⊗ (NOT ⊗ id⟷)) ◎
+        TOFFOLI ◎
+        (id⟷ ⊗ swap⋆) ◎ (id⟷ ⊗ (NOT ⊗ id⟷)) ◎
+        TOFFOLI ◎
         (id⟷ ⊗ (NOT ⊗ id⟷)) ◎ assocl⋆
 -- spec:
 -- (((false , false) , false) , (false , false) , false) ∷
@@ -172,33 +172,33 @@ PERES = (id⟷ ⊗ NOT) ◎ assocr⋆ ◎ (id⟷ ⊗ swap⋆) ◎
 -- and cout = ((n1 xor n2) and cin) xor (n1 and n2) xor z
 FULLADDER : TIMES BOOL (TIMES (TIMES BOOL BOOL) BOOL) ⟷
             TIMES BOOL (TIMES BOOL (TIMES BOOL BOOL))
-FULLADDER = 
+FULLADDER =
   -- (z,((n1,n2),cin))
-  swap⋆ ◎ 
+  swap⋆ ◎
   -- (((n1,n2),cin),z)
-  (swap⋆ ⊗ id⟷) ◎ 
+  (swap⋆ ⊗ id⟷) ◎
   -- ((cin,(n1,n2)),z)
-  assocr⋆ ◎ 
+  assocr⋆ ◎
   -- (cin,((n1,n2),z))
-  swap⋆ ◎ 
+  swap⋆ ◎
   -- (((n1,n2),z),cin)
-  (PERES ⊗ id⟷) ◎     
-  -- (((n1,n1 xor n2),(n1 and n2) xor z),cin) 
-  assocr⋆ ◎ 
+  (PERES ⊗ id⟷) ◎
+  -- (((n1,n1 xor n2),(n1 and n2) xor z),cin)
+  assocr⋆ ◎
   -- ((n1,n1 xor n2),((n1 and n2) xor z,cin))
-  (id⟷ ⊗ swap⋆) ◎ 
+  (id⟷ ⊗ swap⋆) ◎
   -- ((n1,n1 xor n2),(cin,(n1 and n2) xor z))
-  assocr⋆ ◎ 
+  assocr⋆ ◎
   -- (n1,(n1 xor n2,(cin,(n1 and n2) xor z)))
-  (id⟷ ⊗ assocl⋆) ◎ 
+  (id⟷ ⊗ assocl⋆) ◎
   -- (n1,((n1 xor n2,cin),(n1 and n2) xor z))
-  (id⟷ ⊗ PERES) ◎ 
+  (id⟷ ⊗ PERES) ◎
   -- (n1,((n1 xor n2,n1 xor n2 xor cin),
   --      ((n1 xor n2) and cin) xor (n1 and n2) xor z))
   (id⟷ ⊗ assocr⋆)
   -- (n1,(n1 xor n2,
   --      (n1 xor n2 xor cin,((n1 xor n2) and cin) xor (n1 and n2) xor z)))
--- spec: 
+-- spec:
 -- ((false , (false , false) , false) , false , false , false , false) ∷
 -- ((false , (false , false) , true)  , false , false , true  , false) ∷
 -- ((false , (false , true)  , false) , false , true  , true  , false) ∷
@@ -219,7 +219,7 @@ FULLADDER =
 ------------------------------------------------------------------------------
 -- Generalized CNOT and TOFFOLI
 
-ttt : {t₁ t₂ t₃ t₄ : U} → 
+ttt : {t₁ t₂ t₃ t₄ : U} →
   (TIMES (PLUS t₁ t₂) (PLUS t₃ t₄)) ⟷
   (PLUS (PLUS (PLUS (TIMES t₁ t₃) (TIMES t₂ t₃)) (TIMES t₁ t₄))) (TIMES t₂ t₄)
 ttt {t₁} {t₂} {t₃} {t₄} =
@@ -239,4 +239,3 @@ GToffoli : {A B C D E : U} →
 GToffoli = dist ◎ (id⟷ ⊕ (id⟷ ⊗ gcnot)) ◎ factor
 
 ------------------------------------------------------------------------------
-
