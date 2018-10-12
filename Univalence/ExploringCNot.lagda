@@ -235,3 +235,65 @@ full-choice _ q (inj₂ _ , c) = id⟷ ⊗ q
 The above really has its ``proper'' type: one can plainly see that a bit of x is
 actually consumed to make the choice. So even though it looks like the value is
 untouched, this is not so.
+
+However, this is not a particular helpful type for a conditional! What it
+does is to record the reason for the choice (in the type) -- and from there
+makes composition extremely difficult. In other words, although this is
+a ``logically correct'' combinator and type, it is not a very helpful direction.
+
+What seems like a more fruitful direction is to combine the ideas of
+gcnot-⟷ and choose.
+\begin{code}
+choose-⟷ : {A B C E F : U} (p : C ⟷ E) (q : C ⟷ F) (r : E ⟷ F) →
+  (TIMES (PLUS A B) C) ⟷ (TIMES (PLUS A B) E)
+choose-⟷ p q r = dist ◎ ((id⟷ ⊗ p) ⊕ (id⟷ ⊗ q)) ◎ (id⟷ ⊕ (id⟷ ⊗ ! r)) ◎ factor
+\end{code}
+Of course, we already know that E ⟷ F, as ! p ◎ q is a witness of that.
+But if we were to use that, then it would be easy to show that choose-⟷
+would just be equivalent to id⟷ ⊗ p.
+
+It might help to think of C, E, and F to be ``big'' types, with cardinality
+say 2^100 (i.e. 100 bits), so that the cardinality of E ⟷ F is (2^100)!,
+a truly astronomical number. It is wortwhile pointing out that the above
+combinator can be expressed more succinctly as
+\begin{code}
+choose′ : {A B C E F : U} (p : C ⟷ E) (q : C ⟷ F) (r : E ⟷ F) →
+  (TIMES (PLUS A B) C) ⟷ (TIMES (PLUS A B) E)
+choose′ p q r = dist ◎ ((id⟷ ⊗ p) ⊕ (id⟷ ⊗ (q ◎ ! r))) ◎ factor
+\end{code}
+Of course, one would be tempted to simplify that some more, to
+\begin{code}
+choose″ : {A B C E : U} (p : C ⟷ E) (q : C ⟷ E) →
+  (TIMES (PLUS A B) C) ⟷ (TIMES (PLUS A B) E)
+choose″ p q = dist ◎ ((id⟷ ⊗ p) ⊕ (id⟷ ⊗ q)) ◎ factor
+\end{code}
+this would bring us back to the very beginning! The situation is
+slightly more subtle though: it is ok to ask for p and q to both
+share the same input C, as that type only occurs once in
+(TIMES (PLUS A B) C), and it is our choice to use dist. But when
+we use factor, we are forcing 2 types to be the same which don't have
+to be. This is why r is needed in choose-⟷: we need a witness that
+it is ok to apply factor, rather than to force it.
+
+Actually, even that argument is somewhat flawed: all of our
+combinators (with full-choice being a partial exception) are
+reversible. So these arguments could be had in the backwards
+direction as well! In the backwards direction, it is factor
+which is ``natural'' and dist which imposes a coincidence.
+Which brings us to what is probably the final version:
+\begin{code}
+choose‴ : {A B C₁ C₂ E₁ E₂ : U} (p : C₁ ⟷ E₁) (q : C₂ ⟷ E₂)
+  (c : C₁ ⟷ C₂) → (e : E₁ ⟷ E₂) →
+  (TIMES (PLUS A B) C₁) ⟷ (TIMES (PLUS A B) E₂)
+choose‴ p q c e = dist ◎ ((id⟷ ⊗ (p ◎ e)) ⊕ (id⟷ ⊗ (c ◎ q))) ◎ factor
+\end{code}
+The above really does choose between 2 routes between C₁ and E₂, and
+these do not have to be equivalent to each other.
+
+Unfortunately, from a ``preservation of information'' point of view,
+this doesn't quite end the story either. This is because the choices
+(of p, q, c and e) matter. In other words, Maxwell's little demon
+knows which ones the circuit uses, even though \emph{extensionally}
+we may not be able to necessarily see it. It seems like the fact that
+we have ``consumed'' one bit (the tag in PLUS A B) always leaves a
+trace. How it shows up is unclear.
