@@ -123,6 +123,9 @@ McMaster University \qquad\qquad Google \qquad\qquad Indiana University}
 \newcommand{\ctr}[1]{{\scriptsize{\texttt{#1}}}}
 \newcommand{\inline}[3]{\ctr{#1} \textasciitilde \ctr{#2}:\ctr{#3}}
 
+% Hyphenation overrides
+\hyphenation{phy-si-cal}
+
 \begin{document}
 \maketitle
 
@@ -142,7 +145,7 @@ McMaster University \qquad\qquad Google \qquad\qquad Indiana University}
   quantity of physical processes and hence of primitive computational
   operations.
 
-  Our aim is re-develop foundational computational models in a way
+  Our aim is to re-develop foundational computational models in a way
   that embraces the principle of conservation of information. We first
   define what information is and what its conservation means in a
   computational setting. We emphasize the idea that computations must
@@ -159,7 +162,7 @@ McMaster University \qquad\qquad Google \qquad\qquad Indiana University}
   develop the corresponding notion of reversible deformations using a
   sound and complete programming language for witnessing type
   isomorphisms and proof terms for commutative semirings.  We then
-  ``move up a level'' to examine spaces that treat programs as data
+  ``move up a level'' to examine spaces that treat programs as data,
   which is a crucial notion for any universal model of computation. To
   derive the corresponding notion of reversible programs between
   programs, i.e., reversible program equivalences, we look at the
@@ -176,7 +179,7 @@ McMaster University \qquad\qquad Google \qquad\qquad Indiana University}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Reversibility, the Missing Principle}
 
-What kind of operations can computers perform? This question was
+What kind of operations can computers perform? This question has been
 answered several times in the last hundred years, where each answer
 proposes an abstract \emph{model of computation} that specifies
 allowable operations and (usually) their cost. The emerging consensus,
@@ -190,13 +193,13 @@ operations emerges all higher-level programming languages and
 abstractions.
 
 No doubt, this consensus on the available primitive physical
-operations has been successful. And no doubt, these operations
+operations has been successful. Futhermore, these operations
 \emph{can} indeed be performed on a computer. Yet, today, with a
-possible quantum computing revolution in sight and with unprecedented
+possible quantum computing revolution in sight and an unprecedented
 explosion in embedded computers and cyber-physical systems, there are
-reasons to re-think this foundational question again. In fact, the
+reasons to re-think this foundational question. In fact, the
 calls to re-think this foundational question have been proclaimed by
-physicists almost forty years ago as the following two quotes testify:
+physicists almost forty years ago:
 
 \begin{quote}
   \textbf{Toffoli 1980~\cite{Toffoli:1980}:} Mathematical models of
@@ -229,15 +232,15 @@ is that the next computing revolution is likely to be founded on
 revised models of computation that are designed to be in closer harmony
 with the laws of physics.
 
-After a detailed introduction on the origins of ``logically
-reversibile computer operations'' and an excursion into the origins of
-``irreversible computer operations,'' we will develop in detail three
+After a detailed introduction on the origins of \emph{logically
+reversibile computer operations} and an excursion into the origins of
+\emph{irreversible computer operations}, we will develop in detail three
 reversible models of computation and discuss their potential
 applications.
 
 %%%%%%%%%
 \paragraph*{Maxwell's Daemon.}
-To fully appreciate the missing principle of ``reversibility'' in
+To fully appreciate the missing principle of \emph{reversibility} in
 conventional computing, we go back to an old thought experiment by
 J. C. Maxwell. The details are codified in a letter that Maxwell wrote
 to P. G Tait in 1867 -- the letter, whose ideas are now known as
@@ -248,18 +251,18 @@ were offered for this conundrum (for a compilation, see the book by
 Leff and Rex~\cite{leff1990}), but none withstood careful scrutiny
 until the establishment of \emph{Landauer's Principle} in
 1961~\cite{Landauer:1961} -- a principle whose experimental validation
-happened recently in 2012~\cite{berut2012experimental}.
+happened in 2012~\cite{berut2012experimental}.
 
-Maxwell's daemon appears to violate the second law of thermodynamics by
+Maxwell's Daemon appears to violate the second law of thermodynamics by
 having a tiny ``intelligence'' observing the movement of individual
 particles of a gas and separating fast moving particles from slow
 moving ones, thereby reducing the total entropy of the
 system. Landauer's resolution of the daemon relied on two ideas that
-took root only a few decades earlier: the formal notion of computation
+had taken root only a few decades earlier: the formal notion of computation
 (through the work of Turing~\cite{turing}, Church~\cite{church51}, and
 others) and the formal notion of information (through the work of
 Shannon~\cite{shannon1948}). Landauer reasoned that the computation
-done by the finite brain of the daemon, involves getting information
+done by the finite brain of the daemon involves getting information
 about the movement of molecules, storing that information, analyzing
 that information to act on it, and then --- and this is the critical
 step --- overwriting it to make room for the next computation.  In
@@ -274,9 +277,9 @@ to take the information content of computations into consideration
 -- in fact, at that time there was no quantifiable notion of
 information. These models followed in the footsteps of logic where,
 following hundreds of years of tradition, the truth of a statement was
-seen as ``absolute'' and independent of any reasoning, understanding,
+seen as \emph{absolute} and independent of any reasoning, understanding,
 or action. Statements were either true or false with no regard to any
-``observer'' and the idea that statements had information content that
+\emph{observer} and the idea that statements had information content that
 should be preserved was outside the classical understanding of
 logic. Hence the fact that conventional logic operations such as
 conjunction and disjunction were logically irreversible and hence lose
@@ -292,22 +295,22 @@ of contemporary laws of physics.
 Current high-level programming languages as well as current hardware
 are both based on the mathematical formalization of logic developed by
 De Morgan, Venn, Boole, and Peirce in the mid to late 1800s. Going
-back to Boole's 1853 book entitled \emph{An Investigation of the Laws
+back to Boole's 1853 book entitled \textit{An Investigation of the Laws
   of Thought, on which are Founded the Mathematical Theories of Logic
   and Probabilities}, we find that the opening sentence of Ch.~1 is:
 \begin{quote}
   The design of the following treatise is to investigate the fundamental laws
   of those operations of the mind by which reasoning is performed;
 \end{quote}
-which clearly identifies the ``source'' of the logical laws as
+which clearly identifies the \emph{source} of the logical laws as
 mirroring Boole's understanding of human reasoning. A few chapters
 later, we find:
 \begin{quote}
   \textbf{Proposition IV.}  That axiom of metaphysicians which is termed the
   principle of contradiction, and which affirms that it is impossible for any
   being to possess a quality, and at the same time not to possess it, is a
-  consequence of the fundamental law of thought, whose expression is $x^2 =
-  x$.
+  consequence of the fundamental law of thought, whose expression is 
+  $x^2 = x$.
 \end{quote}
 This ``law'' is reasonable in a classical world but is violated by the
 postulates of quantum mechanics. Although a detailed historical
@@ -319,18 +322,18 @@ the late 1800s.
 Machines that ``compute'' are quite old. M\"{u}ller (1786) first
 conceived of the idea of a ``difference machine,'' which Babbage
 (1819--1822) was able to construct. There are other computer
-precursors as well -- the first stored programs were actually for
-looms, most notably those of Bouchon (1725) which operated on a paper
-tape, and Jacquard (1804) which operated by chains of punched cards.
+precursors as well -- the first stored programs were actually for looms, most
+notably those of Bouchon (1725) which were controlled by a paper
+tape, and of Jacquard (1804), controlled by chains of punched cards.
 But it was only in the 20th century that computer science emerged as a
 formal discipline. One of the pioneering works was Alan Turing's
-seminal paper~\cite{turing} in 1936 which established the idea that
+seminal paper~\cite{turing} of 1936 which established the idea that
 computation has a formal interpretation and that all computability can
 be captured within a formal system. Implicit in this achievement
 however is the idea that abstract models of computation are just that
 -- \emph{abstractions of computation realized in the physical world.}
-Indeed, going back to Turing's 1936 article \emph{On Computable
-  Numbers, with an Application to the Entscheidungsproblem,}, the
+Indeed, going back to Turing's 1936 article \textit{On Computable
+  Numbers, with an Application to the Entscheidungsproblem,} the
 opening sentence of Sec. 1 is:
 \begin{quote}
   We have said that the computable numbers are those whose decimals
@@ -345,8 +348,8 @@ In Sec. 9, we find:
 \end{quote}
 It is worth noting that these assumptions are both physical (on
 distances) and metaphysical (on restrictions of the mind).  If we take
-the human mind to be a physical ``machine'' which does computation,
-then when both of the above assumptions are translated to the language
+the human mind to be a physical ``machine'' which performs computation,
+then when both of the above assumptions are translated into the language
 of physics, they embody what is known as the ``Bekenstein
 bound''~\cite{PhysRevD.23.287}, which is an upper limit on the amount
 of information that can be contained within a given finite region of
@@ -366,7 +369,7 @@ physics. Our understanding of physics has evolved tremendously since
 1900!  Thus it is time to revisit these abstractions, especially with
 respect to quantum mechanics.  Indeed one should take the physical
 principles underlying quantum mechanics, the most successful physical
-theory known to us and adapt computation to ``learn'' from these
+theory known to us, and adapt computation to ``learn'' from these
 principles.  In the words of Girard~\cite{Girard:2007:TMI:1348911.1348915}:
 \begin{quote}
   In other terms, what is so good in logic that quantum physics should
@@ -430,7 +433,7 @@ is, we will be interested in programs as representing transformations
 of that data which are reversible. In other words, we want our
 programs-as-transformations to ``play well'' with the inherent notion
 of ``sameness'' that our data will carry. Thus we need to start by
-looking at what structure our data has, and that will help us define
+looking at what structure our data has, which will help us define
 an appropriate notion of a reversible program. Of course, when
 programs themselves are data, things do get more complicated.  In the
 following sections, we will look at different natural classes of data,
@@ -438,7 +441,7 @@ and explore the corresponding notion of reversible programs.
 
 To summarize, we will take ``the same'' as a fundamental principle and
 derive what it means for data, programs, program transformations, as
-well as proofs / deductions, to be ``the same'' -- in an manner
+well as proofs / deductions, to be ``the same'' -- in a manner
 consistent with preservation of information. This stands in stark
 contrast with most current approaches to reversible computation, which
 start from current models of computation involving irreversible
@@ -451,7 +454,7 @@ reversible computations: database transactions, mechanisms for data
 provenance, checkpoints, stack and exception traces, logs, backups,
 rollback recoveries, version control systems, reverse engineering,
 software transactional memories, continuations, backtracking search,
-and multiple-level ``undo'' features in commercial applications. In
+and multiple-level undo features in commercial applications. In
 the early nineties, Baker~\cite{Baker:1992:LLL,Baker:1992:NFT} argued
 for a systematic, first-class, treatment of reversibility. But
 intensive research in full-fledged reversible models of computations
@@ -479,9 +482,9 @@ In previous work, Carette, Bowman, James, and
 Sabry~\cite{rc2011,James:2012:IE:2103656.2103667,Carette2016}
 introduced the~$\Pi$ family of typed reversible languages.  As motivated above,
 the starting point for this development is the physical principle of
-``conservation of
-information''~\cite{Hey:1999:FCE:304763,fredkin1982conservative} and
-the family of languages is designed to embrace that principle by
+\emph{conservation of
+information}~\cite{Hey:1999:FCE:304763,fredkin1982conservative} and
+the family of languages is designed to embrace this principle by
 requiring all computations to preserve information.
 
 The fragment without
@@ -494,7 +497,7 @@ at first sight, $\Pi$ too might appear \emph{ad hoc}, it really arises
 naturally from an ``extended'' view of the Curry-Howard
 correspondence~\cite{Carette2016}: rather than looking at mere
 \emph{inhabitation} as the main source of analogy between logic and
-computation, \emph{type equivalences} becomes the source of analogy.
+computation, \emph{type equivalence} becomes the source of analogy.
 Taking inspiration from the fact that many terms of the $\lambda$-calculus
 arise from Cartesian Closed Categories including, most importantly,
 a variety of propositional equalities and computation rules,
