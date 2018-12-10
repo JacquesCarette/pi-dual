@@ -1618,15 +1618,17 @@ then we essentially have an `if' expression.
 \inkscape{if-c1-c2.pdf}
 
 
-The diagram above shows the input value of type \ensuremath{(1{\sumtype}1) {\prodtype}  b_2}
+The diagram above shows the input value of type \ensuremath{(1{\sumtype}1) {\prodtype}  b_1}
 processed by the distribute operator \ensuremath{\dist}, which converts it into
-a value of type \ensuremath{(1 {\prodtype}  b_2){\sumtype}(1 {\prodtype}  b_2)}. In the
+a value of type \ensuremath{(1 {\prodtype}  b_1){\sumtype}(1 {\prodtype}  b_1)}. In the
 \ensuremath{\mathit{left}} branch, which corresponds to the
 case when the boolean is \ensuremath{\mathit{true}} (i.e. the value was
 \ensuremath{\mathit{left} ~()}), the combinator~\ensuremath{c_1} is applied to
 the value of type~\ensuremath{b_1}. The right
 branch which corresponds to the boolean being \ensuremath{\mathit{false}} passes
 the value of type \ensuremath{b_1} through the combinator \ensuremath{c_2}.
+The inverse of \ensuremath{\dist}, namely \ensuremath{\factor} is applied
+to get the final result of type \ensuremath{(1{\sumtype}1) {\prodtype} b_2}.
 
 \paragraph*{Logic Gates}
 There are several universal primitives for conventional (irreversible)
