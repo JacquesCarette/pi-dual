@@ -2,8 +2,11 @@
 \usepackage{graphicx}
 \usepackage{onecolceurws}
 
+\usepackage[LGR,TS1,T1]{fontenc}
 \usepackage{agda}
 \usepackage{ucs}
+\usepackage{lmodern}
+\usepackage{textgreek}
 \usepackage[utf8x]{inputenc}
 
 % Not the final title!
@@ -48,7 +51,7 @@ The inspiration for this paper comes from a number of sources:
   \item Oleg Grenrus' \textit{Finding correct (lens) laws}~\cite{oleg-blog},
   \item The paper \textit{Synthesizing Bijective Lenses}~\cite{Miltner2018},
   \item Twan van Laarhoven's blog \textit{Isomorphism Lenses},
-  \item (more?)
+  \item (many more, insert citations throughout)
 \end{enumerate}
 
 There are many, many different representations for (monomorphic)
