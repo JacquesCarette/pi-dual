@@ -179,7 +179,7 @@ guess the complement by solving the equation $A ≃ C × A$ for $C$: $C$ must
 be $\AgdaSymbol{⊤}$. But then the $∃-Lens$ isn't quite as simple as above:
 \begin{code}
   AA-∃-lens : ∃-Lens A A
-  AA-∃-lens = record { HC = hide (Lift {zero} {ℓ} ⊤)
+  AA-∃-lens = record { HC = hide (Lift ℓ ⊤)
     ; iso = (λ a → (lift tt) , a) , qinv proj₂ (λ { ( (lift tt) , a) → refl}) λ _ → refl }
 \end{code}
 
