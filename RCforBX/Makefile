@@ -5,4 +5,4 @@ RCforBX.pdf : latex/RCforBX.tex
 	pdflatex latex/RCforBX.tex
 
 latex/RCforBX.tex : RCforBX.lagda
-	agda --allow-unsolved-metas --latex -i . RCforBX.lagda
+	agda --allow-unsolved-metas --latex -i . -i ../Univalence RCforBX.lagda

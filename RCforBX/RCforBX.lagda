@@ -41,7 +41,9 @@ open import Data.Unit
 open import Relation.Binary.PropositionalEquality
   using (_≡_; cong; cong₂; trans; refl)
 open import Function using (id)
+
 open import Equiv
+open import TypeEquiv
 \end{code}
 }
 \section{Introduction}
@@ -123,47 +125,8 @@ sound record { HC = HC ; iso = (f , qinv g α β) } = record
   ; putput = λ s a a' → cong g (cong₂ _,_ (cong proj₁ (α _)) refl) }
 \end{code}
 
-The other direction is considerably more challenging. One method
-involves assuming additional principles --- proof irrelevance and
-functional extensionality. But can we do without?
-
-But before going down that path, let's see what happens.  Of course,
-what we want to do is to manufacture the correct constant complement.
-But we don't really know how.  Let us try a proxy: $S$ itself.
-
-Roughly speaking the forward part of the isomorphism is forced:
-given an $s:S$, there is only one way to get an $A$, and that is
-via \AgdaFunction{get}. To get an $S$ back, there are two choices:
-either use $s$ itself, or call \AgdaFunction{set}; the choice is
-irrelevant (because of the laws). In the backwards direction,
-the laws help in narrowing down the choices: basically, we want the
-$s′ : S$ where $\AgdaFunction{get s′} ≡ a$, and so we again
-use \AgdaFunction{set} for the purpose:
-\begin{code}
-complete : {ℓ : Level} {S A : Set ℓ} → GS-Lens S A → ∃-Lens S A
-complete {ℓ} {S} {A} record { get = get ; set = set ; getput = getput ; putget = putget ; putput = putput } =
-  record { HC = hide S
-         ; iso = (λ s → s , get s) ,
-                 qinv (λ { (s , a) → set s a })
-                      (λ { (s , a) → cong₂ _,_ hole (getput s a)})
-                       λ s → putget s }
-\end{code}
-That almost gets us there. The one whole we can't fill is one that says
-\begin{code}
-    where
-      hole : {s : S} {a : A} → set s a ≡ s
-      hole = {!!}
-\end{code}
-But that will only ever happen if $\AgdaFunction{get s}$ was already $a$ (by
-\AgdaField{putget}).
-
-Of course, we already knew this would happen: $S$ is too big. Basically, it is
-too big by exactly the inverse image of $A$ by \AgdaFunction{get}.
-
-Thus our next move is to make that part of $S$ not matter. In other words,
-rather than using the \emph{type} $S$ as a proxy, we want to use a
-\AgdaRecord{Setoid} where $s, t : S$ will be regarded as the same if they
-only differ in their $A$ component.
+The other direction is considerably more challenging. We leave that
+to~\ref{sec:lens-equiv}.
 
 \section{Exploring the Lens landscape}
 
@@ -208,11 +171,53 @@ Intro to Pi.
 
 \section{Happy together}
 
-Really explore the relationship.
+Really explore the relationship between lens and Pi.
 
-\section{Proof of equivalence}
+\section{Proof of equivalence}\label{sec:lens-equiv}
 
 Finish the proof that was started earlier.
+One method
+involves assuming additional principles --- proof irrelevance and
+functional extensionality. But can we do without?
+
+But before going down that path, let's see what happens.  Of course,
+what we want to do is to manufacture the correct constant complement.
+But we don't really know how.  Let us try a proxy: $S$ itself.
+
+Roughly speaking the forward part of the isomorphism is forced:
+given an $s:S$, there is only one way to get an $A$, and that is
+via \AgdaFunction{get}. To get an $S$ back, there are two choices:
+either use $s$ itself, or call \AgdaFunction{set}; the choice is
+irrelevant (because of the laws). In the backwards direction,
+the laws help in narrowing down the choices: basically, we want the
+$s′ : S$ where $\AgdaFunction{get s′} ≡ a$, and so we again
+use \AgdaFunction{set} for the purpose:
+\begin{code}
+complete : {ℓ : Level} {S A : Set ℓ} → GS-Lens S A → ∃-Lens S A
+complete {ℓ} {S} {A} record { get = get ; set = set ; getput = getput ; putget = putget ; putput = putput } =
+  record { HC = hide S
+         ; iso = (λ s → s , get s) ,
+                 qinv (λ { (s , a) → set s a })
+                      (λ { (s , a) → cong₂ _,_ hole (getput s a)})
+                       λ s → putget s }
+\end{code}
+
+That almost gets us there. The one whole we can't fill is one that says
+\begin{code}
+    where
+      hole : {s : S} {a : A} → set s a ≡ s
+      hole = {!!}
+\end{code}
+But that will only ever happen if $\AgdaFunction{get s}$ was already $a$ (by
+\AgdaField{putget}).
+
+Of course, we already knew this would happen: $S$ is too big. Basically, it is
+too big by exactly the inverse image of $A$ by \AgdaFunction{get}.
+
+Thus our next move is to make that part of $S$ not matter. In other words,
+rather than using the \emph{type} $S$ as a proxy, we want to use a
+\AgdaRecord{Setoid} where $s, t : S$ will be regarded as the same if they
+only differ in their $A$ component.
 
 \section{Conclusion}
 
