@@ -2,6 +2,10 @@
 \usepackage{graphicx}
 \usepackage{onecolceurws}
 
+\usepackage{agda}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+
 % Not the final title!
 \title{Reversible Programming for the BX enthusiast}
 
@@ -30,8 +34,10 @@ module RCforBX where
 
 open import Level
 open import Data.Product
+open import Data.Unit
 open import Relation.Binary.PropositionalEquality
   using (_≡_; cong; cong₂; trans; refl)
+open import Function using (id)
 open import Equiv
 \end{code}
 }
@@ -52,9 +58,9 @@ record GS-Lens {ℓs ℓa : Level} (S : Set ℓs) (A : Set ℓa) : Set (ℓs ⊔
   field
     get : S → A
     set : S → A → S
-    .getput : (s : S) (a : A) → get (set s a) ≡ a
-    .putget : (s : S) → set s (get s) ≡ s
-    .putput : (s : S) (a a' : A) → set (set s a) a' ≡ set s a'
+    getput : (s : S) (a : A) → get (set s a) ≡ a
+    putget : (s : S) → set s (get s) ≡ s
+    putput : (s : S) (a a' : A) → set (set s a) a' ≡ set s a'
 \end{code}
 
 There are also \emph{constant complement lenses}, informally those
@@ -101,7 +107,7 @@ we'll assume everything is the same level.
 \end{code}
 
 This gives us the needed infrastructure.  Let's show that, given
-a $\AgdaType{∃-Lens}$, we can build a \AgdaType{GS-Lens}:
+a $\AgdaRecord{∃-Lens}$, we can build a \AgdaRecord{GS-Lens}:
 \begin{code}
 open Hide
 
@@ -118,11 +124,69 @@ The other direction is considerably more challenging. One method
 involves assuming additional principles --- proof irrelevance and
 functional extensionality. But can we do without?
 
-Yes, but doing so requires a detour via \AgdaType{Setoid}.
+But before going down that path, let's see what happens.  Of course,
+what we want to do is to manufacture the correct constant complement.
+But we don't really know how.  Let us try a proxy: $S$ itself.
 
-Paper: bijective lenses, p.5.
+Roughly speaking the forward part of the isomorphism is forced:
+given an $s:S$, there is only one way to get an $A$, and that is
+via \AgdaFunction{get}. To get an $S$ back, there are two choices:
+either use $s$ itself, or call \AgdaFunction{set}; the choice is
+irrelevant (because of the laws). In the backwards direction,
+the laws help in narrowing down the choices: basically, we want the
+$s′ : S$ where $\AgdaFunction{get s′} ≡ a$, and so we again
+use \AgdaFunction{set} for the purpose:
+\begin{code}
+complete : {ℓ : Level} {S A : Set ℓ} → GS-Lens S A → ∃-Lens S A
+complete {ℓ} {S} {A} record { get = get ; set = set ; getput = getput ; putget = putget ; putput = putput } =
+  record { HC = hide S
+         ; iso = (λ s → s , get s) ,
+                 qinv (λ { (s , a) → set s a })
+                      (λ { (s , a) → cong₂ _,_ hole (getput s a)})
+                       λ s → putget s }
+\end{code}
+That almost gets us there. The one whole we can't fill is one that says
+\begin{code}
+    where
+      hole : {s : S} {a : A} → set s a ≡ s
+      hole = {!!}
+\end{code}
+But that will only ever happen if $\AgdaFunction{get s}$ was already $a$ (by
+\AgdaField{putget}).
 
-\section{Lens and other Optics}
+Of course, we already knew this would happen: $S$ is too big. Basically, it is
+too big by exactly the inverse image of $A$ by \AgdaFunction{get}.
+
+Thus our next move is to make that part of $S$ not matter. In other words,
+rather than using the \emph{type} $S$ as a proxy, we want to use a
+\AgdaRecord{Setoid} where $s, t : S$ will be regarded as the same if they
+only differ in their $A$ component.
+
+\section{Exploring the Lens landscape}
+
+Let's explore the simplest lenses first.  For a \AgdaRecord{GS-Lens}, the simplest is
+when \AgdaField{get} is the identity, which forces the rest:
+
+\begin{code}
+module _ {ℓ : Level} (A : Set ℓ) where
+  AA-gs-lens : GS-Lens A A
+  AA-gs-lens = record { get = id ; set = λ _ → id
+    ; getput = λ _ _ → refl ; putget = λ _ → refl ; putput = λ _ _ _ → refl }
+\end{code}
+
+What does that correspond to as a \AgdaRecord{∃-Lens}? Here, we can easily
+guess the complement by solving the equation $A ≃ C × A$ for $C$: $C$ must
+be $\AgdaSymbol{⊤}$. But then the $∃-Lens$ isn't quite as simple as above:
+\begin{code}
+  AA-∃-lens : ∃-Lens A A
+  AA-∃-lens = record { HC = hide (Lift {zero} {ℓ} ⊤)
+    ; iso = (λ a → (lift tt) , a) , qinv proj₂ (λ { ( (lift tt) , a) → refl}) λ _ → refl }
+\end{code}
+
+(The above is the 'wrong' way to go about telling the story!  I was trying to do
+this without introducing Pi quite yet, but that's just going to make things harder than
+needed.  So let's dive in, introduce Pi, and explore next.)
+
 
 Remember that (A + A + A) ~= 3*A. And that one can lens into the 3
 on the right -- so one can lens into it on the left too!
@@ -143,13 +207,9 @@ Intro to Pi.
 
 Really explore the relationship.
 
-\section{Random thoughts}
+\section{Proof of equivalence}
 
-What if we took different notions of iso (i.e. contractible or not)
-instead of the usual one, would that change things? What about the
-effect no the lens laws?
-
-Possibly this should all be done in Agda? Or Haskell? Some PL for sure.
+Finish the proof that was started earlier.
 
 \section{Conclusion}
 
