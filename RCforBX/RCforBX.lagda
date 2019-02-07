@@ -134,7 +134,7 @@ Let's explore the simplest lenses first.  For a \AgdaRecord{GS-Lens}, the simple
 when \AgdaField{get} is the identity, which forces the rest:
 
 \begin{code}
-module _ {ℓ : Level} (A : Set ℓ) where
+module _ (A B : Set) where
   AA-gs-lens : GS-Lens A A
   AA-gs-lens = record { get = id ; set = λ _ → id
     ; getput = λ _ _ → refl ; putget = λ _ → refl ; putput = λ _ _ _ → refl }
@@ -145,14 +145,27 @@ guess the complement by solving the equation $A ≃ C × A$ for $C$: $C$ must
 be $\AgdaSymbol{⊤}$. But then the $∃-Lens$ isn't quite as simple as above:
 \begin{code}
   AA-∃-lens : ∃-Lens A A
-  AA-∃-lens = record { HC = hide (Lift ℓ ⊤)
-    ; iso = (λ a → (lift tt) , a) , qinv proj₂ (λ { ( (lift tt) , a) → refl}) λ _ → refl }
+  AA-∃-lens = record { HC = hide ⊤ ; iso = uniti⋆equiv }
 \end{code}
+\noindent where $\AgdaFunction{uniti⋆equiv}$ has type
+$A ≃ (⊤ × A)$. In other words, as the complement is not actually
+present in $A$, it must be introduced.
 
-(The above is the 'wrong' way to go about telling the story!  I was trying to do
-this without introducing Pi quite yet, but that's just going to make things harder than
-needed.  So let's dive in, introduce Pi, and explore next.)
-
+What about in the other direction, what is the \AgdaRecord{∃-Lens} whose
+underlying isomorphism is the identity?
+\begin{code}
+  BAA-∃-lens : ∃-Lens (B × A) A
+  BAA-∃-lens = record { HC = hide B ; iso = id≃ }
+\end{code}
+\noindent Since our definition of \AgdaRecord{∃-Lens} is right-biased
+(we are looking for isomorphisms of shape $S ≃ C × A$), the above lens
+extracts the $A$ on the right.  Of course, there is another lens which
+switches the roles of $A$ and $B$ --- and this leaves a trace on the
+isomorphism:
+\begin{code}
+  BAB-∃-lens : ∃-Lens (B × A) B
+  BAB-∃-lens = record { HC = hide A ; iso = swap⋆equiv }
+\end{code}
 
 Remember that (A + A + A) ~= 3*A. And that one can lens into the 3
 on the right -- so one can lens into it on the left too!
