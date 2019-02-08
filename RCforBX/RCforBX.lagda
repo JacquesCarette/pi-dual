@@ -8,6 +8,29 @@
 \usepackage{lmodern}
 \usepackage{textgreek}
 \usepackage[utf8x]{inputenc}
+\usepackage{comment}
+
+% Convenient abbreviations
+\newcommand{\AIC}[1]{\AgdaInductiveConstructor{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Comments
+
+\newif\ifcomments\commentstrue
+
+\ifcomments
+\newcommand{\authornote}[3]{\textcolor{#1}{[#3 ---#2]}}
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+\else
+\newcommand{\authornote}[3]{}
+\newcommand{\todo}[1]{}
+\fi
+
+%% \newcommand{\amr}[1]{}
+%% \newcommand{\jc}[1]{}
+
+\newcommand{\jc}[1]{\authornote{purple}{JC}{#1}}
+\newcommand{\amr}[1]{\fbox{\begin{minipage}{0.9\textwidth}\color{red}{Amr says: {#1}}\end{minipage}}}
 
 % Not the final title!
 \title{Reversible Programming for the BX enthusiast}
@@ -36,8 +59,10 @@ so that BX enthusiast should really know all about RP too.
 module RCforBX where
 
 open import Level
-open import Data.Product
+open import Data.Product using (_×_; _,_; proj₁; proj₂)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Unit
+open import Data.Empty
 open import Relation.Binary.PropositionalEquality
   using (_≡_; cong; cong₂; trans; refl)
 open import Function using (id)
@@ -107,8 +132,8 @@ we'll assume everything is the same level.
     field
       iso : S ≃ (C × A)
 
-  ∃-lens : {ℓ : Level} (S A C : Set ℓ) → S ≃ (C × A) → ∃-Lens S A
-  ∃-lens S A C iso = record {HC = hide C; iso = iso}
+  ∃-lens : {ℓ : Level} {S A : Set ℓ} (C : Set ℓ) → S ≃ (C × A) → ∃-Lens S A
+  ∃-lens C iso = record {HC = hide C; iso = iso}
 \end{code}
 
 This gives us the needed infrastructure.  Let's show that, given
@@ -128,13 +153,24 @@ sound record { HC = HC ; iso = (f , qinv g α β) } = record
 The other direction is considerably more challenging. We leave that
 to~\ref{sec:lens-equiv}.
 
+What we wish to do is to explore the link betweens lens, especially
+in the form of \AgdaRecord{∃-Lens}, and reversible computing.
+
+\section{A typed reversible language}
+
+Intro to Pi. the weak semiring of types. The language Pi.
+The interpretation of Pi as a PL, and its denotation as
+equivalences. List the equivalences?
+
 \section{Exploring the Lens landscape}
 
 Let's explore the simplest lenses first.  For a \AgdaRecord{GS-Lens}, the simplest is
 when \AgdaField{get} is the identity, which forces the rest:
 
 \begin{code}
-module _ (A B : Set) where
+module _ (A B D E : Set) where
+  open ∃-Lens
+
   AA-gs-lens : GS-Lens A A
   AA-gs-lens = record { get = id ; set = λ _ → id
     ; getput = λ _ _ → refl ; putget = λ _ → refl ; putput = λ _ _ _ → refl }
@@ -145,7 +181,7 @@ guess the complement by solving the equation $A ≃ C × A$ for $C$: $C$ must
 be $\AgdaSymbol{⊤}$. But then the $∃-Lens$ isn't quite as simple as above:
 \begin{code}
   AA-∃-lens : ∃-Lens A A
-  AA-∃-lens = record { HC = hide ⊤ ; iso = uniti⋆equiv }
+  AA-∃-lens = ∃-lens ⊤ uniti⋆equiv
 \end{code}
 \noindent where $\AgdaFunction{uniti⋆equiv}$ has type
 $A ≃ (⊤ × A)$. In other words, as the complement is not actually
@@ -155,7 +191,7 @@ What about in the other direction, what is the \AgdaRecord{∃-Lens} whose
 underlying isomorphism is the identity?
 \begin{code}
   BAA-∃-lens : ∃-Lens (B × A) A
-  BAA-∃-lens = record { HC = hide B ; iso = id≃ }
+  BAA-∃-lens = ∃-lens B id≃
 \end{code}
 \noindent Since our definition of \AgdaRecord{∃-Lens} is right-biased
 (we are looking for isomorphisms of shape $S ≃ C × A$), the above lens
@@ -164,9 +200,90 @@ switches the roles of $A$ and $B$ --- and this leaves a trace on the
 isomorphism:
 \begin{code}
   BAB-∃-lens : ∃-Lens (B × A) B
-  BAB-∃-lens = record { HC = hide A ; iso = swap⋆equiv }
+  BAB-∃-lens = ∃-lens A swap⋆equiv
 \end{code}
 
+Thus, looking at the Π combinators, which ones return a type
+of shape $C × A$ ?  We have already seen \AIC{uniti⋆l},
+\AIC{id⟷} and \AIC{swap⋆} arise. That leaves four:
+\AIC{assocl⋆}, \AIC{factorzl}, \AIC{factor} and \AIC{⊗}.
+These occur as follows (where we use the \AIC{equiv} version
+directly):
+\begin{code}
+  DBA-lens : ∃-Lens (D × (B × A)) A
+  DBA-lens = ∃-lens (D × B) assocl⋆equiv
+
+  ⊥-lens : ∃-Lens ⊥ A
+  ⊥-lens = ∃-lens ⊥ factorzequiv
+
+  ⊎-lens : ∃-Lens ((D × A) ⊎ (B × A)) A
+  ⊎-lens = ∃-lens (D ⊎ B) factorequiv
+
+  ⊗-lens : (E ≃ B) → (D ≃ A) → ∃-Lens (E × D) A
+  ⊗-lens iso₁ iso₂ = ∃-lens B (iso₁ ×≃ iso₂)
+\end{code}
+
+\jc{comment on each? Also, give an example of composition?}
+
+These last two are intriguing indeed, and really give us a strong
+sense that lenses are more than just conveniences for records! In
+particular, it is possible to create lenses for things which are
+not ``in'' a type at all.  Let's see this concretely.  And, for
+completeness, both \AgdaRecord{GS-Lens} and \AgdaRecord{∃-Lens}
+will be given.
+\begin{code}
+module _ {A : Set} where
+  data Colour : Set where red green blue : Colour
+
+  ∃-Colour-in-A+A+A : ∃-Lens (A ⊎ A ⊎ A) Colour
+  ∃-Colour-in-A+A+A = ∃-lens A eq
+   where
+    f : A ⊎ A ⊎ A → A × Colour
+    f (inj₁ x) = x , red
+    f (inj₂ (inj₁ x)) = x , green
+    f (inj₂ (inj₂ x)) = x , blue
+    g : A × Colour → A ⊎ A ⊎ A
+    g (a , red) = inj₁ a
+    g (a , green) = inj₂ (inj₁ a)
+    g (a , blue) = inj₂ (inj₂ a)
+    eq : (A ⊎ A ⊎ A) ≃ (A × Colour)
+    eq = f , qinv g (λ { (a , red) → refl ; (a , green) → refl ; (a , blue) → refl})
+                    λ { (inj₁ x) → refl ; (inj₂ (inj₁ x)) → refl ; (inj₂ (inj₂ y)) → refl}
+
+  GS-Colour-in-A+A+A : GS-Lens (A ⊎ A ⊎ A) Colour
+  GS-Colour-in-A+A+A = record
+    { get = λ { (inj₁ x) → red ; (inj₂ (inj₁ x)) → green ; (inj₂ (inj₂ y)) → blue}
+    ; set = λ { (inj₁ x) red → inj₁ x ; (inj₁ x) green → inj₂ (inj₁ x) ; (inj₁ x) blue → inj₂ (inj₂ x)
+              ; (inj₂ (inj₁ x)) red → inj₁ x ; (inj₂ (inj₁ x)) green → inj₂ (inj₁ x) ; (inj₂ (inj₁ x)) blue → inj₂ (inj₂ x)
+              ; (inj₂ (inj₂ y)) red → inj₁ y ; (inj₂ (inj₂ y)) green → inj₂ (inj₁ y) ; (inj₂ (inj₂ y)) blue → inj₂ (inj₂ y)}
+    ; getput = λ { (inj₁ x) red → refl ; (inj₁ x) green → refl ; (inj₁ x) blue → refl
+                 ; (inj₂ (inj₁ x)) red → refl ; (inj₂ (inj₁ x)) green → refl ; (inj₂ (inj₁ x)) blue → refl
+                 ; (inj₂ (inj₂ y)) red → refl ; (inj₂ (inj₂ y)) green → refl ; (inj₂ (inj₂ y)) blue → refl}
+    ; putget = λ { (inj₁ x) → refl ; (inj₂ (inj₁ x)) → refl ; (inj₂ (inj₂ y)) → refl}
+    ; putput = λ { (inj₁ x) red red → refl ; (inj₁ x) green red → refl ; (inj₁ x) blue red → refl
+                 ; (inj₁ x) red green → refl ; (inj₁ x) green green → refl ; (inj₁ x) blue green → refl
+                 ; (inj₁ x) red blue → refl ; (inj₁ x) green blue → refl ; (inj₁ x) blue blue → refl
+
+                 ; (inj₂ (inj₁ x)) red red → refl ; (inj₂ (inj₁ x)) green red → refl ; (inj₂ (inj₁ x)) blue red → refl
+                 ; (inj₂ (inj₁ x)) red green → refl ; (inj₂ (inj₁ x)) green green → refl ; (inj₂ (inj₁ x)) blue green → refl
+                 ; (inj₂ (inj₁ x)) red blue → refl ; (inj₂ (inj₁ x)) green blue → refl ; (inj₂ (inj₁ x)) blue blue → refl
+
+                 ; (inj₂ (inj₂ y)) red red → refl ; (inj₂ (inj₂ y)) green red → refl ; (inj₂ (inj₂ y)) blue red → refl
+                 ; (inj₂ (inj₂ y)) red green → refl ; (inj₂ (inj₂ y)) green green → refl ; (inj₂ (inj₂ y)) blue green → refl
+                 ; (inj₂ (inj₂ y)) red blue → refl ; (inj₂ (inj₂ y)) green blue → refl ; (inj₂ (inj₂ y)) blue blue → refl}
+    }
+\end{code}
+
+Note how the \AgdaRecord{∃-Lens} is linear in the size of the enumerated type, including
+the proofs whilst \AgdaRecord{GS-Lens} is quadratic for the function size, and cubic in
+the proof size!
+
+But the deeper points is that $A ⊎ A ⊎ A$ does not ``contain'' a \AgdaSymbol{Colour},
+and yet we can create a lens to get and set it.  The \AgdaRecord{GS-Lens} view makes this
+quite mysterious but, in our opinion, the \AgdaRecord{∃-Lens} makes it clear that any
+type that we can see \emph{up to isomorphism} can be focused on.
+
+\begin{comment}
 Remember that (A + A + A) ~= 3*A. And that one can lens into the 3
 on the right -- so one can lens into it on the left too!
 The iso expresses the difference (in languages with proper sum-of-product
@@ -177,14 +294,7 @@ to/from tags.
 
 Rememer that the type Lens (A*B*C) (A*C) is inhabited. So is
 Lens (A*B*C) (C*A).  Look familiar?
-
-\section{Pi}
-
-Intro to Pi.
-
-\section{Happy together}
-
-Really explore the relationship between lens and Pi.
+\end{comment}
 
 \section{Proof of equivalence}\label{sec:lens-equiv}
 
@@ -231,6 +341,25 @@ Thus our next move is to make that part of $S$ not matter. In other words,
 rather than using the \emph{type} $S$ as a proxy, we want to use a
 \AgdaRecord{Setoid} where $s, t : S$ will be regarded as the same if they
 only differ in their $A$ component.
+
+\section{Prisms and other Optics}
+
+Prisms just use ⊎ instead of ×. Other optics are similar (but not all).
+The same things arise.
+
+In particular, factor/distrib can move between them.
+
+\section{Geometry of types}
+
+Lens is a cartesian factoring.  Prism is a partition.
+
+Note that we should really view $S$ as a sort of curve 2-dimensional type, while
+$C × A$ is our cartesian, 2-dimensional version. $C$ doesn't depend on $A$, which is
+why the name \emph{constant complement} is quite apt.  A Lens is a change of coordinates
+that allows one to see $A$ as a cartesian projection. Similarly, a Prism is a
+change of coordinates that shuffles all of $A$ ``to the right''.
+
+What are the other optics?
 
 \section{Conclusion}
 
