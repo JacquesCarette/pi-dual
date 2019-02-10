@@ -6,9 +6,12 @@
 \usepackage{agda}
 \usepackage{ucs}
 \usepackage{lmodern}
-\usepackage{textgreek}
+\usepackage{textgreek}  -- for some of the greek characters in text
 \usepackage[utf8x]{inputenc}
 \usepackage{comment}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Some needed unicode characters
 
 % Convenient abbreviations
 \newcommand{\AIC}[1]{\AgdaInductiveConstructor{#1}}
@@ -31,6 +34,7 @@
 
 \newcommand{\jc}[1]{\authornote{purple}{JC}{#1}}
 \newcommand{\amr}[1]{\fbox{\begin{minipage}{0.9\textwidth}\color{red}{Amr says: {#1}}\end{minipage}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Not the final title!
 \title{Reversible Programming for the BX enthusiast}
@@ -138,7 +142,7 @@ may as well provide a lift function to do so:
   _⊎h_ : {ℓa ℓb : Level} → Hidden {ℓa} → Hidden {ℓb} → Hidden {ℓa ⊔ ℓb}
   _⊎h_ = lift-to-hidden _⊎_
 \end{code}
-\jacques{Do it in an appendix?}
+\jc{Do it in an appendix?}
 Furthermore, we need to know that these induce equivalences. If we can
 reveal the indirection, this is indeed trivial:
 \begin{code}
@@ -349,16 +353,29 @@ An interesting interpretation of that isomorphism is that we can freely move tag
 of data $A$ with \textit{finite information} between type-level tags and value-level
 tags at will.
 
-\begin{comment}
-Remember that the type Lens (A*B*C) (A*C) is inhabited. So is
-Lens (A*B*C) (C*A).  Look familiar?
-\end{comment}
-
 \section{More Optics}
+
+Prisms just use ⊎ instead of ×. Other optics are similar (but not all).
+The same things arise.
+Affine is $∃C, D. S ≃ D ⊎ C × A$.
+Achroma is $∃C. S ≃ ⊤ ⊎ C × A$.
+Grate is $∃I. S ≃ I → A$, which isn't included in $Π$.
+Setter is $∃ F : Set → Set. S ≃ F A$, which is even further off.
+
+What about $∃C. S ≃ (⊤ ⊎ C) × A$ ?
+
+Note that factor/distrib is crucial to move between them all.
+
+\section{Optic transformations}
+
+Level 2 of $Π$ lets us look at relations between isomorphisms.
+In particular, we can see when some lens/prims/etc are simplifiable
+to something simpler.
 
 \section{Proof of equivalence}\label{sec:lens-equiv}
 
-Finish the proof that was started earlier.
+Finish the proof that was started earlier.  \jc{Or skip it entirely and
+refer to Oleg's gist?}
 One method
 involves assuming additional principles --- proof irrelevance and
 functional extensionality. But can we do without?
@@ -402,13 +419,6 @@ rather than using the \emph{type} $S$ as a proxy, we want to use a
 \AgdaRecord{Setoid} where $s, t : S$ will be regarded as the same if they
 only differ in their $A$ component.
 
-\section{Prisms and other Optics}
-
-Prisms just use ⊎ instead of ×. Other optics are similar (but not all).
-The same things arise.
-
-In particular, factor/distrib can move between them.
-
 \section{Geometry of types}
 
 Lens is a cartesian factoring.  Prism is a partition.
@@ -419,7 +429,20 @@ why the name \emph{constant complement} is quite apt.  A Lens is a change of coo
 that allows one to see $A$ as a cartesian projection. Similarly, a Prism is a
 change of coordinates that shuffles all of $A$ ``to the right''.
 
-What are the other optics?
+\jc{What are the other optics?}
+
+\section{Discussion}
+
+So why all the complications with \texttt{Profunctor}? Basically, that is mostly
+Haskell-isms: by relying on \emph{Free Theorems}, one can get the type system to
+reject a lot of ill-formed lenses, though, of course, not all. Optics, in Agda and
+using equivalences turn out to be \emph{simpler}, not harder!
+
+Another thread is via the Yoneda lemma. Of course, one can see this here too:
+the existentials correspond to a co-end, and the isomorphisms are exactly what is
+in the Hom-set. But we get more mileage from looking ``under the hood'' to see
+the fundamental \textbf{programming language} underlying Optics, rather than jumping
+to abstractions too early.
 
 \section{Conclusion}
 
