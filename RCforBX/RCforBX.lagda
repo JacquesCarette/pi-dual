@@ -53,8 +53,9 @@ Amr Sabry \\ Computer Science Dept.\\
 \maketitle
 
 \begin{abstract}
-Show how BX is deeply entertwined with RP already,
-so that BX enthusiast should really know all about RP too.
+Bidirectional programming, lenses, prisms, and other optics have connections to reversible programming which have been explored from several perspectives, mostly by attempting to recover bidirectional transformations from unidirectional ones. We offer a novel and foundational perspective in which reversible programming is expressed using “type equivalences.” This perspective offers several advantages: first, it is possible to construct sets of sound and complete type equivalences for certain collections of types; these correspond to canonical optic constructions. Second, using ideas inspired by category theory and homotopy type theory, it is possible to construct sound and complete “equivalences between equivalences” which provide the canonical laws for reasoning about lens and prism equivalences. 
+%% Show how BX is deeply entertwined with RP already,
+%% so that BX enthusiast should really know all about RP too.
 \end{abstract}
 \vskip 32pt
 
