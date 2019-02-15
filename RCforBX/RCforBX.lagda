@@ -174,17 +174,39 @@ The inspiration for this paper comes from a number of sources:
   \item (many more, insert citations throughout)
 \end{enumerate}
 
-There are many, many different representations for (monomorphic)
-very well behaved lenses. One of the first are the \emph{get-set lenses}:
+\section{Lenses}
+
+A \emph{lens} is a structure that mediates between a source $S$ and
+view $A$. Typically a lens comes equipped with two functions
+$\mathit{get}$ which projects a view from a source, and $\mathit{set}$
+which takes a view and reconstructs an appropriate source with that
+view. A monomorphic interface for such lenses is shown below,
+including the commonly cited laws for the lens to be well-behaved:
+
 \begin{code}
 record GS-Lens {ℓs ℓa : Level} (S : Set ℓs) (A : Set ℓa) : Set (ℓs ⊔ ℓa) where
   field
-    get : S → A
-    set : S → A → S
-    getput : (s : S) (a : A) → get (set s a) ≡ a
-    putget : (s : S) → set s (get s) ≡ s
-    putput : (s : S) (a a' : A) → set (set s a) a' ≡ set s a'
+    get     : S → A
+    set     : S → A → S
+    getput  : (s : S) (a : A) → get (set s a) ≡ a
+    putget  : (s : S) → set s (get s) ≡ s
+    putput  : (s : S) (a a' : A) → set (set s a) a' ≡ set s a'
 \end{code}
+
+A common theme in the literature on lenses is that the function
+$\mathit{get}$ discards some information from the source to create a
+view, and that this information can be explicitly represented using
+the \emph{constant-complement} technique from the database
+literature. In other words, lenses are viewed as elements of $\exists\
+C. S \cong C × A$. Although correct in principle~\cite{survey}, and
+although the discarded information $C$ appears to be hidden by the
+existential quantifier, it is not really hidden. \amr{needs to be explained better}
+
+
+
+\newpage
+
+
 
 There are also \emph{constant complement lenses}, informally those
 where $\exists C. S ≅ C × A$. If encoded carelessly, these two
