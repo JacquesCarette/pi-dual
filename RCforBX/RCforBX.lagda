@@ -317,16 +317,32 @@ the product ($\preprodtype$) type. But rather than focusing on
 expressions form a commutative semiring -- and leads us to
 expect that types
 too form a commutative semiring. And indeed they do -- at least up to
-\emph{type isomorphism}.
+\emph{type isomorphism}.  The reader unfamiliar with these can
+find a leisurely introduction in~\cite{CaretteJamesSabryArxiv}. We
+will furthermore assume that the reader is already familiar with
+the basic definitions around \emph{type equivalences}.
+That types, with ($\bot, \top, \presumtype,
+\preprodtype$) interpreted as ($0, 1, +, ×$) and strict
+equality replaced with equivalence $≃$
+form a commutative semiring is a basic result of type theory.
 
-\begin{definition}
-\label{def:rig}
-A \emph{commutative semiring} (sometimes called a \emph{commutative
-  rig} --- commutative ri\emph{n}g without negative elements)
-$(R,0,1,+,\cdot)$ consists of a set $R$, two distinguished elements of
-$R$ named $0$ and $1$, and two binary operations~$+$ and $\cdot$,
-satisfying the following relations for any $a,b,c \in R$:
+However, we might be misled by the Curry-Howard correspondence:
+In logic, it is true that $A \lor A = A$ and
+$A \land A = A$. However, neither $A \presumtype A$ nor $A \preprodtype A$ are
+equivalent to $A$. They are however \emph{equi-inhabited}. This is
+a fancy way of saying
+\[ A \presumtype A \ \text{is inhabited} \qquad \Leftrightarrow \qquad A \
+  \text{is inhabited} \] The above is the real \textit{essence} of the
+Curry-Howard correspondence.  In other words, classical Curry-Howard
+tells us about \emph{logical equivalence} of types; there are indeed functions
+$f : A \presumtype A \rightarrow A$ and $g : A \rightarrow A \presumtype A$;
+however, they are not inverses.
+
+\begin{figure}[t]
+\begin{minipage}{0.48\textwidth}
 \[\begin{array}{rcl}
+a &=& a \\
+\\
 0 + a &=& a \\
 a + b &=& b + a \\
 a + (b + c) &=& (a + b) + c \\
@@ -338,90 +354,8 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 0 \cdot a &=& 0 \\
 (a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
 \end{array}\]
-\end{definition}
-
-We would like to adapt the commutative semiring definition to the
-setting of structured types. First, types do not naturally want to be
-put together into a ``set.''  This can be fixed if we replace the set
-$R$ with a universe $U$, and replace the set membership $0 \in R$ with
-the typing judgement $\bot : U$ (and similarly for the other
-items). Our next instinct would be to similarly replace $=$ with a
-type $A \equiv B$ that asserts that $A$ and $B$ are
-\emph{propositionally equal}, i.e. reduce to equivalent type-denoting
-expressions under the rules of the host type system.  This is however
-not true: the proposition $A \preprodtype B \equiv B \preprodtype A$ is not
-normally\footnote{Except in univalent type theory where equivalent
-  types are identified.} provable for arbitrary types $A$ and $B$. But
-it should be clear that $A \preprodtype B$ and $B \preprodtype A$ contain
-equivalent information. In other words, we would like to be able to
-witness that $A \preprodtype B$ can be reversibly deformed into
-$B \preprodtype A$, and vice-versa, which motivates the introduction of type
-\emph{equivalences}. To do this, we need a few important auxiliary
-concepts.
-
-\begin{definition}[Homotopy]
-\label{def:homotopy}
-Two functions $f,g:A \rightarrow B$ are \emph{homotopic}
-if~$\forall x:A. f(x) \equiv g(x)$. We denote this $f \sim g$.
-\end{definition}
-
-\noindent It is easy to prove that homotopies (for any given function
-space $A \rightarrow B$) are an equivalence relation.  The simplest
-definition of the data which makes up an equivalence is the following.
-
-\begin{definition}[Quasi-inverse]
-\label{def:quasi}
-For a function $f : A \rightarrow B$, a \emph{quasi-inverse} is a
-triple $(g, \alpha, \beta)$, consisting of a function
-$g : B \rightarrow A$ and two homotopies
-$\alpha : f \circ g \sim \mathrm{id}_B$ and
-$\beta : g \circ f \sim \mathrm{id}_A$.
-\end{definition}
-
-\begin{definition}[Equivalence of types]
-  Two types $A$ and $B$ are equivalent $A \simeq B$ if there exists a
-  function $f : A \rightarrow B$ together with a quasi-inverse for $f$.
-\end{definition}
-
-\noindent Why \emph{quasi}? The reasons are beyond our scope, but the
-interested reader can read Sec.~$2.4$ and Ch.~$4$ in the
-Homotopy Type Theory (HoTT) book~\cite{hottbook}.
-There are several conceptually different, but
-equivalent, ``better'' definitions.  We record just one here:
-
-\begin{definition}[Bi-invertibility]
-\label{def:biinv}
-For a function $f : A \rightarrow B$, a \emph{bi-inverse} is a
-pair of functions $g,h : B \rightarrow A$ and two homotopies
-$\alpha : f \circ g \sim \mathrm{id}_B$ and
-$\beta : h \circ f \sim \mathrm{id}_A$.
-\end{definition}
-
-\noindent We can then replace quasi-inverse with bi-invertibility in
-the definition of type equivalence. The differences will not matter to
-us here.
-
-We are now in position to describe the commutative
-semiring structure for types. After replacing the set $R$ with a
-universe $U$, we also replace the algebraic use of $=$ in
-Def.~\ref{def:rig} by the type equivalence relation $\simeq$. With
-this change, we can indeed prove that types (with $\bot, \top, \presumtype,
-\preprodtype$) form a commutative semiring.
-
-If we revisit the Curry-Howard correspondence, we notice one
-more issue. In logic, it is true that $A \lor A = A$ and
-$A \land A = A$. However, neither $A \presumtype A$ nor $A \preprodtype A$ are
-equivalent to $A$. They are however \emph{equi-inhabited}. This is
-a fancy way of saying
-\[ A \presumtype A \ \text{is inhabited} \qquad \Leftrightarrow \qquad A \
-  \text{is inhabited} \] The above is the real \textit{essence} of the
-Curry-Howard correspondence.  In other words, classical Curry-Howard
-tells us about \emph{logical equivalence} of types. This is even a
-constructive statement: there are indeed functions
-$f : A \presumtype A \rightarrow A$ and $g : A \rightarrow A \presumtype A$;
-however, they are not inverses.
-
-\begin{figure}[t]
+\end{minipage}
+\begin{minipage}{0.48\textwidth}
 \[
 \begin{array}{rrcll}
 & A & \simeq & A &\\
@@ -438,36 +372,14 @@ however, they are not inverses.
 & (A \presumtype B) \preprodtype C & \simeq & (A \preprodtype C) \presumtype (B \preprodtype C) &
 \end{array}
 \]
-\caption{Type isomorphisms.}
+\end{minipage}
+\caption{Semiring equalities and type isomorphisms.}
 \label{type-isos}
 \end{figure}
 
-Nevertheless, the Curry-Howard correspondence still has some force. We
-know that the inhabitants of types formed with with $\bot, \top,
-\presumtype, \preprodtype$ form a commutative semiring. What we want
-to know is, which types are equivalent? From a commutative semiring
-perspective, this amounts to asking what terms are equal.  We have a
-set of generators for those equations, namely those in
-Def.~\ref{def:rig}. What we thus need is to create $8$ pairs of
-mutually inverse functions which witness these identities.  For
-concreteness, we show the signatures in Fig.~\ref{type-isos}.
-
-From category theory, we are informed of the following privilege
-enjoyed by the natural numbers~$\Nat$:
-\begin{theorem}
-  The semiring $\left(\Nat, 0, 1, +, \cdot\right)$ is \emph{initial}
-  in the category of semirings and semiring homomorphisms.
-\end{theorem}
-\noindent In other words, for any semiring $S$, there is a homomorphism
-from $\Nat$ into $S$. But $\Nat$ is also the ``counting'' semiring,
-which formalizes the notion of cardinality of finite discrete sets.
-
-The previous section on finite sets, along with the reasoning above,
-thus leads us to posit that the correct denotational semantics for
-finite discrete types is that of the semiring $\left(\Nat, 0, 1, +,
-\cdot\right)$. It is worth noting that equality in this semiring is
-intensional (i.e. two things are equal if and only if they are
-identical after evaluation), unlike that for types.
+The generators for our type isomorphisms will exactly be those
+of a semiring --- we place them side-by-side in
+Fig.~\ref{type-isos}.
 
 %%%%%%%%%
 \subsection{A Language of Type Equivalences}
@@ -493,12 +405,12 @@ identical after evaluation), unlike that for types.
 \label{pi-terms}
 \end{figure}
 
-We now have in our hands our desired denotational semantics for types.
-We want to create a programming language, which we call $\Pi$, such
-that the types and type combinators map to $\bot, \top, \presumtype,
-\preprodtype$, and such that we have ground terms whose denotation are
-all $16$ type isomorphisms of Fig.~\ref{type-isos}. This is rather
-straightforward, as we can simply do this literally. To make the
+This gives us the denotational semantics for types and for
+equivalences. From this, we want to
+a programming language, which we call $\Pi$,
+where we have ground terms whose denotation are
+all $16$ type isomorphisms of Fig.~\ref{type-isos}.
+We can simply do this literally. To make the
 analogy with commutative semirings stand out even more, we will use
 $0, 1, \sumtype$, and ${\prodtype}$ at the type level, and will denote
 ``equivalence'' by $\iso$.  Thus Fig.~\ref{pi-terms} shows the
@@ -539,47 +451,18 @@ unexpected programming language design:
 
 \noindent
 Of course, one does not get a programming language with just typed
-constants! There is a need to perform multiple equivalences. There are
+constants! We need to put together multiple equivalences to form
+other equivalences. There are
 in fact three ways to do this: sequential composition $\odot$, choice
 composition $\oplus$ (sometimes called juxtaposition), and parallel
 composition $\otimes$. See Fig.~\ref{pi-combinators} for the
 signatures. The construction $c_1 \odot c_2$ corresponds to performing
-$c_1$ first, then $c_2$, and is the usual notion of composition -- and
-corresponds to $\fatsemi$ of the language of permutations of
-Sec.~\ref{sec:dataone}. The construction $c_1 \oplus c_2$ chooses to
+$c_1$ first, then $c_2$, and is the usual notion of composition.
+The construction $c_1 \oplus c_2$ chooses to
 perform $c_1$ or $c_2$ depending on whether the input is labelled
 $\textsf{left}$ or $\textsf{right}$ respectively. Finally the
 construction $c_1 \otimes c_2$ operates on a product structure, and
-applies $c_1$ to the first component and $c_2$ to the second. The
-language of permutations lacked the ability to combine permutations by
-taking sums and products, which led to the awkward non-compositional
-programming style illustrated in the full adder
-example~(Eq.~\ref{eq:adder}).
-
-Thus the denotation of the $\Pi$ terms \emph{should} be
-permutations. But given types $A$ and $B$ denoting $\fin{m}$
-and~$\fin{n}$ respectively, what are $A \presumtype B$ and $A \preprodtype B$ ?
-They correspond exactly to $\fin{m+n}$ and $\fin{m*n}$!
-Geometrically, this corresponds to concatenation for $A + B$,
-i.e. lining up the elements of $A$ first, and then those of~$B$. For
-$A * B$, one can picture this as lining up the elements of $A$
-horizontally, those of $B$ vertically and perpendicular to those of
-$A$, and filling in the square with pairs of elements from $A$ and
-$B$; if one re-numbers these sequentially, reading row-wise, this
-gives an enumeration of $\fin{m*n}$.
-
-From here, it is easy to see what, for example, $c_1 \oplus c_2$ must be,
-operationally: from a permutation on $\fin{m}$ and another on $\fin{n}$,
-create a permutation on $\fin{m+n}$ by having $c_1$ operate on the first
-$m$ elements of $A+B$, and $c_2$ operate on the last $n$ elements.
-Similarly, $\swapp$ switches the roles of $A$ and $B$, and thus corresponds
-to $\fin{n+m}$. Note how we ``recover'' the commutativity of
-natural number addition from this type isomorphism. Geometrically, $\swapt$
-is also rather interesting: it corresponds to matrix transpose!
-Furthermore, in this representations, some combinators like
-$\identlp$ and $\assoclp$ are identity operations: the underlying representations
-are not merely isomorphic, they are definitionally equal.
-In other words, the passage to $\Nat$ erases some structural information.
+applies $c_1$ to the first component and $c_2$ to the second.
 
 \begin{figure}[t]
 \[
@@ -599,7 +482,6 @@ inverse. As this is used frequently, we give it the short name $!$,
 and its type is given in Fig.~\ref{derived-pi-combinator}. This
 combinator is \emph{defined}, by pattern matching on the syntax of
 its argument and structural recursion.
-
 This is not the only choice.  Another would be to add a
 $\mathit{flip}$ combinator to the language; we could then remove
 quite a few combinators as redundant. The drawback is that many
@@ -775,55 +657,9 @@ $c_1~=~c_2$ whenever:
   \forall  ~v_1:b_1, v_2 : b_2. ~~ c_1 ~v_1 \mapsto v_2 ~\text{if and only if\ } c_2 ~v_1 \mapsto v_2
 \]
 
-Each type $b$ has a size $|b|$ defined in the obvious way. We had
-previously established that for any natural number $n$, there is a
-canonical set of size $n$, which we denoted $[n]$. Furthermore, we can
-also define a canonical \emph{type} of that size, which we will denote
-$\sharp\, b$, i.e. $\sharp\, b$ is a canonical type of size $|b|$.
-
-%% \roshan{Mixing types and numberix $+$ is super confusing. Let's use a
-%%   block font of some sort for the numeric cases. There are only a few
-%%   of them.}
-
-\begin{definition}($\sharp$).
-  By recursion on $|b|$.  First define $\tau$ that maps numeric sizes
-  to their corresponding types. We will revert to using type notation
-  for greater clarity of this definition:
-\[\begin{array}{rcl}
-  \tau~ (0) & = & \bot \\
-  \tau~ (1 + n) & = & \top \presumtype \tau~ (n) \\
- \end{array}\]
-\noindent so that we can define $\sharp\, b = \tau~ |b|$.
-\end{definition}
-
-We are now ready to go further and establish
-that there is always an equivalence between a type and the canonical
-type of the same size.
-
-\begin{proposition}
-  For any type \ensuremath{b} there exists an isomorphism \ensuremath{b \leftrightarrow \sharp\, b}.
-  \begin{proof}
-    The fact that such an isomorphism exists is evident from the
-    definition of size and what it means for two types to be
-    isomorphic. While many equivalent constructions are possible
-    for any type \ensuremath{b}, one such construction is given by
-    \sem{b}:
-
-\[\begin{array}{rclr}
- \sem{0} & = & \idc \\
- \sem{1} & = & \idc \\
- \sem{1{\sumtype}b} & = & \idc \oplus\ \sem{b} \\
- \sem{(b_1{\sumtype}b_2){\sumtype}b_3} & = & \assocrp \odot \sem{b_1 {\sumtype} (b_2 {\sumtype} b_3)} \\
- \sem{b_1 {\sumtype} b_2} & = & (\sem{b_1} \oplus \idc) \odot \sem{ \sharp\, b_1 {\sumtype} b_2 } \\
- \sem{0 {\prodtype} b_2} & = & \absorbr \\
- \sem{1 {\prodtype} b_2} & = & \identlt \odot \sem{b_2} \\
- \sem{(b_1 {\prodtype} b_2) {\prodtype} b_3} & = & \assocrt \odot \sem{b_1 {\prodtype} (b_2 {\prodtype} b_3)} \\
- \sem{(b_1{\sumtype}b_2) {\prodtype} b_3} & = & \dist \odot \sem{b_1 {\prodtype} b_3{\sumtype}b_2 {\prodtype} b_3} \\
- \end{array}\]
-%originally subcode source isomorphisms.tex:598
-
-  \end{proof}
-\end{proposition}
+The language also captures ideas around the size of types, aka
+cardinality, and type equivalences. The interested reader can
+find more details in~\cite{CaretteJamesSabryArxiv}.
 
 %%%%%%%%%
 \subsection{Graphical Language}
