@@ -1563,6 +1563,9 @@ Fig.~\ref{figb} is particularly daunting, involving a sequence of $3$ combinator
 on the left and $6$ on the right.
 
 %%%%%%%%%
+\newcommand{\evalone}{\ensuremath{\mathit{eval}_1}}
+\newcommand{\transLR}{\AgdaInductiveConstructor{trans⇔}}
+
 \subsection{Example}\label{sec:level2-example}
 
 We can now illustrate how this all works with a small example.
@@ -1692,9 +1695,6 @@ by vertical $\Rightarrow$) justifying the move to the next line.
 The first diagram uses lines $1,4,7,8$ in full; the second
 diagram collapses $7$ and $8$ into one, as well as not duplicating
 parts which are related by $\idf$.
-
-
-
 
 \section{Exploring the Lens landscape}
 
