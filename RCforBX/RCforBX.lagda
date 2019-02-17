@@ -141,9 +141,7 @@ Amr Sabry \\ Computer Science Dept.\\
 \maketitle
 
 \begin{abstract}
-Bidirectional programming, lenses, prisms, and other optics have connections to reversible programming which have been explored from several perspectives, mostly by attempting to recover bidirectional transformations from unidirectional ones. We offer a novel and foundational perspective in which reversible programming is expressed using “type equivalences.” This perspective offers several advantages: first, it is possible to construct sets of sound and complete type equivalences for certain collections of types; these correspond to canonical optic constructions. Second, using ideas inspired by category theory and homotopy type theory, it is possible to construct sound and complete “equivalences between equivalences” which provide the canonical laws for reasoning about lens and prism equivalences. 
-%% Show how BX is deeply entertwined with RP already,
-%% so that BX enthusiast should really know all about RP too.
+Bidirectional programming, lenses, prisms, and other optics have connections to reversible programming which have been explored from several perspectives, mostly by attempting to recover bidirectional transformations from unidirectional ones. We offer a novel and foundational perspective in which reversible programming is expressed using “type equivalences.” This perspective offers several advantages: first, it is possible to construct sets of sound and complete type equivalences for certain collections of types; these correspond to canonical optic constructions. Second, using ideas inspired by category theory and homotopy type theory, it is possible to construct sound and complete “equivalences between equivalences” which provide the canonical laws for reasoning about lens and prism equivalences.
 \end{abstract}
 \vskip 32pt
 
@@ -445,17 +443,9 @@ $\alpha : f \circ g \sim \mathrm{id}_B$ and
 $\beta : h \circ f \sim \mathrm{id}_A$.
 \end{definition}
 
-%% \roshan{This is a poor sentence. We have 4 or 5 definitions back to
-%%   back and have given very little intuition as to how or why they
-%%   are relevant and then we go on to say this:}
-
 \noindent We can then replace quasi-inverse with bi-invertibility in
 the definition of type equivalence. The differences will not matter to
 us here.
-
-%% \roshan{More on the above: Let us either explain what the point is
-%%   OR simply not suggest that we could be making a point, which we
-%%   then choose not to.}
 
 We are now in position to describe the commutative
 semiring structure for types. After replacing the set $R$ with a
@@ -659,10 +649,6 @@ language of permutations lacked the ability to combine permutations by
 taking sums and products, which led to the awkward non-compositional
 programming style illustrated in the full adder
 example~(Eq.~\ref{eq:adder}).
-
-%% \roshan{Mixing types and numberix $+$ is super confusing. Let's use a
-%%   block font of some sort for the numeric cases. There are only a few
-%%   of them.}
 
 Thus the denotation of the $\Pi$ terms \emph{should} be
 permutations. But given types $A$ and $B$ denoting $\fin{m}$
@@ -936,6 +922,8 @@ type of the same size.
 %%%%%%%%%
 \subsection{Graphical Language}
 
+\jc{we want to mention that there is a graphical language, but nothing else}
+
 Combinators of \ensuremath{\Pi } can be written in terms of the
 operators described previously or via a graphical language similar in
 spirit to those developed for Geometry of Interaction
@@ -947,99 +935,6 @@ the operator based (syntactic) description of programs.
 look like ``wiring diagrams.'' Values take the form of ``particles''
 that flow along the wires. Computation is expressed by the flow of
 particles.
-
-\begin{itemize}
-\item
-The simplest sort of diagram is the \ensuremath{\idc : b \leftrightarrow b} combinator which
-is simply represented as a wire labeled by its type \ensuremath{b}. In more
-complex diagrams, if the type of a wire is obvious from the context,
-it may be omitted.
-
-\noindent
-Values flow from left to right in the graphical language of
-\ensuremath{\Pi }.  When tracing a computation, one might imagine a value
-\ensuremath{v} of type \ensuremath{b} on the wire, as shown below.
-
-\item
-The product type \ensuremath{b_1 {\prodtype} b_2} may be represented both as one wire
-labeled \ensuremath{b_1 \prodtype b_2} or by two parallel wires labeled \ensuremath{b_1} and
-\ensuremath{b_2}. Both representations may be used interchangeably.
-
-When tracing execution using particles, one should think of one
-particle on each wire or alternatively as in folklore in the
-literature on monoidal categories as a ``wave.''
-
-\item
-Sum types may similarly be represented using using parallel wires with
-a \ensuremath{{\sumtype}} operator between them.
-
-\noindent
-When tracing the execution of \ensuremath{b_1{\sumtype}b_2} represented by one
-wire, one can think of a value of the form \ensuremath{\mathit{left} ~v_1} or \ensuremath{\mathit{right} ~v_2}
-as flowing on the wire, where \ensuremath{v_1:b_1} and \ensuremath{v_2:b_2}.  When tracing
-the execution of two additive wires, a value can reside on only one of
-the two wires.
-
-\item
-When representing complex types like \ensuremath{(b_1 {\prodtype} b_2){\sumtype}b_3} some visual
-grouping of the wires may be done to aid readability. The exact type
-however will always be clarified by the context of the diagram.
-
-\item
-Associativity is entirely skipped in the graphical language. Hence
-three parallel wires may be inferred as \ensuremath{b_1 {\prodtype} (b_2 {\prodtype} b_3)} or
-\ensuremath{(b_1 {\prodtype} b_2) {\prodtype} b_3}, based on the context. This is much like handling of
-associativity in the graphical representations of categories as well as
-that for monoidal categories.
-
-\item Commutativity is represented by crisscrossing wires.
-
-\noindent
-When tracing the execution of \ensuremath{b_1{\sumtype}b_2} represented by one wire, one
-can think of a value of the form \ensuremath{\mathit{left} ~v_1} or
-\ensuremath{\mathit{right} ~v_2} as flowing on the wire, where
-\ensuremath{v_1:b_1} and \ensuremath{v_2:b_2}.  By visually
-tracking the flow of particles on the wires, one can verify that the
-expected types for commutativity are satisfied.
-
-\item
-The morphisms that witness that \ensuremath{0} and \ensuremath{1} are the additive and
-  multiplicative units are represented as shown below. Note that since there
-  is no value of type 0, there can be no particle on a wire of type \ensuremath{0}.
-  Also since the monoidal units can be freely introduced and eliminated, sometimes
-  they are omitted.  However, as this is in fact dangerous, as explained
-  by~\cite{BLUTE1996229}, we will err on the side of including them.
-
-\item
-Distributivity and factoring are represented using the dual
-boxes shown below:
-
-Distributivity and factoring are interesting because they represent
-interactions between sum and pair types. Distributivity should
-essentially be thought of as a multiplexer that redirects the flow of
-\ensuremath{v:b} depending on what value inhabits the type \ensuremath{b_1{\sumtype}b_2}, as shown
-below.
-
-\noindent
-Factoring is the corresponding adjoint operation.
-
-\item Combinators can be composed in series (\ensuremath{c_1 \odot c_2}) or
-  parallel. Sequential (series) composition corresponds to connecting
-  the output of one combinator to the input of the next.
-
-There are two forms of parallel composition -- combinators
-  can be combined additively \ensuremath{c_1 \oplus\ c_2} (shown on the left) or
-  multiplicatively \ensuremath{c_1 \otimes c_2} (shown on the right).
-
-\end{itemize}
-
-\noindent
-\textit{Example.} As an example consider the wiring diagram
-of the combinator \ensuremath{c} below:
-\[\begin{array}{rcl}
-c & : & b {\prodtype} (1{\sumtype}1) \leftrightarrow b {\sumtype} b \\
-c & = & \swapt \odot \dist \odot (\identlt \oplus \identlt)
-\end{array}\]
 
 %%%%%%%%%
 \subsection{Denotational Semantics}
@@ -1054,14 +949,14 @@ equivalence between the denotation of each type%
 of this work, which has been reported on in a previous paper~\cite{Carette2016}.}:
 
 \begin{code}
--- c2equiv : 
+-- c2equiv :
 \end{code}
 
 \noindent And as such an equivalence contains a function as
 its first component, we can compare if our operational
 semantics and denotational semantics match.  And they do:
 \begin{code}
--- lemma0 : 
+-- lemma0 :
 \end{code}
 
 \noindent We can similarly hand-write a backwards evaluator,
