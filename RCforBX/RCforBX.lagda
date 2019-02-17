@@ -661,11 +661,8 @@ combinators of Sec.~\ref{sec:pi1}) as being at level-1, and to the
 equivalences between equivalences of types (i.e., the combinators
 discussed in this section) as being at level-2.
 
-%%%%%%%%%
-\subsection{A Model of Equivalences between Type Equivalences}
-
-Previously we saw how we could take the proof terms of commutative semiring
-equivalences as our starting point for $\Pi$. What we need
+$\Pi$ was defined by taking the the proof terms of commutative semiring
+equivalences as terms. What we need
 now is to understand how \emph{proofs} of algebraic identities should be
 considered equivalent. Classical algebra does not help, as proofs
 are not considered first-class citizens. However,
@@ -676,8 +673,6 @@ structure comes from explicitly modeling the ``identity
 types'': instead of regarding all terms which witness
 the equality of (say) $a$ and $b$ of type $A$ as being
 indistinguishable, we posit that there may in fact be many.
-This consequences of this one decision are enough to show that
-types can be modeled by groupoids.
 
 Thus, rather than looking at (untyped) commutative semirings, we
 should look at a \emph{typed} version. This process frequently goes by
@@ -700,21 +695,20 @@ and~$\rho$ respectively), but also coherence conditions that these must satisfy.
 Looking, for example, at just the additive fragment of $\Pi$ (i.e. with just $0$,
 $1$ and $+$ for the types, $\odot$ and $\oplus$ as combinators, and
 only the terms so expressible), the sub-language would correspond,
-denotationally, to exactly (non-empty) symmetric monoidal groupoids. And what
-these possess are exactly some \emph{equations between equations}
-as commutative diagrams.  Transporting these coherence conditions, for
-example those that express that various transformations are \emph{natural}
-to $\Pi$, gives a list of equations between $\Pi$ programs.
+denotationally, to exactly (non-empty) symmetric monoidal groupoids. And
+here we \emph{equations between equations}, aka
+commutative diagrams.  Transporting these coherence conditions, for
+example those that express that various transformations are \emph{natural},
+to $\Pi$ gives a list of equations between $\Pi$ programs.
 Furthermore, all the natural transformations
 that arise are in fact natural \emph{isomorphisms} -- and thus
 reversible.
 
-We can then proceed to prove that every one of the coherence conditions
-involved in defining a symmetric Rig Groupoid holds for the groupoid
+We can in fact prove that all the coherence conditions
+of symmetric Rig Groupoids holds for the groupoid
 interpretation of types~\cite{Carette2016}.  This is somewhat tedious
-given the sheer number of these, but when properly formulated,
-relatively straightforward, but see below for comments on some
-tricky cases.
+given the sheer numbers involved, but when properly formulated,
+relatively straightforward, up to a couple of tricky cases.
 
 But why are these particular coherence laws? Are they all necessary?
 Conversely are they, in some appropriate sense, sufficient? This is
