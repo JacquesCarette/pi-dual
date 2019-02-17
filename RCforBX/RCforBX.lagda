@@ -522,102 +522,16 @@ circuits~\cite{James:2012:IE:2103656.2103667}.
 \subsection{Operational Semantics}
 \label{sec:opsem}
 
-To give an operational semantics to $\Pi$, we are mainly missing
-a notation for \emph{values}.
-
-\begin{definition}{(Syntax of values of \ensuremath{\Pi })}
-\label{def:langRev}
-\[\begin{array}{rclr}
- \mathit{values}, v &::=& () ~|~ \mathit{left} ~v ~|~ \mathit{right} ~v ~|~ (v,v) \\
- \end{array}\]
-%subcode source isomorphisms.tex:483
-\end{definition}
-
-Given a program \ensuremath{c : b_1 \leftrightarrow b_2} in \ensuremath{\Pi },
-we can run it by supplying it with a value \ensuremath{ v_1 : b_1}. The
-evaluation rules \ensuremath{c ~v_1 \mapsto v_2} are given below.
-
-\begin{definition}{(Operational Semantics for \ensuremath{\Pi })}
-\label{def:operational-langRev}
-
-Identity:
-\[\begin{array}{rlcl}
- \idc & v &\mapsto & v \\
- \end{array}\]
-
-Additive fragment:
-\[\begin{array}{rlcl}
- \identlp & (\mathit{right} ~v) &\mapsto & v \\
- \identrp & v &\mapsto & \mathit{right} ~v \\
- \identlsp & (\mathit{left} ~v) &\mapsto & v \\
- \identrsp & v &\mapsto & \mathit{left} ~v \\
- \swapp & (\mathit{left} ~v) &\mapsto & \mathit{right} ~v \\
- \swapp & (\mathit{right} ~v) &\mapsto & \mathit{left} ~v \\
- \assoclp & (\mathit{left} ~v_1) &\mapsto & \mathit{left} ~(\mathit{left} ~v_1) \\
- \assoclp & (\mathit{right} ~(\mathit{left} ~v_2)) &\mapsto & \mathit{left} ~(\mathit{right} ~v_2) \\
- \assoclp & (\mathit{right} ~(\mathit{right} ~v_3)) &\mapsto & \mathit{right} ~v_3 \\
- \assocrp & (\mathit{left} ~(\mathit{left} ~v_1)) &\mapsto & \mathit{left} ~v_1 \\
- \assocrp & (\mathit{left} ~(\mathit{right} ~v_2)) &\mapsto & \mathit{right} ~(\mathit{left} ~v_2) \\
- \assocrp & (\mathit{right} ~v_3) &\mapsto & \mathit{right} ~(\mathit{right} ~v_3) \\
- \end{array}\]
-%originally: subcode source isomorphisms.tex:504
-
-Multiplicative fragment:
-\[\begin{array}{rlcl}
- \identlt & ((), v) &\mapsto & v \\
- \identrt & v &\mapsto & ((), v) \\
- \identlst & (v, ()) &\mapsto & v \\
- \identrst & v &\mapsto & (v, ()) \\
- \swapt & (v_1, v_2) &\mapsto & (v_2, v_1) \\
- \assoclt & (v_1, (v_2, v_3)) &\mapsto & ((v_1, v_2), v_3) \\
- \assocrt & ((v_1, v_2), v_3) &\mapsto & (v_1, (v_2, v_3)) \\
- \absorbr & (v_1, v_2) & \mapsto & v_1 \\
- \end{array}\]
-%originally: subcode source isomorphisms.tex:514
-
-Distributivity and factoring:
-
-\[\begin{array}{rlcl}
- \dist & (\mathit{left} ~v_1, v_3) &\mapsto & \mathit{left} ~(v_1, v_3) \\
- \dist & (\mathit{right} ~v_2, v_3) &\mapsto & \mathit{right} ~(v_2, v_3) \\
- \distl & (v_1, \mathit{left} ~v_2) &\mapsto & \mathit{left} ~(v_1, v_2) \\
- \distl & (v_1, \mathit{right} ~v_3) &\mapsto & \mathit{right} ~(v_1, v_3) \\
- \factor & (\mathit{left} ~(v_1, v_3)) &\mapsto & (\mathit{left} ~v_1, v_3) \\
- \factor & (\mathit{right} ~(v_2, v_3)) &\mapsto & (\mathit{right} ~v_2, v_3) \\
- \factorl & (\mathit{left} ~(v_1, v_2)) &\mapsto & (v_1, \mathit{left} ~v_2) \\
- \factorl & (\mathit{right} ~(v_1, v_3)) &\mapsto & (v_1, \mathit{right} ~v_3) \\
- \absorbl & (v_1 , v_2) & \mapsto & v_2 \\
- \end{array}\]
-%originally: subcode source isomorphisms.tex:523
-
-The evaluation rules of the composition combinators are given below:
-
-$$
-\infer{ (c_1\odot c_2) ~v_1 \mapsto v_2}{
-         c_1 ~v_1 \mapsto v
-        &
-         c_2 ~v \mapsto v_2
-}
-$$
-$$
-\infer{ (c_1 \oplus c_2) ~(\mathit{left} ~v_1) \mapsto \mathit{left} ~v_2}{
-         c_1 ~v_1 \mapsto v_2
-}
-\quad
-\infer{ (c_1 \oplus c_2) ~(\mathit{right} ~v_1) \mapsto \mathit{right} ~v_2}{
-         c_2 ~v_1 \mapsto v_2
-}
-$$
-$$
-\infer{ (c_1 \otimes c_2) ~(v_1, v_2) \mapsto (v_3, v_4)}{
-         c_1 ~v_1 \mapsto v_3
-        &
-         c_2 ~v_2 \mapsto v_4
-}
-$$
-%subcode source isomorphisms.tex:546
-
-\end{definition}
+It is then quite straightforward to give an operational semantics to
+$\Pi$: we write a ``forward evaluator'' which, given a
+program program \ensuremath{c : b_1 \leftrightarrow b_2} in \ensuremath{\Pi },
+and a value \ensuremath{ v_1 : b_1}, returns a value of type $b_2$. Of course,
+what makes $\Pi$ interesting is that we can also write a ``backward
+evaluator'' from values of type $b_2$ to values of type $b_1$. Furthermore
+we can prove that these are exact inverses. Given our denotational semantics,
+this should not be surprising. As the details are straightforward but
+verbose, we elide them. As we mentioned before, $!$ is a defined combinator.
+Only a few cases need commenting on.
 
 Since there are no values that have the type \ensuremath{0}, the
 reductions for the combinators \identlp, \identrp, \identlsp, and
@@ -629,86 +543,34 @@ of $0$ given on one side is passed on to the other side. The reason
 for this choice will have to wait for Sec.~\ref{langeqeq} when we
 explain some higher-level symmetries (see Fig.~\ref{figc}).
 
-As we mentioned before, $!$ is a defined combinator.
-
-\begin{definition}[Adjoint, \ensuremath{!~ c}]
- The adjoint of a combinator \ensuremath{c} is defined as follows:
-
-  \begin{itemize}
-  \item For primitive isomorphisms \ensuremath{c}, \ensuremath{!~ c} is given by its
-    inverse from Figs.~\ref{pi-terms} and~\ref{more-pi}.
-
-  \item \ensuremath{!(c_1 \otimes c_2) =\ !c_1 \otimes~ !c_2}
-
-  \item \ensuremath{!(c_1 \oplus c_2) =\ !c_1 \oplus~ !c_2}
-
-  \item \ensuremath{!(c_1\odot c_2) =\ !c_2 \odot~ !c_1}. (Note that the
-    order of combinators has been reversed).
-
-  \end{itemize}
-\end{definition}
-
-\noindent We can further define that two combinators are
-\emph{observationally equivalent} if on all values of their common
-domain, they evaluate to identical values.  More precisely, we will
-say that for combinators $c_1, c_2 : b_1 \leftrightarrow b_2$,
-$c_1~=~c_2$ whenever:
-\[
-  \forall  ~v_1:b_1, v_2 : b_2. ~~ c_1 ~v_1 \mapsto v_2 ~\text{if and only if\ } c_2 ~v_1 \mapsto v_2
-\]
-
-The language also captures ideas around the size of types, aka
-cardinality, and type equivalences. The interested reader can
-find more details in~\cite{CaretteJamesSabryArxiv}.
-
 %%%%%%%%%
-\subsection{Graphical Language}
+\subsection{Further features}
 
-\jc{we want to mention that there is a graphical language, but nothing else}
+The language $\Pi$ also captures ideas around the size of types, aka
+cardinality, and their relation to type equivalences.
 
 Combinators of \ensuremath{\Pi } can be written in terms of the
 operators described previously or via a graphical language similar in
 spirit to those developed for Geometry of Interaction
 \cite{DBLP:conf/popl/Mackie95} and string diagrams for category
-theory~\cite{BLUTE1996229,selinger-graphical}. Modulo some conventions
-and shorthand we describe here, the wiring diagrams are equivalent to
-the operator based (syntactic) description of programs.
+theory~\cite{BLUTE1996229,selinger-graphical}.
 \ensuremath{\Pi } combinators expressed in this graphical language
 look like ``wiring diagrams.'' Values take the form of ``particles''
 that flow along the wires. Computation is expressed by the flow of
 particles.
 
-%%%%%%%%%
-\subsection{Denotational Semantics}
+The interested reader can
+find more details for both features in~\cite{CaretteJamesSabryArxiv}.
 
-Fig.~\ref{type-isos} introduces our desired denotational semantics,
-and Sec.~\ref{sec:opsem} is a direct definition of an operational
-semantics. One obvious question arises: do these correspond?
-
-We can certainly associate to each $\Pi$ combinator an
-equivalence between the denotation of each type%
-\footnote{This is extracted from the Agda formalization
-of this work, which has been reported on in a previous paper~\cite{Carette2016}.}:
-
-\begin{code}
--- c2equiv :
-\end{code}
-
-\noindent And as such an equivalence contains a function as
-its first component, we can compare if our operational
-semantics and denotational semantics match.  And they do:
-\begin{code}
--- lemma0 :
-\end{code}
-
-\noindent We can similarly hand-write a backwards evaluator,
-prove that it is indeed a proper backwards evaluator, and
-finally show that it agrees with the reverse equivalence.
+Lastly, in previous work~\cite{Carette2016}, we had shown that
+the denotational and operational semantics correspond, and given
+a constructive proof of this. In other words, to each $\Pi$
+combinator we can associate an equivalence between the denotation
+of each type, which has all the obvious desirable properties we
+would want from such an association.
 
 \subsection{Examples}
-\jc{Removed most, but leave a few in, in case there is room to illustrate.}
-
-\noindent We can express a 3-bit word reversal operation as follows:
+We can express a 3-bit word reversal operation as follows:
 
 \ensuremath{\mathit{reverse} : \mathit{word}_3 \leftrightarrow \mathit{word}_3}
 
@@ -716,60 +578,23 @@ finally show that it agrees with the reverse equivalence.
 
 \noindent We can check that \ensuremath{\mathit{reverse}} does the right thing by
 applying it to a value \ensuremath{(v_1, (v_2, v_3))} and writing out the full
-derivation tree of the reduction.  The combinator \ensuremath{\mathit{reverse}}, like
-many others we will see in this paper, is formed by sequentially
-composing several simpler combinators. Instead of presenting the
-operation of \ensuremath{\mathit{reverse}} as a derivation tree, it is easier (purely
-for presentation reasons) to flatten the tree into a sequence of
-reductions as caused by each component. Such a sequence of reductions
-is given below:
+reduction, which can be visualized as:
 \[\begin{array}{rlr}
  & (v_1, (v_2, v_3)) \\
  \swapt & ((v_2, v_3), v_1) \\
  \swapt \otimes  \idc & ((v_3, v_2), v_1) \\
  \assocrt & (v_3, (v_2, v_1)) \\
  \end{array}\]
-%subcode source isomorphisms.tex:979
 
-\noindent On the first line is the initial value. On each subsequent
-line is a fragment of the \ensuremath{\mathit{reverse}} combinator and the value that
-results from applying this combinator to the value on the previous
-line. For example, \ensuremath{\swapt} transforms \ensuremath{(v_1, (v_2, v_3))} to
-\ensuremath{((v_2,v_3),v_1)}.  On the last line we see the expected result with
-the bits in reverse order.
-
-\jc{Leave the following paragraph in, to remind ourselves to look at these
-two gates as lenses}
-\paragraph*{Logic Gates}
 There are several universal primitives for conventional (irreversible)
 hardware circuits, such as \ensuremath{\mathit{nand}} and \ensuremath{\mathit{fanout}}. In the case
 of reversible hardware circuits, the canonical universal primitive is
 the Toffoli gate~\cite{Toffoli:1980}. The Toffoli gate takes three
 boolean inputs: if the first two inputs are \ensuremath{\mathit{true}} then the third
-bit is negated. In a traditional language, the Toffoli gate would be
-most conveniently expressed as a conditional expression like:
+bit is negated. The Toffoli gate, and its simple cousin the $\mathit{cnot}$ gate, are both
+expressible in $\Pi$.
 
-\noindent
-\ensuremath{ \mathit{toffoli}(v_1,v_2,v_3) = \mathit{if} ~(v_1 ~\mathit{and} ~v_2) ~\mathit{then} ~(v_1, v_2, \mathit{not}(v_3)) ~\mathit{else} ~(v_1, v_2, v_3)}
-
-We will derive Toffoli gate in \ensuremath{\Pi } by first deriving a simpler
-logic gate called \ensuremath{\mathit{cnot}}.  Consider a one-armed version, \ensuremath{\mathit{if}_c},
-of the conditional derived above. If the \ensuremath{\mathit{bool}} is
-\ensuremath{\mathit{true}}, the value of type \ensuremath{b} is modified by the operator \ensuremath{c}.
-
-By choosing \ensuremath{b} to be \ensuremath{\mathit{bool}} and \ensuremath{c} to be \ensuremath{\mathit{not}}, we have the
-combinator \ensuremath{\mathit{if}_{\mathit{not}} : \mathit{bool} {\prodtype}  \mathit{bool}\leftrightarrow \mathit{bool} {\prodtype}  \mathit{bool}} which negates its
-second argument if the first argument is \ensuremath{\mathit{true}}. This gate
-\ensuremath{\mathit{if}_{\mathit{not}}} is often referred to as the \ensuremath{\mathit{cnot}} gate\cite{Toffoli:1980}.
-
-If we iterate this construction once more, the resulting combinator
-\ensuremath{\mathit{if}_{\mathit{cnot}}} has type \ensuremath{\mathit{bool} {\prodtype}  (\mathit{bool} {\prodtype}  \mathit{bool})\leftrightarrow \mathit{bool} {\prodtype}  (\mathit{bool} {\prodtype}  \mathit{bool})}. The
-resulting gate checks the first argument and if it is \ensuremath{\mathit{true}},
-proceeds to check the second argument. If that is also \ensuremath{\mathit{true}} then
-it will negate the third argument. Thus \ensuremath{\mathit{if}_{\mathit{cnot}}} is the required
-Toffoli gate.
-
-\subsection{Data III: Reversible Programs between Reversible Programs}
+\subsection{Reversible Programs between Reversible Programs}
 \label{sec:pi2}
 
 In the previous sections, we examined equivalences between
@@ -1597,6 +1422,9 @@ the chains of isomorphisms $A \uplus A \uplus A \simeq A × \mathbb{3}
 An interesting interpretation of that isomorphism is that we can freely move tagging
 of data $A$ with \textit{finite information} between type-level tags and value-level
 tags at will.
+
+\subsection{More ideas}
+\jc{We should take a look at the optics generated by cnot and/or toffoli}
 
 \section{More Optics}
 
