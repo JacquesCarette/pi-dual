@@ -304,52 +304,20 @@ in the form of \AgdaRecord{∃-Lens}, and reversible computing.
 %% interpretation of Pi as a PL, and its denotation as
 %% equivalences. List the equivalences?
 
-Instead of spaces (aka discrete sets) consisting solely of
-unstructured isolated points, we now investigate structured spaces
-built from sums and products of elementary spaces. This structure
-corresponds to the building blocks of type theory which are: the empty
+Our starting point will be a basic type theory with the empty
 type ($\bot$), the unit type ($\top$), the sum type ($\presumtype$), and
-the product ($\preprodtype$) type. Before getting into the formal theory,
-let's consider possible deformations on the space $(\top \presumtype \bot)
-\preprodtype (\top \presumtype \top)$. This space is the product of two
-subspaces: the subspace $(\top \presumtype \bot)$ which itself is the sum
-of the space~$\top$ containing one element $\texttt{tt}$ and the empty
-space $\bot$ and the subspace $(\top \presumtype \top)$ which is the sum of
-two spaces each containing the one element $\texttt{tt}$. First, as
-discussed in the previous section, any deformation of this space must
-at least preserve the number of elements: we can neither create nor
-destroy points during any continuous deformation. Seeing that the
-number of elements in our example space is 2, a reasonable hypothesis
-is that we can deform the space above to any other space with 2
-elements such as $\top \presumtype \top$ or $\top \presumtype (\top \presumtype
-\bot)$. What this really means is that we are treating the sum and
-product structure as malleable. For example, imagining a product
-structure as arranged in a grid; by ``stretching'' we can turn it
-in to a sum structure arranged in a line. We can also change the
-orientation of the grid by exchanging the axes, as well as do other
-transformations --- as long as we preserve the number of points.
-Of course, it is not a priori clear that this necessary requirement
-is also sufficient.  Making this intuition precise will be the topic of this
-section.
+the product ($\preprodtype$) type. But rather than focusing on
+\emph{functions} between these types, we will instead looks at
+\emph{equivalences}.
 
 %%%%%%%%%
-\subsection{A Model of Type Equivalences}
+\subsection{Type Equivalences}
 
-We now want a proper mathematical description of this idea. Our goal
-is a denotational semantics on types which makes types that have the
-same number of points be equivalent types.  First we note that the
-structure of types has a nice correspondence (Curry-Howard) to logic:
-
-\noindent This correspondence is rather fruitful. As logical
-expressions form a commutative semiring, we would expect that types
+\noindent The Curry-Howard correspondence teaches that logical
+expressions form a commutative semiring -- and leads us to
+expect that types
 too form a commutative semiring. And indeed they do -- at least up to
-\emph{type isomorphism}.  The natural numbers $\Nat$ are another
-commutative semiring; it will turn out that, even though the
-Curry-Howard correspondence has been extremely fruitful for
-programming language research, it is $\Nat$ which will be a better
-model for finite structured types as the corresponding commutative
-semiring captures the familiar numerical identities that preserve the
-number of points in the types.
+\emph{type isomorphism}.
 
 \begin{definition}
 \label{def:rig}
@@ -390,20 +358,6 @@ witness that $A \preprodtype B$ can be reversibly deformed into
 $B \preprodtype A$, and vice-versa, which motivates the introduction of type
 \emph{equivalences}. To do this, we need a few important auxiliary
 concepts.
-
-\begin{definition}[Propositional Equivalence]\label{def:propeq}
-Two expressions $a, b$ of type $A$ are \emph{propositionally
-equal} if their normal forms are equivalent under the rules
-of the host type system.
-\end{definition}
-
-In Martin-L\"{o}f Type Theory, normal forms mean $\beta\eta$-long
-normal forms under $\alpha$-equivalence. In other words, expressions
-are evaluated as much as possible ($\beta$-reduced), all functions are
-fully applied ($\eta$-long), and the exact names of bound variables
-are irrelevant ($\alpha$-equivalence). Note that the above definition
-applies equally well to expressions that denote values and expressions
-that denote types.
 
 \begin{definition}[Homotopy]
 \label{def:homotopy}
@@ -452,16 +406,7 @@ semiring structure for types. After replacing the set $R$ with a
 universe $U$, we also replace the algebraic use of $=$ in
 Def.~\ref{def:rig} by the type equivalence relation $\simeq$. With
 this change, we can indeed prove that types (with $\bot, \top, \presumtype,
-\preprodtype$) form a commutative semiring. The reader familiar with
-universal algebra should pause and ponder a bit about what we have
-done. We have lifted \emph{equality} from being in the signature of
-the ambient logic and instead put it in the signature of the algebraic
-structure of interest.  In simpler terms, we shift equality from
-having a privileged status in our meta-theory, to being just another
-symbol (denoting an equivalence relation) in our theory.  The understanding
-that equality is not an absolute concept has recently been an area of
-active research in mechanized mathematics --- although the concepts of
-intensional versus extensional equality go back to Frege and Russell.
+\preprodtype$) form a commutative semiring.
 
 If we revisit the Curry-Howard correspondence, we notice one
 more issue. In logic, it is true that $A \lor A = A$ and
@@ -475,24 +420,6 @@ tells us about \emph{logical equivalence} of types. This is even a
 constructive statement: there are indeed functions
 $f : A \presumtype A \rightarrow A$ and $g : A \rightarrow A \presumtype A$;
 however, they are not inverses.
-
-So mere inhabitation falls far short of our goals of being able to
-smoothly deform from one type to another. Let us thus analyze the crux
-of the ``problem.'' In logic, we have that $\land$ and $\lor$ are both
-\emph{idempotent}: this is the property of any binary operation $\circ$
-where $\forall a. a \circ a = a$. And it should be clear that an
-idempotent operations is a \emph{forgetful} operation: its input has
-two copies of $a$, but its output, only one. On the type side,
-something more subtle happens. Consider $\top \presumtype \top$ versus
-$\top$; the first has exactly \emph{two} proofs of inhabitation
-($\inleft{\texttt{tt}}$ and $\inright{\texttt{tt}}$) while the second
-only one ($\texttt{tt}$). These cannot be put in bijective
-correspondence. Even though the ``payload'' \texttt{tt} is the same,
-forgetting $\texttt{left}$ (or \texttt{right}) throws away information
--- something we have expressly disallowed.  Yes, this should remind
-you of Maxwell's daemon: even though the data is the same, they are
-tagged differently, and these tags are indeed information, and their
-information content must be preserved.
 
 \begin{figure}[t]
 \[
@@ -514,27 +441,6 @@ information content must be preserved.
 \caption{Type isomorphisms.}
 \label{type-isos}
 \end{figure}
-
-%% \begin{figure}[t]
-%% \[
-%% \begin{array}{rrcll}
-%% \idc :& A & \simeq & A &: \idc \\
-%% \\
-%% \identlp :&  \bot \presumtype A & \simeq & A &: \identrp \\
-%% \swapp :&  A \presumtype B & \simeq & B \presumtype A &: \swapp \\
-%% \assoclp :&  A \presumtype (B \presumtype C) & \simeq & (A \presumtype B) \presumtype C &: \assocrp \\
-%% \\
-%% \identlt :&  \top \preprodtype A & \simeq & A &: \identrt \\
-%% \swapt :&  A \preprodtype B & \simeq & B \preprodtype A &: \swapt \\
-%% \assoclt :&  A \preprodtype (B \preprodtype C) & \simeq & (A \preprodtype B) \preprodtype C &: \assocrt \\
-%% \\
-%% \absorbr :&~ \bot \preprodtype A & \simeq & \bot ~ &: \factorzl \\
-%% \dist :&~ (A \presumtype B) \preprodtype C & \simeq & (A \preprodtype C) \presumtype (B \preprodtype C)~ &: \factor
-%% \end{array}
-%% \]
-%% \caption{Type isomorphisms.}
-%% \label{type-isos}
-%% \end{figure}
 
 Nevertheless, the Curry-Howard correspondence still has some force. We
 know that the inhabitants of types formed with with $\bot, \top,
