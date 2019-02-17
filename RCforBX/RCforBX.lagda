@@ -597,22 +597,9 @@ expressible in $\Pi$.
 \subsection{Reversible Programs between Reversible Programs}
 \label{sec:pi2}
 
-In the previous sections, we examined equivalences between
-conventional data structures, i.e., sets of values and structured trees
-of values. We now consider a richer but
-foundational notion of data: programs themselves. Indeed, universal
-computation models crucially rely on the fact that \emph{programs
-are (or can be encoded as) data}, e.g., a Turing machine can be
-encoded as a string that another Turing machine (or even the same
-machine) can manipulate. Similarly, first-class functions are
-the \emph{only} values in the $\lambda$-calculus.
-In our setting, the programs developed in the
-previous section are reversible deformations between structured finite
-types. We now ask whether these programs can themselves
-be subject to (higher-level) reversible deformations?
-
-Before developing the theory, let's consider a small example
-consisting of two deformations between the types $A + B$ and $C+D$:
+Just as programs can be shown equivalent, so can reversible
+programs. To illustrate, consider two programms that both
+map between the types $A + B$ and $C+D$:
 
 \begin{center}
 \begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
@@ -659,37 +646,12 @@ consisting of two deformations between the types $A + B$ and $C+D$:
 \end{tikzpicture}
 \end{center}
 The top path is the $\Pi$ program
-$(c_1~\oplus~c_2)~\odot~\swapp$ which deforms the
-type $A$ by $c_1$, deforms the type $B$ by $c_2$, and deforms the
-resulting space by a twist that exchanges the two injections into the
-sum type. The bottom path performs the twist first and then deforms
-the type $A$ by $c_1$ and the type $B$ by $c_2$ as before. One
-could imagine the paths are physical \emph{elastic} wires in $3$ space, where
-the deformations $c_1$ and $c_2$ as arbitrary deformations on these wires, and
-the twists do not touch but are in fact well-separated. Then, holding the
-points $A$, $B$, $C$, and $D$ fixed, it is possible to imagine
-sliding $c_1$ and $c_2$ from the top wire rightward past the
-twist, and then using the elasticity of the wires, pull the
-twist back to line up with that of the bottom --- thus making
-both parts of the diagram identical.  Each of these moves
-can be undone (reversed), and doing so would take the bottom
-part of the diagram into the top part.  In other
-words, there exists a deformation of the program
-$(c_1~\oplus~c_2)~\odot~\swapp$ to the program
-$\swapp \odot (c_2~\oplus~c_1)$. We can also show that this
-means that, as permutations, $(c_1~\oplus~c_2)~\odot~\swapp$ and
-$\swapp \odot (c_2~\oplus~c_1)$ are equal. And, of course, not
-all programs between the same types can be deformed into one
-another. The simplest example of inequivalent deformations
+$(c_1~\oplus~c_2)~\odot~\swapp$ and the bottom path
+$\swapp~\odot~(c_2~\oplus~c_1)$. These are equivalent --
+and in fact denote the same permutation.
+And, of course, not
+all programs between the same types are equivalent. The simplest example
 are the two automorphisms of $1+1$, namely $\idc$ and $\swapp$.
-
-While we will not make the details of the stretchable wires and
-slidable boxes formal, it is useful for intuition.  One caveat
-though: some of the sliding and stretching needs to be done in
-spaces of higher dimension than 3 to have ``enough room'' to
-move things along without collision or over-stretching wires.
-That, unfortunately, means that some equivalences are harder to
-grasp. Luckily, most equivalences only need 3 dimensions.
 
 Our reversible language of type isomorphisms and equivalences between
 them has a strong connection to \emph{univalent universes} in
