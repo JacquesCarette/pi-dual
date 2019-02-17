@@ -1,6 +1,7 @@
 %% \documentclass[a4paper]{article}
 \documentclass{article}
 
+\usepackage{amssymb,amsthm,amsmath}
 \usepackage{graphicx}
 \usepackage{onecolceurws}
 \usepackage[LGR,TS1,T1]{fontenc}
@@ -12,7 +13,6 @@
 \usepackage{tikz}
 \usepackage{tikz-cd}
 \usepackage[nocenter]{qtree}
-\usepackage{amssymb,amsthm,amsmath}
 \usepackage{fullpage}
 \usepackage{url}
 \usepackage{multicol}
@@ -94,6 +94,8 @@ $\displaystyle
 
 \DeclareUnicodeCharacter{9679}{\ensuremath{\bullet}}
 
+\DeclareMathAlphabet{\mymathbb}{U}{bbold}{m}{n}
+
 % TIKZ declarations
 \tikzstyle{func}=[rectangle,draw,fill=black!20,minimum size=1.9em,
   text width=2.4em, text centered]
@@ -125,7 +127,8 @@ $\displaystyle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Not the final title!
-\title{Reversible Programming for the BX enthusiast}
+% \title{Reversible Programming for the BX enthusiast}
+\title{Reversible programming applied to bidirectional programming}
 
 \author{
 Jacques Carette\\ Dept. of Computing and Software\\
@@ -284,13 +287,15 @@ a $\AgdaRecord{∃-Lens}$, we can build a \AgdaRecord{GS-Lens}:
 open Hide
 
 sound : {ℓ : Level} {S A : Set ℓ} → ∃-Lens S A → GS-Lens S A
-sound record { HC = HC ; iso = (f , qinv g α β) } = record
+sound record { iso = (f , qinv g α β) } = record
   { get = λ s → proj₂ (f s)
   ; set = λ s a → g (proj₁ (f s) , a)
   ; getput = λ s a → cong proj₂ (α _)
   ; putget = λ s → β s
   ; putput = λ s a a' → cong g (cong₂ _,_ (cong proj₁ (α _)) refl) }
 \end{code}
+\noindent It is important to notice that the above only uses
+the \AgdaField{iso} part of the \AgdaRecord{∃-lens}.
 
 The other direction is considerably more challenging. We leave that
 to~\ref{sec:lens-equiv}.
@@ -300,14 +305,10 @@ in the form of \AgdaRecord{∃-Lens}, and reversible computing.
 
 \section{A typed reversible language}
 
-%% Intro to Pi. the weak semiring of types. The language Pi.  The
-%% interpretation of Pi as a PL, and its denotation as
-%% equivalences. List the equivalences?
-
 Our starting point will be a basic type theory with the empty
 type ($\bot$), the unit type ($\top$), the sum type ($\presumtype$), and
 the product ($\preprodtype$) type. But rather than focusing on
-\emph{functions} between these types, we will instead looks at
+\emph{functions} between these types, we will instead look at
 \emph{equivalences}.
 
 %%%%%%%%%
@@ -1039,8 +1040,10 @@ build associativity into its syntax. Categorical diagrams usually do.
 
 \section{Exploring the Lens landscape}
 
-Rather than exploring the most general setting for lenses (as has been done
-in many papers), we will instead look inside the implementations. This will
+Given the above foundational programming language for type equivalences,
+we can explore what this means for actually programming lenses. Many papers
+have explored the most general settings for lenses, we will instead look
+inside the implementations.  This will
 reveal the \emph{inner structure} of lenses, rather than focusing on their
 macro structure.
 
@@ -1120,6 +1123,8 @@ missing composition:
     { HC = (HC l₁) ×h (HC l₂)
     ; iso = (×h-equiv {A = HC l₁} ×≃ id≃) ● assocl⋆equiv ● (id≃ ×≃ iso l₂) ● iso l₁ }
 \end{code}
+The above gives us our first \emph{lens program} consisting of a composition of
+four more basic equivalences.
 
 \subsection{Unusual lenses}
 
@@ -1151,7 +1156,7 @@ First, a \AgdaRecord{∃-Lens} built ``by hand'':
     eq = f , qinv g (λ { (a , red) → refl ; (a , green) → refl ; (a , blue) → refl})
                     λ { (inj₁ x) → refl ; (inj₂ (inj₁ x)) → refl ; (inj₂ (inj₂ y)) → refl}
 \end{code}
-The equivalence is not too painful to establish. We will return to this.  But let's do
+The equivalence is not too painful to establish. But let's do
 the same for the \verb|GS-Lens|:
 \begin{code}
   GS-Colour-in-A+A+A : GS-Lens (A ⊎ A ⊎ A) Colour
@@ -1180,7 +1185,9 @@ the same for the \verb|GS-Lens|:
 
 Note how the \AgdaRecord{∃-Lens} is linear in the size of the enumerated type, including
 the proofs whilst \AgdaRecord{GS-Lens} is quadratic for the function size, and cubic in
-the proof size!
+the proof size!  Naturally in a tactic-based theorem provers, the proof for
+\AgdaField{putput} would likely have hidden this; this is misleading as the tactics
+nevertheless generate this large term, as it is what needs to be type-checked.
 
 But the deeper points is that $A ⊎ A ⊎ A$ does not ``contain'' a \AgdaSymbol{Colour},
 and yet we can create a lens to get and set it.  The \AgdaRecord{GS-Lens} view makes this
@@ -1189,16 +1196,32 @@ type that we can see \emph{up to isomorphism} can be focused on.
 
 In a way, a ``better'' explanation of \AgdaRecord{∃-Colour-in-A+A+A}
 is to remark that the types $⊤ ⊎ ⊤ ⊎ ⊤$ (which we'll call
-$\mathbb{3}$) and \AgdaRecord{Colour} are isomorphic, which leads to
-the chains of isomorphisms $A \uplus A \uplus A \simeq A × \mathbb{3}
+$\mymathbb{3}$) and \AgdaRecord{Colour} are isomorphic, which leads to
+the chains of isomorphisms $A \uplus A \uplus A \simeq A × \mymathbb{3}
 \simeq A × \AgdaRecord{Colour}$.
 
 An interesting interpretation of that isomorphism is that we can freely move tagging
 of data $A$ with \textit{finite information} between type-level tags and value-level
 tags at will.
 
-\subsection{More ideas}
-\jc{We should take a look at the optics generated by cnot and/or toffoli}
+\subsection{Lenses from reversible circuits}
+
+Consider the following lens, built from a generalized \texttt{cnot} gate:
+\begin{code}
+  gcnot-equiv : {A B C : Set} → ((A ⊎ B) × (C ⊎ C)) ≃ ((A ⊎ B) × (C ⊎ C))
+  gcnot-equiv = factorequiv ● id≃ ⊎≃ (id≃ ×≃ swap₊equiv) ● distequiv
+
+  gcnot-lens : {A B C : Set} → ∃-Lens ((A ⊎ B) × (C ⊎ C))  (C ⊎ C)
+  gcnot-lens {A} {B} = ∃-lens (A ⊎ B) gcnot-equiv
+\end{code}
+The above lens is rather unusual in that it dynamically chooses between
+passing the $C ⊎ C$ value through as-is or swapped, depending on the first
+parameter. The corresponding $\AgdaRecord{GS-Lens}$ would be considerably
+more complex.
+
+The same can be done with a (generalized) Toffoli gate, which ends up being
+controlled by the conjunction of two values instead of just one, but otherwise
+introduces no new ideas.
 
 \section{More Optics}
 
