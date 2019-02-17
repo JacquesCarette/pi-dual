@@ -746,7 +746,8 @@ equivalences are perfectly modeled by the coherence conditions of weak
 Rig Groupoids. Syntactically, we take the easiest way there: simply
 make every coherence isomorphism into a programming construct. These
 constructs are collected in several figures (Fig.~\ref{figj} to
-Fig.~\ref{figa}) and are discussed next.
+Fig.~\ref{figa}). We present these without much comment as this
+would take us too far afield. \jc{cite}
 
 Conveniently, the various coherence conditions can be naturally
 grouped into ``related'' laws.  Each group basically captures the
@@ -774,14 +775,6 @@ Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_
 \caption{\label{fige}Signatures of level-2 $\Pi$-combinators: functors}
 \end{figure}
 
-Starting with the simplest constructions, the first two constructs in
-Fig.~\ref{fige} are the level-2 analogs of~$+$ and~$*$, which
-respectively model level-1 choice composition and parallel composition
-(of equivalences).  These allow us to ``build up'' larger equivalences
-from smaller ones.  The next two express that both of these
-composition operators distribute over sequential composition $\odot$
-(and vice versa).
-
 \begin{figure}[t]
 Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 : t_3 \leftrightarrow t_4$:
 \[\def\arraystretch{1.3}
@@ -802,16 +795,6 @@ Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 
 \end{array}\]
 \caption{\label{figj}Signatures of level-2 $\Pi$-combinators: associativity}
 \end{figure}
-
-The constructs in Fig.~\ref{figj} capture the informal idea that all
-the different ways of associating programs are equivalent. The first
-says that sequential composition itself ($\odot$) is associative.
-The next $4$ capture how
-the $\oplus$ and $\otimes$ combinators ``commute'' with re-association.
-In other words, it expresses that the type-level associativity of $+$ is
-properly reflected by the properties of $\oplus$.
-The last two equivalences show how composition of associativity combinators
-interact together.
 
 The bottom line in Fig.~\ref{figj} is actually a linear
 restatement of the famous ``pentagon diagram'' stating a
@@ -845,10 +828,6 @@ Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, and $c_3 :
 \caption{\label{figi}Signatures of level-2 $\Pi$-combinators: distributivity and factoring}
 \end{figure}
 
-The constructs in Fig.~\ref{figi} are the basic coherence for
-$\dist$, $\distl$, $\factor$ and $\factorl$: the type-level distribution
-and factoring has to commute with the level-1 $\oplus$ and $\otimes$.
-
 \begin{figure}[t]
 Let $c_0, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c_4, c_5 : t_3 \leftrightarrow t_4$:
 \[\def\arraystretch{1.3}
@@ -879,14 +858,6 @@ Let $c_0, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c_4, c_5 : t_3 \leftrigh
 \end{array}\]
 \caption{\label{figh}Signatures of level-2 $\Pi$-combinators: identity and composition}
 \end{figure}
-
-The constructs in Fig.~\ref{figh} express various properties of composition.
-The first two says that $\idc$ is a left and right identity for sequential composition.
-The next two say that all programs are reversible, both on the left and the right:
-running $c$ and then its reverse ($!\, c$) is equivalent to the identity, and the
-same for doing $!\, c$ first then $c$. The last line say that there is an
-identity level-2 combinator, a sequential composition, and that level-2
-equivalence respects level-1 sequential composition $\odot$.
 
 \begin{figure}[t]
 Let $c_0 : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c_3 : t_1 \leftrightarrow t_2$:
@@ -919,7 +890,7 @@ Let $c_0 : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c_3 : t_1 \le
 
 The constructs in Fig.~\ref{figg} may at first blush look similarly straightforward,
 but deserve some pause. One obvious question: What is the point of
-$c_0 : 0 \leftrightarrow 0$, isn't that just the identity combinator $\idc$
+$c_0 : 0 \leftrightarrow 0$, isn't it just the identity combinator $\idc$
 for $A = 0$ (as defined in Fig.~\ref{type-isos})? Operationally, $c_0$
 is indeed indistinguishable from $\idc$. However, there are multiple syntactic
 ways of writing down combinators of type $0 \leftrightarrow 0$, and the
@@ -931,16 +902,6 @@ true between combinators, it can also mislead. The same reasoning
 applies to $c_1 : 1 \leftrightarrow 1$.  The first $8$ combinators can
 then be read as basic coherence for unit introduction and elimination,
 in both additive and multiplicative cases.
-
-The last two capture
-another simple idea, related to swapping: eliminating a unit
-on the left is the same as first swapping then eliminating on the
-right (both additively and multiplicatively). As a side note,
-these are not related to \emph{commutativity}, but rather
-come from one of the simplest coherence condition for
-braided monoidal categories. In other words, it reflects the
-idempotence of $\swapp$ and $\swapt$ rather than the
-commutativity of $\oplus$ and $\otimes$.
 
 \begin{figure}[t]
 Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
@@ -961,17 +922,6 @@ Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
 \caption{\label{figf}Signatures of level-2 $\Pi$-combinators: commutativity and associativity}
 \end{figure}
 
-The first two equivalences in Fig.~\ref{figf} reflect the basic
-coherence between level-0 swapping and the level-1 combinator
-actions. The next four arise because of interactions between (additive
-and multiplicative) level-1 associativity and swapping.  In other
-words, they arise as critical pairs.  For example, the first expresses
-that the two ways of going from $\left(A \oplus B\right) \oplus C$ to
-$B \oplus \left(C \oplus A\right)$ are equivalent, with the second
-saying that the reverse (i.e.  the results of applying $!$\,) also
-gives equivalent programs.  The last two say the same but for the
-multiplicative structure.
-
 \begin{figure}[t]
 \[\def\arraystretch{1.3}
 \begin{array}{c}
@@ -981,10 +931,6 @@ multiplicative structure.
 \end{array}\]
 \caption{\label{figd}Signatures of level-2 $\Pi$-combinators: unit and associativity}
 \end{figure}
-
-The constructs in Fig.~\ref{figd} express how unit elimination ``in the middle''
-can be expressed either as operating on the right or, (after re-association) on the left.
-
 
 \begin{figure}[t]
 Let $c : t_1 \leftrightarrow t_2$:
@@ -1039,11 +985,10 @@ $0 * t$ cannot be inhabited because the first member of the pair
 cannot, is not in fact equivalent to $\absorbr$ on $0 * 0$.  However,
 if we instead define $\absorbl$ to ``transport'' the putative
 impossible first member of the pair to its (equally impossible)
-output, then these do form equivalent pairs.  The next few in
-Fig.~\ref{figc} also express how $\absorbr$ and $\absorbl$ interact
-with other combinators. As seen previously, all of these arise as
-critical pairs. What is much more subtle here is that the types
-involved often are asymmetric: they do not have the same occurrences
+output, then these do form equivalent pairs.
+
+There are further subtle issues when the types
+involved are asymmetric: they do not have the same occurrences
 on the left and right. Such cases are particularly troublesome for
 finding normal forms. Laplaza~\cite{laplaza72} certainly comments on this,
 but in mostly terse and technical terms. Blute et al.~\cite{BLUTE1996229}
@@ -1078,146 +1023,19 @@ offer much more intuitive explanations.
 \caption{\label{figa}Signatures of level-2 $\Pi$-combinators: commutativity and distributivity}
 \end{figure}
 
-The constructs in Fig.~\ref{figb} and Fig.~\ref{figa} relating associativity and
-distributivity, and commutativity and distributivity, have more in common with
-previous sets of combinators.  They do arise from non-trivial critical pairs
-of different ways of going between equivalent types. The last one of
-Fig.~\ref{figb} is particularly daunting, involving a sequence of $3$ combinators
-on the left and $6$ on the right.
-
-%%%%%%%%%
-\newcommand{\evalone}{\ensuremath{\mathit{eval}_1}}
-\newcommand{\transLR}{\AgdaInductiveConstructor{trans⇔}}
-
-\subsection{Example}\label{sec:level2-example}
-
-We can now illustrate how this all works with a small example.
-Consider a circuit that takes an input type consisting of three values
-\Tree [ {\small a} [ {\small b} {\small c} ] ]~
-and swaps the leftmost value with the rightmost value to produce
-\Tree [ {\small c} [ {\small b} {\small a} ] ]~.
-We can implement two such circuits using our Agda library for $\Pi$:
-
-\begin{code}
--- swap-fl1 ...
-\end{code}
-
-\noindent The first implementation rewrites the incoming values as follows:
-\[
-\Tree [ {\small a} [ {\small b} {\small c} ] ] ~\to~
-\Tree [ [ {\small a} {\small b} ] {\small c} ] ~\to~
-\Tree [ {\small c} [ {\small a} {\small b} ] ] ~\to~
-\Tree [ {\small c} [ {\small b} {\small a} ] ] ~.
-\]
-\noindent
-The second implementation rewrites the incoming values as follows:
-\[
-\Tree [ {\small a} [ {\small b} {\small c} ] ] ~\to~
-\Tree [ {\small a} [ {\small c} {\small b} ] ] ~\to~
-\Tree [ [ {\small a} {\small c} ] {\small b} ] ~\to~
-\Tree [ [ {\small c} {\small a} ] {\small b} ] ~\to~
-\Tree [ {\small c} [ {\small a} {\small b} ] ] ~\to~
-\Tree [ {\small c} [ {\small b} {\small a} ] ] ~.
-\]
-\noindent The two circuits are extensionally equal. Using the level-2
-isomorphisms we can \emph{explicitly} construct a sequence of
-rewriting steps that transforms the second circuit to the first.
-
-We write such proofs in an equational style: in the left column, we have
-the current combinator which is equivalent to the first one, and in
-the right column, the justification for that equivalence. The
-joining combinator is syntactic sugar for \transLR.  The transformation
-could be written (using \transLR) by just giving all the pieces in
-the right hand column --- but such transformations are very hard for
-humans to understand and follow.
-
-The proof
-can be read as follows: the first three lines ``refocus'' from a right-associated
-isomorphism onto the (left-associated) composition of the first $3$ isomorphisms;
-then apply a complex rewrite on these (the ``hexagon'' coherence condition
-of symmetric braided monoidal categories); this exposes two inverse combinators
-next to each other --- so we have to refocus on these to eliminate them; we
-finally re-associate to get the result.
-
-\renewcommand{\AgdaIndentSpace}{\;\;}
-\setlength\mathindent{0.5em}
-
-\begin{code}
--- swap-fl2
-\end{code}
+Unfortunately, giving a detailed example would take us too far afield. \jc{cite}
 
 \renewcommand{\AgdaIndentSpace}{\AgdaSpace{}$\;\;$}
 
-\subsection{Internal Language}
-
+We will however mention one last interpretation.
 Recalling that the $\lambda$-calculus arises as the internal language
 of Cartesian Closed Categories (Elliott~\cite{Elliott-2017} gives a particularly
 readable account of this), we can think of $\Pi$ in similar terms, but
-for symmetric Rig Groupoids instead. For example, we can ask what does
-the derivation in Sec.~\ref{sec:level2-example} represent? It is
-actually a ``linear'' representation of a 2-categorial commutative
+for symmetric Rig Groupoids instead.  Programs at level-2 of $\Pi$
+are a ``linear'' representation of a 2-categorial commutative
 diagram! In fact, it is a painfully verbose version thereof, as it
 includes many \emph{refocusing} steps because our language does not
 build associativity into its syntax. Categorical diagrams usually do.
-Thus if we rewrite the example in diagrammatic form, eliding all uses
-of associativity, but keeping explicit uses of identity transformations,
-we get that \AgdaFunction{swap{-}fl2⇔swap{-}fl1} represents
-
-\newcommand{\idd}{\mathit{id}\leftrightarrow}
-\newcommand{\idf}{\mathit{id}\Leftrightarrow}
-\vspace*{3mm}
-\begin{tikzcd}[column sep=normal, row sep=normal]
- && (a+c)+b \arrow [r, "\swapp \oplus\idd", ""{name=U, below}] & (c+a)+b \arrow [dr, "\assocrp"] && \\
- & a+(c+b) \arrow [ur, "\assoclp"] & & & c+(a+b) \arrow [dr, "\idd\oplus\swapp"] &  \\
-a+(b+c) \arrow [ur, "\idd\oplus\swapp"] \arrow [r, "\assoclp"]
-  \arrow [dr, "\assoclp"]
-  \arrow [ddr, swap, "\assoclp"]
-    & (a+b)+c \arrow [r, "\swapp"] &
-    c+(a+b) \arrow [r, swap, "\assoclp", ""{name=D, above}]
-    & |[alias=Z]| (c+a)+b \arrow [r, "\assocrp"] &c+(a+b) \arrow [r, "\idd\oplus\swapp"] & c+(b+a) \\
- & (a+b)+c \arrow [dr, "\swapp"] &&&& \\
- & (a+b)+c \arrow [dr, swap, "\swapp"] & c+(a+b) \arrow [rr, swap, "\idd", ""{name=DD, above}]
-             \arrow [d, Rightarrow, "\idf\, \mathit{idl}\odot{l}"] &&
-    c+(a+b) \arrow [ruu, "\idd\oplus\swapp"] & \\
- && c+(a+b) \arrow [rrruuu, bend right = 40, swap, "\idd\oplus\swapp"] && \\
- \arrow[Rightarrow, from=U, to=D, "\mathit{hexagon}\oplus{r}\, \boxdot\, \idf"]
- \arrow[Rightarrow, from=Z, to=DD, swap, "\idf\boxdot\mathit{linv}\odot{l}\,\boxdot\,\idf"]
-\end{tikzcd}
-
-\noindent For some, the above diagram will be clearer --- it is only three layers
-high rather than nine! Others will prefer the more programmatic feel of the
-original definition.
-
-We would be remiss in letting the reader believe that the above is ``the''
-categorical diagram that would be found in categorical textbooks. Rather,
-congruence would be used to elide the $\idf$. Furthermore, the various arrows
-would also be named differently --- our \assoclp\ is often named $\alpha$,
-\assocrp\ is $\alpha^{-1}$, $\swapp$ is $B$ (always with subscripts).
-And the two steps needed to remove inverses (i.e. first cancelling
-inverse arrows, then removing the resulting identity arrow ``in context'')
-are often combined into one. Here we'll simply name this operation
-$\mathit{cancel}$, which could be programmed as a defined function over
-$\Pi$ level-2.  The result would then be the much simpler
-
-\vspace*{3mm}
-\begin{tikzcd}[column sep=normal, row sep=normal]
- & a+(c+b) \arrow [r, "\assoclp", ""{name=U, below}] & (a+c)+b \arrow [rd, "\swapp\oplus\idd"] & & & \\
-a+(b+c) \arrow [ur, "\idd\oplus\swapp"] \arrow [dr, "\assoclp"]
-  & & & (c+a)+b \arrow [r, "\assocrp", ""{name=UU, below}] & c+(a+b) \arrow [r, "\idd\oplus\swapp"] & c+(b+a) \\
- & (a+b)+c \arrow [r, swap, "\swapp", ""{name=D, above}] & c+(a+b) \arrow [ur, "\assoclp"]
-  \arrow [urrr, swap, "\idd\oplus\swapp", ""{name=DD,above}] & & & & \\
- \arrow[Rightarrow, from=U, to=D, "\mathit{hexagon}\oplus{r}"]
- \arrow[Rightarrow, from=UU, to=DD, "\mathit{cancel}"]
-\end{tikzcd}
-
-In other words, each (non-refocusing) line of the proof of
-\AgdaFunction{swap{-}fl2⇔swap{-}fl1}\; is a complete path
-from left to right in each diagram above, and the annotation
-on the right-hand-side becomes the natural transformation (denoted
-by vertical $\Rightarrow$) justifying the move to the next line.
-The first diagram uses lines $1,4,7,8$ in full; the second
-diagram collapses $7$ and $8$ into one, as well as not duplicating
-parts which are related by $\idf$.
 
 \section{Exploring the Lens landscape}
 
