@@ -963,58 +963,8 @@ semantics and denotational semantics match.  And they do:
 prove that it is indeed a proper backwards evaluator, and
 finally show that it agrees with the reverse equivalence.
 
-%%%%%%%%%
 \subsection{Examples}
-\label{sec:langRev-examples}
-\label{examples}
-
-At first, it is not immediately clear that a programming language
-in which information is preserved could model choice. We recall a
-quote by Minsky communicating this concern:
-
-\begin{quote}
-  Ed Fredkin pursued the idea that information must be finite in
-  density. One day, he announced that things must be even more simple
-  than that. He said that he was going to assume that information
-  itself is conserved. “You’re out of you mind, Ed.” I
-  pronounced. “That’s completely ridiculous. Nothing could happen in
-  such a world. There couldn’t even be logical gates. No decisions
-  could ever be made.” But when Fredkin gets one of his ideas, he’s
-  quite immune to objections like that; indeed, they fuel him with
-  energy. Soon he went on to assume that information processing must
-  also be reversible — and invented what’s now called the Fredkin
-  gate~\cite{Hey:1999:FCE:304763}.
-\end{quote}
-
-We will however show that one can program all logical gates in
-$\Pi$. We will start with a few simple examples and then discuss the
-expressiveness of the language and its properties.
-
-\paragraph*{Booleans}
-Let us start with encoding booleans. We use the type \ensuremath{1{\sumtype}1} to
-represent booleans with \ensuremath{\mathit{left} ~()} representing \ensuremath{\mathit{true}} and
-\ensuremath{\mathit{right}~()} representing \ensuremath{\mathit{false}}.
-Boolean negation is straightforward to define:
-
-\ensuremath{\mathit{not} : \mathit{bool} \leftrightarrow \mathit{bool}}
-
-\ensuremath{\mathit{not} = \swapp}
-
-\noindent
-It is easy to verify that \ensuremath{\mathit{not}} changes \ensuremath{\mathit{true}} to \ensuremath{\mathit{false}} and
-vice versa.
-
-\paragraph*{Bit Vectors.}
-We can represent $n$-bit words using an n-ary product of
-\ensuremath{\mathit{bool}}s. For example, we can represent a 3-bit word, \ensuremath{\mathit{word}_3},
-using the type \ensuremath{\mathit{bool} {\prodtype} (\mathit{bool} {\prodtype}  \mathit{bool})}.  We can perform various
-operations on these 3-bit words using combinators in \ensuremath{\Pi }. For
-instance the bitwise \ensuremath{\mathit{not}} operation is the parallel composition of
-three \ensuremath{\mathit{not}} operations:
-
-\ensuremath{\mathit{not}_{\mathit{word}_3} :: \mathit{word}_3 \leftrightarrow \mathit{word}_3}
-
-\ensuremath{\mathit{not}_{\mathit{word}_3} = \mathit{not}  {\prodtype}  (\mathit{not}  {\prodtype}  \mathit{not})}
+\jc{Removed most, but leave a few in, in case there is room to illustrate.}
 
 \noindent We can express a 3-bit word reversal operation as follows:
 
@@ -1046,36 +996,8 @@ line. For example, \ensuremath{\swapt} transforms \ensuremath{(v_1, (v_2, v_3))}
 \ensuremath{((v_2,v_3),v_1)}.  On the last line we see the expected result with
 the bits in reverse order.
 
-We can also draw out the graphical representation of the 3-bit reverse
-combinator. In the graphical representation, it is clear that the
-combinator achieves the required shuffling.
-
-\paragraph*{Conditionals.}
-Even though \ensuremath{\Pi } lacks conditional expressions, they are
-expressible using the distributivity and factoring laws. The
-diagrammatic representation of \ensuremath{\dist} shows that it redirects the flow
-of a value \ensuremath{v:b} based on the value of another one of type
-\ensuremath{b_1{\sumtype}b_2}. If we choose \ensuremath{1{\sumtype}1} to be
-\ensuremath{\mathit{bool}} and apply either \ensuremath{c_1:b_1\leftrightarrow
-b_2} or \ensuremath{c_2:b_1\leftrightarrow b_2} to the value \ensuremath{v},
-then we essentially have an `if' expression.
-
-\ensuremath{\mathit{if}_{c_1,c_2} : \mathit{bool}  {\prodtype}  b_1 \leftrightarrow \mathit{bool}  {\prodtype}  b_2}
-
-\ensuremath{\mathit{if}_{c_1,c_2} = \dist \odot ((\idc  \otimes\  c_1) {\sumtype} (\idc \otimes\  c_2)) \odot \factor}
-
-The diagram above shows the input value of type \ensuremath{(1{\sumtype}1) {\prodtype}  b_1}
-processed by the distribute operator \ensuremath{\dist}, which converts it into
-a value of type \ensuremath{(1 {\prodtype}  b_1){\sumtype}(1 {\prodtype}  b_1)}. In the
-\ensuremath{\mathit{left}} branch, which corresponds to the
-case when the boolean is \ensuremath{\mathit{true}} (i.e. the value was
-\ensuremath{\mathit{left} ~()}), the combinator~\ensuremath{c_1} is applied to
-the value of type~\ensuremath{b_1}. The right
-branch which corresponds to the boolean being \ensuremath{\mathit{false}} passes
-the value of type \ensuremath{b_1} through the combinator \ensuremath{c_2}.
-The inverse of \ensuremath{\dist}, namely \ensuremath{\factor} is applied
-to get the final result of type \ensuremath{(1{\sumtype}1) {\prodtype} b_2}.
-
+\jc{Leave the following paragraph in, to remind ourselves to look at these
+two gates as lenses}
 \paragraph*{Logic Gates}
 There are several universal primitives for conventional (irreversible)
 hardware circuits, such as \ensuremath{\mathit{nand}} and \ensuremath{\mathit{fanout}}. In the case
