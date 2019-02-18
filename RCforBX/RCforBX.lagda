@@ -1289,7 +1289,8 @@ module _ {ℓ : Level} (S A : Set ℓ) where
       refine s (b , ()) | inj₁ x | _
       refine s (_ , pf) | inj₂ y | [ eq ] = y , trans (cong g (sym eq)) (β s)
 \end{code}
-\noindent where injectivity of constructors is used in a crucial way.
+\noindent where injectivity of constructors is used in a crucial way, and again
+the hidden component is not used.
 
 Note that there is one more way, again equivalent, of defining a prism:
 rather than using $\AgdaRecord{Maybe} A$, use $S ⊎ A$ and replace
@@ -1376,6 +1377,8 @@ change of coordinates that shuffles all of $A$ ``to the right''.
 
 \section{Discussion}
 
+\subsection{Categorical approaches}
+
 So why all the complications with \texttt{Profunctor}? Basically, that is mostly
 Haskell-isms: by relying on \emph{Free Theorems}, one can get the type system to
 reject a lot of ill-formed lenses, though, of course, not all. Optics, in Agda and
@@ -1386,6 +1389,17 @@ the existentials correspond to a co-end, and the isomorphisms are exactly what i
 in the Hom-set. But we get more mileage from looking ``under the hood'' to see
 the fundamental \textbf{programming language} underlying Optics, rather than jumping
 to abstractions too early.
+
+\subsection{Laws}
+
+Why do lenses have 3 laws but equivalences have two?  Because the functions that
+make up lenses have 3 laws --- the products have η. And the proof of setset uses it.
+Why do prisms have 2 laws then? They should have 3 as well: the 2nd law really ought to
+be a logical equivalence; injectivity of constructors is the 3rd law involve in prism.
+
+Why do some bidirectional programming eschew the setset law? Basically because they want
+to hide one more component in their lens: a $C → C$ function that is applied on
+\AgdaField{set}. For example, this allows a ``logging'' implementation to be lawful.
 
 \section{Conclusion}
 
