@@ -211,82 +211,37 @@ the world of reversible programming and export them to the world of
 bidirectional programming with lenses.
 
 Although correct in principle~\cite{survey}, a straightforward
-encoding of \emph{constant-complement lenses} as $\exists\ C. S \cong
+encoding of \emph{constant-complement lenses} as $Σ\ C. S \cong
 C × A$ is not satisfactory: a $\AgdaRecord{GS-Lens}$ does not reveal
 any sort of complement $C$; so the constant-complement lenses should
-not either. To do this, we must somehow hide our choice of $C$.  We
-can re-use a well-known trick from Haskell\footnote{but be wary that
-this does not generalize to more constructors, as Agda can still see
-that the non-public constructors are still injective; see Martin
-Escardo's counter-example at \cite{XXX}}, where we build a data type
-but do not export its constructor. To compensate for the lack of
-access to the constructor we export equivalence-preserving sum and product
-type constructions:
+not either. To do this, we should somehow hide our choice of $C$.
 
+We could use a variety of tricks to do this, but all would rely
+on features of Agda which do not have well-understood meta-theory.
+Instead, we will rely on \emph{discipline} to never access the
+actual $C$. Note that because $\AgdaFunction{Set} ℓ$ does not allow
+introspection, actually getting one's hands on this $C$ still does
+not reveal very much!
+
+Now our definition of lens; for simplicity, we'll assume
+everything is at the same level. We make $C$ implicit, so as to
+reduce the temptation to examine it.
 \begin{code}
-module Hide where
-  private
-    data ReallyHidden {ℓ : Level} : Set (suc ℓ) where
-      box : (C : Set ℓ) → ReallyHidden {ℓ}
+record ∃-Lens {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
+  constructor ∃-lens
+  field
+    {C} : Set ℓ
+    iso : S ≃ (C × A)
 
-  Hidden : {ℓ : Level} → Set (suc ℓ)
-  Hidden = ReallyHidden
-
-  hide : {ℓ : Level} → Set ℓ → Hidden
-  hide C = box C
-
-  private -- local access only; not exported
-    unbox : {ℓc : Level} → Hidden {ℓc} → Set ℓc
-    unbox (box x) = x
-
-  -- we can take sums and products of hidden types
-  lift-to-hidden : {ℓa ℓb : Level} → (op : Set ℓa → Set ℓb → Set (ℓa ⊔ ℓb)) →
-    Hidden {ℓa} → Hidden {ℓb} → Hidden {ℓa ⊔ ℓb}
-  lift-to-hidden (_**_) (box A) (box B) = box (A ** B)
-
-  _×h_ : {ℓa ℓb : Level} → Hidden {ℓa} → Hidden {ℓb} → Hidden {ℓa ⊔ ℓb}
-  _×h_ = lift-to-hidden _×_
-  _⊎h_ : {ℓa ℓb : Level} → Hidden {ℓa} → Hidden {ℓb} → Hidden {ℓa ⊔ ℓb}
-  _⊎h_ = lift-to-hidden _⊎_
-
-  -- and these induce equivalences
-  ×h-equiv : {ℓa ℓb : Level} {A : Hidden {ℓa}} {B : Hidden {ℓb}} →
-    (unbox A × unbox B) ≃ unbox (A ×h B)
-  ×h-equiv {A = box A} {B = box B} = id≃
-\end{code}
-
-Given this infrastructure, we can build a record with two parts, one
-hidden and another which is visible. For simplicity, we'll assume
-everything is at the same level.  This will form the core of our
-implementation of lenses based on reversible type equivalences:
-
-\begin{code}
-  record ∃-Lens {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
-    field
-      HC : Hidden {ℓ}
-    private
-      C : Set ℓ
-      C = unbox HC
-    field
-      iso : S ≃ (C × A)
-
-  ∃-lens : {ℓ : Level} {S A : Set ℓ} (C : Set ℓ) → S ≃ (C × A) → ∃-Lens S A
-  ∃-lens C iso = record {HC = hide C; iso = iso}
 \end{code}
 
 \AgdaHide{
 \begin{code}
-  record ∃-Prism {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
-    field
-      HC : Hidden {ℓ}
-    private
-      C : Set ℓ
-      C = unbox HC
-    field
-      iso : S ≃ (C ⊎ A)
-
-  ∃-prism : {ℓ : Level} {S A : Set ℓ} (C : Set ℓ) → S ≃ (C ⊎ A) → ∃-Prism S A
-  ∃-prism C iso = record {HC = hide C; iso = iso}
+record ∃-Prism {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
+  constructor ∃-prism
+  field
+    C : Set ℓ
+    iso : S ≃ (C ⊎ A)
 \end{code}
 }
 
@@ -294,10 +249,8 @@ Unlike the case for the naive implementation, we can show that, given
 a $\AgdaRecord{∃-Lens}$, we can build a \AgdaRecord{GS-Lens}:
 
 \begin{code}
-open Hide
-
 sound : {ℓ : Level} {S A : Set ℓ} → ∃-Lens S A → GS-Lens S A
-sound record { iso = (f , qinv g α β) } = record
+sound (∃-lens (f , qinv g α β)) = record
   { get = λ s → proj₂ (f s)
   ; set = λ s a → g (proj₁ (f s) , a)
   ; getput = λ s a → cong proj₂ (α _)
@@ -1072,7 +1025,7 @@ guess the complement by solving the equation $A ≃ C × A$ for $C$: $C$ must
 be $\AgdaSymbol{⊤}$. But then the $∃-Lens$ isn't quite as simple as above:
 \begin{code}
   AA-∃-lens : ∃-Lens A A
-  AA-∃-lens = ∃-lens ⊤ uniti⋆equiv
+  AA-∃-lens = ∃-lens uniti⋆equiv
 \end{code}
 \noindent where $\AgdaFunction{uniti⋆equiv}$ has type
 $A ≃ (⊤ × A)$. In other words, as the complement is not actually
@@ -1082,7 +1035,7 @@ What about in the other direction, what is the \AgdaRecord{∃-Lens} whose
 underlying isomorphism is the identity?
 \begin{code}
   BAA-∃-lens : ∃-Lens (B × A) A
-  BAA-∃-lens = ∃-lens B id≃
+  BAA-∃-lens = ∃-lens id≃
 \end{code}
 \noindent Since our definition of \AgdaRecord{∃-Lens} is right-biased
 (we are looking for isomorphisms of shape $S ≃ C × A$), the above lens
@@ -1091,7 +1044,7 @@ switches the roles of $A$ and $B$ --- and this leaves a trace on the
 isomorphism:
 \begin{code}
   BAB-∃-lens : ∃-Lens (B × A) B
-  BAB-∃-lens = ∃-lens A swap⋆equiv
+  BAB-∃-lens = ∃-lens swap⋆equiv
 \end{code}
 
 Thus, looking at the Π combinators, which ones return a type
@@ -1102,16 +1055,16 @@ These occur as follows (where we use the \AIC{equiv} version
 directly):
 \begin{code}
   DBA-lens : ∃-Lens (D × (B × A)) A
-  DBA-lens = ∃-lens (D × B) assocl⋆equiv
+  DBA-lens = ∃-lens assocl⋆equiv
 
   ⊥-lens : ∃-Lens ⊥ A
-  ⊥-lens = ∃-lens ⊥ factorzequiv
+  ⊥-lens = ∃-lens factorzequiv
 
   ⊎-lens : ∃-Lens ((D × A) ⊎ (B × A)) A
-  ⊎-lens = ∃-lens (D ⊎ B) factorequiv
+  ⊎-lens = ∃-lens factorequiv
 
   ⊗-lens : (E ≃ B) → (D ≃ A) → ∃-Lens (E × D) A
-  ⊗-lens iso₁ iso₂ = ∃-lens B (iso₁ ×≃ iso₂)
+  ⊗-lens iso₁ iso₂ = ∃-lens (iso₁ ×≃ iso₂)
 \end{code}
 
 \jc{comment on each? Also, give an example of composition?}
@@ -1126,9 +1079,7 @@ we should complete the picture of lifting Π to lenses, and we're
 missing composition:
 \begin{code}
   ∘-lens : ∃-Lens D B → ∃-Lens B A → ∃-Lens D A
-  ∘-lens l₁ l₂ = record
-    { HC = (HC l₁) ×h (HC l₂)
-    ; iso = (×h-equiv {A = HC l₁} ×≃ id≃) ● assocl⋆equiv ● (id≃ ×≃ iso l₂) ● iso l₁ }
+  ∘-lens l₁ l₂ = ∃-lens (assocl⋆equiv ● (id≃ ×≃ iso l₂) ● iso l₁)
 \end{code}
 The above gives us our first \emph{lens program} consisting of a composition of
 four more basic equivalences.
@@ -1149,7 +1100,7 @@ module _ {A : Set} where
 First, a \AgdaRecord{∃-Lens} built ``by hand'':
 \begin{code}
   ∃-Colour-in-A+A+A : ∃-Lens (A ⊎ A ⊎ A) Colour
-  ∃-Colour-in-A+A+A = ∃-lens A eq
+  ∃-Colour-in-A+A+A = ∃-lens eq
    where
     f : A ⊎ A ⊎ A → A × Colour
     f (inj₁ x) = x , red
@@ -1219,7 +1170,7 @@ Consider the following lens, built from a generalized \texttt{cnot} gate:
   gcnot-equiv = factorequiv ● id≃ ⊎≃ (id≃ ×≃ swap₊equiv) ● distequiv
 
   gcnot-lens : {A B C : Set} → ∃-Lens ((A ⊎ B) × (C ⊎ C))  (C ⊎ C)
-  gcnot-lens {A} {B} = ∃-lens (A ⊎ B) gcnot-equiv
+  gcnot-lens {A} {B} = ∃-lens gcnot-equiv
 \end{code}
 The above lens is rather unusual in that it dynamically chooses between
 passing the $C ⊎ C$ value through as-is or swapped, depending on the first
@@ -1339,13 +1290,11 @@ use \AgdaFunction{set} for the purpose:
 \begin{code}
 complete : {ℓ : Level} {S A : Set ℓ} → GS-Lens S A → ∃-Lens S A
 complete {ℓ} {S} {A} record { get = get ; set = set ; getput = getput ; putget = putget ; putput = putput } =
-  record { HC = hide S
-         ; iso = (λ s → s , get s) ,
-                 qinv (λ { (s , a) → set s a })
-                      (λ { (s , a) → cong₂ _,_ hole (getput s a)})
-                       λ s → putget s }
+  ∃-lens ((λ s → s , get s) ,
+         qinv (λ { (s , a) → set s a })
+              (λ { (s , a) → cong₂ _,_ hole (getput s a)})
+               λ s → putget s)
 \end{code}
-
 That almost gets us there. The one whole we can't fill is one that says
 \begin{code}
     where
