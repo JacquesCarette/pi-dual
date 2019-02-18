@@ -153,13 +153,14 @@ Bidirectional programming, lenses, prisms, and other optics have connections to 
 module RCforBX where
 
 open import Level
-open import Data.Product using (_×_; _,_; proj₁; proj₂)
-open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ)
+open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_]′)
 open import Data.Unit
 open import Data.Empty
+open import Data.Maybe
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; cong; cong₂; trans; refl)
-open import Function using (id)
+  using (_≡_; cong; cong₂; sym; trans; refl; inspect; [_])
+open import Function using (id; const; _∘_; case_of_)
 
 open import Equiv
 open import TypeEquiv
@@ -273,7 +274,23 @@ implementation of lenses based on reversible type equivalences:
   ∃-lens C iso = record {HC = hide C; iso = iso}
 \end{code}
 
-Unlike the case for the naive implementation, we can show that, given 
+\AgdaHide{
+\begin{code}
+  record ∃-Prism {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
+    field
+      HC : Hidden {ℓ}
+    private
+      C : Set ℓ
+      C = unbox HC
+    field
+      iso : S ≃ (C ⊎ A)
+
+  ∃-prism : {ℓ : Level} {S A : Set ℓ} (C : Set ℓ) → S ≃ (C ⊎ A) → ∃-Prism S A
+  ∃-prism C iso = record {HC = hide C; iso = iso}
+\end{code}
+}
+
+Unlike the case for the naive implementation, we can show that, given
 a $\AgdaRecord{∃-Lens}$, we can build a \AgdaRecord{GS-Lens}:
 
 \begin{code}
@@ -1207,13 +1224,79 @@ Consider the following lens, built from a generalized \texttt{cnot} gate:
 The above lens is rather unusual in that it dynamically chooses between
 passing the $C ⊎ C$ value through as-is or swapped, depending on the first
 parameter. The corresponding $\AgdaRecord{GS-Lens}$ would be considerably
-more complex.
+more complex to write (and prove correct).
 
 The same can be done with a (generalized) Toffoli gate, which ends up being
 controlled by the conjunction of two values instead of just one, but otherwise
 introduces no new ideas.
 
-\section{More Optics}
+\section{Optics}
+
+Lenses have been generalized -- and in keeping with the theme, have been
+named \emph{optics}. The immediate dual to lens is \emph{prism}, which
+we will dig into a little. We will follow this by general remarks on
+other optics, as the precise development follows a clear pattern.
+
+\subsection{Prism}
+
+Prisms are dual to lenses in that they arise from exchanging product ($×$)
+with coproduct ($⊎$). In other words, a prism is $∃C. S ≃ C ⊎ A$, giving us
+\AgdaRecord{∃-Prism} (straightforward definition elided). We can mimick
+the definitions used for lens for all the basic combinators.
+
+But let us instead take this opportunity to do a rational reconstruction of
+the usual interface to a prism.  Suppose that we have prism $∃C. S ≃ C ⊎ A$
+in hand, then:
+\begin{itemize}
+\item Given just an $S$, what can we get? Running the isomorphism
+forward, we can obtain a $C ⊎ A$ -- but that is unsatisfactory as $C$ is supposed
+to be hidden. We can however \emph{squash} $C$ to obtain a $\AgdaRecord{Maybe} A$.
+\item Given just an $A$? We can run the isomorphism backwards to get an $S$.
+\item Given both an $A$ and an $S$ does not provide any new opportunities.
+\end{itemize}
+
+It is common to describe prisms in terms of \emph{pattern matching}. This is
+adequate when the isomorphism embedded in a prism is a ``refocusing'' of
+a member of a sum type -- but less so with a non-trivial isomorphism. The
+formulation as $∃C. S ≃ C ⊎ A$ instead suggests that a prism is a
+\emph{partition} view of $S$; we will thus choose to use \AgdaField{belongs}
+and \AgdaField{inject} as field names, rather than (respectively)
+\AgdaField{preview} and \AgdaField{review} as is common in Haskell implementations.
+As with the fields of the interface, we can reconstruct the laws by attempting
+various (legal) compositions. Putting all of this together, we get:
+\begin{code}
+record BI-Prism {ℓs ℓa : Level} (S : Set ℓs) (A : Set ℓa) : Set (ℓs ⊔ ℓa) where
+  field
+    belongs    : S → Maybe A
+    inject     : A → S
+    belongsinject : (a : A) → belongs (inject a) ≡ just a
+    injectbelongs : (s : S) → Σ A (λ a → belongs s ≡ just a) → Σ A (λ a → inject a ≡ s)
+\end{code}
+
+From this, we can again prove soundness:
+\begin{code}
+module _ {ℓ : Level} (S A : Set ℓ) where
+  prism-sound : ∃-Prism S A → BI-Prism S A
+  prism-sound record { iso = (f , qinv g α β) } = record
+    { belongs = λ s → [ const nothing , just ]′ (f s)
+    ; inject = g ∘ inj₂
+    ; belongsinject = λ a → cong ([ _ , _ ]′) (α _)
+    ; injectbelongs = λ s → refine s
+    }
+    where
+      refine : (t : S) → Σ A (λ b → [ const nothing , just ]′ (f t) ≡ just b) → Σ A (λ b → g (inj₂ b) ≡ t)
+      refine s (b , pf) with f s | inspect f s
+      refine s (b , ()) | inj₁ x | _
+      refine s (_ , pf) | inj₂ y | [ eq ] = y , trans (cong g (sym eq)) (β s)
+\end{code}
+\noindent where injectivity of constructors is used in a crucial way.
+
+Note that there is one more way, again equivalent, of defining a prism:
+rather than using $\AgdaRecord{Maybe} A$, use $S ⊎ A$ and replace
+$\AgdaField{belongs}$ with
+$λ s → \AgdaFunction{map} (\AgdaFunction{const} s) \AgdaFunction{id} (f s)$.
+
+\subsection{Other Optics}
 
 Prisms just use ⊎ instead of ×. Other optics are similar (but not all).
 The same things arise.
