@@ -175,6 +175,8 @@ The inspiration for this paper comes from a number of sources:
   \item (many more, insert citations throughout)
 \end{enumerate}
 
+\newpage
+
 \section{Lenses}
 
 A \emph{lens} is a structure that mediates between a source $S$ and
@@ -198,31 +200,28 @@ A common theme in the literature on lenses is that the function
 $\mathit{get}$ discards some information from the source to create a
 view, and that this information can be explicitly represented using
 the \emph{constant-complement} technique from the database
-literature. In other words, lenses are viewed as elements of $\exists\
-C. S \cong C × A$. Although correct in principle~\cite{survey}, and
-although the discarded information $C$ appears to be hidden by the
-existential quantifier, it is not really hidden. \amr{needs to be explained better}
+literature. In other words, lenses can viewed as elements of $\exists\
+C. S \cong C × A$ where $\cong$ is type equivalence.
 
+This observation is what connects lenses to type equivalences and
+hence to reversible programming. The main contribution of the paper is
+to exploit various canonical constructions and completness results in
+the world of reversible programming and export them to the world of
+bidirectional programming with lenses.
 
+Although correct in principle~\cite{survey}, a straightforward
+encoding of \emph{constant-complement lenses} as $\exists\ C. S \cong
+C × A$ is not satisfactory: a $\AgdaRecord{GS-Lens}$ does not reveal
+any sort of complement $C$; so the constant-complement lenses should
+not either. To do this, we must somehow hide our choice of $C$.  We
+can re-use a well-known trick from Haskell\footnote{but be wary that
+this does not generalize to more constructors, as Agda can still see
+that the non-public constructors are still injective; see Martin
+Escardo's counter-example at \cite{XXX}}, where we build a data type
+but do not export its constructor. To compensate for the lack of
+access to the constructor we export equivalence-preserving sum and product
+type constructions:
 
-\newpage
-
-
-
-There are also \emph{constant complement lenses}, informally those
-where $\exists C. S ≅ C × A$. If encoded carelessly, these two
-notions are not \textit{quite} equivalent. A $\AgdaRecord{GS-Lens}$
-does not reveal any sort of complement $C$; so the constant complement
-lenses should not either\footnote{unlike an early survey~\cite{survey}
-which did not quite explain this gap}.
-
-To do this, we must somehow hide our choice of $C$.  We can
-re-use a well-known trick from Haskell%
-\footnote{but be wary that this does not generalize to more
-constructors, as Agda can still see that the non-public constructors
-are still injective; see Martin Escardo's counter-example at
-\cite{XXX}}, where we build a data type
-but do not export its constructor.
 \begin{code}
 module Hide where
   private
@@ -231,20 +230,15 @@ module Hide where
 
   Hidden : {ℓ : Level} → Set (suc ℓ)
   Hidden = ReallyHidden
+
   hide : {ℓ : Level} → Set ℓ → Hidden
   hide C = box C
-\end{code}
-Locally, we will have a means to reveal, but again, this will not
-be exported.
-\begin{code}
-  private
+
+  private -- local access only; not exported
     unbox : {ℓc : Level} → Hidden {ℓc} → Set ℓc
     unbox (box x) = x
-\end{code}
-Again, later, we will need to be able to take products and sums
-of hidden types, thus we need to provide such features now. In fact,
-may as well provide a lift function to do so:
-\begin{code}
+
+  -- we can take sums and products of hidden types
   lift-to-hidden : {ℓa ℓb : Level} → (op : Set ℓa → Set ℓb → Set (ℓa ⊔ ℓb)) →
     Hidden {ℓa} → Hidden {ℓb} → Hidden {ℓa ⊔ ℓb}
   lift-to-hidden (_**_) (box A) (box B) = box (A ** B)
@@ -253,19 +247,17 @@ may as well provide a lift function to do so:
   _×h_ = lift-to-hidden _×_
   _⊎h_ : {ℓa ℓb : Level} → Hidden {ℓa} → Hidden {ℓb} → Hidden {ℓa ⊔ ℓb}
   _⊎h_ = lift-to-hidden _⊎_
-\end{code}
-\jc{Do it in an appendix?}
-Furthermore, we need to know that these induce equivalences. If we can
-reveal the indirection, this is indeed trivial:
-\begin{code}
+
+  -- and these induce equivalences
   ×h-equiv : {ℓa ℓb : Level} {A : Hidden {ℓa}} {B : Hidden {ℓb}} →
     (unbox A × unbox B) ≃ unbox (A ×h B)
   ×h-equiv {A = box A} {B = box B} = id≃
 \end{code}
-Given this infrastructure, we can build a record with two
-parts, one hidden and another which is visible. For simplicity,
-we'll assume everything is at the same level.  This will form
-the core of our implementation of Lens based on isomorphisms.
+
+Given this infrastructure, we can build a record with two parts, one
+hidden and another which is visible. For simplicity, we'll assume
+everything is at the same level.  This will form the core of our
+implementation of lenses based on reversible type equivalences:
 
 \begin{code}
   record ∃-Lens {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
@@ -281,8 +273,9 @@ the core of our implementation of Lens based on isomorphisms.
   ∃-lens C iso = record {HC = hide C; iso = iso}
 \end{code}
 
-This gives us the needed infrastructure.  Let's show that, given
+Unlike the case for the naive implementation, we can show that, given 
 a $\AgdaRecord{∃-Lens}$, we can build a \AgdaRecord{GS-Lens}:
+
 \begin{code}
 open Hide
 
@@ -294,14 +287,11 @@ sound record { iso = (f , qinv g α β) } = record
   ; putget = λ s → β s
   ; putput = λ s a a' → cong g (cong₂ _,_ (cong proj₁ (α _)) refl) }
 \end{code}
-\noindent It is important to notice that the above only uses
-the \AgdaField{iso} part of the \AgdaRecord{∃-lens}.
 
-The other direction is considerably more challenging. We leave that
-to~\ref{sec:lens-equiv}.
-
-What we wish to do is to explore the link betweens lens, especially
-in the form of \AgdaRecord{∃-Lens}, and reversible computing.
+\noindent It is important to notice that the above only uses the
+\AgdaField{iso} part of the \AgdaRecord{∃-lens}. The other direction
+is considerably more challenging. We leave that
+to~Sec.\ref{sec:lens-equiv}.
 
 \section{A typed reversible language}
 
