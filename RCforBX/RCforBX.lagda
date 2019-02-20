@@ -168,15 +168,32 @@ open import TypeEquiv
 }
 \section{Introduction}
 
-The inspiration for this paper comes from a number of sources:
-\begin{enumerate}
-  \item Oleg Grenrus' \textit{Finding correct (lens) laws}~\cite{oleg-blog},
-  \item The paper \textit{Synthesizing Bijective Lenses}~\cite{Miltner2018},
-  \item Twan van Laarhoven's blog \textit{Isomorphism Lenses},
-  \item (many more, insert citations throughout)
-\end{enumerate}
+The notion of lenses (and its generalizations to optics) is now
+established as one of the formalisms for bidirectional
+transformations. These optics are generally studied in the context of
+conventional programming languages (e.g., Java, Haskell, etc.) which
+leaves untapped the richness of a dependently-typed language,
+especially one which directly supports programming with proof-relevant
+type equivalences.
 
-\newpage
+In this paper, we show that in the context of such a dependently-typed
+language for proof-relevant type equivalences, the many constructions
+of optics and more importantly, their correctness and their laws,
+become simple consequences of the general properties of proof-relevant
+type equivalences. In particular, we formalize the intuitive, but
+informal, constructions and laws, in various
+sources~\cite{oleg-bloc,Miltner2018,laarhoven}.
+
+%% The inspiration for this paper comes from a number of sources:
+%% \begin{enumerate}
+%%   \item Oleg Grenrus' \textit{Finding correct (lens) laws}~\cite{oleg-blog},
+%%   \item The paper \textit{Synthesizing Bijective Lenses}~\cite{Miltner2018},
+%%   \item Twan van Laarhoven's blog \textit{Isomorphism Lenses},
+%%   \item (many more, insert citations throughout)
+%% \end{enumerate}
+%% 
+%% Example of two lenses that are the same
+%% lenses as fractional types; prisms as negative types
 
 \section{Lenses}
 
