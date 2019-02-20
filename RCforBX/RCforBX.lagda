@@ -1285,8 +1285,8 @@ A number of additional optics have been put forth. They are easiest seen as foll
 \caption{A variety of optics}
 \label{fig:optics}
 \begin{tabular}{ll}\hline
-Equality $ $S ⟷ A$ \\ \hline
-Iso & $ $S ≃ A$ \\ \hline
+Equality & $S ⟷ A$ \\ \hline
+Iso & $S ≃ A$ \\ \hline
 Lens & $∃C. S ≃ C × A$ \\
 Prism & $∃C . S ≃ C + A$ \\
 Achroma & $∃C. S ≃ ⊤ ⊎ (C × A)$ \\
