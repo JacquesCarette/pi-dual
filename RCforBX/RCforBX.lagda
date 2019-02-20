@@ -158,7 +158,7 @@ open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_]′)
 open import Data.Unit
 open import Data.Empty
 open import Data.Maybe
-open import Relation.Binary.PropositionalEquality
+open import Relation.Binary.PropositionalEquality as P
   using (_≡_; cong; cong₂; sym; trans; refl; inspect; [_])
 open import Function using (id; const; _∘_; case_of_)
 
@@ -257,7 +257,7 @@ record ∃-Lens {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
 record ∃-Prism {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
   constructor ∃-prism
   field
-    C : Set ℓ
+    {C} : Set ℓ
     iso : S ≃ (C ⊎ A)
 \end{code}
 }
@@ -1198,6 +1198,20 @@ The same can be done with a (generalized) Toffoli gate, which ends up being
 controlled by the conjunction of two values instead of just one, but otherwise
 introduces no new ideas.
 
+\subsection{Completeness}
+
+The $\Pi$ language is \emph{complete} for equivalences, in the sense that
+any two type which can be written as a sum-of-products over arbitrarily many
+variables are equivalent if and only if there is a term of $Π$ which witnesses
+this equivalence.  In other words,
+
+\begin{theorem}
+Suppose $S$ and $A$ are two types belonging to the language of the
+semiring of types $T\left[x_{1},\ldots,x_{n}\right]$ over $n$ variables.
+If $∃C. S ≃ C × A$ is inhabited, then there is a term of $Π$ whose denotation
+is an equivalence witnessing the equivalence.
+\end{theorem}
+
 \section{Optics}
 
 Lenses have been generalized -- and in keeping with the theme, have been
@@ -1245,7 +1259,7 @@ From this, we can again prove soundness:
 \begin{code}
 module _ {ℓ : Level} (S A : Set ℓ) where
   prism-sound : ∃-Prism S A → BI-Prism S A
-  prism-sound record { iso = (f , qinv g α β) } = record
+  prism-sound (∃-prism (f , qinv g α β) ) = record
     { belongs = λ s → [ const nothing , just ]′ (f s)
     ; inject = g ∘ inj₂
     ; belongsinject = λ a → cong ([ _ , _ ]′) (α _)
@@ -1257,32 +1271,59 @@ module _ {ℓ : Level} (S A : Set ℓ) where
       refine s (b , ()) | inj₁ x | _
       refine s (_ , pf) | inj₂ y | [ eq ] = y , trans (cong g (sym eq)) (β s)
 \end{code}
-\noindent where injectivity of constructors is used in a crucial way, and again
-the hidden component is not used.
+\noindent where injectivity of constructors is used in a crucial way.
 
 Note that there is one more way, again equivalent, of defining a prism:
 rather than using $\AgdaRecord{Maybe} A$, use $S ⊎ A$ and replace
 $\AgdaField{belongs}$ with
-$λ s → \AgdaFunction{map} (\AgdaFunction{const} s) \AgdaFunction{id} (f s)$.
+$λ s → \AgdaFunction{Data.Sum.map} (\AgdaFunction{const} s) \AgdaFunction{id} (f s)$.
 
 \subsection{Other Optics}
 
-Prisms just use ⊎ instead of ×. Other optics are similar (but not all).
-The same things arise.
-Affine is $∃C, D. S ≃ D ⊎ C × A$.
-Achroma is $∃C. S ≃ ⊤ ⊎ C × A$.
-Grate is $∃I. S ≃ I → A$, which isn't included in $Π$.
-Setter is $∃ F : Set → Set. S ≃ F A$, which is even further off.
+A number of additional optics have been put forth. They are easiest seen as follows:
+\begin{figure}[h]
+\caption{A variety of optics}
+\label{fig:optics}
+\begin{tabular}{ll}\hline
+Equality $ $S ⟷ A$ \\ \hline
+Iso & $ $S ≃ A$ \\ \hline
+Lens & $∃C. S ≃ C × A$ \\
+Prism & $∃C . S ≃ C + A$ \\
+Achroma & $∃C. S ≃ ⊤ ⊎ (C × A)$ \\
+Affine & $∃C, D. S ≃ D ⊎ (C × A)$ \\ \hline
+Grate & $∃I. S ≃ I → A$ \\ \hline
+Setter & $∃ F : Set → Set. S ≃ F A$ \\ \hline
+\end{tabular}
+\end{figure}
 
-What about $∃C. S ≃ (⊤ ⊎ C) × A$ ?
+The names used are as found in various bits of the literature. A line
+is drawn when the language is extended.
+Equality is sometimes called Adapter: it merely witnesses equi-inhabitation of
+$S$ and $A$ without any requirements that the witnessing functions are in any
+way related. Iso, short for Isomorphism, is exactly type equivalence.
+Then we have Lens and Prism, as well as two new ones: Achroma and Affine.
+Affine is the most general, and we obtain
+\begin{itemize}
+\item Lens when $D = ⊥$,
+\item Prism when $C = ⊤$,
+\item Achroma when $D = ⊤$,
+\item Iso when $D = ⊥$ and $C = ⊤$.
+\end{itemize}
+Specializing $C$ to $⊤$ in Affine does not give anything useful, as it
+ignores $A$ and just says that $S$ is isomorphic to \emph{something},
+which is a tautology (as $D$ can be taken to be $S$ itself).
 
-Note that factor/distrib is crucial to move between them all.
+Grate moves us to a rather different world, one that involves function types. And Setter
+is more general still, where all we know is that $S$ is isomorphic to some \emph{container}
+of $A$s.
 
 \section{Optic transformations}
 
 Level 2 of $Π$ lets us look at relations between isomorphisms.
 In particular, we can see when some lens/prims/etc are simplifiable
 to something simpler.
+
+Note that factor/distrib is crucial to move between them all.
 
 \section{Proof of equivalence}\label{sec:lens-equiv}
 
@@ -1305,8 +1346,8 @@ the laws help in narrowing down the choices: basically, we want the
 $s′ : S$ where $\AgdaFunction{get s′} ≡ a$, and so we again
 use \AgdaFunction{set} for the purpose:
 \begin{code}
-complete : {ℓ : Level} {S A : Set ℓ} → GS-Lens S A → ∃-Lens S A
-complete {ℓ} {S} {A} record { get = get ; set = set ; getput = getput ; putget = putget ; putput = putput } =
+incomplete : {ℓ : Level} {S A : Set ℓ} → GS-Lens S A → ∃-Lens S A
+incomplete {ℓ} {S} {A} record { get = get ; set = set ; getput = getput ; putget = putget ; putput = putput } =
   ∃-lens ((λ s → s , get s) ,
          qinv (λ { (s , a) → set s a })
               (λ { (s , a) → cong₂ _,_ hole (getput s a)})
@@ -1328,6 +1369,65 @@ Thus our next move is to make that part of $S$ not matter. In other words,
 rather than using the \emph{type} $S$ as a proxy, we want to use a
 \AgdaRecord{Setoid} where $s, t : S$ will be regarded as the same if they
 only differ in their $A$ component.
+
+So what we want to do is
+\begin{code}
+open import Relation.Binary using (Setoid)
+open import Function.Equality using (_⟨$⟩_) renaming (cong to scong)
+-- open import Relation.Binary.Product.Pointwise using (_×-setoid_)
+open import Function.Inverse using (Inverse)
+open Setoid
+
+_×S_ : {a b c d : Level} → Setoid a b → Setoid c d → Setoid (a ⊔ c) (b ⊔ d)
+S ×S T = record
+  { Carrier = Carrier S × Carrier T
+  ; _≈_ = λ {(s₁ , t₁) (s₂ , t₂) → _≈_ S s₁ s₂ × _≈_ T t₁ t₂}
+  ; isEquivalence = record
+    { refl = (Setoid.refl S) , (Setoid.refl T)
+    ; sym = λ pf → Setoid.sym S (proj₁ pf) , Setoid.sym T (proj₂ pf)
+    ; trans = λ {(i≈Sj , i≈Tj) (j≈Sk , j≈Tk) → Setoid.trans S i≈Sj j≈Sk , Setoid.trans T i≈Tj j≈Tk }
+    } }
+
+record ∃′-Lens {a s : Level} (S : Set s) (A : Set a) : Set (suc (a ⊔ s)) where
+  constructor ll
+  field
+    C : Setoid s a
+    iso : Inverse (P.setoid S) (C ×S (P.setoid A))
+
+sound′ : {ℓ : Level} {S A : Set ℓ} → ∃′-Lens S A → GS-Lens S A
+sound′ {S = S} {A} (ll c record { to = to ; from = from ; inverse-of = record
+                      { left-inverse-of = left-inverse-of
+                      ; right-inverse-of = right-inverse-of } }) = record
+  { get = λ s → proj₂ (to ⟨$⟩ s)
+  ; set = λ s a → from ⟨$⟩ (proj₁ (to ⟨$⟩ s) , a)
+  ; getput = λ s a → proj₂ (right-inverse-of (proj₁ (to ⟨$⟩ s) , a))
+  ; putget = λ s → left-inverse-of s
+  ; putput = λ s a a' → scong from (proj₁ (right-inverse-of (proj₁ (to ⟨$⟩ s) , a)) , P.refl) }
+
+complete : {ℓ : Level} {S A : Set ℓ} → GS-Lens S A → ∃′-Lens S A
+complete {ℓ} {S} {A} record { get = get ; set = set ; getput = getput ; putget = putget ; putput = putput } =
+  ll (record {
+        Carrier = S
+      ; _≈_ = λ s t → ∀ (a : A) → set s a ≡ set t a
+      ; isEquivalence = record
+          { refl = λ a → P.refl
+          ; sym = λ i≈j a → P.sym (i≈j a)
+          ; trans = λ i≈j j≈k a → P.trans (i≈j a) (j≈k a)
+          } })
+     (record {
+       to = record
+         { _⟨$⟩_ = λ s → s , get s
+         ; cong = λ { refl → (λ _ → P.refl) , P.refl } }
+       ; from = record
+         { _⟨$⟩_ = λ {(s , a) → set s a}
+         ; cong = λ { {s₁ , a₁} {s₂ , .a₁} (s₁≈s₂ , P.refl) → s₁≈s₂ a₁ }
+         }
+       ; inverse-of = record
+           { left-inverse-of = λ s → putget s
+           ; right-inverse-of = λ { (s , a) → (λ a' → putput s a a') , getput s a}
+           }
+       })
+\end{code}
 
 \section{Geometry of types}
 
