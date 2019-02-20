@@ -191,7 +191,7 @@ sources~\cite{oleg-bloc,Miltner2018,laarhoven}.
 %%   \item Twan van Laarhoven's blog \textit{Isomorphism Lenses},
 %%   \item (many more, insert citations throughout)
 %% \end{enumerate}
-%% 
+%%
 %% Example of two lenses that are the same
 %% lenses as fractional types; prisms as negative types
 
@@ -1394,15 +1394,27 @@ record ∃′-Lens {a s : Level} (S : Set s) (A : Set a) : Set (suc (a ⊔ s)) w
     C : Setoid s a
     iso : Inverse (P.setoid S) (C ×S (P.setoid A))
 
+lens : {ℓ : Level} {S A C : Set ℓ} → S ≃ (C × A) → ∃′-Lens S A
+lens {C = C} (f , qinv g α β) = ll (P.setoid C) (record
+  { to = record { _⟨$⟩_ = f ; cong = λ { P.refl → P.refl , P.refl} }
+  ; from = record { _⟨$⟩_ = g ; cong = λ { (P.refl , P.refl) → P.refl } } -- η for × crucial
+  ; inverse-of = record
+    { left-inverse-of = β
+    ; right-inverse-of = λ { (c , a) → (cong proj₁ (α _)) , cong proj₂ (α _)}
+    }
+  })
+
 sound′ : {ℓ : Level} {S A : Set ℓ} → ∃′-Lens S A → GS-Lens S A
 sound′ {S = S} {A} (ll c record { to = to ; from = from ; inverse-of = record
-                      { left-inverse-of = left-inverse-of
-                      ; right-inverse-of = right-inverse-of } }) = record
-  { get = λ s → proj₂ (to ⟨$⟩ s)
-  ; set = λ s a → from ⟨$⟩ (proj₁ (to ⟨$⟩ s) , a)
-  ; getput = λ s a → proj₂ (right-inverse-of (proj₁ (to ⟨$⟩ s) , a))
-  ; putget = λ s → left-inverse-of s
-  ; putput = λ s a a' → scong from (proj₁ (right-inverse-of (proj₁ (to ⟨$⟩ s) , a)) , P.refl) }
+                      { left-inverse-of = β
+                      ; right-inverse-of = α } }) =
+  let f = to ⟨$⟩_ in let g = from ⟨$⟩_ in
+  record
+  { get = λ s → proj₂ (f s)
+  ; set = λ s a → g (proj₁ (f s) , a)
+  ; getput = λ s a → proj₂ (α (proj₁ (f s) , a))
+  ; putget = β
+  ; putput = λ s a _ → scong from (proj₁ (α (proj₁ (f s) , a)) , P.refl) }
 
 complete : {ℓ : Level} {S A : Set ℓ} → GS-Lens S A → ∃′-Lens S A
 complete {ℓ} {S} {A} record { get = get ; set = set ; getput = getput ; putget = putget ; putput = putput } =
