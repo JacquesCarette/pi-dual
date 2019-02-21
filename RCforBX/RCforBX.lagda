@@ -128,7 +128,8 @@ $\displaystyle
 
 % Not the final title!
 % \title{Reversible Programming for the BX enthusiast}
-\title{Reversible programming applied to bidirectional programming}
+%\title{Reversible programming applied to bidirectional programming}
+\title{Optics and type equivalences}
 
 \author{
 Jacques Carette\\ Dept. of Computing and Software\\
@@ -144,7 +145,16 @@ Amr Sabry \\ Computer Science Dept.\\
 \maketitle
 
 \begin{abstract}
-Bidirectional programming, lenses, prisms, and other optics have connections to reversible programming which have been explored from several perspectives, mostly by attempting to recover bidirectional transformations from unidirectional ones. We offer a novel and foundational perspective in which reversible programming is expressed using “type equivalences.” This perspective offers several advantages: first, it is possible to construct sets of sound and complete type equivalences for certain collections of types; these correspond to canonical optic constructions. Second, using ideas inspired by category theory and homotopy type theory, it is possible to construct sound and complete “equivalences between equivalences” which provide the canonical laws for reasoning about lens and prism equivalences.
+Bidirectional programming, lenses, prisms, and other optics have connections
+to reversible programming which have been explored from several perspectives,
+mostly by attempting to recover bidirectional transformations from unidirectional
+ones. We offer a novel and foundational perspective in which reversible programming
+is expressed using “type equivalences.” This perspective offers several advantages:
+first, it is possible to construct sets of sound and complete type equivalences
+for certain collections of types; these correspond to canonical optic constructions.
+Second, using ideas inspired by category theory and homotopy type theory,
+it is possible to construct sound and complete “equivalences between equivalences”
+which provide the canonical laws for reasoning about lens and prism equivalences.
 \end{abstract}
 \vskip 32pt
 
@@ -162,8 +172,24 @@ open import Relation.Binary.PropositionalEquality as P
   using (_≡_; cong; cong₂; sym; trans; refl; inspect; [_])
 open import Function using (id; const; _∘_; case_of_)
 
+open import Relation.Binary using (Setoid)
+open import Function.Equality using (_⟨$⟩_) renaming (cong to scong)
+-- open import Relation.Binary.Product.Pointwise using (_×-setoid_)
+open import Function.Inverse using (Inverse)
+
 open import Equiv
 open import TypeEquiv
+
+-- Do our own Setoid product, because the built-in one triggers an internal error!
+_×S_ : {a b c d : Level} → Setoid a b → Setoid c d → Setoid (a ⊔ c) (b ⊔ d)
+S ×S T = record
+  { Carrier = Setoid.Carrier S × Setoid.Carrier T
+  ; _≈_ = λ {(s₁ , t₁) (s₂ , t₂) → Setoid._≈_ S s₁ s₂ × Setoid._≈_ T t₁ t₂}
+  ; isEquivalence = record
+    { refl = (Setoid.refl S) , (Setoid.refl T)
+    ; sym = λ pf → Setoid.sym S (proj₁ pf) , Setoid.sym T (proj₂ pf)
+    ; trans = λ {(i≈Sj , i≈Tj) (j≈Sk , j≈Tk) → Setoid.trans S i≈Sj j≈Sk , Setoid.trans T i≈Tj j≈Tk }
+    } }
 \end{code}
 }
 \section{Introduction}
@@ -272,7 +298,7 @@ sound (∃-lens (f , qinv g α β)) = record
   ; set = λ s a → g (proj₁ (f s) , a)
   ; getput = λ s a → cong proj₂ (α _)
   ; putget = λ s → β s
-  ; putput = λ s a a' → cong g (cong₂ _,_ (cong proj₁ (α _)) refl) }
+  ; putput = λ s a a' → cong g (cong₂ _,_ (cong proj₁ (α _)) P.refl) }
 \end{code}
 
 \noindent It is important to notice that the above only uses the
@@ -1034,7 +1060,7 @@ module _ (A B D E : Set) where
 
   AA-gs-lens : GS-Lens A A
   AA-gs-lens = record { get = id ; set = λ _ → id
-    ; getput = λ _ _ → refl ; putget = λ _ → refl ; putput = λ _ _ _ → refl }
+    ; getput = λ _ _ → P.refl ; putget = λ _ → P.refl ; putput = λ _ _ _ → P.refl }
 \end{code}
 
 What does that correspond to as a \AgdaRecord{∃-Lens}? Here, we can easily
@@ -1372,22 +1398,6 @@ only differ in their $A$ component.
 
 So what we want to do is
 \begin{code}
-open import Relation.Binary using (Setoid)
-open import Function.Equality using (_⟨$⟩_) renaming (cong to scong)
--- open import Relation.Binary.Product.Pointwise using (_×-setoid_)
-open import Function.Inverse using (Inverse)
-open Setoid
-
-_×S_ : {a b c d : Level} → Setoid a b → Setoid c d → Setoid (a ⊔ c) (b ⊔ d)
-S ×S T = record
-  { Carrier = Carrier S × Carrier T
-  ; _≈_ = λ {(s₁ , t₁) (s₂ , t₂) → _≈_ S s₁ s₂ × _≈_ T t₁ t₂}
-  ; isEquivalence = record
-    { refl = (Setoid.refl S) , (Setoid.refl T)
-    ; sym = λ pf → Setoid.sym S (proj₁ pf) , Setoid.sym T (proj₂ pf)
-    ; trans = λ {(i≈Sj , i≈Tj) (j≈Sk , j≈Tk) → Setoid.trans S i≈Sj j≈Sk , Setoid.trans T i≈Tj j≈Tk }
-    } }
-
 record ∃′-Lens {a s : Level} (S : Set s) (A : Set a) : Set (suc (a ⊔ s)) where
   constructor ll
   field
