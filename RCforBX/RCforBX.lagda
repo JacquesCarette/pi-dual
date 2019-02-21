@@ -221,7 +221,7 @@ properties. We therefore introduce our final definition of lenses
 using the notion of \emph{setoid} to formalize the correct equivalence
 relation on the source type of the lens. We present a complete
 formalized proof in Agda that this final definition is sound and
-complete with respect to the conventional set/get definition. 
+complete with respect to the conventional set/get definition.
 
 With a formulation of lenses based on proof-relevant type-equivalences
 in hand, we aim to show that many variants of lenses, as well as othe
@@ -242,14 +242,14 @@ properties can still be expressed but we generally lose guarantees of
 completeness.
 
 %% * we want to understand lenses in the setting of proof-relevant type isomorphisms
-%% 
-%% * the first question is how to define lenses: 
+%%
+%% * the first question is how to define lenses:
 %%      - first guess set/get; no obvious connection to type equivalences
 %%      - next guess \exists; type equivalences appear; can show soundness but
-%%        no completness 
+%%        no completness
 %%      - final def: setoid
 %%    [none of the above refers to Pi, so could be presented first, right?]
-%% 
+%%
 %% * we now want to explore various optics using our definition; but
 %%      first we need a language to talk about proof-relevant type
 %%      equivalences; if we restrict ourselves to finite types, we can
@@ -259,7 +259,7 @@ completeness.
 %%      papers with trace etc) but we lose
 %%      soundness/completeness. Introduce relevant pieces of PI as a
 %%      language for sound and complete proof relevant type equivalences
-%% 
+%%
 %% * a whole bunch of optics emerge with the right laws for free….
 
 %% The inspiration for this paper comes from a number of sources:
@@ -1259,21 +1259,43 @@ sense that lenses are more than just conveniences for records! In
 particular, it is possible to create lenses for things which are
 not ``in'' a type at all.
 
+Composition of \AgdaFunction{Lens₁} is quite straightforward:
+\begin{code}
+  ∘-lens₁ : Lens₁ D B → Lens₁ B A → Lens₁ D A
+  ∘-lens₁ l₁ l₂ = ∃-lens (assocl⋆equiv ● id≃ ×≃ Lens₁.iso l₂ ● Lens₁.iso l₁)
+\end{code}
+
 Before we see an example of lensing onto a non-existent component,
-we should complete the picture of lifting Π to lenses, and we're
+we should complete the picture of lenses, and we're
 missing composition:
 \begin{code}
   ∘-lens : ∃-Lens D B → ∃-Lens B A → ∃-Lens D A
   ∘-lens l₁ l₂ = ll {C = C l₁ ×S C l₂} (record
-    { to = record { _⟨$⟩_ = fwd ; cong = λ { refl → (Setoid.refl (C l₁) , Setoid.refl (C l₂)) , refl} }
-    ; from = record { _⟨$⟩_ = {!!} ; cong = {!!} }
-    ; inverse-of = record { left-inverse-of = {!!} ; right-inverse-of = {!!} }
+    { to = record
+      { _⟨$⟩_ = fwd
+      ; cong = λ { refl → (Setoid.refl (C l₁) , Setoid.refl (C l₂)) , refl}
+      }
+    ; from = record
+      { _⟨$⟩_ = bwd
+      ; cong = λ { {(c₁₁ , c₂₁) , a₁} {(c₁₂ , c₂₂) , .a₁} ((c₁₁≈c₁₂ , c₂₁≈c₂₂) , refl) →
+          scong (Inverse.from (iso l₁)) (c₁₁≈c₁₂ , scong (Inverse.from (iso l₂)) (c₂₁≈c₂₂ , refl)) }
+      }
+    ; inverse-of = record
+      { left-inverse-of = λ d → {!Inverse.left-inverse-of (iso l₁) d!}
+      ; right-inverse-of = λ { ((c₁ , c₂) , a) →
+        let b = Inverse.from (iso l₂) ⟨$⟩ (c₂ , a) in
+        let right-inv = Inverse.right-inverse-of (iso l₁) (c₁ , b) in
+        (proj₁ right-inv , {!proj₁ (scong (Inverse.to (iso l₂)) (proj₂ right-inv))!}) , {!!} }
+      }
     })
     where
       fwd : (d : D) → (Setoid.Carrier (C l₁) × Setoid.Carrier (C l₂)) × A
       fwd d = let (c₁ , b) = Inverse.to (iso l₁) ⟨$⟩ d in
               let (c₂ , a) = Inverse.to (iso l₂) ⟨$⟩ b in
               (c₁ , c₂) , a
+      bwd : (Setoid.Carrier (C l₁) × Setoid.Carrier (C l₂)) × A → D
+      bwd ((c₁ , c₂) , a) = let b = Inverse.from (iso l₂) ⟨$⟩ (c₂ , a) in
+                            Inverse.from (iso l₁) ⟨$⟩ (c₁ , b)
 \end{code}
 The above gives us our first \emph{lens program} consisting of a composition of
 four more basic equivalences.
