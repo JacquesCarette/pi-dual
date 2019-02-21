@@ -184,6 +184,37 @@ type equivalences. In particular, we formalize the intuitive, but
 informal, constructions and laws, in various
 sources~\cite{oleg-bloc,Miltner2018,laarhoven}.
 
+We start with the conventional definition of lenses using a pair of
+\emph{very well-behaved} set/get functions. That definition is only
+implicitly related to type equivalences via a hidden
+\emph{constant-complement}. We therefore introduce an equivalent
+formulation in which the underlying type equivalences become explicit.
+
+%% * we want to understand lenses in the setting of proof-relevant type isomorphisms
+%% 
+%% * the first question is how to define lenses: 
+%%      - first guess set/get; no obvious connection to type equivalences
+%%      - next guess \exists; type equivalences appear; can show soundness but
+%%        no completness 
+%%      - final def: setoid
+%%    [none of the above refers to Pi, so could be presented first, right?]
+%% 
+%% * we now want to explore various optics using our definition; but
+%%      first we need a language to talk about proof-relevant type
+%%      equivalences; if we restrict ourselves to finite types, we can
+%%      have soundness and completeness of type equivalences AND proofs
+%%      about such equivalences; that setting will give us nice canonical
+%%      results; in principle we could go to richer types (cite other Pi
+%%      papers with trace etc) but we lose
+%%      soundness/completeness. Introduce relevant pieces of PI as a
+%%      language for sound and complete proof relevant type equivalences
+%% 
+%% * a whole bunch of optics emerge with the right laws for free….
+
+
+
+
+
 %% The inspiration for this paper comes from a number of sources:
 %% \begin{enumerate}
 %%   \item Oleg Grenrus' \textit{Finding correct (lens) laws}~\cite{oleg-blog},
