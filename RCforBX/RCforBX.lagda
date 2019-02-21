@@ -164,6 +164,7 @@ module RCforBX where
 
 open import Level
 open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ)
+  renaming (map to map×)
 open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_]′)
 open import Data.Unit
 open import Data.Empty
@@ -175,7 +176,8 @@ open import Function using (id; const; _∘_; case_of_)
 open import Relation.Binary using (Setoid)
 open import Function.Equality using (_⟨$⟩_) renaming (cong to scong)
 -- open import Relation.Binary.Product.Pointwise using (_×-setoid_)
-open import Function.Inverse using (Inverse)
+-- open import Data.Product.Relation.Pointwise.NonDependent using (_×-inverse_)
+open import Function.Inverse using (Inverse) renaming (id to idF; _∘_ to _∘F_)
 
 open import Equiv
 open import TypeEquiv
@@ -190,6 +192,29 @@ S ×S T = record
     ; sym = λ pf → Setoid.sym S (proj₁ pf) , Setoid.sym T (proj₂ pf)
     ; trans = λ {(i≈Sj , i≈Tj) (j≈Sk , j≈Tk) → Setoid.trans S i≈Sj j≈Sk , Setoid.trans T i≈Tj j≈Tk }
     } }
+
+-- And our own product of Inverses
+_×-inverse_ : {a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : Level}
+  {A : Setoid a₁ a₂} {B : Setoid b₁ b₂}
+  {C : Setoid c₁ c₂} {D : Setoid d₁ d₂} →
+  Inverse A B → Inverse C D → Inverse (A ×S C) (B ×S D)
+A↔B ×-inverse C↔D = record
+  { to = record { _⟨$⟩_ = map× (to A↔B ⟨$⟩_) (to C↔D ⟨$⟩_)
+                ; cong = λ { ( _∼₁_ , _∼₂_ ) → scong (to A↔B) _∼₁_ , scong (to C↔D) _∼₂_ } }
+  ; from = record { _⟨$⟩_ = map× (from A↔B ⟨$⟩_) (from C↔D ⟨$⟩_)
+                  ; cong = λ { ( _∼₁_ , _∼₂_ ) → scong (from A↔B) _∼₁_ , scong (from C↔D) _∼₂_ } }
+  ; inverse-of = record
+    { left-inverse-of = λ { (a , c) → left-inverse-of A↔B a , left-inverse-of C↔D c}
+    ; right-inverse-of = λ { (b , d) → right-inverse-of A↔B b , right-inverse-of C↔D d } } }
+  where
+    open Inverse
+    inv = right-inverse A↔B
+
+postulate
+  ×-assoc : {a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ e₁ e₂ f₁ f₂ : Level}
+    {A : Setoid a₁ a₂} {B : Setoid b₁ b₂} {C : Setoid c₁ c₂} {D : Setoid d₁ d₂}
+    {E : Setoid e₁ e₂} {F : Setoid f₁ f₂} →
+    Inverse A B → Inverse C D → Inverse E F → Inverse (A ×S (C ×S E)) ((B ×S D) ×S F)
 \end{code}
 }
 \section{Introduction}
@@ -1270,32 +1295,7 @@ we should complete the picture of lenses, and we're
 missing composition:
 \begin{code}
   ∘-lens : ∃-Lens D B → ∃-Lens B A → ∃-Lens D A
-  ∘-lens l₁ l₂ = ll {C = C l₁ ×S C l₂} (record
-    { to = record
-      { _⟨$⟩_ = fwd
-      ; cong = λ { refl → (Setoid.refl (C l₁) , Setoid.refl (C l₂)) , refl}
-      }
-    ; from = record
-      { _⟨$⟩_ = bwd
-      ; cong = λ { {(c₁₁ , c₂₁) , a₁} {(c₁₂ , c₂₂) , .a₁} ((c₁₁≈c₁₂ , c₂₁≈c₂₂) , refl) →
-          scong (Inverse.from (iso l₁)) (c₁₁≈c₁₂ , scong (Inverse.from (iso l₂)) (c₂₁≈c₂₂ , refl)) }
-      }
-    ; inverse-of = record
-      { left-inverse-of = λ d → {!Inverse.left-inverse-of (iso l₁) d!}
-      ; right-inverse-of = λ { ((c₁ , c₂) , a) →
-        let b = Inverse.from (iso l₂) ⟨$⟩ (c₂ , a) in
-        let right-inv = Inverse.right-inverse-of (iso l₁) (c₁ , b) in
-        (proj₁ right-inv , {!proj₁ (scong (Inverse.to (iso l₂)) (proj₂ right-inv))!}) , {!!} }
-      }
-    })
-    where
-      fwd : (d : D) → (Setoid.Carrier (C l₁) × Setoid.Carrier (C l₂)) × A
-      fwd d = let (c₁ , b) = Inverse.to (iso l₁) ⟨$⟩ d in
-              let (c₂ , a) = Inverse.to (iso l₂) ⟨$⟩ b in
-              (c₁ , c₂) , a
-      bwd : (Setoid.Carrier (C l₁) × Setoid.Carrier (C l₂)) × A → D
-      bwd ((c₁ , c₂) , a) = let b = Inverse.from (iso l₂) ⟨$⟩ (c₂ , a) in
-                            Inverse.from (iso l₁) ⟨$⟩ (c₁ , b)
+  ∘-lens l₁ l₂ = ll {C = C l₁ ×S C l₂} ((×-assoc idF idF idF ∘F (idF ×-inverse ∃-Lens.iso l₂)) ∘F ∃-Lens.iso l₁)
 \end{code}
 The above gives us our first \emph{lens program} consisting of a composition of
 four more basic equivalences.
