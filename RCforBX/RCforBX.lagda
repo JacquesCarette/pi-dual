@@ -334,7 +334,7 @@ $\mathit{get}$ discards some information from the source to create a
 view, and that this information can be explicitly represented using
 the \emph{constant-complement} technique from the database
 literature. In other words, lenses can viewed as elements of $\exists\
-C. S \cong C × A$ where $\cong$ is type equivalence.
+C. S \simeq C × A$ where $\simeq$ is type equivalence.
 
 This observation is what connects lenses to type equivalences and
 hence to reversible programming. The main contribution of the paper is
@@ -343,7 +343,7 @@ the world of reversible programming and export them to the world of
 bidirectional programming with lenses (and other optics).
 
 Although correct in principle~\cite{survey}, a straightforward
-encoding of \emph{constant-complement lenses} as $\Sigma\ C. S \cong
+encoding of \emph{constant-complement lenses} as $\Sigma\ C. S \simeq
 C × A$ is not satisfactory: a $\AgdaRecord{GS-Lens}$ does not reveal
 any sort of complement $C$; so the constant-complement lenses should
 not either. To do this, we should somehow hide our choice of $C$.
@@ -354,7 +354,7 @@ actual $C$. Note that because $\AgdaFunction{Set} ℓ$ does not allow
 introspection, actually getting one's hands on this $C$ still does
 not reveal very much!
 
-We can use the formulation $∃\ C. S \cong C × A$ as the basis for a
+We can use the formulation $∃\ C. S \simeq C × A$ as the basis for a
 first definitions of isomorphism-based lens. We make $C$ implicit, so as to
 reduce the temptation to examine it. This formulation will not be
 entirely adequate, but is very close to our final definition.
@@ -504,7 +504,7 @@ Our principal means of building lenses, \AgdaFunction{lens}, takes as
 input a \emph{type equivalence}.  These are called \emph{proof relevant}
 because different witnesses (proofs) of an equivalence are
 not assumed to be the same.  For example, there are two
-non-equivalent ways to prove that $A × A \cong A × A$, namely
+non-equivalent ways to prove that $A × A \simeq A × A$, namely
 the identity and ``swap''.
 
 Our starting point will be a basic type theory with the empty
@@ -526,7 +526,7 @@ will furthermore assume that the reader is already familiar with
 the basic definitions around \emph{type equivalences}.
 That types, with ($\bot, \top, \presumtype,
 \preprodtype$) interpreted as ($0, 1, +, ×$) and strict
-equality replaced with equivalence $\cong$
+equality replaced with equivalence $\simeq$
 form a commutative semiring is a basic result of type theory.
 
 However, we might be misled by the Curry-Howard correspondence:
@@ -766,7 +766,8 @@ to derive such coherence conditions.
 
 \section{Exploring the Lens landscape}
 
-Given the above foundational programming language for type equivalences,
+Given that we have a sound and complete set of primitive type equivalences
+(and combinators),
 we can explore what this means for actually programming lenses. Many papers
 have explored the most general settings for lenses, we will instead look
 inside the implementations.  This will
@@ -788,14 +789,17 @@ module _ (A B D E : Set) where
 
 What does that correspond to as a \AgdaRecord{∃-Lens}? Here, we can easily
 guess the complement by solving the equation $A ≃ C × A$ for $C$: $C$ must
-be $\AgdaSymbol{⊤}$. But then the $∃-Lens$ isn't quite as simple as above:
+be $\AgdaSymbol{⊤}$. But then the $\AgdaRecord{∃-Lens}$ isn't quite as simple as above:
 \begin{code}
   AA-∃-lens : ∃-Lens A A
   AA-∃-lens = lens uniti⋆equiv
 \end{code}
 \noindent where $\AgdaFunction{uniti⋆equiv}$ has type
 $A ≃ (⊤ × A)$. In other words, as the complement is not actually
-present in $A$, it must be introduced.
+present in $A$, it must be introduced. $\AgdaFunction{uniti⋆equiv}$
+names the ``multiplicative unit introduction equivalence''. From
+here on, we will not expand on the names, trusting that they
+can be guessed by the reader.
 
 What about in the other direction, what is the \AgdaRecord{∃-Lens} whose
 underlying isomorphism is the identity?
@@ -816,9 +820,8 @@ isomorphism:
 Thus, looking at type equivalences, which ones return a type
 of shape $C × A$ ?  We have already seen \AIC{uniti⋆l},
 \AIC{id⟷} and \AIC{swap⋆} arise. That leaves four:
-\AIC{assocl⋆}, \AIC{factorzl}, \AIC{factor} and \AIC{⊗}.
-These occur as follows (where we use the \AIC{equiv} version
-directly):
+\AIC{assocl⋆}, \AIC{factorz}, \AIC{factor} and \AIC{×≃}.
+These occur as follows:
 \begin{code}
   DBA-lens : ∃-Lens (D × (B × A)) A
   DBA-lens = lens assocl⋆equiv
@@ -833,34 +836,34 @@ directly):
   ⊗-lens iso₁ iso₂ = lens (iso₁ ×≃ iso₂)
 \end{code}
 
-\jc{comment on each? Also, give an example of composition?}
+The first is a basic administrative ``reshaping''. The second
+takes a bit more thought, but is easily explained: if we promise
+an impossible source, it is easy to promise to return something
+arbitrary in return!
 
-These last two are intriguing indeed, and really give us a strong
-sense that lenses are more than just conveniences for records! In
-particular, it is possible to create lenses for things which are
-not ``in'' a type at all.
+The $\AgdaFunction{⊎-lens}$ is interesting, because it allows us
+to see a constant complement in a type which itself is not a
+product -- it is, however, equivalent to one. The last uses the
+full power of equivalences, to see an $A$ where, a priori, one
+does not seem to exist at all.
 
-Composition of \AgdaFunction{Lens₁} is quite straightforward:
-\begin{code}
-  ∘-lens₁ : Lens₁ D B → Lens₁ B A → Lens₁ D A
-  ∘-lens₁ l₁ l₂ = ∃-lens (assocl⋆equiv ● id≃ ×≃ Lens₁.iso l₂ ● Lens₁.iso l₁)
-\end{code}
-
-Before we see an example of lensing onto a non-existent component,
-we should complete the picture of lenses, and we're
-missing composition:
+Lastly, we also have lens composition:
 \begin{code}
   ∘-lens : ∃-Lens D B → ∃-Lens B A → ∃-Lens D A
-  ∘-lens l₁ l₂ = ll {C = C l₁ ×S C l₂} ((×-assoc ∘F (idF ×-inverse ∃-Lens.iso l₂)) ∘F ∃-Lens.iso l₁)
+  ∘-lens l₁ l₂ = ll ((×-assoc ∘F (idF ×-inverse ∃-Lens.iso l₂)) ∘F ∃-Lens.iso l₁)
 \end{code}
 The above gives us our first \emph{lens program} consisting of a composition of
-four more basic equivalences.
+four more basic equivalences. However, it is ``lower level'' as we can only
+extract $\AgdaRecord{Setoid}$-based equivalences from a $\AgdaRecord{∃-Lens}$.
+The necessary code is quite straightforward (and available in the literate
+Agda source of this paper).
+
 
 \subsection{Unusual lenses}
 
-Let's now get back to lensing into a component that is not immediately
-present, through a concrete example.  For
-completeness, both \AgdaRecord{GS-Lens} and \AgdaRecord{∃-Lens}
+It is possible to create lenses for things which are
+not ``in'' a type at all --- an example is most instructive.
+For completeness, both \AgdaRecord{GS-Lens} and \AgdaRecord{∃-Lens}
 will be given.
 
 Let us consider a type \verb|Colour| with exactly $3$ inhabitants,
@@ -914,7 +917,7 @@ the same for the \verb|GS-Lens|:
 \end{code}
 
 Note how the \AgdaRecord{∃-Lens} is linear in the size of the enumerated type, including
-the proofs whilst \AgdaRecord{GS-Lens} is quadratic for the function size, and cubic in
+the proofs, whilst \AgdaRecord{GS-Lens} is quadratic for the function size, and cubic in
 the proof size!  Naturally in a tactic-based theorem provers, the proof for
 \AgdaField{putput} would likely have hidden this; this is misleading as the tactics
 nevertheless generate this large term, as it is what needs to be type-checked.
@@ -928,9 +931,11 @@ In a way, a ``better'' explanation of \AgdaRecord{∃-Colour-in-A+A+A}
 is to remark that the types $⊤ ⊎ ⊤ ⊎ ⊤$ (which we'll call
 $\mymathbb{3}$) and \AgdaRecord{Colour} are isomorphic, which leads to
 the chains of isomorphisms $A \uplus A \uplus A \simeq A × \mymathbb{3}
-\simeq A × \AgdaRecord{Colour}$.
+\simeq A × \AgdaRecord{Colour}$. This is a strength of the combinator-based
+approach to type isomorphisms.
 
-An interesting interpretation of that isomorphism is that we can freely move tagging
+An interesting interpretation of $A \uplus A \uplus A \simeq A × \AgdaRecord{Colour}$
+is that we can freely move tagging
 of data $A$ with \textit{finite information} between type-level tags and value-level
 tags at will.
 
