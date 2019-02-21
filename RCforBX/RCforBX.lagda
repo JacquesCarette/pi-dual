@@ -6,7 +6,7 @@
 \usepackage{graphicx}
 \usepackage{agda}
 \usepackage{lmodern}
-\usepackage[greek]{babel}
+\usepackage{textgreek}
 \usepackage[utf8x]{inputenc}
 \usepackage[LGR,TS1,T1]{fontenc}
 \usepackage{comment}
@@ -585,7 +585,8 @@ of a semiring --- we place them side-by-side in
 Fig.~\ref{type-isos}.  Each is also named --- the details can be found
 both in~\cite{Carette2016,Carette2018} and in the online repository
 \url{http://github.com/JacquesCarette/pi-dual} (in file
-\texttt{Univalence/TypeEquiv.agda}).
+\texttt{Univalence/TypeEquiv.agda}).  There, a programming
+language named $\Pi$ is created to denote type isomorphisms.
 
 This set of isomorphisms is known to be sound and
 complete~\cite{Fiore:2004,fiore-remarks} for isomorphisms
@@ -616,13 +617,14 @@ of reversible hardware circuits, the canonical universal primitive is
 the Toffoli gate~\cite{Toffoli:1980}. The Toffoli gate takes three
 boolean inputs: if the first two inputs are \ensuremath{\mathit{true}} then the third
 bit is negated. The Toffoli gate, and its simple cousin the $\mathit{cnot}$ gate, are both
-expressible in $\Pi$.
+expressible in the programming language $\Pi$.
 
-\subsection{Reversible Programs between Reversible Programs}
+\subsection{Equivalences between Equivalences}
 \label{sec:pi2}
 
-Just as programs can be shown equivalent, so can reversible
-programs. To illustrate, consider two programms that both
+Just as types can be shown equivalent, type isomorphisms
+also induce a ``higher dimensional'' set of equivalences.
+To illustrate, consider two equivalences that both
 map between the types $A + B$ and $C+D$:
 
 \begin{center}
@@ -669,7 +671,7 @@ map between the types $A + B$ and $C+D$:
   \path (3,-3.5) node (bc2) [func] {$c_2$};
 \end{tikzpicture}
 \end{center}
-The top path is the $\Pi$ program
+The top path is
 $(c_1~\oplus~c_2)~\odot~\swapp$ and the bottom path
 $\swapp~\odot~(c_2~\oplus~c_1)$. These are equivalent --
 and in fact denote the same permutation.
@@ -677,16 +679,16 @@ And, of course, not
 all programs between the same types are equivalent. The simplest example
 are the two automorphisms of $1+1$, namely $\idc$ and $\swapp$.
 
-Our reversible language of type isomorphisms and equivalences between
+The language of type isomorphisms and equivalences between
 them has a strong connection to \emph{univalent universes} in
 HoTT~\cite{Carette2018}. Based on this connection, we refer to the
-types as being at level-0, to the equivalences between types (i.e., the
-combinators of Sec.~\ref{sec:pi1}) as being at level-1, and to the
-equivalences between equivalences of types (i.e., the combinators
-discussed in this section) as being at level-2.
+types as being at level-0, to the equivalences between types as being
+at level-1, and to the
+equivalences between equivalences of types (i.e., this subsection)
+as being at level-2.
 
-$\Pi$ was defined by taking the the proof terms of commutative semiring
-equivalences as terms. What we need
+The basic type equivalences were defined by using all the
+proof terms of commutative semirings. What we need
 now is to understand how \emph{proofs} of algebraic identities should be
 considered equivalent. Classical algebra does not help, as proofs
 are not considered first-class citizens. However,
@@ -696,7 +698,8 @@ one can model types as \emph{groupoids}.  The additional
 structure comes from explicitly modeling the ``identity
 types'': instead of regarding all terms which witness
 the equality of (say) $a$ and $b$ of type $A$ as being
-indistinguishable, we posit that there may in fact be many.
+indistinguishable, we posit that there may in fact be many,
+i.e. proof relevance.
 
 Thus, rather than looking at (untyped) commutative semirings, we
 should look at a \emph{typed} version. This process frequently goes by
@@ -716,14 +719,14 @@ How does this help? Coherence conditions! Symmetric monoidal categories,
 to start somewhere simple, do not just introduce natural transformations
 like the associator $\alpha$ and the left and right unitors ($\lambda$
 and~$\rho$ respectively), but also coherence conditions that these must satisfy.
-Looking, for example, at just the additive fragment of $\Pi$ (i.e. with just $0$,
+Looking, for example, at just the additive fragment (i.e. with just $0$,
 $1$ and $+$ for the types, $\odot$ and $\oplus$ as combinators, and
 only the terms so expressible), the sub-language would correspond,
-denotationally, to exactly (non-empty) symmetric monoidal groupoids. And
-here we \emph{equations between equations}, aka
+denotationally, to exactly symmetric monoidal groupoids. And
+here we have \emph{equations between equations}, aka
 commutative diagrams.  Transporting these coherence conditions, for
 example those that express that various transformations are \emph{natural},
-to $\Pi$ gives a list of equations between $\Pi$ programs.
+to our setting gives a list of equations between isomorphisms.
 Furthermore, all the natural transformations
 that arise are in fact natural \emph{isomorphisms} -- and thus
 reversible.
@@ -760,306 +763,6 @@ The problem is far from trivial --- Fiore et al.~\cite{Fiore-2008}
 document some publications where the coherence set is in
 fact incorrect. They furthermore give a quite general algorithm
 to derive such coherence conditions.
-
-%%%%%%%%%
-\subsection{A Language of Equivalences between Type Equivalences}
-\label{langeqeq}
-
-As motivated in the previous section, the equivalences between type
-equivalences are perfectly modeled by the coherence conditions of weak
-Rig Groupoids. Syntactically, we take the easiest way there: simply
-make every coherence isomorphism into a programming construct. These
-constructs are collected in several figures (Fig.~\ref{figj} to
-Fig.~\ref{figa}). We present these without much comment as this
-would take us too far afield. \jc{cite}
-
-Conveniently, the various coherence conditions can be naturally
-grouped into ``related'' laws.  Each group basically captures the
-interactions between compositions of level-1 $\Pi$ combinators.
-
-\begin{figure}[t]
-Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, $c_3 : t_1 \leftrightarrow t_2$, and $c_4 : t_3 \leftrightarrow t_4$. \\
-Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_1 \leftrightarrow t_3$, and $a_4 : t_2 \leftrightarrow t_4$.
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-\Rule{}
-  {c_1 \Leftrightarrow c_3 \quad c_2 \Leftrightarrow c_4}
-  {c_1 \oplus c_2 \Leftrightarrow c_3 \oplus c_4}
-  {}
-\qquad
-\Rule{}
-  {c_1 \Leftrightarrow c_3 \quad c_2 \Leftrightarrow c_4}
-  {c_1 \otimes c_2 \Leftrightarrow c_3 \otimes c_4}
-  {}
-\\
-  {(a_1 \odot a_3) \oplus (a_2 \odot a_4) \Leftrightarrow (a_1 \oplus a_2) \odot (a_3 \oplus a_4)}
-\\
-  {(a_1 \odot a_3) \otimes (a_2 \odot a_4) \Leftrightarrow (a_1 \otimes a_2) \odot (a_3 \otimes a_4)}
-\end{array}\]
-\caption{\label{fige}Signatures of level-2 $\Pi$-combinators: functors}
-\end{figure}
-
-\begin{figure}[t]
-Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 : t_3 \leftrightarrow t_4$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {c_1 \odot (c_2 \odot c_3) \Leftrightarrow (c_1 \odot c_2) \odot c_3}
-\\
-  {(c_1 \oplus (c_2 \oplus c_3)) \odot \assoclp \Leftrightarrow \assoclp \odot ((c_1 \oplus c_2) \oplus c_3)}
-\\
-  {(c_1 \otimes (c_2 \otimes c_3)) \odot \assoclt \Leftrightarrow \assoclt \odot ((c_1 \otimes c_2) \otimes c_3)}
-\\
-  {((c_1 \oplus c_2) \oplus c_3) \odot \assocrp \Leftrightarrow \assocrp \odot (c_1 \oplus (c_2 \oplus c_3))}
-\\
-  {((c_1 \otimes c_2) \otimes c_3) \odot \assocrt \Leftrightarrow \assocrt \odot (c_1 \otimes (c_2 \otimes c_3))}
-\\
-  {\assocrp \odot \assocrp \Leftrightarrow ((\assocrp \oplus \idc) \odot \assocrp) \odot (\idc \oplus \assocrp)}
-\\
-  {\assocrt \odot \assocrt \Leftrightarrow ((\assocrt \otimes \idc) \odot \assocrt) \odot (\idc \otimes \assocrt)}
-\end{array}\]
-\caption{\label{figj}Signatures of level-2 $\Pi$-combinators: associativity}
-\end{figure}
-
-The bottom line in Fig.~\ref{figj} is actually a linear
-restatement of the famous ``pentagon diagram'' stating a
-particular coherence condition for monoidal categories~\cite{KELLY197197}.
-To make the relation between $\Pi$ as a language and the
-language of category theory, the figure below displays
-the same morphism but in categorical terms.
-
-\begin{center}
-\begin{tikzcd}[column sep=normal]
-   & (A \times (B \times C)) \times D \arrow [dr, "\assocrt"] & \\
-((A \times B) \times C) \times D \arrow [ur, "\assocrt \otimes \mathit{id}\leftrightarrow"]
-   \arrow [d, "\assocrt"] &
-       & A \times ((B \times C) \times D) \arrow [d, "\mathit{id}\leftrightarrow \otimes \assocrt" ]\\
-(A \times B) \times (C \times D) \arrow [rr, "\assocrt"] & & A \times (B \times (C \times D))
-\end{tikzcd}
-\end{center}
-
-\begin{figure}[t]
-Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, and $c_3 : t_5 \leftrightarrow t_6$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {((c_1 \oplus c_2) \otimes c_3) \odot \dist \Leftrightarrow \dist \odot ((c_1 \otimes c_3) \oplus (c_2 \otimes c_3))}
-\\
-  {(c_1 \otimes (c_2 \oplus c_3)) \odot \distl \Leftrightarrow \distl \odot ((c_1 \otimes c_2) \oplus (c_1 \otimes c_3))}
-\\
-  {((c_1 \otimes c_3) \oplus (c_2 \otimes c_3)) \odot \factor \Leftrightarrow \factor \odot ((c_1 \oplus c_2) \otimes c_3)}
-\\
-  {((c_1 \otimes c_2) \oplus (c_1 \otimes c_3)) \odot \factorl \Leftrightarrow \factorl \odot (c_1 \otimes (c_2 \oplus c_3))}
-\end{array}\]
-\caption{\label{figi}Signatures of level-2 $\Pi$-combinators: distributivity and factoring}
-\end{figure}
-
-\begin{figure}[t]
-Let $c_0, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c_4, c_5 : t_3 \leftrightarrow t_4$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {\idc \odot \, c_0 \Leftrightarrow c_0}
-\quad
-  {c_0 \, \odot \idc \, \Leftrightarrow c_0}
-\quad
-  {c_0\,\, \odot\,!\, c_0 \Leftrightarrow \idc}
-\quad
-  {!\, c_0 \odot c_0 \Leftrightarrow \idc}
-\\
-  {\idc \oplus \, \idc \, \Leftrightarrow \idc}
-\qquad
-  {\idc \otimes \, \idc \, \Leftrightarrow \idc}
-\\
-  {c_0 \Leftrightarrow c_0}
-\quad
-\Rule{}
-  {c_1 \Leftrightarrow c_2 \quad c_2 \Leftrightarrow c_3}
-  {c_1 \Leftrightarrow c_3}
-  {}
-\quad
-\Rule{}
-  {c_1 \Leftrightarrow c_4 \quad c_2 \Leftrightarrow c_5}
-  {c_1 \odot c_2 \Leftrightarrow c_4 \odot c_5}
-  {}
-\end{array}\]
-\caption{\label{figh}Signatures of level-2 $\Pi$-combinators: identity and composition}
-\end{figure}
-
-\begin{figure}[t]
-Let $c_0 : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c_3 : t_1 \leftrightarrow t_2$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {\identlp \odot c_3 \Leftrightarrow (c_0 \oplus c_3) \odot \identlp}
-\qquad
-  {\identrp \odot (c_0 \oplus c_3) \Leftrightarrow c_3 \odot \identrp}
-\\
-  {\identlsp \odot c_3 \Leftrightarrow (c_3 \oplus c_0) \odot \identlsp}
-\qquad
-  {\identrsp \odot (c_3 \oplus c_0) \Leftrightarrow c_3 \odot \identrsp}
-\\
-  {\identlt \odot c_3 \Leftrightarrow (c_1 \otimes c_3) \odot \identlt}
-\qquad
-  {\identrt \odot (c_1 \otimes c_3) \Leftrightarrow c_3 \odot \identrp}
-\\
-  {\identlst \odot c_3 \Leftrightarrow (c_3 \otimes c_1) \odot \identlst}
-\qquad
-  {\identrst \odot (c_3 \otimes c_1) \Leftrightarrow c_3 \odot \identrst}
-\\
-  {\identlt \Leftrightarrow \distl \odot (\identlt \oplus \identlt)}
-\\
-\identlp \Leftrightarrow \swapp \odot \identlsp
-\qquad
-\identlt \Leftrightarrow \swapt \odot \identlst
-\end{array}\]
-\caption{\label{figg}Signatures of level-2 $\Pi$-combinators: unit}
-\end{figure}
-
-The constructs in Fig.~\ref{figg} may at first blush look similarly straightforward,
-but deserve some pause. One obvious question: What is the point of
-$c_0 : 0 \leftrightarrow 0$, isn't it just the identity combinator $\idc$
-for $A = 0$ (as defined in Fig.~\ref{type-isos})? Operationally, $c_0$
-is indeed indistinguishable from $\idc$. However, there are multiple syntactic
-ways of writing down combinators of type $0 \leftrightarrow 0$, and the
-first combinator in Fig.~\ref{figg} applies to all of them uniformly.
-This is another subtle aspect of coherence: all reasoning must be valid for
-all possible models, not just the one we have in mind. So even though
-operational reasoning may suggest that some relations \emph{may} be
-true between combinators, it can also mislead. The same reasoning
-applies to $c_1 : 1 \leftrightarrow 1$.  The first $8$ combinators can
-then be read as basic coherence for unit introduction and elimination,
-in both additive and multiplicative cases.
-
-\begin{figure}[t]
-Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {\swapp \odot (c_1 \oplus c_2) \Leftrightarrow (c_2 \oplus c_1) \odot \swapp}
-\quad
-  {\swapt \odot (c_1 \otimes c_2) \Leftrightarrow (c_2 \otimes c_1) \odot \swapt}
-\\
-  {(\assocrp \odot \swapp) \odot \assocrp \Leftrightarrow ((\swapp \oplus \idc) \odot \assocrp) \odot (\idc \oplus \swapp)}
-\\
-  {(\assoclp \odot \swapp) \odot \assoclp \Leftrightarrow ((\idc \oplus \swapp) \odot \assoclp) \odot (\swapp \oplus \idc)}
-\\
-  {(\assocrt \odot \swapt) \odot \assocrt \Leftrightarrow ((\swapt \otimes \idc) \odot \assocrt) \odot (\idc \otimes \swapt)}
-\\
-  {(\assoclt \odot \swapt) \odot \assoclt \Leftrightarrow ((\idc \otimes \swapt) \odot \assoclt) \odot (\swapt \otimes \idc)}
-\end{array}\]
-\caption{\label{figf}Signatures of level-2 $\Pi$-combinators: commutativity and associativity}
-\end{figure}
-
-\begin{figure}[t]
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {\identlsp \oplus \idc ~\Leftrightarrow~ \assocrp \odot (\idc \oplus \, \identlp)}
-\\
-  {\identlst \otimes \idc ~\Leftrightarrow~ \assocrt \odot (\idc \otimes \, \identlt)}
-\end{array}\]
-\caption{\label{figd}Signatures of level-2 $\Pi$-combinators: unit and associativity}
-\end{figure}
-
-\begin{figure}[t]
-Let $c : t_1 \leftrightarrow t_2$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {(c \otimes \idc) \odot \absorbl \Leftrightarrow \absorbl \odot \idc}
-\quad
-  {(\idc \, \otimes c) \odot \absorbr \Leftrightarrow \absorbr \odot \idc}
-\\
-  {\idc \odot \, \factorzl \Leftrightarrow \factorzl \odot (\idc \otimes c)}
-\quad
-  {\idc \odot \, \factorzr \Leftrightarrow \factorzr \odot (c \otimes \idc)}
-\\
-  {\absorbr \Leftrightarrow \absorbl}
-\\
-  {\absorbr \Leftrightarrow (\distl \odot (\absorbr \oplus \absorbr)) \odot \identlp}
-\\
-  {\identlst \Leftrightarrow \absorbr}
-\qquad
-  {\absorbl \Leftrightarrow \swapt \odot \absorbr}
-\\
-  {\absorbr \Leftrightarrow (\assoclt \odot (\absorbr \otimes \idc)) \odot \absorbr}
-\\
-  {(\idc \otimes \absorbr) \odot \absorbl \Leftrightarrow (\assoclt \odot (\absorbl \otimes \idc)) \odot \absorbr}
-\\
-  {\idc \otimes \, \identlp \Leftrightarrow (\distl \odot (\absorbl \oplus \idc)) \odot \identlp}
-\end{array}\]
-\caption{\label{figc}Signatures of level-2 $\Pi$-combinators: zero}
-\end{figure}
-
-The constructs in Fig.~\ref{figc} are significantly more subtle, as they
-deal with combinators involving $0$, aka an impossibility.  For example,
-\[  {(c \otimes \idc_{0}) \odot \absorbl \Leftrightarrow \absorbl \odot \idc_{0}}
-\]
-(where we have explicitly annotated the types of $\idc$ for increased clarity)
-tells us that of the two ways of transforming from $t_1  *\  0$ to $0$,
-namely first doing some arbitrary transformation $c$ from $t_1$ to $t_2$ and
-(in parallel) leaving $0$ alone then eliminating $0$, or first eliminating $0$
-then doing the identity (at $0$), are equivalent. This is the ``naturality'' of
-$\absorbl$. One item to note is the fact that this combinator is not
-irreducible, as the $\idc$ on the right can be eliminated. But that is actually
-a property visible at an even higher level (which we will not touch in this
-paper).  The next $3$ are similarly expressing the naturality of $\absorbr$,
-$\factorzl$ and $\factorzr$.
-
-The next combinator, $\absorbr \Leftrightarrow \absorbl$, is
-particularly fascinating: while it says something simple --- that the
-two obvious ways of transforming $0 * 0$ into $0$, namely absorbing
-either the left or right $0$ --- it implies something subtle.  A
-straightforward proof of $\absorbl$ which proceeds by saying that
-$0 * t$ cannot be inhabited because the first member of the pair
-cannot, is not in fact equivalent to $\absorbr$ on $0 * 0$.  However,
-if we instead define $\absorbl$ to ``transport'' the putative
-impossible first member of the pair to its (equally impossible)
-output, then these do form equivalent pairs.
-
-There are further subtle issues when the types
-involved are asymmetric: they do not have the same occurrences
-on the left and right. Such cases are particularly troublesome for
-finding normal forms. Laplaza~\cite{laplaza72} certainly comments on this,
-but in mostly terse and technical terms. Blute et al.~\cite{BLUTE1996229}
-offer much more intuitive explanations.
-
-\begin{figure}[t]
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {((\assoclp \otimes \idc) \odot \dist) \odot (\dist \oplus \idc) \Leftrightarrow (\dist \odot (\idc \oplus \dist)) \odot \assoclp}
-\\
-  {\assoclt \odot \distl \Leftrightarrow ((\idc \otimes \distl) \odot \distl) \odot (\assoclt \oplus \assoclt)}
-\end{array}\]
-\vspace{ -0.5em}
-\[\def\arraystretch{1.3}
-\begin{array}{rcl}
-  (\distl \odot (\dist \oplus \dist)) \odot \assoclp &\Leftrightarrow&
-   \dist \odot (\distl \oplus \distl) \odot \assoclp ~\odot \\
-&& (\assocrp \oplus \idc) ~\odot \\
-&& ((\idc \oplus \swapp) \oplus \idc) ~\odot \\
-&&      (\assoclp \oplus \idc)
-\end{array}\]
-\caption{\label{figb}Signatures of level-2 $\Pi$-combinators: associativity and distributivity}
-\end{figure}
-
-\begin{figure}[t]
-\[\def\arraystretch{1.3}
-\begin{array}{rcl}
-  (\idc \otimes \swapp) \odot \distl &\Leftrightarrow& \distl \odot \swapp
-\\
-  \dist \odot (\swapt \oplus \swapt) &\Leftrightarrow & \swapt \odot \distl
-\end{array}\]
-\caption{\label{figa}Signatures of level-2 $\Pi$-combinators: commutativity and distributivity}
-\end{figure}
-
-Unfortunately, giving a detailed example would take us too far afield. \jc{cite}
-
-\renewcommand{\AgdaIndentSpace}{\AgdaSpace{}$\;\;$}
-
-We will however mention one last interpretation.
-Recalling that the $\lambda$-calculus arises as the internal language
-of Cartesian Closed Categories (Elliott~\cite{Elliott-2017} gives a particularly
-readable account of this), we can think of $\Pi$ in similar terms, but
-for symmetric Rig Groupoids instead.  Programs at level-2 of $\Pi$
-are a ``linear'' representation of a 2-categorial commutative
-diagram! In fact, it is a painfully verbose version thereof, as it
-includes many \emph{refocusing} steps because our language does not
-build associativity into its syntax. Categorical diagrams usually do.
 
 \section{Exploring the Lens landscape}
 
@@ -1607,3 +1310,303 @@ a constructive proof of this. In other words, to each $\Pi$
 combinator we can associate an equivalence between the denotation
 of each type, which has all the obvious desirable properties we
 would want from such an association.
+
+%%%%%%%%%
+\subsection{A Language of Equivalences between Type Equivalences}
+\label{langeqeq}
+
+As motivated in the previous section, the equivalences between type
+equivalences are perfectly modeled by the coherence conditions of weak
+Rig Groupoids. Syntactically, we take the easiest way there: simply
+make every coherence isomorphism into a programming construct. These
+constructs are collected in several figures (Fig.~\ref{figj} to
+Fig.~\ref{figa}). We present these without much comment as this
+would take us too far afield. \jc{cite}
+
+Conveniently, the various coherence conditions can be naturally
+grouped into ``related'' laws.  Each group basically captures the
+interactions between compositions of level-1 $\Pi$ combinators.
+
+\begin{figure}[t]
+Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, $c_3 : t_1 \leftrightarrow t_2$, and $c_4 : t_3 \leftrightarrow t_4$. \\
+Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_1 \leftrightarrow t_3$, and $a_4 : t_2 \leftrightarrow t_4$.
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+\Rule{}
+  {c_1 \Leftrightarrow c_3 \quad c_2 \Leftrightarrow c_4}
+  {c_1 \oplus c_2 \Leftrightarrow c_3 \oplus c_4}
+  {}
+\qquad
+\Rule{}
+  {c_1 \Leftrightarrow c_3 \quad c_2 \Leftrightarrow c_4}
+  {c_1 \otimes c_2 \Leftrightarrow c_3 \otimes c_4}
+  {}
+\\
+  {(a_1 \odot a_3) \oplus (a_2 \odot a_4) \Leftrightarrow (a_1 \oplus a_2) \odot (a_3 \oplus a_4)}
+\\
+  {(a_1 \odot a_3) \otimes (a_2 \odot a_4) \Leftrightarrow (a_1 \otimes a_2) \odot (a_3 \otimes a_4)}
+\end{array}\]
+\caption{\label{fige}Signatures of level-2 $\Pi$-combinators: functors}
+\end{figure}
+
+\begin{figure}[t]
+Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 : t_3 \leftrightarrow t_4$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {c_1 \odot (c_2 \odot c_3) \Leftrightarrow (c_1 \odot c_2) \odot c_3}
+\\
+  {(c_1 \oplus (c_2 \oplus c_3)) \odot \assoclp \Leftrightarrow \assoclp \odot ((c_1 \oplus c_2) \oplus c_3)}
+\\
+  {(c_1 \otimes (c_2 \otimes c_3)) \odot \assoclt \Leftrightarrow \assoclt \odot ((c_1 \otimes c_2) \otimes c_3)}
+\\
+  {((c_1 \oplus c_2) \oplus c_3) \odot \assocrp \Leftrightarrow \assocrp \odot (c_1 \oplus (c_2 \oplus c_3))}
+\\
+  {((c_1 \otimes c_2) \otimes c_3) \odot \assocrt \Leftrightarrow \assocrt \odot (c_1 \otimes (c_2 \otimes c_3))}
+\\
+  {\assocrp \odot \assocrp \Leftrightarrow ((\assocrp \oplus \idc) \odot \assocrp) \odot (\idc \oplus \assocrp)}
+\\
+  {\assocrt \odot \assocrt \Leftrightarrow ((\assocrt \otimes \idc) \odot \assocrt) \odot (\idc \otimes \assocrt)}
+\end{array}\]
+\caption{\label{figj}Signatures of level-2 $\Pi$-combinators: associativity}
+\end{figure}
+
+The bottom line in Fig.~\ref{figj} is actually a linear
+restatement of the famous ``pentagon diagram'' stating a
+particular coherence condition for monoidal categories~\cite{KELLY197197}.
+To make the relation between $\Pi$ as a language and the
+language of category theory, the figure below displays
+the same morphism but in categorical terms.
+
+\begin{center}
+\begin{tikzcd}[column sep=normal]
+   & (A \times (B \times C)) \times D \arrow [dr, "\assocrt"] & \\
+((A \times B) \times C) \times D \arrow [ur, "\assocrt \otimes \mathit{id}\leftrightarrow"]
+   \arrow [d, "\assocrt"] &
+       & A \times ((B \times C) \times D) \arrow [d, "\mathit{id}\leftrightarrow \otimes \assocrt" ]\\
+(A \times B) \times (C \times D) \arrow [rr, "\assocrt"] & & A \times (B \times (C \times D))
+\end{tikzcd}
+\end{center}
+
+\begin{figure}[t]
+Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, and $c_3 : t_5 \leftrightarrow t_6$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {((c_1 \oplus c_2) \otimes c_3) \odot \dist \Leftrightarrow \dist \odot ((c_1 \otimes c_3) \oplus (c_2 \otimes c_3))}
+\\
+  {(c_1 \otimes (c_2 \oplus c_3)) \odot \distl \Leftrightarrow \distl \odot ((c_1 \otimes c_2) \oplus (c_1 \otimes c_3))}
+\\
+  {((c_1 \otimes c_3) \oplus (c_2 \otimes c_3)) \odot \factor \Leftrightarrow \factor \odot ((c_1 \oplus c_2) \otimes c_3)}
+\\
+  {((c_1 \otimes c_2) \oplus (c_1 \otimes c_3)) \odot \factorl \Leftrightarrow \factorl \odot (c_1 \otimes (c_2 \oplus c_3))}
+\end{array}\]
+\caption{\label{figi}Signatures of level-2 $\Pi$-combinators: distributivity and factoring}
+\end{figure}
+
+\begin{figure}[t]
+Let $c_0, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c_4, c_5 : t_3 \leftrightarrow t_4$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\idc \odot \, c_0 \Leftrightarrow c_0}
+\quad
+  {c_0 \, \odot \idc \, \Leftrightarrow c_0}
+\quad
+  {c_0\,\, \odot\,!\, c_0 \Leftrightarrow \idc}
+\quad
+  {!\, c_0 \odot c_0 \Leftrightarrow \idc}
+\\
+  {\idc \oplus \, \idc \, \Leftrightarrow \idc}
+\qquad
+  {\idc \otimes \, \idc \, \Leftrightarrow \idc}
+\\
+  {c_0 \Leftrightarrow c_0}
+\quad
+\Rule{}
+  {c_1 \Leftrightarrow c_2 \quad c_2 \Leftrightarrow c_3}
+  {c_1 \Leftrightarrow c_3}
+  {}
+\quad
+\Rule{}
+  {c_1 \Leftrightarrow c_4 \quad c_2 \Leftrightarrow c_5}
+  {c_1 \odot c_2 \Leftrightarrow c_4 \odot c_5}
+  {}
+\end{array}\]
+\caption{\label{figh}Signatures of level-2 $\Pi$-combinators: identity and composition}
+\end{figure}
+
+\begin{figure}[t]
+Let $c_0 : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c_3 : t_1 \leftrightarrow t_2$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\identlp \odot c_3 \Leftrightarrow (c_0 \oplus c_3) \odot \identlp}
+\qquad
+  {\identrp \odot (c_0 \oplus c_3) \Leftrightarrow c_3 \odot \identrp}
+\\
+  {\identlsp \odot c_3 \Leftrightarrow (c_3 \oplus c_0) \odot \identlsp}
+\qquad
+  {\identrsp \odot (c_3 \oplus c_0) \Leftrightarrow c_3 \odot \identrsp}
+\\
+  {\identlt \odot c_3 \Leftrightarrow (c_1 \otimes c_3) \odot \identlt}
+\qquad
+  {\identrt \odot (c_1 \otimes c_3) \Leftrightarrow c_3 \odot \identrp}
+\\
+  {\identlst \odot c_3 \Leftrightarrow (c_3 \otimes c_1) \odot \identlst}
+\qquad
+  {\identrst \odot (c_3 \otimes c_1) \Leftrightarrow c_3 \odot \identrst}
+\\
+  {\identlt \Leftrightarrow \distl \odot (\identlt \oplus \identlt)}
+\\
+\identlp \Leftrightarrow \swapp \odot \identlsp
+\qquad
+\identlt \Leftrightarrow \swapt \odot \identlst
+\end{array}\]
+\caption{\label{figg}Signatures of level-2 $\Pi$-combinators: unit}
+\end{figure}
+
+The constructs in Fig.~\ref{figg} may at first blush look similarly straightforward,
+but deserve some pause. One obvious question: What is the point of
+$c_0 : 0 \leftrightarrow 0$, isn't it just the identity combinator $\idc$
+for $A = 0$ (as defined in Fig.~\ref{type-isos})? Operationally, $c_0$
+is indeed indistinguishable from $\idc$. However, there are multiple syntactic
+ways of writing down combinators of type $0 \leftrightarrow 0$, and the
+first combinator in Fig.~\ref{figg} applies to all of them uniformly.
+This is another subtle aspect of coherence: all reasoning must be valid for
+all possible models, not just the one we have in mind. So even though
+operational reasoning may suggest that some relations \emph{may} be
+true between combinators, it can also mislead. The same reasoning
+applies to $c_1 : 1 \leftrightarrow 1$.  The first $8$ combinators can
+then be read as basic coherence for unit introduction and elimination,
+in both additive and multiplicative cases.
+
+\begin{figure}[t]
+Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\swapp \odot (c_1 \oplus c_2) \Leftrightarrow (c_2 \oplus c_1) \odot \swapp}
+\quad
+  {\swapt \odot (c_1 \otimes c_2) \Leftrightarrow (c_2 \otimes c_1) \odot \swapt}
+\\
+  {(\assocrp \odot \swapp) \odot \assocrp \Leftrightarrow ((\swapp \oplus \idc) \odot \assocrp) \odot (\idc \oplus \swapp)}
+\\
+  {(\assoclp \odot \swapp) \odot \assoclp \Leftrightarrow ((\idc \oplus \swapp) \odot \assoclp) \odot (\swapp \oplus \idc)}
+\\
+  {(\assocrt \odot \swapt) \odot \assocrt \Leftrightarrow ((\swapt \otimes \idc) \odot \assocrt) \odot (\idc \otimes \swapt)}
+\\
+  {(\assoclt \odot \swapt) \odot \assoclt \Leftrightarrow ((\idc \otimes \swapt) \odot \assoclt) \odot (\swapt \otimes \idc)}
+\end{array}\]
+\caption{\label{figf}Signatures of level-2 $\Pi$-combinators: commutativity and associativity}
+\end{figure}
+
+\begin{figure}[t]
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\identlsp \oplus \idc ~\Leftrightarrow~ \assocrp \odot (\idc \oplus \, \identlp)}
+\\
+  {\identlst \otimes \idc ~\Leftrightarrow~ \assocrt \odot (\idc \otimes \, \identlt)}
+\end{array}\]
+\caption{\label{figd}Signatures of level-2 $\Pi$-combinators: unit and associativity}
+\end{figure}
+
+\begin{figure}[t]
+Let $c : t_1 \leftrightarrow t_2$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {(c \otimes \idc) \odot \absorbl \Leftrightarrow \absorbl \odot \idc}
+\quad
+  {(\idc \, \otimes c) \odot \absorbr \Leftrightarrow \absorbr \odot \idc}
+\\
+  {\idc \odot \, \factorzl \Leftrightarrow \factorzl \odot (\idc \otimes c)}
+\quad
+  {\idc \odot \, \factorzr \Leftrightarrow \factorzr \odot (c \otimes \idc)}
+\\
+  {\absorbr \Leftrightarrow \absorbl}
+\\
+  {\absorbr \Leftrightarrow (\distl \odot (\absorbr \oplus \absorbr)) \odot \identlp}
+\\
+  {\identlst \Leftrightarrow \absorbr}
+\qquad
+  {\absorbl \Leftrightarrow \swapt \odot \absorbr}
+\\
+  {\absorbr \Leftrightarrow (\assoclt \odot (\absorbr \otimes \idc)) \odot \absorbr}
+\\
+  {(\idc \otimes \absorbr) \odot \absorbl \Leftrightarrow (\assoclt \odot (\absorbl \otimes \idc)) \odot \absorbr}
+\\
+  {\idc \otimes \, \identlp \Leftrightarrow (\distl \odot (\absorbl \oplus \idc)) \odot \identlp}
+\end{array}\]
+\caption{\label{figc}Signatures of level-2 $\Pi$-combinators: zero}
+\end{figure}
+
+The constructs in Fig.~\ref{figc} are significantly more subtle, as they
+deal with combinators involving $0$, aka an impossibility.  For example,
+\[  {(c \otimes \idc_{0}) \odot \absorbl \Leftrightarrow \absorbl \odot \idc_{0}}
+\]
+(where we have explicitly annotated the types of $\idc$ for increased clarity)
+tells us that of the two ways of transforming from $t_1  *\  0$ to $0$,
+namely first doing some arbitrary transformation $c$ from $t_1$ to $t_2$ and
+(in parallel) leaving $0$ alone then eliminating $0$, or first eliminating $0$
+then doing the identity (at $0$), are equivalent. This is the ``naturality'' of
+$\absorbl$. One item to note is the fact that this combinator is not
+irreducible, as the $\idc$ on the right can be eliminated. But that is actually
+a property visible at an even higher level (which we will not touch in this
+paper).  The next $3$ are similarly expressing the naturality of $\absorbr$,
+$\factorzl$ and $\factorzr$.
+
+The next combinator, $\absorbr \Leftrightarrow \absorbl$, is
+particularly fascinating: while it says something simple --- that the
+two obvious ways of transforming $0 * 0$ into $0$, namely absorbing
+either the left or right $0$ --- it implies something subtle.  A
+straightforward proof of $\absorbl$ which proceeds by saying that
+$0 * t$ cannot be inhabited because the first member of the pair
+cannot, is not in fact equivalent to $\absorbr$ on $0 * 0$.  However,
+if we instead define $\absorbl$ to ``transport'' the putative
+impossible first member of the pair to its (equally impossible)
+output, then these do form equivalent pairs.
+
+There are further subtle issues when the types
+involved are asymmetric: they do not have the same occurrences
+on the left and right. Such cases are particularly troublesome for
+finding normal forms. Laplaza~\cite{laplaza72} certainly comments on this,
+but in mostly terse and technical terms. Blute et al.~\cite{BLUTE1996229}
+offer much more intuitive explanations.
+
+\begin{figure}[t]
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {((\assoclp \otimes \idc) \odot \dist) \odot (\dist \oplus \idc) \Leftrightarrow (\dist \odot (\idc \oplus \dist)) \odot \assoclp}
+\\
+  {\assoclt \odot \distl \Leftrightarrow ((\idc \otimes \distl) \odot \distl) \odot (\assoclt \oplus \assoclt)}
+\end{array}\]
+\vspace{ -0.5em}
+\[\def\arraystretch{1.3}
+\begin{array}{rcl}
+  (\distl \odot (\dist \oplus \dist)) \odot \assoclp &\Leftrightarrow&
+   \dist \odot (\distl \oplus \distl) \odot \assoclp ~\odot \\
+&& (\assocrp \oplus \idc) ~\odot \\
+&& ((\idc \oplus \swapp) \oplus \idc) ~\odot \\
+&&      (\assoclp \oplus \idc)
+\end{array}\]
+\caption{\label{figb}Signatures of level-2 $\Pi$-combinators: associativity and distributivity}
+\end{figure}
+
+\begin{figure}[t]
+\[\def\arraystretch{1.3}
+\begin{array}{rcl}
+  (\idc \otimes \swapp) \odot \distl &\Leftrightarrow& \distl \odot \swapp
+\\
+  \dist \odot (\swapt \oplus \swapt) &\Leftrightarrow & \swapt \odot \distl
+\end{array}\]
+\caption{\label{figa}Signatures of level-2 $\Pi$-combinators: commutativity and distributivity}
+\end{figure}
+
+Unfortunately, giving a detailed example would take us too far afield. \jc{cite}
+
+\renewcommand{\AgdaIndentSpace}{\AgdaSpace{}$\;\;$}
+
+We will however mention one last interpretation.
+Recalling that the $\lambda$-calculus arises as the internal language
+of Cartesian Closed Categories (Elliott~\cite{Elliott-2017} gives a particularly
+readable account of this), we can think of $\Pi$ in similar terms, but
+for symmetric Rig Groupoids instead.  Programs at level-2 of $\Pi$
+are a ``linear'' representation of a 2-categorial commutative
+diagram! In fact, it is a painfully verbose version thereof, as it
+includes many \emph{refocusing} steps because our language does not
+build associativity into its syntax. Categorical diagrams usually do.
