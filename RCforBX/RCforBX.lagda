@@ -210,6 +210,58 @@ type equivalences. In particular, we formalize the intuitive, but
 informal, constructions and laws, in various
 sources~\cite{oleg-bloc,Miltner2018,laarhoven}.
 
+We start with the conventional definition of lenses using a pair of
+\emph{very well-behaved} set/get functions. That definition is only
+implicitly related to type equivalences via a hidden
+\emph{constant-complement}. In order to expose the underlying type
+equivalence, we first reformulate the definition of lenses using an
+existential record that packages an unknown but fixed complement
+type. That definition, however, turns out to have weak proof-theoretic
+properties. We therefore introduce our final definition of lenses
+using the notion of \emph{setoid} to formalize the correct equivalence
+relation on the source type of the lens. We present a complete
+formalized proof in Agda that this final definition is sound and
+complete with respect to the conventional set/get definition. 
+
+With a formulation of lenses based on proof-relevant type-equivalences
+in hand, we aim to show that many variants of lenses, as well as othe
+optics (prisms, etc.), are directly expressible, and more importantly,
+that their laws are immediately derivable. In order to do that,
+however, we first need, a language in which to express type
+equivalences as well as proofs between type equivalences. In previous
+work, we have established that if we restrict ourselves to finite
+types constructed from the empty type, the unit type, the sum type,
+and the product type, then it is possible to formulate a two-level
+language with the following properties. The level-1 programs in the
+language are sound and complete type equivalences, and the level-2
+programs are sound and complete proofs of equivalences between the
+level-1 programs. This setting of finite types thus provides us with a
+framework in which to define canonical optics with their
+properties. In the presence of richer types, lenses and their
+properties can still be expressed but we generally lose guarantees of
+completeness.
+
+%% * we want to understand lenses in the setting of proof-relevant type isomorphisms
+%% 
+%% * the first question is how to define lenses: 
+%%      - first guess set/get; no obvious connection to type equivalences
+%%      - next guess \exists; type equivalences appear; can show soundness but
+%%        no completness 
+%%      - final def: setoid
+%%    [none of the above refers to Pi, so could be presented first, right?]
+%% 
+%% * we now want to explore various optics using our definition; but
+%%      first we need a language to talk about proof-relevant type
+%%      equivalences; if we restrict ourselves to finite types, we can
+%%      have soundness and completeness of type equivalences AND proofs
+%%      about such equivalences; that setting will give us nice canonical
+%%      results; in principle we could go to richer types (cite other Pi
+%%      papers with trace etc) but we lose
+%%      soundness/completeness. Introduce relevant pieces of PI as a
+%%      language for sound and complete proof relevant type equivalences
+%% 
+%% * a whole bunch of optics emerge with the right laws for free….
+
 %% The inspiration for this paper comes from a number of sources:
 %% \begin{enumerate}
 %%   \item Oleg Grenrus' \textit{Finding correct (lens) laws}~\cite{oleg-blog},
