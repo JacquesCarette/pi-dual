@@ -160,6 +160,7 @@ which provide the canonical laws for reasoning about lens and prism equivalences
 
 \AgdaHide{
 \begin{code}
+{-# OPTIONS --without-K #-}
 module RCforBX where
 
 open import Level
@@ -174,10 +175,12 @@ open import Relation.Binary.PropositionalEquality as P
 open import Function using (id; const; _∘_; case_of_)
 
 open import Relation.Binary using (Setoid)
-open import Function.Equality using (_⟨$⟩_) renaming (cong to scong)
+open import Function.Equality using (_⟨$⟩_; Π)
 -- open import Relation.Binary.Product.Pointwise using (_×-setoid_)
 -- open import Data.Product.Relation.Pointwise.NonDependent using (_×-inverse_)
-open import Function.Inverse using (Inverse) renaming (id to idF; _∘_ to _∘F_)
+open import Function.Inverse using (Inverse)
+  renaming (id to idF; _∘_ to _∘F_)
+open Inverse using (to; from; left-inverse-of; right-inverse-of)
 
 open import Equiv
 open import TypeEquiv
@@ -200,9 +203,9 @@ _×-inverse_ : {a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : Level}
   Inverse A B → Inverse C D → Inverse (A ×S C) (B ×S D)
 A↔B ×-inverse C↔D = record
   { to = record { _⟨$⟩_ = map× (to A↔B ⟨$⟩_) (to C↔D ⟨$⟩_)
-                ; cong = λ { ( _∼₁_ , _∼₂_ ) → scong (to A↔B) _∼₁_ , scong (to C↔D) _∼₂_ } }
+                ; cong = λ { ( _∼₁_ , _∼₂_ ) → Π.cong (to A↔B) _∼₁_ , Π.cong (to C↔D) _∼₂_ } }
   ; from = record { _⟨$⟩_ = map× (from A↔B ⟨$⟩_) (from C↔D ⟨$⟩_)
-                  ; cong = λ { ( _∼₁_ , _∼₂_ ) → scong (from A↔B) _∼₁_ , scong (from C↔D) _∼₂_ } }
+                  ; cong = λ { ( _∼₁_ , _∼₂_ ) → Π.cong (from A↔B) _∼₁_ , Π.cong (from C↔D) _∼₂_ } }
   ; inverse-of = record
     { left-inverse-of = λ { (a , c) → left-inverse-of A↔B a , left-inverse-of C↔D c}
     ; right-inverse-of = λ { (b , d) → right-inverse-of A↔B b , right-inverse-of C↔D d } } }
@@ -210,11 +213,19 @@ A↔B ×-inverse C↔D = record
     open Inverse
     inv = right-inverse A↔B
 
-postulate
-  ×-assoc : {a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ e₁ e₂ f₁ f₂ : Level}
-    {A : Setoid a₁ a₂} {B : Setoid b₁ b₂} {C : Setoid c₁ c₂} {D : Setoid d₁ d₂}
-    {E : Setoid e₁ e₂} {F : Setoid f₁ f₂} →
-    Inverse A B → Inverse C D → Inverse E F → Inverse (A ×S (C ×S E)) ((B ×S D) ×S F)
+×-assoc : {a₁ a₂ b₁ b₂ c₁ c₂ : Level}
+  {A : Setoid a₁ a₂} {B : Setoid b₁ b₂} {C : Setoid c₁ c₂} →
+  Inverse (A ×S (B ×S C)) ((A ×S B) ×S C)
+×-assoc {A = A} {B} {C} = record
+  { to = record
+    { _⟨$⟩_ = λ {(a , (b , c)) → (a , b) , c}
+    ; cong = λ { (≈₁ , ≈₂ , ≈₃) → (≈₁ , ≈₂), ≈₃ }}
+  ; from = record
+    { _⟨$⟩_ = λ {((a , b), c) → a , b , c}
+    ; cong = λ { ((≈₁ , ≈₂) , ≈₃) → ≈₁ , ≈₂ , ≈₃ } }
+  ; inverse-of = record { left-inverse-of = λ _ → (Setoid.refl A) , (Setoid.refl B) , (Setoid.refl C)
+                        ; right-inverse-of = λ _ → (Setoid.refl A , Setoid.refl B) , Setoid.refl C }
+  }
 \end{code}
 }
 \section{Introduction}
@@ -233,7 +244,7 @@ of optics and more importantly, their correctness and their laws,
 become simple consequences of the general properties of proof-relevant
 type equivalences. In particular, we formalize the intuitive, but
 informal, constructions and laws, in various
-sources~\cite{oleg-bloc,Miltner2018,laarhoven}.
+sources~\cite{oleg-blog,Miltner2018,laarhoven}.
 
 We start with the conventional definition of lenses using a pair of
 \emph{very well-behaved} set/get functions. That definition is only
@@ -315,6 +326,7 @@ record GS-Lens {ℓs ℓa : Level} (S : Set ℓs) (A : Set ℓa) : Set (ℓs ⊔
     getput  : (s : S) (a : A) → get (set s a) ≡ a
     putget  : (s : S) → set s (get s) ≡ s
     putput  : (s : S) (a a' : A) → set (set s a) a' ≡ set s a'
+open GS-Lens
 \end{code}
 
 A common theme in the literature on lenses is that the function
@@ -328,17 +340,16 @@ This observation is what connects lenses to type equivalences and
 hence to reversible programming. The main contribution of the paper is
 to exploit various canonical constructions and completness results in
 the world of reversible programming and export them to the world of
-bidirectional programming with lenses.
+bidirectional programming with lenses (and other optics).
 
 Although correct in principle~\cite{survey}, a straightforward
 encoding of \emph{constant-complement lenses} as $Σ\ C. S \cong
 C × A$ is not satisfactory: a $\AgdaRecord{GS-Lens}$ does not reveal
 any sort of complement $C$; so the constant-complement lenses should
 not either. To do this, we should somehow hide our choice of $C$.
-
 We could use a variety of tricks to do this, but all would rely
 on features of Agda which do not have well-understood meta-theory.
-Instead, we will rely on \emph{discipline} to never access the
+Instead, we will rely on \emph{discipline} to not access the
 actual $C$. Note that because $\AgdaFunction{Set} ℓ$ does not allow
 introspection, actually getting one's hands on this $C$ still does
 not reveal very much!
@@ -346,7 +357,7 @@ not reveal very much!
 We can use the formulation $∃\ C. S \cong C × A$ as the basis for a
 first definitions of isomorphism-based lens. We make $C$ implicit, so as to
 reduce the temptation to examine it. This formulation will not be
-entirely adequate, but is actually very close to our final definition.
+entirely adequate, but is very close to our final definition.
 \begin{code}
 record Lens₁ {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
   constructor ∃-lens
@@ -365,7 +376,8 @@ record ∃-Prism {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
 \end{code}
 }
 
-Given an $\AgdaRecord{Lens₁}$, we can build a \AgdaRecord{GS-Lens}:
+Given an $\AgdaRecord{Lens₁}$, we can build a \AgdaRecord{GS-Lens}, so
+that this is certainly sound:
 
 \begin{code}
 sound : {ℓ : Level} {S A : Set ℓ} → Lens₁ S A → GS-Lens S A
@@ -377,34 +389,38 @@ sound (∃-lens (f , qinv g α β)) = record
   ; putput = λ s a a' → cong g (cong₂ _,_ (cong proj₁ (α _)) P.refl) }
 \end{code}
 
-\noindent It is important to notice that the above only uses the
+\noindent It is important to notice that the conversion above only uses the
 \AgdaField{iso} part of the \AgdaRecord{Lens₁}.
 
-But before going down that path, let's see what happens.  Of course,
-what we want to do is to manufacture the correct constant complement.
-But we don't really know how.  Let us try a proxy: $S$ itself.
+The question is, is this \emph{complete}, in the sense that we can
+also go in the other direction? To achieve this, we must
+manufacture an appropriate constant complement.  We certainly
+know what $S$ contains all the necessary information for this but
+is in some sense ``too big''.  But it is instructive to see what
+happens when we try.
 
 Roughly speaking the forward part of the isomorphism is forced:
 given an $s:S$, there is only one way to get an $A$, and that is
 via \AgdaFunction{get}. To get an $S$ back, there are two choices:
-either use $s$ itself, or call \AgdaFunction{set}; the choice is
-irrelevant (because of the laws). In the backwards direction,
+either use $s$ itself, or call \AgdaFunction{set}; the laws of
+\AgdaRecord{GS-Lens} say that either will actually work.
+In the backwards direction of the isomorphism,
 the laws help in narrowing down the choices: basically, we want the
 $s′ : S$ where $\AgdaFunction{get s′} ≡ a$, and so we again
 use \AgdaFunction{set} for the purpose:
 
 \begin{code}
 incomplete : {ℓ : Level} {S A : Set ℓ} → GS-Lens S A → Lens₁ S A
-incomplete {ℓ} {S} {A} record { get = get ; set = set ; getput = getput ; putget = putget ; putput = putput } =
-  ∃-lens ((λ s → s , get s) ,
-         qinv (λ { (s , a) → set s a })
-              (λ { (s , a) → cong₂ _,_ hole (getput s a)})
-               λ s → putget s)
+incomplete {ℓ} {S} {A} l =
+  ∃-lens ((λ s → s , get l s) ,
+         qinv (λ { (s , a) → set l s a })
+              (λ { (s , a) → cong₂ _,_ hole (getput l s a)})
+               λ s → putget l s)
 \end{code}
-That almost gets us there. The one whole we can't fill is one that says
+That almost gets us there. The one hole we can't fill says
 \begin{code}
     where
-      hole : {s : S} {a : A} → set s a ≡ s
+      hole : {s : S} {a : A} → set l s a ≡ s
       hole = {!!}
 \end{code}
 But that will only ever happen if $\AgdaFunction{get s}$ was already $a$ (by
@@ -416,9 +432,10 @@ too big by exactly the inverse image of $A$ by \AgdaFunction{get}.
 Thus our next move is to make that part of $S$ not matter. In other words,
 rather than using the \emph{type} $S$ as a proxy, we want to use a
 \AgdaRecord{Setoid} where $s, t : S$ will be regarded as the same if they
-only differ in their $A$ component.
+only differ in their $A$ component.  It is convenient to also define a
+function \AgdaFunction{lens} that lifts type isormorphisms (which work over
+propositional equality) to the \AgdaRecord{Setoid} setting.
 
-So what we want to do is
 \begin{code}
 record ∃-Lens {a s : Level} (S : Set s) (A : Set a) : Set (suc (a ⊔ s)) where
   constructor ll
@@ -435,43 +452,51 @@ lens {C = C} (f , qinv g α β) = ll {C = P.setoid C} (record
     ; right-inverse-of = λ { (c , a) → (cong proj₁ (α _)) , cong proj₂ (α _)}
     }
   })
+\end{code}
 
+One important aspect of the proof is that not only are both laws $\alpha$ and $\beta$
+for the isormorphism used, but $\eta$ for pairs is also crucial.
+
+The soundness proof is then essentially identical to the previous one:
+\begin{code}
 sound′ : {ℓ : Level} {S A : Set ℓ} → ∃-Lens S A → GS-Lens S A
-sound′ {S = S} {A} (ll record { to = to ; from = from ; inverse-of = record
-                      { left-inverse-of = β
-                      ; right-inverse-of = α } }) =
-  let f = to ⟨$⟩_ in let g = from ⟨$⟩_ in
+sound′ {S = S} {A} (ll len) =
+  let f = to len ⟨$⟩_
+      g = from len ⟨$⟩_
+      α = right-inverse-of len
+      β = left-inverse-of len in
   record
   { get = λ s → proj₂ (f s)
   ; set = λ s a → g (proj₁ (f s) , a)
   ; getput = λ s a → proj₂ (α (proj₁ (f s) , a))
   ; putget = β
-  ; putput = λ s a _ → scong from (proj₁ (α (proj₁ (f s) , a)) , P.refl) }
-
-complete : {ℓ : Level} {S A : Set ℓ} → GS-Lens S A → ∃-Lens S A
-complete {ℓ} {S} {A} record { get = get ; set = set ; getput = getput ; putget = putget ; putput = putput } =
-  ll {C = record {
-        Carrier = S
-      ; _≈_ = λ s t → ∀ (a : A) → set s a ≡ set t a
-      ; isEquivalence = record
-          { refl = λ a → P.refl
-          ; sym = λ i≈j a → P.sym (i≈j a)
-          ; trans = λ i≈j j≈k a → P.trans (i≈j a) (j≈k a)
-          } }}
-     (record {
-       to = record
-         { _⟨$⟩_ = λ s → s , get s
-         ; cong = λ { refl → (λ _ → P.refl) , P.refl } }
-       ; from = record
-         { _⟨$⟩_ = λ {(s , a) → set s a}
-         ; cong = λ { {s₁ , a₁} {s₂ , .a₁} (s₁≈s₂ , P.refl) → s₁≈s₂ a₁ }
-         }
-       ; inverse-of = record
-           { left-inverse-of = λ s → putget s
-           ; right-inverse-of = λ { (s , a) → (λ a' → putput s a a') , getput s a}
-           }
-       })
+  ; putput = λ s a _ → Π.cong (from len) (proj₁ (α (proj₁ (f s) , a)) , P.refl) }
 \end{code}
+
+And now the completeness proof goes through. Key is to create an equivalence
+relation $\AgdaField{≈}$ between sources $s,t$ which makes them ``the same''
+if they only differ in their $A$ component.
+\begin{code}
+complete : {ℓ : Level} {S A : Set ℓ} → GS-Lens S A → ∃-Lens S A
+complete {ℓ} {S} {A} l = ll
+  {C = record
+    { Carrier = S
+    ; _≈_ = λ s t → ∀ (a : A) → set l s a ≡ set l t a
+    ; isEquivalence = record { refl = λ _ → P.refl ; sym = λ i≈j a → P.sym (i≈j a)
+                             ; trans = λ i≈j j≈k a → P.trans (i≈j a) (j≈k a) } }}
+   (record
+     { to = record { _⟨$⟩_ = λ s → s , get l s ; cong = λ { refl → (λ _ → P.refl) , P.refl } }
+     ; from = record { _⟨$⟩_ = λ {(s , a) → set l s a} ; cong = λ { {_ , a₁} (≈ , P.refl) → ≈ a₁ } }
+     ; inverse-of = record
+         { left-inverse-of = putget l
+         ; right-inverse-of = λ { (s , a) → (λ a' → putput l s a a') , getput l s a}
+         }
+     })
+\end{code}
+
+Grenrus~\cite{oleg-blog} gives a completely different type which also works --- but
+the completeness proofs requires both proof irrelevance and function extensionality
+(crucially), while our proof works in a much simpler setting.
 
 \section{A typed reversible language}
 
@@ -1295,7 +1320,7 @@ we should complete the picture of lenses, and we're
 missing composition:
 \begin{code}
   ∘-lens : ∃-Lens D B → ∃-Lens B A → ∃-Lens D A
-  ∘-lens l₁ l₂ = ll {C = C l₁ ×S C l₂} ((×-assoc idF idF idF ∘F (idF ×-inverse ∃-Lens.iso l₂)) ∘F ∃-Lens.iso l₁)
+  ∘-lens l₁ l₂ = ll {C = C l₁ ×S C l₂} ((×-assoc ∘F (idF ×-inverse ∃-Lens.iso l₂)) ∘F ∃-Lens.iso l₁)
 \end{code}
 The above gives us our first \emph{lens program} consisting of a composition of
 four more basic equivalences.
