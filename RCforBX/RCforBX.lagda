@@ -1,20 +1,20 @@
 %% \documentclass[a4paper]{article}
 \documentclass{article}
 
+\usepackage{onecolceurws}
 \usepackage{amssymb,amsthm,amsmath}
 \usepackage{graphicx}
-\usepackage{onecolceurws}
-\usepackage[LGR,TS1,T1]{fontenc}
 \usepackage{agda}
 \usepackage{lmodern}
-\usepackage{textgreek}  %% for some of the greek characters in text
+\usepackage[greek]{babel}
 \usepackage[utf8x]{inputenc}
+\usepackage[LGR,TS1,T1]{fontenc}
 \usepackage{comment}
 \usepackage{tikz}
 \usepackage{tikz-cd}
 \usepackage[nocenter]{qtree}
 \usepackage{fullpage}
-\usepackage{url}
+\usepackage{hyperref}
 \usepackage{multicol}
 \usepackage{stmaryrd}
 \usepackage{proof}
@@ -343,7 +343,7 @@ the world of reversible programming and export them to the world of
 bidirectional programming with lenses (and other optics).
 
 Although correct in principle~\cite{survey}, a straightforward
-encoding of \emph{constant-complement lenses} as $Σ\ C. S \cong
+encoding of \emph{constant-complement lenses} as $\Sigma\ C. S \cong
 C × A$ is not satisfactory: a $\AgdaRecord{GS-Lens}$ does not reveal
 any sort of complement $C$; so the constant-complement lenses should
 not either. To do this, we should somehow hide our choice of $C$.
@@ -498,7 +498,14 @@ Grenrus~\cite{oleg-blog} gives a completely different type which also works --- 
 the completeness proofs requires both proof irrelevance and function extensionality
 (crucially), while our proof works in a much simpler setting.
 
-\section{A typed reversible language}
+\section{Proof-relevant type equivalences}
+
+Our principal means of building lenses, \AgdaFunction{lens}, takes as
+input a \emph{type equivalence}.  These are called \emph{proof relevant}
+because different witnesses (proofs) of an equivalence are
+not assumed to be the same.  For example, there are two
+non-equivalent ways to prove that $A × A \cong A × A$, namely
+the identity and ``swap''.
 
 Our starting point will be a basic type theory with the empty
 type ($\bot$), the unit type ($\top$), the sum type ($\presumtype$), and
@@ -519,7 +526,7 @@ will furthermore assume that the reader is already familiar with
 the basic definitions around \emph{type equivalences}.
 That types, with ($\bot, \top, \presumtype,
 \preprodtype$) interpreted as ($0, 1, +, ×$) and strict
-equality replaced with equivalence $≃$
+equality replaced with equivalence $\cong$
 form a commutative semiring is a basic result of type theory.
 
 However, we might be misled by the Curry-Howard correspondence:
@@ -575,195 +582,16 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 
 The generators for our type isomorphisms will exactly be those
 of a semiring --- we place them side-by-side in
-Fig.~\ref{type-isos}.
-
-%%%%%%%%%
-\subsection{A Language of Type Equivalences}
-
-\begin{figure}[t]
-\[
-\begin{array}{rrcll}
-\idc :& t & \iso & t &: \idc \\
-\\
-\identlp :&  0 \sumtype t & \iso & t &: \identrp \\
-\swapp :&  t_1 \sumtype t_2 & \iso & t_2 \sumtype t_1 &: \swapp \\
-\assoclp :&  t_1 \sumtype (t_2 \sumtype t_3) & \iso & (t_1 \sumtype t_2) \sumtype t_3 &: \assocrp \\
-\\
-\identlt :&  1 {\prodtype} t & \iso & t &: \identrt \\
-\swapt :&  t_1 {\prodtype} t_2 & \iso & t_2 {\prodtype} t_1 &: \swapt \\
-\assoclt :&  t_1 {\prodtype} (t_2 {\prodtype} t_3) & \iso & (t_1 {\prodtype} t_2) {\prodtype} t_3 &: \assocrt \\
-\\
-\absorbr :&~ 0 {\prodtype} t & \iso & 0 ~ &: \factorzl \\
-\dist :&~ (t_1 \sumtype t_2) {\prodtype} t_3 & \iso & (t_1 {\prodtype} t_3) \sumtype (t_2 {\prodtype} t_3)~ &: \factor
-\end{array}
-\]
-\caption{$\Pi$-terms.}
-\label{pi-terms}
-\end{figure}
-
-This gives us the denotational semantics for types and for
-equivalences. From this, we want to
-a programming language, which we call $\Pi$,
-where we have ground terms whose denotation are
-all $16$ type isomorphisms of Fig.~\ref{type-isos}.
-We can simply do this literally. To make the
-analogy with commutative semirings stand out even more, we will use
-$0, 1, \sumtype$, and ${\prodtype}$ at the type level, and will denote
-``equivalence'' by $\iso$.  Thus Fig.~\ref{pi-terms} shows the
-``constants'' of the language.  As these all come in symmetric pairs
-(some of which are self-symmetric), we give names for both directions.
-Note how we have continued with the spirit of Curry-Howard: the terms
-of $\Pi$ are \emph{proof terms}, but rather than being witnesses of
-inhabitation, they are witnesses of equivalences. Thus we get an
-unexpected programming language design:
-
-\begin{center}
-\fbox{ The proof terms denoting commutative semiring equivalences
-  induce the terms of $\Pi$.}
-\end{center}
-\vspace*{3mm}
-
-\begin{figure}[t]
-\[
-\Rule{}
-{\jdg{}{}{c_1 : t_1 \iso t_2} \quad \vdash c_2 : t_2 \iso t_3}
-{\jdg{}{}{c_1 \odot c_2 : t_1 \iso t_3}}
-{}
-\qquad
-\Rule{}
-{\jdg{}{}{c_1 : t_1 \iso t_2} \quad \vdash c_2 : t_3 \iso t_4}
-{\jdg{}{}{c_1 \oplus c_2 : t_1 \sumtype t_3 \iso t_2 \sumtype t_4}}
-{}
-\]
-\[
-\Rule{}
-{\jdg{}{}{c_1 : t_1 \iso t_2} \quad \vdash c_2 : t_3 \iso t_4}
-{\jdg{}{}{c_1 \otimes c_2 : t_1 {\prodtype} t_3 \iso t_2 {\prodtype} t_4}}
-{}
-\]
-\caption{$\Pi$-combinators.}
-\label{pi-combinators}
-\end{figure}
-
-\noindent
-Of course, one does not get a programming language with just typed
-constants! We need to put together multiple equivalences to form
-other equivalences. There are
-in fact three ways to do this: sequential composition $\odot$, choice
-composition $\oplus$ (sometimes called juxtaposition), and parallel
-composition $\otimes$. See Fig.~\ref{pi-combinators} for the
-signatures. The construction $c_1 \odot c_2$ corresponds to performing
-$c_1$ first, then $c_2$, and is the usual notion of composition.
-The construction $c_1 \oplus c_2$ chooses to
-perform $c_1$ or $c_2$ depending on whether the input is labelled
-$\textsf{left}$ or $\textsf{right}$ respectively. Finally the
-construction $c_1 \otimes c_2$ operates on a product structure, and
-applies $c_1$ to the first component and $c_2$ to the second.
-
-\begin{figure}[t]
-\[
-\Rule{}
-{\jdg{}{}{c_1 : t_1 \iso t_2}}
-{\jdg{}{}{\ !\ c_1 : t_2 \iso t_1}}
-{}
-\]
-\caption{Derived $\Pi$-combinator.}
-\label{derived-pi-combinator}
-\end{figure}
-
-Embedded in our definition of $\Pi$ is a conscious design decision: to make the
-terms of $\Pi$ \emph{syntactically} reversible. In other words, to
-every $\Pi$ constant, there is another $\Pi$ constant which is its
-inverse. As this is used frequently, we give it the short name $!$,
-and its type is given in Fig.~\ref{derived-pi-combinator}. This
-combinator is \emph{defined}, by pattern matching on the syntax of
-its argument and structural recursion.
-This is not the only choice.  Another would be to add a
-$\mathit{flip}$ combinator to the language; we could then remove
-quite a few combinators as redundant. The drawback is that many
-programs in $\Pi$ become longer. Furthermore, some of the symmetry
-at ``higher levels'' (see next section) is also lost. Since the
-extra burden of language definition and of proofs is quite low, we
-prefer the structural symmetry over a minimalistic language definition.
-
-\begin{figure}[t]
-\[
-\begin{array}{rrcll}
-\identlsp :&  t \sumtype 0 & \iso & t &: \identrsp \\
-\identlst :&  t {\prodtype} 1 & \iso & t &: \identrst \\
-\\
-\absorbl :&~ t {\prodtype} 0 & \iso & 0 ~ &: \factorzr \\
-\distl :&~ t_1 {\prodtype} (t_2 \sumtype t_3) & \iso & (t_1 {\prodtype} t_2) \sumtype (t_1 {\prodtype} t_3)~ &: \factorl
-\end{array}
-\]
-\caption{Additional $\Pi$-terms.}
-\label{more-pi}
-\end{figure}
-
-We also make a second design decision, which is to make the $\Pi$
-language itself symmetric in another sense: we want both left
-and right introduction/elimination rules for units, $0$ absorption
-and distributivity. Specifically, we add the $\Pi$-terms of
-Fig.~\ref{more-pi} to our language. These are redundant because
-of $\swapp$ and $\swapt$, but will later enable shorter programs
-and more elegant presentation of program transformations.
+Fig.~\ref{type-isos}.  Each is also named --- the details can be found
+both in~\cite{Carette2016,Carette2018} and in the online repository
+\url{http://github.com/JacquesCarette/pi-dual} (in file
+\texttt{Univalence/TypeEquiv.agda}).
 
 This set of isomorphisms is known to be sound and
 complete~\cite{Fiore:2004,fiore-remarks} for isomorphisms
 of finite types.  Furthermore, it is also universal
 for hardware combinational
 circuits~\cite{James:2012:IE:2103656.2103667}.
-
-%%%%%%%%%
-\subsection{Operational Semantics}
-\label{sec:opsem}
-
-It is then quite straightforward to give an operational semantics to
-$\Pi$: we write a ``forward evaluator'' which, given a
-program program \ensuremath{c : b_1 \leftrightarrow b_2} in \ensuremath{\Pi },
-and a value \ensuremath{ v_1 : b_1}, returns a value of type $b_2$. Of course,
-what makes $\Pi$ interesting is that we can also write a ``backward
-evaluator'' from values of type $b_2$ to values of type $b_1$. Furthermore
-we can prove that these are exact inverses. Given our denotational semantics,
-this should not be surprising. As the details are straightforward but
-verbose, we elide them. As we mentioned before, $!$ is a defined combinator.
-Only a few cases need commenting on.
-
-Since there are no values that have the type \ensuremath{0}, the
-reductions for the combinators \identlp, \identrp, \identlsp, and
-\identrsp\ omit the impossible cases. \factorzr\ and \factorzl\
-likewise do not appear as they have no possible cases at all. However,
-\absorbr\ and \absorbl\ are treated slightly differently: rather than
-\emph{eagerly} assuming they are impossible, the purported inhabitant
-of $0$ given on one side is passed on to the other side. The reason
-for this choice will have to wait for Sec.~\ref{langeqeq} when we
-explain some higher-level symmetries (see Fig.~\ref{figc}).
-
-%%%%%%%%%
-\subsection{Further features}
-
-The language $\Pi$ also captures ideas around the size of types, aka
-cardinality, and their relation to type equivalences.
-
-Combinators of \ensuremath{\Pi } can be written in terms of the
-operators described previously or via a graphical language similar in
-spirit to those developed for Geometry of Interaction
-\cite{DBLP:conf/popl/Mackie95} and string diagrams for category
-theory~\cite{BLUTE1996229,selinger-graphical}.
-\ensuremath{\Pi } combinators expressed in this graphical language
-look like ``wiring diagrams.'' Values take the form of ``particles''
-that flow along the wires. Computation is expressed by the flow of
-particles.
-
-The interested reader can
-find more details for both features in~\cite{CaretteJamesSabryArxiv}.
-
-Lastly, in previous work~\cite{Carette2016}, we had shown that
-the denotational and operational semantics correspond, and given
-a constructive proof of this. In other words, to each $\Pi$
-combinator we can associate an equivalence between the denotation
-of each type, which has all the obvious desirable properties we
-would want from such an association.
 
 \subsection{Examples}
 We can express a 3-bit word reversal operation as follows:
@@ -1282,7 +1110,7 @@ isomorphism:
   BAB-∃-lens = lens swap⋆equiv
 \end{code}
 
-Thus, looking at the Π combinators, which ones return a type
+Thus, looking at type equivalences, which ones return a type
 of shape $C × A$ ?  We have already seen \AIC{uniti⋆l},
 \AIC{id⟷} and \AIC{swap⋆} arise. That leaves four:
 \AIC{assocl⋆}, \AIC{factorzl}, \AIC{factor} and \AIC{⊗}.
@@ -1426,13 +1254,13 @@ introduces no new ideas.
 
 The $\Pi$ language is \emph{complete} for equivalences, in the sense that
 any two type which can be written as a sum-of-products over arbitrarily many
-variables are equivalent if and only if there is a term of $Π$ which witnesses
+variables are equivalent if and only if there is a term of $\Pi$ which witnesses
 this equivalence.  In other words,
 
 \begin{theorem}
 Suppose $S$ and $A$ are two types belonging to the language of the
 semiring of types $T\left[x_{1},\ldots,x_{n}\right]$ over $n$ variables.
-If $∃C. S ≃ C × A$ is inhabited, then there is a term of $Π$ whose denotation
+If $∃C. S ≃ C × A$ is inhabited, then there is a term of $\Pi$ whose denotation
 is an equivalence witnessing the equivalence.
 \end{theorem}
 
@@ -1543,7 +1371,7 @@ of $A$s.
 
 \section{Optic transformations}
 
-Level 2 of $Π$ lets us look at relations between isomorphisms.
+Level 2 of $\Pi$ lets us look at relations between isomorphisms.
 In particular, we can see when some lens/prims/etc are simplifiable
 to something simpler.
 
@@ -1594,3 +1422,188 @@ to hide one more component in their lens: a $C → C$ function that is applied o
 %inline the .bbl file directly for mailing to authors.
 
 \end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% Stuff cut out from above.
+
+\subsection{A Language of Type Equivalences}
+
+\begin{figure}[t]
+\[
+\begin{array}{rrcll}
+\idc :& t & \iso & t &: \idc \\
+\\
+\identlp :&  0 \sumtype t & \iso & t &: \identrp \\
+\swapp :&  t_1 \sumtype t_2 & \iso & t_2 \sumtype t_1 &: \swapp \\
+\assoclp :&  t_1 \sumtype (t_2 \sumtype t_3) & \iso & (t_1 \sumtype t_2) \sumtype t_3 &: \assocrp \\
+\\
+\identlt :&  1 {\prodtype} t & \iso & t &: \identrt \\
+\swapt :&  t_1 {\prodtype} t_2 & \iso & t_2 {\prodtype} t_1 &: \swapt \\
+\assoclt :&  t_1 {\prodtype} (t_2 {\prodtype} t_3) & \iso & (t_1 {\prodtype} t_2) {\prodtype} t_3 &: \assocrt \\
+\\
+\absorbr :&~ 0 {\prodtype} t & \iso & 0 ~ &: \factorzl \\
+\dist :&~ (t_1 \sumtype t_2) {\prodtype} t_3 & \iso & (t_1 {\prodtype} t_3) \sumtype (t_2 {\prodtype} t_3)~ &: \factor
+\end{array}
+\]
+\caption{$\Pi$-terms.}
+\label{pi-terms}
+\end{figure}
+
+This gives us the denotational semantics for types and for
+equivalences. From this, we want to
+a programming language, which we call $\Pi$,
+where we have ground terms whose denotation are
+all $16$ type isomorphisms of Fig.~\ref{type-isos}.
+We can simply do this literally. To make the
+analogy with commutative semirings stand out even more, we will use
+$0, 1, \sumtype$, and ${\prodtype}$ at the type level, and will denote
+``equivalence'' by $\iso$.  Thus Fig.~\ref{pi-terms} shows the
+``constants'' of the language.  As these all come in symmetric pairs
+(some of which are self-symmetric), we give names for both directions.
+Note how we have continued with the spirit of Curry-Howard: the terms
+of $\Pi$ are \emph{proof terms}, but rather than being witnesses of
+inhabitation, they are witnesses of equivalences. Thus we get an
+unexpected programming language design:
+
+\begin{center}
+\fbox{ The proof terms denoting commutative semiring equivalences
+  induce the terms of $\Pi$.}
+\end{center}
+\vspace*{3mm}
+
+\begin{figure}[t]
+\[
+\Rule{}
+{\jdg{}{}{c_1 : t_1 \iso t_2} \quad \vdash c_2 : t_2 \iso t_3}
+{\jdg{}{}{c_1 \odot c_2 : t_1 \iso t_3}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c_1 : t_1 \iso t_2} \quad \vdash c_2 : t_3 \iso t_4}
+{\jdg{}{}{c_1 \oplus c_2 : t_1 \sumtype t_3 \iso t_2 \sumtype t_4}}
+{}
+\]
+\[
+\Rule{}
+{\jdg{}{}{c_1 : t_1 \iso t_2} \quad \vdash c_2 : t_3 \iso t_4}
+{\jdg{}{}{c_1 \otimes c_2 : t_1 {\prodtype} t_3 \iso t_2 {\prodtype} t_4}}
+{}
+\]
+\caption{$\Pi$-combinators.}
+\label{pi-combinators}
+\end{figure}
+
+\noindent
+Of course, one does not get a programming language with just typed
+constants! We need to put together multiple equivalences to form
+other equivalences. There are
+in fact three ways to do this: sequential composition $\odot$, choice
+composition $\oplus$ (sometimes called juxtaposition), and parallel
+composition $\otimes$. See Fig.~\ref{pi-combinators} for the
+signatures. The construction $c_1 \odot c_2$ corresponds to performing
+$c_1$ first, then $c_2$, and is the usual notion of composition.
+The construction $c_1 \oplus c_2$ chooses to
+perform $c_1$ or $c_2$ depending on whether the input is labelled
+$\textsf{left}$ or $\textsf{right}$ respectively. Finally the
+construction $c_1 \otimes c_2$ operates on a product structure, and
+applies $c_1$ to the first component and $c_2$ to the second.
+
+\begin{figure}[t]
+\[
+\Rule{}
+{\jdg{}{}{c_1 : t_1 \iso t_2}}
+{\jdg{}{}{\ !\ c_1 : t_2 \iso t_1}}
+{}
+\]
+\caption{Derived $\Pi$-combinator.}
+\label{derived-pi-combinator}
+\end{figure}
+
+Embedded in our definition of $\Pi$ is a conscious design decision: to make the
+terms of $\Pi$ \emph{syntactically} reversible. In other words, to
+every $\Pi$ constant, there is another $\Pi$ constant which is its
+inverse. As this is used frequently, we give it the short name $!$,
+and its type is given in Fig.~\ref{derived-pi-combinator}. This
+combinator is \emph{defined}, by pattern matching on the syntax of
+its argument and structural recursion.
+This is not the only choice.  Another would be to add a
+$\mathit{flip}$ combinator to the language; we could then remove
+quite a few combinators as redundant. The drawback is that many
+programs in $\Pi$ become longer. Furthermore, some of the symmetry
+at ``higher levels'' (see next section) is also lost. Since the
+extra burden of language definition and of proofs is quite low, we
+prefer the structural symmetry over a minimalistic language definition.
+
+\begin{figure}[t]
+\[
+\begin{array}{rrcll}
+\identlsp :&  t \sumtype 0 & \iso & t &: \identrsp \\
+\identlst :&  t {\prodtype} 1 & \iso & t &: \identrst \\
+\\
+\absorbl :&~ t {\prodtype} 0 & \iso & 0 ~ &: \factorzr \\
+\distl :&~ t_1 {\prodtype} (t_2 \sumtype t_3) & \iso & (t_1 {\prodtype} t_2) \sumtype (t_1 {\prodtype} t_3)~ &: \factorl
+\end{array}
+\]
+\caption{Additional $\Pi$-terms.}
+\label{more-pi}
+\end{figure}
+
+We also make a second design decision, which is to make the $\Pi$
+language itself symmetric in another sense: we want both left
+and right introduction/elimination rules for units, $0$ absorption
+and distributivity. Specifically, we add the $\Pi$-terms of
+Fig.~\ref{more-pi} to our language. These are redundant because
+of $\swapp$ and $\swapt$, but will later enable shorter programs
+and more elegant presentation of program transformations.
+
+%%%%%%%%%
+\subsection{Operational Semantics}
+\label{sec:opsem}
+
+It is then quite straightforward to give an operational semantics to
+$\Pi$: we write a ``forward evaluator'' which, given a
+program program \ensuremath{c : b_1 \leftrightarrow b_2} in \ensuremath{\Pi },
+and a value \ensuremath{ v_1 : b_1}, returns a value of type $b_2$. Of course,
+what makes $\Pi$ interesting is that we can also write a ``backward
+evaluator'' from values of type $b_2$ to values of type $b_1$. Furthermore
+we can prove that these are exact inverses. Given our denotational semantics,
+this should not be surprising. As the details are straightforward but
+verbose, we elide them. As we mentioned before, $!$ is a defined combinator.
+Only a few cases need commenting on.
+
+Since there are no values that have the type \ensuremath{0}, the
+reductions for the combinators \identlp, \identrp, \identlsp, and
+\identrsp\ omit the impossible cases. \factorzr\ and \factorzl\
+likewise do not appear as they have no possible cases at all. However,
+\absorbr\ and \absorbl\ are treated slightly differently: rather than
+\emph{eagerly} assuming they are impossible, the purported inhabitant
+of $0$ given on one side is passed on to the other side. The reason
+for this choice will have to wait for Sec.~\ref{langeqeq} when we
+explain some higher-level symmetries (see Fig.~\ref{figc}).
+
+%%%%%%%%%
+\subsection{Further features}
+
+The language $\Pi$ also captures ideas around the size of types, aka
+cardinality, and their relation to type equivalences.
+
+Combinators of \ensuremath{\Pi } can be written in terms of the
+operators described previously or via a graphical language similar in
+spirit to those developed for Geometry of Interaction
+\cite{DBLP:conf/popl/Mackie95} and string diagrams for category
+theory~\cite{BLUTE1996229,selinger-graphical}.
+\ensuremath{\Pi } combinators expressed in this graphical language
+look like ``wiring diagrams.'' Values take the form of ``particles''
+that flow along the wires. Computation is expressed by the flow of
+particles.
+
+The interested reader can
+find more details for both features in~\cite{CaretteJamesSabryArxiv}.
+
+Lastly, in previous work~\cite{Carette2016}, we had shown that
+the denotational and operational semantics correspond, and given
+a constructive proof of this. In other words, to each $\Pi$
+combinator we can associate an equivalence between the denotation
+of each type, which has all the obvious desirable properties we
+would want from such an association.
