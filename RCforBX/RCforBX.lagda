@@ -129,7 +129,7 @@ $\displaystyle
 % Not the final title!
 % \title{Reversible Programming for the BX enthusiast}
 %\title{Reversible programming applied to bidirectional programming}
-\title{Optics and type equivalences}
+\title{Optics and Type Equivalences}
 
 \author{
 Jacques Carette\\ Dept. of Computing and Software\\
@@ -232,11 +232,11 @@ A↔B ×-inverse C↔D = record
 
 The notion of lenses (and its generalizations to optics) is now
 established as one of the formalisms for bidirectional
-transformations. These optics are generally studied in the context of
-conventional programming languages (e.g., Java, Haskell, etc.) which
-leaves untapped the richness of a dependently-typed language,
-especially one which directly supports programming with proof-relevant
-type equivalences.
+transformations~\cite{eaab8672ebea42538109e9f72ece5ed0}. These optics
+are generally studied in the context of conventional programming
+languages (e.g., Java, Haskell, etc.) which leaves untapped the
+richness of a dependently-typed language, especially one which
+directly supports programming with proof-relevant type equivalences.
 
 In this paper, we show that in the context of such a dependently-typed
 language for proof-relevant type equivalences, the many constructions
@@ -244,23 +244,24 @@ of optics and more importantly, their correctness and their laws,
 become simple consequences of the general properties of proof-relevant
 type equivalences. In particular, we formalize the intuitive, but
 informal, constructions and laws, in various
-sources~\cite{oleg-blog,Miltner2018,laarhoven}.
+sources~\cite{oleg-blog,Miltner:2017:SBL:3177123.3158089,laarhoven}.
 
-We start with the conventional definition of lenses using a pair of
-\emph{very well-behaved} set/get functions. That definition is only
-implicitly related to type equivalences via a hidden
-\emph{constant-complement}. In order to expose the underlying type
-equivalence, we first reformulate the definition of lenses using an
-existential record that packages an unknown but fixed complement
-type. That definition, however, turns out to have weak proof-theoretic
-properties. We therefore introduce our final definition of lenses
-using the notion of \emph{setoid} to formalize the correct equivalence
-relation on the source type of the lens. We present a complete
-formalized proof in Agda that this final definition is sound and
-complete with respect to the conventional set/get definition.
+We start in the next section with the conventional definition of
+lenses using a pair of \emph{very well-behaved} set/get
+functions. That definition is only implicitly related to type
+equivalences via a hidden \emph{constant-complement}. In order to
+expose the underlying type equivalence, we first reformulate the
+definition of lenses using an existential record that packages an
+unknown but fixed complement type. That definition, however, turns out
+to have weak proof-theoretic properties. We therefore introduce our
+final definition of lenses using the notion of \emph{setoid} to
+formalize the correct equivalence relation on the source type of the
+lens. We present a complete formalized proof in Agda that this final
+definition is sound and complete with respect to the conventional
+set/get definition.
 
 With a formulation of lenses based on proof-relevant type-equivalences
-in hand, we aim to show that many variants of lenses, as well as othe
+in hand, we aim to show that many variants of lenses, as well as other
 optics (prisms, etc.), are directly expressible, and more importantly,
 that their laws are immediately derivable. In order to do that,
 however, we first need, a language in which to express type
@@ -268,14 +269,15 @@ equivalences as well as proofs between type equivalences. In previous
 work, we have established that if we restrict ourselves to finite
 types constructed from the empty type, the unit type, the sum type,
 and the product type, then it is possible to formulate a two-level
-language with the following properties. The level-1 programs in the
-language are sound and complete type equivalences, and the level-2
-programs are sound and complete proofs of equivalences between the
-level-1 programs. This setting of finite types thus provides us with a
-framework in which to define canonical optics with their
-properties. In the presence of richer types, lenses and their
-properties can still be expressed but we generally lose guarantees of
-completeness.
+language with the following properties. The programs at level-1 in the
+language are sound and complete type equivalences, and the programs at
+level-2 are sound and complete proofs of equivalences between the
+level-1 programs (see Sec. 3). This setting of finite types thus
+provides us with a framework in which to define canonical optics with
+their properties (see Sec. 4). In the presence of richer types, lenses
+and their properties can still be expressed but we generally lose
+guarantees of completeness. We conclude with discussions about more
+general optics and transformations.
 
 %% * we want to understand lenses in the setting of proof-relevant type isomorphisms
 %%
@@ -433,7 +435,7 @@ Thus our next move is to make that part of $S$ not matter. In other words,
 rather than using the \emph{type} $S$ as a proxy, we want to use a
 \AgdaRecord{Setoid} where $s, t : S$ will be regarded as the same if they
 only differ in their $A$ component.  It is convenient to also define a
-function \AgdaFunction{lens} that lifts type isormorphisms (which work over
+function \AgdaFunction{lens} that lifts type isomorphisms (which work over
 propositional equality) to the \AgdaRecord{Setoid} setting.
 
 \begin{code}
@@ -455,7 +457,7 @@ lens {C = C} (f , qinv g α β) = ll {C = P.setoid C} (record
 \end{code}
 
 One important aspect of the proof is that not only are both laws $\alpha$ and $\beta$
-for the isormorphism used, but $\eta$ for pairs is also crucial.
+for the isomorphism used, but $\eta$ for pairs is also crucial.
 
 The soundness proof is then essentially identical to the previous one:
 \begin{code}
@@ -983,7 +985,7 @@ other optics, as the precise development follows a clear pattern.
 
 Prisms are dual to lenses in that they arise from exchanging product ($×$)
 with coproduct ($⊎$). In other words, a prism is $∃C. S ≃ C ⊎ A$, giving us
-\AgdaRecord{∃-Prism} (straightforward definition elided). We can mimick
+\AgdaRecord{∃-Prism} (straightforward definition elided). We can mimic
 the definitions used for lens for all the basic combinators.
 
 But let us instead take this opportunity to do a rational reconstruction of
