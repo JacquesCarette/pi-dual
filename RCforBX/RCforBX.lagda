@@ -303,10 +303,12 @@ language are sound and complete type equivalences, and the programs at
 level-2 are sound and complete proofs of equivalences between the
 level-1 programs (see Sec. 3). This setting of finite types thus
 provides us with a framework in which to define canonical optics with
-their properties (see Sec. 4). In the presence of richer types, lenses
-and their properties can still be expressed but we generally lose
-guarantees of completeness. We conclude with discussions about more
-general optics and transformations.
+their properties (see Sec. 4). (In the presence of richer types,
+lenses and their properties can still be expressed but we generally
+lose guarantees of completeness.) In Sec. 5, we show that the
+framework is robut and generalizes to prisms and other less common
+optics. We finish with a short discussion putting our work in context
+and conclude. 
 
 %% * we want to understand lenses in the setting of proof-relevant type isomorphisms
 %%
@@ -1250,15 +1252,18 @@ we know is that $S$ is isomorphic to some \emph{container} of $A$s.
 
 \subsection{Categorical approaches}
 
-So why all the complications with \texttt{Profunctor}? Basically, that is mostly
-Haskell-isms: by relying on \emph{Free Theorems}, one can get the type system to
-reject a lot of ill-formed lenses, though, of course, not all. Optics, in Agda and
-using equivalences turn out to be \emph{simpler}, not harder!
+So why all the complications with \texttt{Profunctor} (see
+e.g.~\cite{achromatic})? Basically, that is mostly Haskell-isms: by
+relying on \emph{Free Theorems}, one can get the type system to reject
+a lot of ill-formed lenses, though, of course, not all. Optics, in
+Agda and using equivalences turn out to be \emph{simpler}, not harder!
 
-Another thread is via the Yoneda lemma. Of course, one can see this here too:
-the existentials correspond to a co-end, and the isomorphisms are exactly what is
-in the Hom-set. But we get more mileage from looking ``under the hood'' to see
-the fundamental \textbf{programming language} underlying Optics, rather than jumping
+Another thread is via the Yoneda
+lemma~\cite{Boisseau:2018:YNK:3243631.3236779}. Of course, one can see
+this here too: the existentials correspond to a co-end, and the
+isomorphisms are exactly what is in the Hom-set. But we get more
+mileage from looking ``under the hood'' to see the fundamental
+\textbf{programming language} underlying Optics, rather than jumping
 to abstractions too early.
 
 \begin{comment}
