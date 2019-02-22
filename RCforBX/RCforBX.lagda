@@ -1123,7 +1123,7 @@ result.  The full details are omitted as they are quite lengthy%
 \footnote{Though available, in full, in the source already cited.}. The main
 component is the computation of the ``other'' component, corresponding
 roughly to $S - A$, which is the \AgdaRecord{Setoid} with
-\AgdaField{Carrier}~$\Sigma S (λ s → \AIC{belongs} bi s ≡ \AIC{nothing})$
+\AgdaField{Carrier}~$\Sigma S (\lambda s → \AIC{belongs} bi s ≡ \AIC{nothing})$
 and equivalence on the first field. This is roughly equivalent to what
 Grenrus showed~\cite{oleg-blog}, but without the need for proof irrelevance
 in the meta-theory, as we build it in to our \AgdaRecord{Setoid} instead.
@@ -1197,7 +1197,7 @@ prism-complete {ℓ} {S} {A} bi = ∃-prism {C = D} (record
 Note that there is one more way, again equivalent, of defining a prism:
 rather than using $\AgdaRecord{Maybe} A$, use $S ⊎ A$ and replace
 $\AgdaField{belongs}$ with
-$λ s → \AgdaFunction{Data.Sum.map} (\AgdaFunction{const} s) \AgdaFunction{id} (f s)$.
+$\lambda s → \AgdaFunction{Data.Sum.map} (\AgdaFunction{const} s) \AgdaFunction{id} (f s)$.
 
 \subsection{Other Optics}
 
@@ -1291,7 +1291,30 @@ why the name \emph{constant complement} is quite apt.  In other words, a Lens is
 that allows one to see $A$ as a cartesian projection. Similarly, a Prism is a
 \emph{change of coordinates} that shuffles all of $A$ ``to the right''.
 
+\subsection{Optimizing Optics programs}
+
+Unlike general programs, which are fiendish to optimize, equivalences, written
+in the language in this paper, are rather different: there is a sound and
+complete set of equations that hold for those which are
+``sufficiently polymorphic'' (the technical details can be found in
+\cite{laplaza72,Fiore-2008}).  Most of those equations can be oriented
+(by size) to produce an optimizer.  Of course, more general approaches are
+needed if wants a \emph{global} optimizer --- there is much room for future
+research in this area.  The complete system is rather daunting: over $200$
+equations!
+
 \section{Conclusion}
+
+We have shown that the approach to optics via type equivalences, in a
+dependently typed language, is quite enlightening. Surprisingly, it is
+no more difficult than dealing with optics in other languages. In fact,
+the error messages we got from Agda were considerably clearer than when
+doing \texttt{Profunctor}-optics in Haskell.
+
+The connection to reversible programming (and thence to quantum computing)
+is intriguing; while it has been known for a long time, it appears to have
+not been sufficiently investigated.  Perhaps what was missing was the right
+dependently-typed setting to bring forth the deep connections.
 
 \bibliographystyle{alpha}
 \bibliography{cites,cites2}
