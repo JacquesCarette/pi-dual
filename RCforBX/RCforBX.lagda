@@ -1119,7 +1119,8 @@ $\eta$ for products was crucial before, here injectivity of
 $\AIC{inj₁}$ and $\AIC{inj₂}$ play a similar role.
 
 From this, we can then prove a new soundness result as well as a completeness
-result.  The full details are omitted as they are quite lengthy. The main
+result.  The full details are omitted as they are quite lengthy%
+\footnote{Though available, in full, in the source already cited.}. The main
 component is the computation of the ``other'' component, corresponding
 roughly to $S - A$, which is the \AgdaRecord{Setoid} with
 \AgdaField{Carrier}~$\Sigma S (λ s → \AIC{belongs} bi s ≡ \AIC{nothing})$
@@ -1201,7 +1202,8 @@ $λ s → \AgdaFunction{Data.Sum.map} (\AgdaFunction{const} s) \AgdaFunction{id}
 \subsection{Other Optics}
 
 A number of additional optics have been put forth. Their salient
-properties can be contrasted in the following table which lists the relation between the source and the view in each case:
+properties can be contrasted in the following table which lists
+the relation between the source and the view in each case:
 
 \medskip
 \begin{figure}[h]
@@ -1210,7 +1212,7 @@ Equality & $S = A$ \\ \hline
 Iso & $S ≃ A$ \\ \hline
 Lens & $∃C. S ≃ C × A$ \\
 Prism & $∃C . S ≃ C + A$ \\
-Achroma & $∃C. S ≃ ⊤ ⊎ (C × A)$ \\
+Achroma & $∃C. S ≃ (⊤ ⊎ C) × A)$ \\
 Affine & $∃C, D. S ≃ D ⊎ (C × A)$ \\ \hline
 Grate & $∃I. S ≃ I → A$ \\ \hline
 Setter & $∃ F : \mathit{Set} → \mathit{Set}. S ≃ F A$ \\ \hline
@@ -1231,18 +1233,18 @@ construction is the most general. Using it, we obtain:
 \begin{itemize}
 \item Lens when $D = ⊥$,
 \item Prism when $C = ⊤$,
-\item Achroma when $D = ⊤$,
+\item Achroma when $D = ⊥$ and $C = ⊤ ⊎ C′$,
 \item Iso when $D = ⊥$ and $C = ⊤$.
 \end{itemize}
 Specializing $C$ to $⊤$ in Affine does not give anything useful, as it
 ignores $A$ and just says that $S$ is isomorphic to \emph{something},
-which is a tautology (as $D$ can be taken to be $S$ itself).
+which is a tautology (as $D$ can be taken to be $S$ itself). Strangely
+the table is obviously missing one case, which is when
+$D = ⊤$.
 
 Grate~\cite{grate} moves us to a rather different world, one that
 involves function types. And Setter is more general still, where all
 we know is that $S$ is isomorphic to some \emph{container} of $A$s.
-
-%% \jc{What are the other optics?}
 
 \section{Discussion}
 
@@ -1259,26 +1261,35 @@ in the Hom-set. But we get more mileage from looking ``under the hood'' to see
 the fundamental \textbf{programming language} underlying Optics, rather than jumping
 to abstractions too early.
 
+\begin{comment}
 \subsection{Laws}
 
 Why do lenses have 3 laws but equivalences have two?  Because the functions that
-make up lenses have 3 laws --- the products have η. And the proof of setset uses it.
-Why do prisms have 2 laws then? They should have 3 as well: the 2nd law really ought to
-be a logical equivalence; injectivity of constructors is the 3rd law involve in prism.
+make up lenses have 3 laws --- the products have $\eta$. And the proof of putput uses it.
+Why do prisms have 2 laws then? This remains unclear.
 
-Why do some bidirectional programming eschew the setset law? Basically because they want
-to hide one more component in their lens: a $C → C$ function that is applied on
-\AgdaField{set}. For example, this allows a ``logging'' implementation to be lawful.
+Why do some bidirectional programming eschew the putput law? In part, this seems due
+to
+\end{comment}
 
 \subsection{Geometry of types}
 
-Lens is a cartesian factoring.  Prism is a partition.
+The type equivalence view brings to the fore a certain ``geometric''
+picture of types: A Lens is exactly a \emph{cartesian factoring},
+where a type can be seen, via an isomorphism, as a cartesian product.
+That the complement does not depend on $A$ is an integral part of
+it being ``cartesian''.
 
-Note that we should really view $S$ as a sort of curve 2-dimensional type, while
-$C × A$ is our cartesian, 2-dimensional version. $C$ doesn't depend on $A$, which is
-why the name \emph{constant complement} is quite apt.  A Lens is a change of coordinates
+By the same reasoning, a Prism is the identification of a type as
+being \emph{partitionable} into two pieces.
+
+A reasonable picture is to view $A$ as a sort of \emph{curved}
+2-dimensional type, while
+$C × A$ is the cartesian, straightened ``rectangular'' version. $C$ doesn't depend on $A$, which is
+why the name \emph{constant complement} is quite apt.  In other words, a Lens is a
+\emph{change of coordinates}
 that allows one to see $A$ as a cartesian projection. Similarly, a Prism is a
-change of coordinates that shuffles all of $A$ ``to the right''.
+\emph{change of coordinates} that shuffles all of $A$ ``to the right''.
 
 \section{Conclusion}
 
