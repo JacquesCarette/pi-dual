@@ -129,7 +129,7 @@ $\displaystyle
 % Not the final title!
 % \title{Reversible Programming for the BX enthusiast}
 %\title{Reversible programming applied to bidirectional programming}
-\title{Optics and type equivalences}
+\title{Optics and Type Equivalences}
 
 \author{
 Jacques Carette\\ Dept. of Computing and Software\\
@@ -257,35 +257,40 @@ A↔B ×-inverse C↔D = record
 
 The notion of lenses (and its generalizations to optics) is now
 established as one of the formalisms for bidirectional
-transformations. These optics are generally studied in the context of
-conventional programming languages (e.g., Java, Haskell, etc.) which
-leaves untapped the richness of a dependently-typed language,
-especially one which directly supports programming with proof-relevant
-type equivalences.
+transformations~\cite{eaab8672ebea42538109e9f72ece5ed0}. These optics
+are generally studied in the context of conventional programming
+languages (e.g., Java, Haskell, etc.) which leaves untapped the
+richness of a dependently-typed language, especially one which
+directly supports programming with proof-relevant type
+equivalences. (See however the characterization of bidirectional
+transformations as proof-relevant
+bisimulations~\cite{eaab8672ebea42538109e9f72ece5ed0} for a closely
+related perspective.)
 
-In this paper, we show that in the context of such a dependently-typed
-language for proof-relevant type equivalences, the many constructions
-of optics and more importantly, their correctness and their laws,
-become simple consequences of the general properties of proof-relevant
-type equivalences. In particular, we formalize the intuitive, but
-informal, constructions and laws, in various
-sources~\cite{oleg-blog,Miltner2018,laarhoven}.
+In this paper, we show that in the context of a programming language
+for proof-relevant type equivalences, the many constructions of optics
+and more importantly, their correctness and their laws, become simple
+consequences of the general properties of proof-relevant type
+equivalences. In particular, we formalize the intuitive, but informal,
+constructions and laws, in various
+sources~\cite{oleg-blog,Miltner:2017:SBL:3177123.3158089,laarhoven}.
 
-We start with the conventional definition of lenses using a pair of
-\emph{very well-behaved} set/get functions. That definition is only
-implicitly related to type equivalences via a hidden
-\emph{constant-complement}. In order to expose the underlying type
-equivalence, we first reformulate the definition of lenses using an
-existential record that packages an unknown but fixed complement
-type. That definition, however, turns out to have weak proof-theoretic
-properties. We therefore introduce our final definition of lenses
-using the notion of \emph{setoid} to formalize the correct equivalence
-relation on the source type of the lens. We present a complete
-formalized proof in Agda that this final definition is sound and
-complete with respect to the conventional set/get definition.
+We start in the next section with the conventional definition of
+lenses using a pair of \emph{very well-behaved} set/get
+functions. That definition is only implicitly related to type
+equivalences via a hidden \emph{constant-complement}. In order to
+expose the underlying type equivalence, we first reformulate the
+definition of lenses using an existential record that packages an
+unknown but fixed complement type. That definition, however, turns out
+to have weak proof-theoretic properties. We therefore introduce our
+final definition of lenses using the notion of \emph{setoid} to
+formalize the correct equivalence relation on the source type of the
+lens. We present a complete formalized proof in Agda that this final
+definition is sound and complete with respect to the conventional
+set/get definition.
 
 With a formulation of lenses based on proof-relevant type-equivalences
-in hand, we aim to show that many variants of lenses, as well as othe
+in hand, we aim to show that many variants of lenses, as well as other
 optics (prisms, etc.), are directly expressible, and more importantly,
 that their laws are immediately derivable. In order to do that,
 however, we first need, a language in which to express type
@@ -293,14 +298,15 @@ equivalences as well as proofs between type equivalences. In previous
 work, we have established that if we restrict ourselves to finite
 types constructed from the empty type, the unit type, the sum type,
 and the product type, then it is possible to formulate a two-level
-language with the following properties. The level-1 programs in the
-language are sound and complete type equivalences, and the level-2
-programs are sound and complete proofs of equivalences between the
-level-1 programs. This setting of finite types thus provides us with a
-framework in which to define canonical optics with their
-properties. In the presence of richer types, lenses and their
-properties can still be expressed but we generally lose guarantees of
-completeness.
+language with the following properties. The programs at level-1 in the
+language are sound and complete type equivalences, and the programs at
+level-2 are sound and complete proofs of equivalences between the
+level-1 programs (see Sec. 3). This setting of finite types thus
+provides us with a framework in which to define canonical optics with
+their properties (see Sec. 4). In the presence of richer types, lenses
+and their properties can still be expressed but we generally lose
+guarantees of completeness. We conclude with discussions about more
+general optics and transformations.
 
 %% * we want to understand lenses in the setting of proof-relevant type isomorphisms
 %%
@@ -367,17 +373,17 @@ to exploit various canonical constructions and completness results in
 the world of reversible programming and export them to the world of
 bidirectional programming with lenses (and other optics).
 
-Although correct in principle~\cite{survey}, a straightforward
-encoding of \emph{constant-complement lenses} as $\Sigma\ C. S \simeq
-C × A$ is not satisfactory: a $\AgdaRecord{GS-Lens}$ does not reveal
-any sort of complement $C$; so the constant-complement lenses should
-not either. To do this, we should somehow hide our choice of $C$.
-We could use a variety of tricks to do this, but all would rely
-on features of Agda which do not have well-understood meta-theory.
-Instead, we will rely on \emph{discipline} to not access the
-actual $C$. Note that because $\AgdaFunction{Set} ℓ$ does not allow
-introspection, actually getting one's hands on this $C$ still does
-not reveal very much!
+Although correct in principle, a straightforward encoding of
+\emph{constant-complement lenses} as $\Sigma\ C. S \simeq C × A$ is
+not satisfactory: a $\AgdaRecord{GS-Lens}$ does not reveal any sort of
+complement $C$; so the constant-complement lenses should not
+either. To do this, we should somehow hide our choice of $C$.  We
+could use a variety of tricks to do this, but all would rely on
+features of Agda which do not have well-understood meta-theory.
+Instead, we will rely on \emph{discipline} to not access the actual
+$C$. Note that because $\AgdaFunction{Set}~ℓ$ does not allow
+introspection, actually getting one's hands on this $C$ still does not
+reveal very much!
 
 We can use the formulation $∃\ C. S \simeq C × A$ as the basis for a
 first definitions of isomorphism-based lens. We make $C$ implicit, so as to
@@ -448,7 +454,7 @@ Thus our next move is to make that part of $S$ not matter. In other words,
 rather than using the \emph{type} $S$ as a proxy, we want to use a
 \AgdaRecord{Setoid} where $s, t : S$ will be regarded as the same if they
 only differ in their $A$ component.  It is convenient to also define a
-function \AgdaFunction{lens} that lifts type isormorphisms (which work over
+function \AgdaFunction{lens} that lifts type isomorphisms (which work over
 propositional equality) to the \AgdaRecord{Setoid} setting.
 
 \begin{code}
@@ -470,7 +476,7 @@ lens {C = C} (f , qinv g α β) = ll {C = P.setoid C} (record
 \end{code}
 
 One important aspect of the proof is that not only are both laws $\alpha$ and $\beta$
-for the isormorphism used, but $\eta$ for pairs is also crucial.
+for the isomorphism used, but $\eta$ for pairs is also crucial.
 
 The soundness proof is then essentially identical to the previous one:
 \begin{code}
@@ -873,7 +879,6 @@ extract $\AgdaRecord{Setoid}$-based equivalences from a $\AgdaRecord{∃-Lens}$.
 The necessary code is quite straightforward (and available in the literate
 Agda source of this paper).
 
-
 \subsection{Unusual lenses}
 
 It is possible to create lenses for things which are
@@ -972,6 +977,22 @@ more complex to write (and prove correct).
 The same can be done with a (generalized) Toffoli gate, which ends up being
 controlled by the conjunction of two values instead of just one, but otherwise
 introduces no new ideas.
+
+There are quite a few ways to witness the equivalence using an
+isomorphism: \[ E = ((A ⊎ B) × (C ⊎ C)) ≃ ((A ⊎ B) × (C ⊎ C)) \]
+Recall from Sec. 3 that the level-2 programs are equivalences between
+isomorphisms. Indeed, these equivalences can be used to show the
+equivalence of different implementations of \AgdaFunction{gcnot-lens}
+that use different ways of establishing $E$. More generally the
+level-2 equivalences can be used to simplify, optimize, and reason
+about lens programs.
+
+
+%% Level 2 of $\Pi$ lets us look at relations between isomorphisms.
+%% In particular, we can see when some lens/prims/etc are simplifiable
+%% to something simpler.
+%%
+%% Note that factor/distrib is crucial to move between them all.
 
 \subsection{Completeness}
 
@@ -1179,29 +1200,34 @@ $λ s → \AgdaFunction{Data.Sum.map} (\AgdaFunction{const} s) \AgdaFunction{id}
 
 \subsection{Other Optics}
 
-A number of additional optics have been put forth. They are easiest seen as follows:
+A number of additional optics have been put forth. Their salient
+properties can be contrasted in the following table which lists the relation between the source and the view in each case:
+
+\medskip
 \begin{figure}[h]
-\caption{A variety of optics}
-\label{fig:optics}
-\begin{tabular}{ll}\hline
-Equality & $S ⟷ A$ \\ \hline
+\begin{center}\begin{tabular}{ll}\hline
+Equality & $S = A$ \\ \hline
 Iso & $S ≃ A$ \\ \hline
 Lens & $∃C. S ≃ C × A$ \\
 Prism & $∃C . S ≃ C + A$ \\
 Achroma & $∃C. S ≃ ⊤ ⊎ (C × A)$ \\
 Affine & $∃C, D. S ≃ D ⊎ (C × A)$ \\ \hline
 Grate & $∃I. S ≃ I → A$ \\ \hline
-Setter & $∃ F : Set → Set. S ≃ F A$ \\ \hline
-\end{tabular}
+Setter & $∃ F : \mathit{Set} → \mathit{Set}. S ≃ F A$ \\ \hline
+\end{tabular}\end{center}
+\caption{A variety of optics}
+\label{fig:optics}
 \end{figure}
 
-The names used are as found in various bits of the literature. A line
-is drawn when the language is extended.
-Equality is sometimes called Adapter: it merely witnesses equi-inhabitation of
-$S$ and $A$ without any requirements that the witnessing functions are in any
-way related. Iso, short for Isomorphism, is exactly type equivalence.
-Then we have Lens and Prism, as well as two new ones: Achroma and Affine.
-Affine is the most general, and we obtain
+The names used are as found in various bits of the
+literature~\cite{oleg-blog,achromatic,affine,grate}. A line is drawn
+when the language is extended.  Equality is sometimes called Adapter:
+it merely witnesses equi-inhabitation of $S$ and $A$ without any
+requirements that the witnessing functions are in any way
+related. Iso, short for Isomorphism, is exactly type equivalence.
+Then we have Lens and Prism, as well as two new ones:
+Achroma~\cite{achromatic} and Affine~\cite{affine}. This latter
+construction is the most general. Using it, we obtain:
 \begin{itemize}
 \item Lens when $D = ⊥$,
 \item Prism when $C = ⊤$,
@@ -1212,29 +1238,11 @@ Specializing $C$ to $⊤$ in Affine does not give anything useful, as it
 ignores $A$ and just says that $S$ is isomorphic to \emph{something},
 which is a tautology (as $D$ can be taken to be $S$ itself).
 
-Grate moves us to a rather different world, one that involves function types. And Setter
-is more general still, where all we know is that $S$ is isomorphic to some \emph{container}
-of $A$s.
+Grate~\cite{grate} moves us to a rather different world, one that
+involves function types. And Setter is more general still, where all
+we know is that $S$ is isomorphic to some \emph{container} of $A$s.
 
-\section{Optic transformations}
-
-Level 2 of $\Pi$ lets us look at relations between isomorphisms.
-In particular, we can see when some lens/prims/etc are simplifiable
-to something simpler.
-
-Note that factor/distrib is crucial to move between them all.
-
-\section{Geometry of types}
-
-Lens is a cartesian factoring.  Prism is a partition.
-
-Note that we should really view $S$ as a sort of curve 2-dimensional type, while
-$C × A$ is our cartesian, 2-dimensional version. $C$ doesn't depend on $A$, which is
-why the name \emph{constant complement} is quite apt.  A Lens is a change of coordinates
-that allows one to see $A$ as a cartesian projection. Similarly, a Prism is a
-change of coordinates that shuffles all of $A$ ``to the right''.
-
-\jc{What are the other optics?}
+%% \jc{What are the other optics?}
 
 \section{Discussion}
 
@@ -1261,6 +1269,16 @@ be a logical equivalence; injectivity of constructors is the 3rd law involve in 
 Why do some bidirectional programming eschew the setset law? Basically because they want
 to hide one more component in their lens: a $C → C$ function that is applied on
 \AgdaField{set}. For example, this allows a ``logging'' implementation to be lawful.
+
+\subsection{Geometry of types}
+
+Lens is a cartesian factoring.  Prism is a partition.
+
+Note that we should really view $S$ as a sort of curve 2-dimensional type, while
+$C × A$ is our cartesian, 2-dimensional version. $C$ doesn't depend on $A$, which is
+why the name \emph{constant complement} is quite apt.  A Lens is a change of coordinates
+that allows one to see $A$ as a cartesian projection. Similarly, a Prism is a
+change of coordinates that shuffles all of $A$ ``to the right''.
 
 \section{Conclusion}
 
