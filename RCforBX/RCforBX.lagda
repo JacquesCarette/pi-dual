@@ -864,7 +864,6 @@ extract $\AgdaRecord{Setoid}$-based equivalences from a $\AgdaRecord{∃-Lens}$.
 The necessary code is quite straightforward (and available in the literate
 Agda source of this paper).
 
-
 \subsection{Unusual lenses}
 
 It is possible to create lenses for things which are
@@ -964,6 +963,22 @@ The same can be done with a (generalized) Toffoli gate, which ends up being
 controlled by the conjunction of two values instead of just one, but otherwise
 introduces no new ideas.
 
+There are quite a few ways to witness the equivalence using an
+isomorphism: \[ E = ((A ⊎ B) × (C ⊎ C)) ≃ ((A ⊎ B) × (C ⊎ C)) \]
+Recall from Sec. 3 that the level-2 programs are equivalences between
+isomorphisms. Indeed, these equivalences can be used to show the
+equivalence of different implementations of \AgdaFunction{gcnot-lens}
+that use different ways of establishing $E$. More generally the
+level-2 equivalences can be used to simplify, optimize, and reason
+about lens programs.
+
+
+%% Level 2 of $\Pi$ lets us look at relations between isomorphisms.
+%% In particular, we can see when some lens/prims/etc are simplifiable
+%% to something simpler.
+%% 
+%% Note that factor/distrib is crucial to move between them all.
+
 \subsection{Completeness}
 
 The $\Pi$ language is \emph{complete} for equivalences, in the sense that
@@ -1046,29 +1061,34 @@ $λ s → \AgdaFunction{Data.Sum.map} (\AgdaFunction{const} s) \AgdaFunction{id}
 
 \subsection{Other Optics}
 
-A number of additional optics have been put forth. They are easiest seen as follows:
+A number of additional optics have been put forth. Their salient
+properties can be contrasted in the following table which lists the relation between the source and the view in each case:
+
+\medskip
 \begin{figure}[h]
-\caption{A variety of optics}
-\label{fig:optics}
-\begin{tabular}{ll}\hline
-Equality & $S ⟷ A$ \\ \hline
+\begin{center}\begin{tabular}{ll}\hline
+Equality & $S = A$ \\ \hline
 Iso & $S ≃ A$ \\ \hline
 Lens & $∃C. S ≃ C × A$ \\
 Prism & $∃C . S ≃ C + A$ \\
 Achroma & $∃C. S ≃ ⊤ ⊎ (C × A)$ \\
 Affine & $∃C, D. S ≃ D ⊎ (C × A)$ \\ \hline
 Grate & $∃I. S ≃ I → A$ \\ \hline
-Setter & $∃ F : Set → Set. S ≃ F A$ \\ \hline
-\end{tabular}
+Setter & $∃ F : \mathit{Set} → \mathit{Set}. S ≃ F A$ \\ \hline
+\end{tabular}\end{center}
+\caption{A variety of optics}
+\label{fig:optics}
 \end{figure}
 
-The names used are as found in various bits of the literature. A line
-is drawn when the language is extended.
-Equality is sometimes called Adapter: it merely witnesses equi-inhabitation of
-$S$ and $A$ without any requirements that the witnessing functions are in any
-way related. Iso, short for Isomorphism, is exactly type equivalence.
-Then we have Lens and Prism, as well as two new ones: Achroma and Affine.
-Affine is the most general, and we obtain
+The names used are as found in various bits of the
+literature~\cite{oleg-blog,achromatic,affine,grate}. A line is drawn
+when the language is extended.  Equality is sometimes called Adapter:
+it merely witnesses equi-inhabitation of $S$ and $A$ without any
+requirements that the witnessing functions are in any way
+related. Iso, short for Isomorphism, is exactly type equivalence.
+Then we have Lens and Prism, as well as two new ones:
+Achroma~\cite{achromatic} and Affine~\cite{affine}. This latter
+construction is the most general. Using it, we obtain:
 \begin{itemize}
 \item Lens when $D = ⊥$,
 \item Prism when $C = ⊤$,
@@ -1079,29 +1099,11 @@ Specializing $C$ to $⊤$ in Affine does not give anything useful, as it
 ignores $A$ and just says that $S$ is isomorphic to \emph{something},
 which is a tautology (as $D$ can be taken to be $S$ itself).
 
-Grate moves us to a rather different world, one that involves function types. And Setter
-is more general still, where all we know is that $S$ is isomorphic to some \emph{container}
-of $A$s.
+Grate~\cite{grate} moves us to a rather different world, one that
+involves function types. And Setter is more general still, where all
+we know is that $S$ is isomorphic to some \emph{container} of $A$s.
 
-\section{Optic transformations}
-
-Level 2 of $\Pi$ lets us look at relations between isomorphisms.
-In particular, we can see when some lens/prims/etc are simplifiable
-to something simpler.
-
-Note that factor/distrib is crucial to move between them all.
-
-\section{Geometry of types}
-
-Lens is a cartesian factoring.  Prism is a partition.
-
-Note that we should really view $S$ as a sort of curve 2-dimensional type, while
-$C × A$ is our cartesian, 2-dimensional version. $C$ doesn't depend on $A$, which is
-why the name \emph{constant complement} is quite apt.  A Lens is a change of coordinates
-that allows one to see $A$ as a cartesian projection. Similarly, a Prism is a
-change of coordinates that shuffles all of $A$ ``to the right''.
-
-\jc{What are the other optics?}
+%% \jc{What are the other optics?}
 
 \section{Discussion}
 
@@ -1128,6 +1130,16 @@ be a logical equivalence; injectivity of constructors is the 3rd law involve in 
 Why do some bidirectional programming eschew the setset law? Basically because they want
 to hide one more component in their lens: a $C → C$ function that is applied on
 \AgdaField{set}. For example, this allows a ``logging'' implementation to be lawful.
+
+\subsection{Geometry of types}
+
+Lens is a cartesian factoring.  Prism is a partition.
+
+Note that we should really view $S$ as a sort of curve 2-dimensional type, while
+$C × A$ is our cartesian, 2-dimensional version. $C$ doesn't depend on $A$, which is
+why the name \emph{constant complement} is quite apt.  A Lens is a change of coordinates
+that allows one to see $A$ as a cartesian projection. Similarly, a Prism is a
+change of coordinates that shuffles all of $A$ ``to the right''.
 
 \section{Conclusion}
 
