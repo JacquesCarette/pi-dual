@@ -160,7 +160,7 @@ which provide the canonical laws for reasoning about lens and prism equivalences
 
 \AgdaHide{
 \begin{code}
- -- {-# OPTIONS --without-K #-}
+{-# OPTIONS --without-K #-}
 module RCforBX where
 
 open import Level
@@ -308,7 +308,7 @@ lenses and their properties can still be expressed but we generally
 lose guarantees of completeness.) In Sec. 5, we show that the
 framework is robut and generalizes to prisms and other less common
 optics. We finish with a short discussion putting our work in context
-and conclude. 
+and conclude.
 
 %% * we want to understand lenses in the setting of proof-relevant type isomorphisms
 %%
