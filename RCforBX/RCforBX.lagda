@@ -236,14 +236,18 @@ transformations~\cite{eaab8672ebea42538109e9f72ece5ed0}. These optics
 are generally studied in the context of conventional programming
 languages (e.g., Java, Haskell, etc.) which leaves untapped the
 richness of a dependently-typed language, especially one which
-directly supports programming with proof-relevant type equivalences.
+directly supports programming with proof-relevant type
+equivalences. (See however the characterization of bidirectional
+transformations as proof-relevant
+bisimulations~\cite{eaab8672ebea42538109e9f72ece5ed0} for a closely
+related perspective.)
 
-In this paper, we show that in the context of such a dependently-typed
-language for proof-relevant type equivalences, the many constructions
-of optics and more importantly, their correctness and their laws,
-become simple consequences of the general properties of proof-relevant
-type equivalences. In particular, we formalize the intuitive, but
-informal, constructions and laws, in various
+In this paper, we show that in the context of a programming language
+for proof-relevant type equivalences, the many constructions of optics
+and more importantly, their correctness and their laws, become simple
+consequences of the general properties of proof-relevant type
+equivalences. In particular, we formalize the intuitive, but informal,
+constructions and laws, in various
 sources~\cite{oleg-blog,Miltner:2017:SBL:3177123.3158089,laarhoven}.
 
 We start in the next section with the conventional definition of
@@ -344,17 +348,17 @@ to exploit various canonical constructions and completness results in
 the world of reversible programming and export them to the world of
 bidirectional programming with lenses (and other optics).
 
-Although correct in principle~\cite{survey}, a straightforward
-encoding of \emph{constant-complement lenses} as $\Sigma\ C. S \simeq
-C × A$ is not satisfactory: a $\AgdaRecord{GS-Lens}$ does not reveal
-any sort of complement $C$; so the constant-complement lenses should
-not either. To do this, we should somehow hide our choice of $C$.
-We could use a variety of tricks to do this, but all would rely
-on features of Agda which do not have well-understood meta-theory.
-Instead, we will rely on \emph{discipline} to not access the
-actual $C$. Note that because $\AgdaFunction{Set} ℓ$ does not allow
-introspection, actually getting one's hands on this $C$ still does
-not reveal very much!
+Although correct in principle, a straightforward encoding of
+\emph{constant-complement lenses} as $\Sigma\ C. S \simeq C × A$ is
+not satisfactory: a $\AgdaRecord{GS-Lens}$ does not reveal any sort of
+complement $C$; so the constant-complement lenses should not
+either. To do this, we should somehow hide our choice of $C$.  We
+could use a variety of tricks to do this, but all would rely on
+features of Agda which do not have well-understood meta-theory.
+Instead, we will rely on \emph{discipline} to not access the actual
+$C$. Note that because $\AgdaFunction{Set}~ℓ$ does not allow
+introspection, actually getting one's hands on this $C$ still does not
+reveal very much!
 
 We can use the formulation $∃\ C. S \simeq C × A$ as the basis for a
 first definitions of isomorphism-based lens. We make $C$ implicit, so as to
