@@ -160,21 +160,22 @@ which provide the canonical laws for reasoning about lens and prism equivalences
 
 \AgdaHide{
 \begin{code}
-{-# OPTIONS --without-K #-}
+ -- {-# OPTIONS --without-K #-}
 module RCforBX where
 
 open import Level
 open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ)
   renaming (map to map×)
 open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_]′)
+open import Data.Sum.Properties
 open import Data.Unit
 open import Data.Empty
 open import Data.Maybe
 open import Relation.Binary.PropositionalEquality as P
   using (_≡_; cong; cong₂; sym; trans; refl; inspect; [_])
-open import Function using (id; const; _∘_; case_of_)
+open import Function using (id; const; _∘_; case_of_; _∋_)
 
-open import Relation.Binary using (Setoid)
+open import Relation.Binary using (Setoid; Rel)
 open import Function.Equality using (_⟨$⟩_; Π)
 -- open import Relation.Binary.Product.Pointwise using (_×-setoid_)
 -- open import Data.Product.Relation.Pointwise.NonDependent using (_×-inverse_)
@@ -195,6 +196,30 @@ S ×S T = record
     ; sym = λ pf → Setoid.sym S (proj₁ pf) , Setoid.sym T (proj₂ pf)
     ; trans = λ {(i≈Sj , i≈Tj) (j≈Sk , j≈Tk) → Setoid.trans S i≈Sj j≈Sk , Setoid.trans T i≈Tj j≈Tk }
     } }
+
+_≈S_ : {a b : Level} → (A : Setoid a b) → (B : Setoid a b) → Rel (Setoid.Carrier A ⊎ Setoid.Carrier B) b
+(S ≈S T) (inj₁ x) (inj₁ x₁) = Setoid._≈_ S x x₁
+(_≈S_ {_} {b} S T) (inj₁ x) (inj₂ y) = Lift b ⊥
+(_≈S_ {_} {b} S T) (inj₂ y₁) (inj₁ x) = Lift b ⊥
+(S ≈S T) (inj₂ y₁) (inj₂ y) = Setoid._≈_ T y₁ y
+
+_⊎S_ : {a b : Level} → Setoid a b → Setoid a b → Setoid a b
+_⊎S_ {a} {b} S T = record
+  { Carrier = Carrier S ⊎ Carrier T
+  ; _≈_ = S ≈S T
+  ; isEquivalence = record
+    { refl = λ { {inj₁ x} → Setoid.refl S ; {inj₂ y} → Setoid.refl T}
+    ; sym = λ { {inj₁ x} {inj₁ x₁} ≈ → Setoid.sym S ≈ ; {inj₁ x} {inj₂ y} (lift ())
+              ; {inj₂ y} {inj₁ x} (lift ()) ; {inj₂ y} {inj₂ y₁} ≈ → Setoid.sym T ≈}
+    ; trans = λ { {inj₁ x} {inj₁ x₁} {inj₁ x₂} i≈j j≈k → Setoid.trans S i≈j j≈k
+                ; {inj₁ x} {inj₁ x₁} {inj₂ y} i≈j (lift ())
+                ; {inj₁ x} {inj₂ y} {inj₁ x₁} i≈j (lift ())
+                ; {inj₁ x} {inj₂ y} {inj₂ y₁} (lift ()) j≈k
+                ; {inj₂ y} {inj₁ x} {k} (lift ()) j≈k
+                ; {inj₂ y} {inj₂ y₁} {inj₁ x} i≈j (lift ())
+                ; {inj₂ y} {inj₂ y₁} {inj₂ y₂} i≈j j≈k → Setoid.trans T i≈j j≈k } }
+  }
+  where open Setoid
 
 -- And our own product of Inverses
 _×-inverse_ : {a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : Level}
@@ -365,16 +390,6 @@ record Lens₁ {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
     {C} : Set ℓ
     iso : S ≃ (C × A)
 \end{code}
-
-\AgdaHide{
-\begin{code}
-record ∃-Prism {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
-  constructor ∃-prism
-  field
-    {C} : Set ℓ
-    iso : S ≃ (C ⊎ A)
-\end{code}
-}
 
 Given an $\AgdaRecord{Lens₁}$, we can build a \AgdaRecord{GS-Lens}, so
 that this is certainly sound:
@@ -968,8 +983,8 @@ this equivalence.  In other words,
 \begin{theorem}
 Suppose $S$ and $A$ are two types belonging to the language of the
 semiring of types $T\left[x_{1},\ldots,x_{n}\right]$ over $n$ variables.
-If $∃C. S ≃ C × A$ is inhabited, then there is a term of $\Pi$ whose denotation
-is an equivalence witnessing the equivalence.
+If $∃C. S ≃ C × A$ is inhabited, then there is a term of $\Pi$ witnessing
+the equivalence.
 \end{theorem}
 
 \section{Optics}
@@ -983,8 +998,18 @@ other optics, as the precise development follows a clear pattern.
 
 Prisms are dual to lenses in that they arise from exchanging product ($×$)
 with coproduct ($⊎$). In other words, a prism is $∃C. S ≃ C ⊎ A$, giving us
-\AgdaRecord{∃-Prism} (straightforward definition elided). We can mimick
-the definitions used for lens for all the basic combinators.
+\AgdaRecord{Prism₁} (straightforward definition elided). We can mimick
+the definitions used for lens for all.
+
+\AgdaHide{
+\begin{code}
+record Prism₁ {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
+  constructor prism₁
+  field
+    {C} : Set ℓ
+    iso : S ≃ (C ⊎ A)
+\end{code}
+}
 
 But let us instead take this opportunity to do a rational reconstruction of
 the usual interface to a prism.  Suppose that we have prism $∃C. S ≃ C ⊎ A$
@@ -1012,27 +1037,141 @@ record BI-Prism {ℓs ℓa : Level} (S : Set ℓs) (A : Set ℓa) : Set (ℓs �
     belongs    : S → Maybe A
     inject     : A → S
     belongsinject : (a : A) → belongs (inject a) ≡ just a
-    injectbelongs : (s : S) → Σ A (λ a → belongs s ≡ just a) → Σ A (λ a → inject a ≡ s)
+    belongs≡just→inject : (s : S) → (a : A) → (belongs s ≡ just a → inject a ≡ s)
 \end{code}
 
 From this, we can again prove soundness:
 \begin{code}
 module _ {ℓ : Level} (S A : Set ℓ) where
-  prism-sound : ∃-Prism S A → BI-Prism S A
-  prism-sound (∃-prism (f , qinv g α β) ) = record
+  prism-sound₁ : Prism₁ S A → BI-Prism S A
+  prism-sound₁ (prism₁ (f , qinv g α β) ) = record
     { belongs = λ s → [ const nothing , just ]′ (f s)
     ; inject = g ∘ inj₂
-    ; belongsinject = λ a → cong ([ _ , _ ]′) (α _)
-    ; injectbelongs = λ s → refine s
+    ; belongsinject = λ _ → cong ([ _ , _ ]′) (α _)
+    ; belongs≡just→inject = refine
     }
     where
-      refine : (t : S) → Σ A (λ b → [ const nothing , just ]′ (f t) ≡ just b) → Σ A (λ b → g (inj₂ b) ≡ t)
-      refine s (b , pf) with f s | inspect f s
-      refine s (b , ()) | inj₁ x | _
-      refine s (_ , pf) | inj₂ y | [ eq ] = y , trans (cong g (sym eq)) (β s)
+      refine : (t : S) → (a : A) → [ const nothing , just ]′ (f t) ≡ just a → g (inj₂ a) ≡ t
+      refine s b pf with f s | inspect f s
+      refine s b () | inj₁ x | _
+      refine s _ refl | inj₂ y | [ eq ] = trans (cong g (sym eq)) (β s)
 \end{code}
 \noindent where injectivity of constructors is used in a crucial way.
+The combinator \AgdaFunction{[\_,\_]′} for $⊎$ is akin to Haskell's \texttt{either}.
+The details of the $\AgdaFunction{refine}$ implementation rely on
+\emph{injectivity of constructors} to reject impossible cases.
 
+But, as with lens, this is not quite complete. We thus upgrade the
+definition in the same way:
+\begin{code}
+record ∃-Prism {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
+  constructor ∃-prism
+  field
+    {C} : Setoid ℓ ℓ
+    iso : Inverse (P.setoid S) (C ⊎S (P.setoid A))
+
+prism : {ℓ : Level} {S A C : Set ℓ} → S ≃ (C ⊎ A) → ∃-Prism S A
+prism {S = S} {A} {C} (f , qinv g α β) = ∃-prism {C = P.setoid C} (record
+  { to = record { _⟨$⟩_ = f ; cong = cong-f }
+  ; from = record { _⟨$⟩_ = g ; cong = cong-g }
+  ; inverse-of = record
+    { left-inverse-of = β
+    ; right-inverse-of = λ { (inj₁ x) → Setoid.reflexive Z (α (inj₁ x))
+                           ; (inj₂ y) → Setoid.reflexive Z (α (inj₂ y))}
+    }
+  })
+  where
+    Z = P.setoid C ⊎S P.setoid A
+    cong-f : {i j : S} → i ≡ j → (P.setoid C ≈S P.setoid A) (f i) (f j)
+    cong-f {i} {.i} refl with f i
+    cong-f {i} {.i} refl | inj₁ x = refl
+    cong-f {i} {.i} refl | inj₂ y = refl
+    cong-g : {i j : C ⊎ A} → (P.setoid C ≈S P.setoid A) i j → g i ≡ g j
+    cong-g {inj₁ x} {inj₁ .x} refl = refl
+    cong-g {inj₁ x} {inj₂ y} (lift ())
+    cong-g {inj₂ y} {inj₁ x} (lift ())
+    cong-g {inj₂ y} {inj₂ .y} refl = refl
+\end{code}
+The principal reason for including all of this code is to show that
+there are rather substantial differences in the details. Where
+$\eta$ for products was crucial before, here injectivity of
+$\AIC{inj₁}$ and $\AIC{inj₂}$ play a similar role.
+
+From this, we can then prove a new soundness result as well as a completeness
+result.  The full details are omitted as they are quite lengthy. The main
+component is the computation of the ``other'' component, corresponding
+roughly to $S - A$, which is the \AgdaRecord{Setoid} with
+\AgdaField{Carrier}~$\Sigma S (λ s → \AIC{belongs} bi s ≡ \AIC{nothing})$
+and equivalence on the first field. This is roughly equivalent to what
+Grenrus showed~\cite{oleg-blog}, but without the need for proof irrelevance
+in the meta-theory, as we build it in to our \AgdaRecord{Setoid} instead.
+
+\AgdaHide{
+\begin{code}
+prism-sound′ : {ℓ : Level} {S A : Set ℓ} → ∃-Prism S A → BI-Prism S A
+prism-sound′ {S = S} {A} (∃-prism p) =
+  let f = to p ⟨$⟩_
+      g = from p ⟨$⟩_ in record
+    { belongs = λ s → [ const nothing , just ]′ (f s)
+    ; inject = g ∘ inj₂
+    ; belongsinject = bi
+    ; belongs≡just→inject = refine
+    }
+    where
+      bi : (a : A) → [ const nothing , just ]′ (to p ⟨$⟩ (from p ⟨$⟩ inj₂ a)) ≡ just a
+      bi a with to p ⟨$⟩ (from p ⟨$⟩ inj₂ a) | right-inverse-of p (inj₂ a)
+      bi a | inj₁ x | lift ()
+      bi a | inj₂ y | pf = cong just pf
+      refine : (s : S) (a : A) → [ const nothing , just ]′ (to p ⟨$⟩ s) ≡ just a →
+                         from p ⟨$⟩ inj₂ a ≡ s
+      refine s a pf with to p ⟨$⟩ s | inspect (to p ⟨$⟩_) s
+      refine s a () | inj₁ x | _
+      refine s .y refl | inj₂ y | [ eq ] = trans (cong (from p ⟨$⟩_) (sym eq)) (left-inverse-of p s)
+
+prism-complete : {ℓ : Level} {S A : Set ℓ} → BI-Prism S A → ∃-Prism S A
+prism-complete {ℓ} {S} {A} bi = ∃-prism {C = D} (record
+  { to = record { _⟨$⟩_ = fwd ; cong = λ { refl → Setoid.reflexive Z (cong fwd refl) } }
+  ; from = record { _⟨$⟩_ = bwd ; cong = λ {i} {j} → cong-bwd {i} {j} }
+  ; inverse-of = record
+    { left-inverse-of = left
+    ; right-inverse-of = right
+    } })
+  where
+    open BI-Prism
+    D : Setoid ℓ ℓ
+    D = record
+      { Carrier = Σ S (λ s → belongs bi s ≡ nothing)
+      ; _≈_ = λ x y → proj₁ x ≡ proj₁ y
+      ; isEquivalence = record { refl = refl ; sym = sym ; trans = trans }
+      }
+    Z = D ⊎S P.setoid A
+    fwd : (x : S) → Σ S (λ s → belongs bi s ≡ nothing) ⊎ A
+    fwd x with belongs bi x | inspect (belongs bi) x
+    fwd x | just x₁ | _ = inj₂ x₁
+    fwd x | nothing | [ eq ] = inj₁ (x , eq)
+    bwd : (x : Σ S (λ s → belongs bi s ≡ nothing) ⊎ A) → S
+    bwd (inj₁ (s , pf))  = s
+    bwd (inj₂ a)         = inject bi a
+    cong-bwd : {i j : Σ S (λ s → belongs bi s ≡ nothing) ⊎ A} → Setoid._≈_ Z i j → bwd i ≡ bwd j
+    cong-bwd {inj₁ x} {inj₁ x₁} ≈ = ≈
+    cong-bwd {inj₁ x} {inj₂ y} (lift ())
+    cong-bwd {inj₂ y} {inj₁ x} (lift ())
+    cong-bwd {inj₂ y} {inj₂ y₁} ≈ = cong (inject bi) ≈
+    left : (x : S) → bwd (fwd x) ≡ x
+    left x with belongs bi x | inspect (belongs bi) x
+    left x | just x₁ | [ eq ] = belongs≡just→inject bi x x₁ eq
+    left x | nothing | [ eq ] = refl
+    contra : {Y : Set ℓ} {y : Y} → (Maybe {ℓ} Y ∋ nothing)  ≡ (Maybe Y ∋ just y) → ⊥
+    contra ()
+    right : (x : Σ S (λ s → belongs bi s ≡ nothing) ⊎ A) → Setoid._≈_ Z (fwd (bwd x))  x
+    right (inj₁ x) with belongs bi (proj₁ x) | inspect (belongs bi) (proj₁ x)
+    right (inj₁ (s , snd)) | just x₁ | [ eq ] = lift (contra (trans (sym snd) eq))
+    right (inj₁ x) | nothing | yyy = refl
+    right (inj₂ y) with belongs bi (inject bi y) | inspect (belongs bi) (inject bi y)
+    right (inj₂ y) | just x | [ eq ] = just-injective (trans (sym eq) (belongsinject bi y))
+    right (inj₂ y) | nothing | [ eq ] = lift (contra (trans (sym eq) (belongsinject bi y)))
+\end{code}
+}
 Note that there is one more way, again equivalent, of defining a prism:
 rather than using $\AgdaRecord{Maybe} A$, use $S ⊎ A$ and replace
 $\AgdaField{belongs}$ with
