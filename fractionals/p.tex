@@ -1,0 +1,32 @@
+
+Reference cells have fractional types
+
+1 -> A * 1/A
+From no information, create a ref cell with a getter (A) and a setter (1/A)
+Usually type of getter is 1 -> A and setter A -> 1
+Using that A -> B is [not A + B] and hence [1/A * B] in this case then:
+1 -> A is [1/1 * A] which is A, and
+A -> 1 is [1/A * 1] which is 1/A
+
+Inspiration from lenses
+Particle/Anti-particle
+Entanglement (side channel between setter and getter)
+
+Forget 1/0 for now; we will fix later with meadow trick
+
+Also we will index the types with a monad or something to make the effect of creating the cell explicit
+
+Denotational semantics already kind of known: groupoid with fractional cardinality
+
+If A and 1/A are left loose, we get errors (reading uninitialized cells, race conditions, etc.). But if information is conserved and we do meadow trick, no errors! That should be the main theorem.
+
+Can get functions A -> B as [1/A * B] , which has a hidden cell for parameter passing, a setter to pass the parameter and a value of type B that is blocked until the cell is full.
+
+Now do interesting programs. Start with all the constructions for closed monoidal categories.
+
+Check 1/(1/A) = A
+1 -> 1/A * 1/(1/A)
+Se here we are creating a cell that holds the setter for another cell; ho-functions!!!
+
+
+
