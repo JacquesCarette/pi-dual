@@ -29,4 +29,32 @@ Check 1/(1/A) = A
 Se here we are creating a cell that holds the setter for another cell; ho-functions!!!
 
 
+===============================================================
 
+Comments on the above:
+
+I am going to use a mixture of 'reversible', 'functional' and 'imperative' thinking below,
+and may not always signal it explicitly -- you've been warned!
+
+So a getter is 1 -> A only in an imperative setting. In a functional setting, the 'better' type
+is World -> A; and a setter is then World -> A -> World. Which is great, because THAT is
+actually exactly the type of a lens! [We could generalize to World' as the result of set,
+which would push us into generalized optics]
+
+The 'reasoning' to get to A and 1/A is dubious at best; it uses 'Boolean' Curry-Howard,
+which is not reversible. I don't believe in that aspect at all.
+
+However, I do see "Lens S A" as being a kind of 'relative complement', i.e. S // A.
+And it does make complete sense to see World as being chopped-up, through allocation, into
+A and its 'complement' World // A. Let's just call this 'Rest'.
+
+Here World is some kind of 'potentially infinite' universe where a Lens does not
+*necessarily* allocate new memory, but it certainly does reserve memory for our use.
+Observationally, these are probably the same.
+
+What do we obtain here? What seems to drop out quite naturally is a flavour of
+separation logic!  The axioms of Lens, equivalently of isomorphisms and product, give
+us exactly that!
+
+Downside? World is _neither_ 1 or 0.  So 1 / A still doesn't pop out.
+Nevertheless, I think this is very interesting.
