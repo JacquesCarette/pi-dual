@@ -1,6 +1,6 @@
-\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+\documentclass[sigplan,review,anonymous]{acmart}
+\settopmatter{printfolios=true,printccs=false,printacmref=false}
 
-\usepackage{onecolceurws}
 \usepackage{amssymb,amsthm,amsmath}
 \usepackage{graphicx}
 \usepackage{lmodern}
