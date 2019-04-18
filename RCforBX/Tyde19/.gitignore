@@ -1,0 +1,12 @@
+*.agdai
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.ptb
+*.out
+*.bbl
+*.blg
+.DS_Store
+*.ibc
+*.dvi
