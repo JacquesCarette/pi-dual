@@ -19,7 +19,6 @@
 \usepackage{ucs}
 \usepackage{agda}
 
-
 %%
 
 \newtheorem{theorem}{Theorem}[section]
@@ -93,6 +92,11 @@ $\displaystyle
 %% \DeclareUnicodeCharacter{10231}{\ensuremath{\leftrightarrow}}
 
 \DeclareUnicodeCharacter{9679}{\ensuremath{\bullet}}
+\DeclareUnicodeCharacter{8343}{\ensuremath{_l}}
+\DeclareUnicodeCharacter{8337}{\ensuremath{_e}}
+\DeclareUnicodeCharacter{8345}{\ensuremath{_n}}
+\DeclareUnicodeCharacter{8347}{\ensuremath{_s}}
+\DeclareUnicodeCharacter{8779}{\ensuremath{\approxeq}}
 %% \newunicodechar{ℓ}{\ensuremath{\ell}}
 %% \newunicodechar{⊔}{\ensuremath{\sqcup}}
 
@@ -187,6 +191,7 @@ open Inverse using (to; from; left-inverse-of; right-inverse-of)
 
 open import Equiv
 open import TypeEquiv
+open import EquivEquiv
 
 -- Do our own Setoid product, because the built-in one triggers an internal error!
 _×S_ : {a b c d : Level} → Setoid a b → Setoid c d → Setoid (a ⊔ c) (b ⊔ d)
@@ -899,7 +904,7 @@ module _ {A : Set} where
 First, a \AgdaRecord{∃-Lens} built ``by hand'':
 \begin{code}
   ∃-Colour-in-A+A+A : ∃-Lens (A ⊎ A ⊎ A) Colour
-  ∃-Colour-in-A+A+A = lens eq
+  ∃-Colour-in-A+A+A = lens equ
    where
     f : A ⊎ A ⊎ A → A × Colour
     f (inj₁ x) = x , red
@@ -909,9 +914,9 @@ First, a \AgdaRecord{∃-Lens} built ``by hand'':
     g (a , red) = inj₁ a
     g (a , green) = inj₂ (inj₁ a)
     g (a , blue) = inj₂ (inj₂ a)
-    eq : (A ⊎ A ⊎ A) ≃ (A × Colour)
-    eq = f , qinv g (λ { (a , red) → refl ; (a , green) → refl ; (a , blue) → refl})
-                    λ { (inj₁ x) → refl ; (inj₂ (inj₁ x)) → refl ; (inj₂ (inj₂ y)) → refl}
+    equ : (A ⊎ A ⊎ A) ≃ (A × Colour)
+    equ = f , qinv g (λ { (a , red) → refl ; (a , green) → refl ; (a , blue) → refl})
+                     λ { (inj₁ x) → refl ; (inj₂ (inj₁ x)) → refl ; (inj₂ (inj₂ y)) → refl}
 \end{code}
 The equivalence is not too painful to establish. But let's do
 the same for the \verb|GS-Lens|:
@@ -1079,7 +1084,7 @@ module _ {ℓ : Level} (S A : Set ℓ) where
       refine : (t : S) → (a : A) → [ const nothing , just ]′ (f t) ≡ just a → g (inj₂ a) ≡ t
       refine s b pf with f s | inspect f s
       refine s b () | inj₁ x | _
-      refine s _ refl | inj₂ y | [ eq ] = trans (cong g (sym eq)) (β s)
+      refine s _ refl | inj₂ y | [ equ ] = trans (cong g (sym equ)) (β s)
 \end{code}
 \noindent where injectivity of constructors is used in a crucial way.
 The combinator \AgdaFunction{[\_,\_]′} for $⊎$ is akin to Haskell's \texttt{either}.
@@ -1152,7 +1157,7 @@ prism-sound′ {S = S} {A} (∃-prism p) =
                          from p ⟨$⟩ inj₂ a ≡ s
       refine s a pf with to p ⟨$⟩ s | inspect (to p ⟨$⟩_) s
       refine s a () | inj₁ x | _
-      refine s .y refl | inj₂ y | [ eq ] = trans (cong (from p ⟨$⟩_) (sym eq)) (left-inverse-of p s)
+      refine s .y refl | inj₂ y | [ equ ] = trans (cong (from p ⟨$⟩_) (sym equ)) (left-inverse-of p s)
 
 prism-complete : {ℓ : Level} {S A : Set ℓ} → BI-Prism S A → ∃-Prism S A
 prism-complete {ℓ} {S} {A} bi = ∃-prism {C = D} (record
@@ -1174,7 +1179,7 @@ prism-complete {ℓ} {S} {A} bi = ∃-prism {C = D} (record
     fwd : (x : S) → Σ S (λ s → belongs bi s ≡ nothing) ⊎ A
     fwd x with belongs bi x | inspect (belongs bi) x
     fwd x | just x₁ | _ = inj₂ x₁
-    fwd x | nothing | [ eq ] = inj₁ (x , eq)
+    fwd x | nothing | [ equ ] = inj₁ (x , equ)
     bwd : (x : Σ S (λ s → belongs bi s ≡ nothing) ⊎ A) → S
     bwd (inj₁ (s , pf))  = s
     bwd (inj₂ a)         = inject bi a
@@ -1185,17 +1190,17 @@ prism-complete {ℓ} {S} {A} bi = ∃-prism {C = D} (record
     cong-bwd {inj₂ y} {inj₂ y₁} ≈ = cong (inject bi) ≈
     left : (x : S) → bwd (fwd x) ≡ x
     left x with belongs bi x | inspect (belongs bi) x
-    left x | just x₁ | [ eq ] = belongs≡just→inject bi x x₁ eq
-    left x | nothing | [ eq ] = refl
+    left x | just x₁ | [ equ ] = belongs≡just→inject bi x x₁ equ
+    left x | nothing | [ equ ] = refl
     contra : {Y : Set ℓ} {y : Y} → (Maybe {ℓ} Y ∋ nothing)  ≡ (Maybe Y ∋ just y) → ⊥
     contra ()
     right : (x : Σ S (λ s → belongs bi s ≡ nothing) ⊎ A) → Setoid._≈_ Z (fwd (bwd x))  x
     right (inj₁ x) with belongs bi (proj₁ x) | inspect (belongs bi) (proj₁ x)
-    right (inj₁ (s , snd)) | just x₁ | [ eq ] = lift (contra (trans (sym snd) eq))
+    right (inj₁ (s , snd)) | just x₁ | [ equ ] = lift (contra (trans (sym snd) equ))
     right (inj₁ x) | nothing | yyy = refl
     right (inj₂ y) with belongs bi (inject bi y) | inspect (belongs bi) (inject bi y)
-    right (inj₂ y) | just x | [ eq ] = just-injective (trans (sym eq) (belongsinject bi y))
-    right (inj₂ y) | nothing | [ eq ] = lift (contra (trans (sym eq) (belongsinject bi y)))
+    right (inj₂ y) | just x | [ equ ] = just-injective (trans (sym equ) (belongsinject bi y))
+    right (inj₂ y) | nothing | [ equ ] = lift (contra (trans (sym equ) (belongsinject bi y)))
 \end{code}
 }
 Note that there is one more way, again equivalent, of defining a prism:
@@ -1326,6 +1331,25 @@ dependently-typed setting to bring forth the deep connections.
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{cites,cites2}
 %inline the .bbl file directly for mailing to authors.
+
+\begin{code}
+infix 4 _≈ₗₑₙₛ_
+
+record _≈ₗₑₙₛ_ {ℓs ℓa : Level} {S : Set ℓs} {A : Set ℓa} (L₁ L₂ : GS-Lens S A) : Set (ℓs ⊔ ℓa) where
+  field
+    get≡ : get L₁ ∼ get L₂
+    set≡ : ∀ {s} → set L₁ s ∼ set L₂ s
+
+≋→≈ₗₑₙₛ : {ℓ : Level} {S A C : Set ℓ} {eq₁ eq₂ : S ≃ (C × A)}
+        → eq₁ ≋ eq₂ → sound′ (lens eq₁) ≈ₗₑₙₛ sound′ (lens eq₂)
+≋→≈ₗₑₙₛ {eq₁ = f₁ , qinv g₁ _ _} {f₂ , qinv g₂ _ _} (eq f≡ g≡) =
+  record { get≡ = λ s → cong proj₂ (f≡ s)
+         ; set≡ = set≡ }
+  where
+    set≡ : ∀ {s} x → g₁ (proj₁ (f₁ s) , x) ≡ g₂ (proj₁ (f₂ s) , x)
+    set≡ {s} x rewrite cong proj₁ (f≡ s) = g≡ _
+\end{code}
+
 
 \end{document}
 
@@ -1813,3 +1837,5 @@ are a ``linear'' representation of a 2-categorial commutative
 diagram! In fact, it is a painfully verbose version thereof, as it
 includes many \emph{refocusing} steps because our language does not
 build associativity into its syntax. Categorical diagrams usually do.
+
+
