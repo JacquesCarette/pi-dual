@@ -177,6 +177,7 @@ open import Data.Sum.Properties
 open import Data.Unit
 open import Data.Empty
 open import Data.Maybe
+open import Data.Maybe.Properties using (just-injective)
 open import Relation.Binary.PropositionalEquality as P
   using (_≡_; cong; cong₂; sym; trans; refl; inspect; [_])
 open import Function using (id; const; _∘_; case_of_; _∋_; _$_)
@@ -223,8 +224,8 @@ _⊎S_ {a} {b} S T = record
   ; _≈_ = S ≈S T
   ; isEquivalence = record
     { refl = λ { {inj₁ x} → Setoid.refl S ; {inj₂ y} → Setoid.refl T}
-    ; sym = λ { {inj₁ x} {inj₁ x₁} ≈ → Setoid.sym S ≈ ; {inj₁ x} {inj₂ y} (lift ())
-              ; {inj₂ y} {inj₁ x} (lift ()) ; {inj₂ y} {inj₂ y₁} ≈ → Setoid.sym T ≈}
+    ; sym = λ { {inj₁ x} {inj₁ x₁} ≈s → Setoid.sym S ≈s ; {inj₁ x} {inj₂ y} (lift ())
+              ; {inj₂ y} {inj₁ x} (lift ()) ; {inj₂ y} {inj₂ y₁} ≈s → Setoid.sym T ≈s}
     ; trans = λ { {inj₁ x} {inj₁ x₁} {inj₁ x₂} i≈j j≈k → Setoid.trans S i≈j j≈k
                 ; {inj₁ x} {inj₁ x₁} {inj₂ y} i≈j (lift ())
                 ; {inj₁ x} {inj₂ y} {inj₁ x₁} i≈j (lift ())
@@ -1388,6 +1389,10 @@ module _ (A B C : Set) where
              trans≋ ((sym≋ hexagonr⊗r≋) ⊡ id≋) $
              trans≋ assoc⊚r≋
                     (id≋ ⊡ assoc⊚r≋)
+{-
+≈→≋ : {ℓ : Level} {S A C : Set ℓ} {lens₁ lens₂ : GS-Lens S A} → lens₁ ≈ₗₑₙₛ lens₂
+    → ∃-Lens.iso (complete lens₁) ≋ ∃-Lens.iso (complete lens₂)
+≈→≋ l1 l2 r = ? -}
 \end{code}
 
 
@@ -1877,5 +1882,3 @@ are a ``linear'' representation of a 2-categorial commutative
 diagram! In fact, it is a painfully verbose version thereof, as it
 includes many \emph{refocusing} steps because our language does not
 build associativity into its syntax. Categorical diagrams usually do.
-
-
