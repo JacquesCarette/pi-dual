@@ -11,7 +11,7 @@ open import Data.Product using (_×_; proj₁; proj₂; _,_)
 open import Algebra using (CommutativeSemiring)
 open import Algebra.Structures
   using (IsSemigroup; IsCommutativeMonoid; IsCommutativeSemiring)
-  
+
 open import Function renaming (_∘_ to _○_)
 open import Relation.Binary.PropositionalEquality using (refl)
 
@@ -138,7 +138,7 @@ swap⋆ (a , b) = (b , a)
 abstract
 
   swapswap⋆ : {A B : Set} → swap⋆ ○ swap⋆ ∼ id {A = A × B}
-  swapswap⋆ (a , b) = refl 
+  swapswap⋆ (a , b) = refl
 
 swap⋆equiv : {A B : Set} → (A × B) ≃ (B × A)
 swap⋆equiv = swap⋆ , qinv swap⋆ swapswap⋆ swapswap⋆
@@ -192,7 +192,7 @@ abstract
   assocr⋆∘assocl⋆ = refl∼
 
 assocl⋆equiv : {A B C : Set} → (A × (B × C)) ≃ ((A × B) × C)
-assocl⋆equiv = 
+assocl⋆equiv =
   assocl⋆ , qinv assocr⋆ assocl⋆∘assocr⋆ assocr⋆∘assocl⋆
 
 assocr⋆equiv : {A B C : Set} → ((A × B) × C) ≃ (A × (B × C))
@@ -215,7 +215,7 @@ abstract
   factorz∘distz (() , proj₂)
 
 distzequiv : {A : Set} → (⊥ × A) ≃ ⊥
-distzequiv {A} = 
+distzequiv {A} =
   distz , qinv factorz (distz∘factorz {A}) factorz∘distz
 
 factorzequiv : {A : Set} → ⊥ ≃ (⊥ × A)
@@ -238,7 +238,7 @@ abstract
   factorzr∘distzr (_ , ())
 
 distzrequiv : {A : Set} → (A × ⊥) ≃ ⊥
-distzrequiv {A} = 
+distzrequiv {A} =
   distzr , qinv factorzr (distzr∘factorzr {A}) factorzr∘distzr
 
 factorzrequiv : {A : Set} → ⊥ ≃ (A × ⊥)
@@ -301,16 +301,19 @@ factorlequiv = sym≃ distlequiv
 
 typesPlusIsSG : IsSemigroup {Level.suc Level.zero} {Level.zero} {Set} _≃_ _⊎_
 typesPlusIsSG = record {
-  isEquivalence = ≃IsEquiv ;
-  assoc = λ t₁ t₂ t₃ → assocr₊equiv {t₁} {t₂} {t₃} ;
-  ∙-cong = _⊎≃_
+  isMagma = record {
+    isEquivalence = ≃IsEquiv ;
+    ∙-cong = _⊎≃_ }
+  ; assoc = λ t₁ t₂ t₃ → assocr₊equiv {t₁} {t₂} {t₃}
   }
 
 typesTimesIsSG : IsSemigroup {Level.suc Level.zero} {Level.zero} {Set} _≃_ _×_
 typesTimesIsSG = record {
-  isEquivalence = ≃IsEquiv ;
-  assoc = λ t₁ t₂ t₃ → assocr⋆equiv {t₁} {t₂} {t₃} ;
-  ∙-cong = _×≃_
+  isMagma = record {
+      isEquivalence = ≃IsEquiv
+    ;  ∙-cong = _×≃_
+    }
+  ; assoc = λ t₁ t₂ t₃ → assocr⋆equiv {t₁} {t₂} {t₃}
   }
 
 typesPlusIsCM : IsCommutativeMonoid _≃_ _⊎_ ⊥
@@ -331,7 +334,7 @@ typesIsCSR : IsCommutativeSemiring _≃_ _⊎_ _×_ ⊥ ⊤
 typesIsCSR = record {
   +-isCommutativeMonoid = typesPlusIsCM ;
   *-isCommutativeMonoid = typesTimesIsCM ;
-  distribʳ = λ t₁ t₂ t₃ → distequiv {t₂} {t₃} {t₁} ; 
+  distribʳ = λ t₁ t₂ t₃ → distequiv {t₂} {t₃} {t₁} ;
   zeroˡ = λ t → distzequiv {t}
   }
 
