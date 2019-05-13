@@ -179,7 +179,7 @@ open import Data.Empty
 open import Data.Maybe
 open import Relation.Binary.PropositionalEquality as P
   using (_≡_; cong; cong₂; sym; trans; refl; inspect; [_])
-open import Function using (id; const; _∘_; case_of_; _∋_)
+open import Function using (id; const; _∘_; case_of_; _∋_; _$_)
 
 open import Relation.Binary using (Setoid; Rel)
 open import Function.Equality using (_⟨$⟩_; Π)
@@ -193,6 +193,13 @@ open import Equiv
 open import TypeEquiv
 open import EquivEquiv
 
+infixr 50 _⊚_
+_⊚_ :  ∀ {ℓ ℓ′ ℓ″} {A : Set ℓ} {B : Set ℓ′} {C : Set ℓ″} → A ≃ B → B ≃ C → A ≃ C
+_⊚_ = trans≃
+
+_⊗_ :  ∀ {ℓA ℓB ℓC ℓD} {A : Set ℓA} {B : Set ℓB} {C : Set ℓC}  {D : Set ℓD}
+     → A ≃ C → B ≃ D → (A × B) ≃ (C × D)
+_⊗_ = _×≃_
 -- Do our own Setoid product, because the built-in one triggers an internal error!
 _×S_ : {a b c d : Level} → Setoid a b → Setoid c d → Setoid (a ⊔ c) (b ⊔ d)
 S ×S T = record
@@ -1348,6 +1355,39 @@ record _≈ₗₑₙₛ_ {ℓs ℓa : Level} {S : Set ℓs} {A : Set ℓa} (L₁
   where
     set≡ : ∀ {s} x → g₁ (proj₁ (f₁ s) , x) ≡ g₂ (proj₁ (f₂ s) , x)
     set≡ {s} x rewrite cong proj₁ (f≡ s) = g≡ _
+
+-- cannot proof these because "abstract" in TypeEquiv
+postulate
+  assoc⊚l≋ : {A B C D : Set} {e₁ : A ≃ B} {e₂ : B ≃ C} {e₃ : C ≃ D}
+           → (e₁ ⊚ (e₂ ⊚ e₃)) ≋ ((e₁ ⊚ e₂) ⊚ e₃)
+  assoc⊚r≋ : {A B C D : Set} {e₁ : A ≃ B} {e₂ : B ≃ C} {e₃ : C ≃ D}
+           → ((e₁ ⊚ e₂) ⊚ e₃) ≋ (e₁ ⊚ (e₂ ⊚ e₃))
+  hexagonr⊗r≋ : {A B C : Set} → (swap⋆equiv ⊗ id≃) ⊚ assocr⋆equiv ⊚ (id≃ ⊗ swap⋆equiv) ≋ (assocr⋆equiv ⊚ swap⋆equiv) ⊚ assocr⋆equiv {A} {B} {C}
+  _⊡_  : {A B C : Set} {e₁ : A ≃ B} {e₂ : B ≃ C} {e₃ : A ≃ B} {e₄ : B ≃ C}
+       → (e₁ ≋ e₃) → (e₂ ≋ e₄) → (e₁ ⊚ e₂) ≋ (e₃ ⊚ e₄)
+  idr⊚r≋ : {A B : Set} {e : A ≃ B} → e ≋ (e ⊚ id≃)
+  -- need definition for !
+  linv⊚r : {A B C : Set} → id≃ ≋ assocr⋆equiv ⊚ assocl⋆equiv {A} {B} {C}
+
+module _ (A B C : Set) where
+  lens₁ : GS-Lens ((A × B) × C) A
+  lens₁ = sound′ (lens (assocr⋆equiv ⊚ swap⋆equiv))
+
+  lens₂ : GS-Lens ((A × B) × C) A
+  lens₂ = sound′ (lens ((swap⋆equiv ⊗ id≃) ⊚ assocr⋆equiv ⊚ (id≃ ⊗ swap⋆equiv) ⊚ assocl⋆equiv))
+
+  lens₁≈lens₂ : lens₁ ≈ₗₑₙₛ lens₂
+  lens₁≈lens₂ = ≋→≈ₗₑₙₛ {eq₁ = assocr⋆equiv ⊚ swap⋆equiv}
+                        {eq₂ = (swap⋆equiv ⊗ id≃) ⊚ assocr⋆equiv ⊚ (id≃ ⊗ swap⋆equiv) ⊚ assocl⋆equiv}
+                        eqeq
+    where
+      eqeq : assocr⋆equiv ⊚ swap⋆equiv ≋ (swap⋆equiv ⊗ id≃) ⊚ assocr⋆equiv ⊚ (id≃ ⊗ swap⋆equiv) ⊚ assocl⋆equiv {B} {C} {A}
+      eqeq = trans≋ idr⊚r≋ $
+             trans≋ (id≋ ⊡ linv⊚r) $
+             trans≋ assoc⊚l≋ $
+             trans≋ ((sym≋ hexagonr⊗r≋) ⊡ id≋) $
+             trans≋ assoc⊚r≋
+                    (id≋ ⊡ assoc⊚r≋)
 \end{code}
 
 
