@@ -1,31 +1,24 @@
-\documentclass{beamer}
+\documentclass[11pt]{beamer}
 
-\usepackage{onecolceurws}
 \usepackage{amssymb,amsthm,amsmath}
-\usepackage{graphicx}
+%\usepackage{graphicx}
 \usepackage{agda}
 \usepackage{lmodern}
 \usepackage{textgreek}
-\usepackage[utf8x]{inputenc}
 \usepackage[LGR,TS1,T1]{fontenc}
-\usepackage{comment}
+%\usepackage[utf8]{inputenc}
+%\usepackage{comment}
 \usepackage{tikz}
-\usepackage{tikz-cd}
-\usepackage[nocenter]{qtree}
-\usepackage{fullpage}
+%\usepackage{tikz-cd}
+%\usepackage[nocenter]{qtree}
+%\usepackage{fullpage}
 \usepackage{hyperref}
-\usepackage{multicol}
+%\usepackage{multicol}
 \usepackage{stmaryrd}
-\usepackage{proof}
+%\usepackage{proof}
 \usepackage{ucs}
 
 %%
-
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{definition}[theorem]{Definition}
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{corollary}[theorem]{Corollary}
 
 \newcommand{\Gpd}{\ensuremath{\mathsf{Groupoid}}}
 \newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
@@ -45,7 +38,7 @@
 \newcommand{\idt}[3]{#2 \equiv_{#1} #3}
 \newcommand{\idrt}[3]{#3 \equiv_{#1} #2}
 \newcommand{\refl}[1]{\textsf{refl}~#1}
-\newcommand{\alt}{~|~}
+% \newcommand{\alt}{~|~}
 \newcommand{\linv}{l!}
 \newcommand{\rinv}{r!}
 \newcommand{\invinv}{!!}
@@ -86,18 +79,17 @@ $\displaystyle
 
 % Unicode declarations
 
-%% \DeclareUnicodeCharacter{9678}{\ensuremath{\odot}}
-%% \DeclareUnicodeCharacter{9636}{\ensuremath{\Box}}
-%% shorten the longarrow
-%% \DeclareUnicodeCharacter{10231}{\ensuremath{\leftrightarrow}}
-
-\DeclareUnicodeCharacter{9679}{\ensuremath{\bullet}}
+% \DeclareUnicodeCharacter{9679}{\ensuremath{\bullet}}
 
 \DeclareMathAlphabet{\mymathbb}{U}{bbold}{m}{n}
 
 % TIKZ declarations
 \tikzstyle{func}=[rectangle,draw,fill=black!20,minimum size=1.9em,
   text width=2.4em, text centered]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% set up beamer
+\usetheme{Boadilla}
+\usecolortheme{crane}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -117,30 +109,37 @@ $\displaystyle
 \newcommand{\todo}[1]{}
 \fi
 
-%% \newcommand{\amr}[1]{}
-%% \newcommand{\jc}[1]{}
-
 \newcommand{\jc}[1]{\authornote{purple}{JC}{#1}}
 \newcommand{\amr}[1]{\fbox{\begin{minipage}{0.9\textwidth}\color{red}{Amr says: {#1}}\end{minipage}}}
+\newcommand{\ch}[1]{\authornote{green}{CHC}{#1}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Not the final title!
-% \title{Reversible Programming for the BX enthusiast}
-%\title{Reversible programming applied to bidirectional programming}
 \title{Optics and Type Equivalences}
-
-\author{
-Jacques Carette\\ Dept. of Computing and Software\\
-        McMaster University \\ carette@mcmaster.ca
-\and
-Amr Sabry \\ Computer Science Dept.\\
-        Indiana University \\ sabry@indiana.edu
-}
-
-\institution{}
+\author{Jacques Carette, Amr Sabry}
+\institute{}
+\date{today}
 
 \begin{document}
 \maketitle
+
+\begin{frame}{Outline}
+\begin{itemize}
+\item Optics is the name of the zoo of lens-inspired constructs in haskell,
+  including prisms, achroma, affine, etc.
+\item As well known, lens are related to reversible programming -- somehow
+\item Here: fully formalize relation between lens and a particular
+  kind of reversible programming, that given by \emph{type equivalences}
+\item Lens in Agda
+\item A little bit of Pi
+\item Exploring the space of "lens programs" in both styles
+\item Prisms
+\item Optics (including the geometric picture)
+\item Future work: optimizing optics programs
+\end{itemize}
+\end{frame}
+
+\end{document}
 
 \begin{abstract}
 Bidirectional programming, lenses, prisms, and other optics have connections
@@ -431,20 +430,20 @@ the laws help in narrowing down the choices: basically, we want the
 $s′ : S$ where $\AgdaFunction{get s′} ≡ a$, and so we again
 use \AgdaFunction{set} for the purpose:
 
-\begin{code}
+\begin{spec}
 incomplete : {ℓ : Level} {S A : Set ℓ} → GS-Lens S A → Lens₁ S A
 incomplete {ℓ} {S} {A} l =
   ∃-lens ((λ s → s , get l s) ,
          qinv (λ { (s , a) → set l s a })
               (λ { (s , a) → cong₂ _,_ hole (getput l s a)})
                λ s → putget l s)
-\end{code}
+\end{spec}
 That almost gets us there. The one hole we can't fill says
-\begin{code}
+\begin{spec}
     where
       hole : {s : S} {a : A} → set l s a ≡ s
       hole = {!!}
-\end{code}
+\end{spec}
 But that will only ever happen if $\AgdaFunction{get s}$ was already $a$ (by
 \AgdaField{putget}).
 
