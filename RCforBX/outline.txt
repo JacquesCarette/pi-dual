@@ -1,0 +1,54 @@
+
+************************************************************************* 
+Optics is the name of the zoo of lens-inspired constructs in haskell,
+  including prisms, achroma, affine, etc.
+
+Screen shot of "Field Guide" at https://github.com/ekmett/lens#lens-lenses-folds-and-traversals
+Won't be readable but will show the amount of code for plain lenses and prisms.
+
+************************************************************************* 
+As well known, lens are related to reversible programming -- somehow
+
+Zoom on iso in "Field Guide" above
+
+************************************************************************* 
+Haskell definition:
+
+data Lens s a = Lens { view :: s -> a, set :: s -> a -> s }
+
+Small example in Haskell
+
+Laws? Optimizations? 
+
+************************************************************************* 
+Lens in Agda
+
+GS-Lens definition
+
+Write example above in Agda
+
+Ok but no help doing proofs of getput, putget, putput
+
+Better (and equivalent) formulation in Agda
+
+Lens1 (no need to mess with setoids)
+
+Show same example; can now exploit work on type equivalences
+
+************************************************************************* 
+Even better we have proof-relevant type equivalences
+
+A bit of Pi detour with connections to category theory and/or HoTT
+
+*************************************************************************
+Revisit example above; can we do something with level 2 equivalences?
+
+*************************************************************************
+Many extensions to lenses
+
+http://oleg.fi/gists/posts/2018-12-12-find-correct-laws.html
+with more kinds of lenses and questions about which laws they should satisfy
+
+************************************************************************* 
+Framework of type equivalences carries smoothly
+
