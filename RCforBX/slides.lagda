@@ -1,14 +1,14 @@
 \documentclass[11pt]{beamer}
 
 \usepackage{amssymb,amsthm,amsmath}
-%\usepackage{graphicx}
 \usepackage{agda}
 \usepackage{lmodern}
 \usepackage{textgreek}
 \usepackage[LGR,TS1,T1]{fontenc}
 %\usepackage[utf8]{inputenc}
 %\usepackage{comment}
-\usepackage{tikz}
+\usepackage{graphicx}
+%\usepackage{tikz}
 %\usepackage{tikz-cd}
 %\usepackage[nocenter]{qtree}
 %\usepackage{fullpage}
@@ -84,12 +84,13 @@ $\displaystyle
 \DeclareMathAlphabet{\mymathbb}{U}{bbold}{m}{n}
 
 % TIKZ declarations
-\tikzstyle{func}=[rectangle,draw,fill=black!20,minimum size=1.9em,
-  text width=2.4em, text centered]
+% \tikzstyle{func}=[rectangle,draw,fill=black!20,minimum size=1.9em,
+%  text width=2.4em, text centered]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% set up beamer
 \usetheme{Boadilla}
 \usecolortheme{crane}
+\setbeamertemplate{navigation symbols}{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -122,38 +123,6 @@ $\displaystyle
 
 \begin{document}
 \maketitle
-
-\begin{frame}{Outline}
-\begin{itemize}
-\item Optics is the name of the zoo of lens-inspired constructs in haskell,
-  including prisms, achroma, affine, etc.
-\item As well known, lens are related to reversible programming -- somehow
-\item Here: fully formalize relation between lens and a particular
-  kind of reversible programming, that given by \emph{type equivalences}
-\item Lens in Agda
-\item A little bit of Pi
-\item Exploring the space of "lens programs" in both styles
-\item Prisms
-\item Optics (including the geometric picture)
-\item Future work: optimizing optics programs
-\end{itemize}
-\end{frame}
-
-\end{document}
-
-\begin{abstract}
-Bidirectional programming, lenses, prisms, and other optics have connections
-to reversible programming which have been explored from several perspectives,
-mostly by attempting to recover bidirectional transformations from unidirectional
-ones. We offer a novel and foundational perspective in which reversible programming
-is expressed using “type equivalences.” This perspective offers several advantages:
-first, it is possible to construct sets of sound and complete type equivalences
-for certain collections of types; these correspond to canonical optic constructions.
-Second, using ideas inspired by category theory and homotopy type theory,
-it is possible to construct sound and complete “equivalences between equivalences”
-which provide the canonical laws for reasoning about lens and prism equivalences.
-\end{abstract}
-\vskip 32pt
 
 \AgdaHide{
 \begin{code}
@@ -251,6 +220,80 @@ A↔B ×-inverse C↔D = record
   }
 \end{code}
 }
+
+\begin{frame}[fragile]{Optics}
+\begin{center}
+\includegraphics[scale=0.21]{Hierarchy.png}
+\end{center}
+\end{frame}
+
+%% *************************************************************************
+%% Optics is the name of the zoo of lens-inspired constructs in haskell,
+%%   including prisms, achroma, affine, etc.
+%%
+%% Screen shot of "Field Guide" at https://github.com/ekmett/lens#lens-lenses-folds-and-traversals
+%% Won't be readable but will show the amount of code for plain lenses and prisms.
+%%
+%% *************************************************************************
+%% As well known, lens are related to reversible programming -- somehow
+%%
+%% Zoom on iso in "Field Guide" above
+%%
+%% *************************************************************************
+%% Haskell definition:
+%%
+%% data Lens s a = Lens { view :: s -> a, set :: s -> a -> s }
+%%
+%% Small example in Haskell
+%%   (JC: why? what's the point being made by the example?)
+%%
+%% Laws? Optimizations?
+%%
+%% *************************************************************************
+%% Lens in Agda
+%%
+%% GS-Lens definition
+%%
+%% Write example above in Agda
+%%
+%% Ok but no help doing proofs of getput, putget, putput
+%%
+%% Better (and **equivalent**) formulation in Agda
+%%
+%% Lens1 (no need to mess with setoids)
+%%
+%% Show same example; can now exploit work on type equivalences
+%%   (JC: Ah, now I see the point! Need to pick it carefully)
+%%
+%% *************************************************************************
+%% Even better we have proof-relevant type equivalences
+%%
+%% A bit of Pi detour with connections to category theory and/or HoTT
+%%
+%% *************************************************************************
+%%
+%% Exploring the space of "lens programs"
+%%
+%% *************************************************************************
+%% Revisit example above; can we do something with level 2 equivalences?
+%%   (JC: again, I'm not sure we have such an example 'in hand'. So I'm
+%%    a bit afraid of going down this route)
+%%
+%% *************************************************************************
+%% Many extensions to lenses
+%%
+%% http://oleg.fi/gists/posts/2018-12-12-find-correct-laws.html
+%% with more kinds of lenses and questions about which laws they should satisfy
+%%
+%% *************************************************************************
+%% Geometric interpretation of optics
+%%
+%% *************************************************************************
+%% Framework of type equivalences carries smoothly (including optimization)
+
+
+\end{document}
+
 \section{Introduction}
 
 The notion of lenses (and its generalizations to optics) is now
