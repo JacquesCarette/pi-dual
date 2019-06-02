@@ -17,8 +17,9 @@ Haskell definition:
 data Lens s a = Lens { view :: s -> a, set :: s -> a -> s }
 
 Small example in Haskell
+  (JC: why? what's the point being made by the example?)
 
-Laws? Optimizations? 
+Laws? Optimizations?
 
 ************************************************************************* 
 Lens in Agda
@@ -29,11 +30,12 @@ Write example above in Agda
 
 Ok but no help doing proofs of getput, putget, putput
 
-Better (and equivalent) formulation in Agda
+Better (and **equivalent**) formulation in Agda
 
 Lens1 (no need to mess with setoids)
 
 Show same example; can now exploit work on type equivalences
+  (JC: Ah, now I see the point! Need to pick it carefully)
 
 ************************************************************************* 
 Even better we have proof-relevant type equivalences
@@ -41,7 +43,13 @@ Even better we have proof-relevant type equivalences
 A bit of Pi detour with connections to category theory and/or HoTT
 
 *************************************************************************
+
+Exploring the space of "lens programs"
+
+*************************************************************************
 Revisit example above; can we do something with level 2 equivalences?
+  (JC: again, I'm not sure we have such an example 'in hand'. So I'm
+   a bit afraid of going down this route)
 
 *************************************************************************
 Many extensions to lenses
@@ -49,6 +57,9 @@ Many extensions to lenses
 http://oleg.fi/gists/posts/2018-12-12-find-correct-laws.html
 with more kinds of lenses and questions about which laws they should satisfy
 
+*************************************************************************
+Geometric interpretation of optics
+
 ************************************************************************* 
-Framework of type equivalences carries smoothly
+Framework of type equivalences carries smoothly (including optimization)
 
