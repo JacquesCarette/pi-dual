@@ -91,6 +91,7 @@ $\displaystyle
 \usetheme{Boadilla}
 \usecolortheme{crane}
 \setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{page number in head/foot}{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -117,9 +118,9 @@ $\displaystyle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \title{Optics and Type Equivalences}
-\author{Jacques Carette, Amr Sabry}
+\author[Carette, Sabry]{Jacques Carette, Amr Sabry}
 \institute{}
-\date{today}
+\date{}
 
 \begin{document}
 \maketitle
@@ -221,24 +222,19 @@ A↔B ×-inverse C↔D = record
 \end{code}
 }
 
+%% Optics is the name of the zoo of lens-inspired constructs in haskell,
+%%   including prisms, achroma, affine, etc.
 \begin{frame}[fragile]{Optics}
 \begin{center}
-\includegraphics[scale=0.21]{Hierarchy.png}
+\only<1>{\includegraphics[scale=0.20]{Hierarchy.png}}
+%% As well known, lens are related to reversible programming -- somehow
+%% Zoom on iso in "Field Guide" above
+\only<2>{
+Based on a `reversible' core:
+\includegraphics[scale=0.65]{Iso.png}}
 \end{center}
 \end{frame}
 
-%% *************************************************************************
-%% Optics is the name of the zoo of lens-inspired constructs in haskell,
-%%   including prisms, achroma, affine, etc.
-%%
-%% Screen shot of "Field Guide" at https://github.com/ekmett/lens#lens-lenses-folds-and-traversals
-%% Won't be readable but will show the amount of code for plain lenses and prisms.
-%%
-%% *************************************************************************
-%% As well known, lens are related to reversible programming -- somehow
-%%
-%% Zoom on iso in "Field Guide" above
-%%
 %% *************************************************************************
 %% Haskell definition:
 %%
