@@ -99,6 +99,12 @@ $\displaystyle
 \lstset{language=Haskell,basicstyle=\footnotesize} % maybe even \scriptsize ?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% For Agda typesetting
+
+% no extra indenting of Agda code
+\newdimen\mathindent\mathindent0pt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Convenient abbreviations
 \newcommand{\AIC}[1]{\AgdaInductiveConstructor{#1}}
@@ -130,8 +136,7 @@ $\displaystyle
 \begin{document}
 \maketitle
 
-\AgdaHide{
-\begin{code}
+\begin{code}[hide]
 {-# OPTIONS --without-K #-}
 module slides where
 
@@ -225,7 +230,6 @@ A↔B ×-inverse C↔D = record
                         ; right-inverse-of = λ _ → (Setoid.refl A , Setoid.refl B) , Setoid.refl C }
   }
 \end{code}
-}
 
 %% Optics is the name of the zoo of lens-inspired constructs in haskell,
 %%   including prisms, achroma, affine, etc.
@@ -255,8 +259,19 @@ Laws? Optimizations?
 
 %% *************************************************************************
 %% Lens in Agda
-%%
-%% GS-Lens definition
+\begin{frame}{Lens in Agda}
+\begin{code}
+record GS-Lens {ℓs ℓa : Level} (S : Set ℓs) (A : Set ℓa) : Set (ℓs ⊔ ℓa) where
+  field
+    get     : S → A
+    set     : S → A → S
+    getput  : {s : S} {a : A}    → get (set s a) ≡ a
+    putget  : (s : S)            → set s (get s) ≡ s
+    putput  : (s : S) (a a' : A) → set (set s a) a' ≡ set s a'
+open GS-Lens
+\end{code}
+
+\end{frame}
 %%
 %% Write example above in Agda
 %%
@@ -298,83 +313,7 @@ Laws? Optimizations?
 
 \end{document}
 
-\section{Introduction}
-
-The notion of lenses (and its generalizations to optics) is now
-established as one of the formalisms for bidirectional
-transformations~\cite{eaab8672ebea42538109e9f72ece5ed0}. These optics
-are generally studied in the context of conventional programming
-languages (e.g., Java, Haskell, etc.) which leaves untapped the
-richness of a dependently-typed language, especially one which
-directly supports programming with proof-relevant type
-equivalences. (See however the characterization of bidirectional
-transformations as proof-relevant
-bisimulations~\cite{eaab8672ebea42538109e9f72ece5ed0} for a closely
-related perspective.)
-
-In this paper, we show that in the context of a programming language
-for proof-relevant type equivalences, the many constructions of optics
-and more importantly, their correctness and their laws, become simple
-consequences of the general properties of proof-relevant type
-equivalences. In particular, we formalize the intuitive, but informal,
-constructions and laws, in various
-sources~\cite{oleg-blog,Miltner:2017:SBL:3177123.3158089,laarhoven}.
-
-We start in the next section with the conventional definition of
-lenses using a pair of \emph{very well-behaved} set/get
-functions. That definition is only implicitly related to type
-equivalences via a hidden \emph{constant-complement}. In order to
-expose the underlying type equivalence, we first reformulate the
-definition of lenses using an existential record that packages an
-unknown but fixed complement type. That definition, however, turns out
-to have weak proof-theoretic properties. We therefore introduce our
-final definition of lenses using the notion of \emph{setoid} to
-formalize the correct equivalence relation on the source type of the
-lens. We present a complete formalized proof in Agda that this final
-definition is sound and complete with respect to the conventional
-set/get definition.
-
-With a formulation of lenses based on proof-relevant type-equivalences
-in hand, we aim to show that many variants of lenses, as well as other
-optics (prisms, etc.), are directly expressible, and more importantly,
-that their laws are immediately derivable. In order to do that,
-however, we first need, a language in which to express type
-equivalences as well as proofs between type equivalences. In previous
-work, we have established that if we restrict ourselves to finite
-types constructed from the empty type, the unit type, the sum type,
-and the product type, then it is possible to formulate a two-level
-language with the following properties. The programs at level-1 in the
-language are sound and complete type equivalences, and the programs at
-level-2 are sound and complete proofs of equivalences between the
-level-1 programs (see Sec. 3). This setting of finite types thus
-provides us with a framework in which to define canonical optics with
-their properties (see Sec. 4). (In the presence of richer types,
-lenses and their properties can still be expressed but we generally
-lose guarantees of completeness.) In Sec. 5, we show that the
-framework is robut and generalizes to prisms and other less common
-optics. We finish with a short discussion putting our work in context
-and conclude.
-
 %% * we want to understand lenses in the setting of proof-relevant type isomorphisms
-%%
-%% * the first question is how to define lenses:
-%%      - first guess set/get; no obvious connection to type equivalences
-%%      - next guess \exists; type equivalences appear; can show soundness but
-%%        no completness
-%%      - final def: setoid
-%%    [none of the above refers to Pi, so could be presented first, right?]
-%%
-%% * we now want to explore various optics using our definition; but
-%%      first we need a language to talk about proof-relevant type
-%%      equivalences; if we restrict ourselves to finite types, we can
-%%      have soundness and completeness of type equivalences AND proofs
-%%      about such equivalences; that setting will give us nice canonical
-%%      results; in principle we could go to richer types (cite other Pi
-%%      papers with trace etc) but we lose
-%%      soundness/completeness. Introduce relevant pieces of PI as a
-%%      language for sound and complete proof relevant type equivalences
-%%
-%% * a whole bunch of optics emerge with the right laws for free….
 
 %% The inspiration for this paper comes from a number of sources:
 %% \begin{enumerate}
@@ -384,28 +323,7 @@ and conclude.
 %%   \item (many more, insert citations throughout)
 %% \end{enumerate}
 %%
-%% Example of two lenses that are the same
-%% lenses as fractional types; prisms as negative types
-
 \section{Lenses}
-
-A \emph{lens} is a structure that mediates between a source $S$ and
-view $A$. Typically a lens comes equipped with two functions
-$\mathit{get}$ which projects a view from a source, and $\mathit{set}$
-which takes a source and a view and reconstructs an appropriate source with that
-view. A monomorphic interface for such lenses is shown below,
-including the commonly cited laws for the lens to be very well-behaved:
-
-\begin{code}
-record GS-Lens {ℓs ℓa : Level} (S : Set ℓs) (A : Set ℓa) : Set (ℓs ⊔ ℓa) where
-  field
-    get     : S → A
-    set     : S → A → S
-    getput  : (s : S) (a : A) → get (set s a) ≡ a
-    putget  : (s : S) → set s (get s) ≡ s
-    putput  : (s : S) (a a' : A) → set (set s a) a' ≡ set s a'
-open GS-Lens
-\end{code}
 
 A common theme in the literature on lenses is that the function
 $\mathit{get}$ discards some information from the source to create a
@@ -452,8 +370,8 @@ sound : {ℓ : Level} {S A : Set ℓ} → Lens₁ S A → GS-Lens S A
 sound (∃-lens (f , qinv g α β)) = record
   { get = λ s → proj₂ (f s)
   ; set = λ s a → g (proj₁ (f s) , a)
-  ; getput = λ s a → cong proj₂ (α _)
-  ; putget = λ s → β s
+  ; getput = cong proj₂ (α _)
+  ; putget = β
   ; putput = λ s a a' → cong g (cong₂ _,_ (cong proj₁ (α _)) P.refl) }
 \end{code}
 
@@ -536,7 +454,7 @@ sound′ {S = S} {A} (ll len) =
   record
   { get = λ s → proj₂ (f s)
   ; set = λ s a → g (proj₁ (f s) , a)
-  ; getput = λ s a → proj₂ (α (proj₁ (f s) , a))
+  ; getput = λ {s} {a} → proj₂ (α (proj₁ (f s) , a))
   ; putget = β
   ; putput = λ s a _ → Π.cong (from len) (proj₁ (α (proj₁ (f s) , a)) , P.refl) }
 \end{code}
@@ -557,7 +475,7 @@ complete {ℓ} {S} {A} l = ll
      ; from = record { _⟨$⟩_ = λ {(s , a) → set l s a} ; cong = λ { {_ , a₁} (≈ , P.refl) → ≈ a₁ } }
      ; inverse-of = record
          { left-inverse-of = putget l
-         ; right-inverse-of = λ { (s , a) → (λ a' → putput l s a a') , getput l s a}
+         ; right-inverse-of = λ { (s , a) → (λ a' → putput l s a a') , getput l}
          }
      })
 \end{code}
@@ -852,7 +770,7 @@ module _ (A B D E : Set) where
 
   AA-gs-lens : GS-Lens A A
   AA-gs-lens = record { get = id ; set = λ _ → id
-    ; getput = λ _ _ → P.refl ; putget = λ _ → P.refl ; putput = λ _ _ _ → P.refl }
+    ; getput = P.refl ; putget = λ _ → P.refl ; putput = λ _ _ _ → P.refl }
 \end{code}
 
 What does that correspond to as a \AgdaRecord{∃-Lens}? Here, we can easily
@@ -965,9 +883,9 @@ the same for the \verb|GS-Lens|:
     ; set = λ { (inj₁ x) red → inj₁ x ; (inj₁ x) green → inj₂ (inj₁ x) ; (inj₁ x) blue → inj₂ (inj₂ x)
               ; (inj₂ (inj₁ x)) red → inj₁ x ; (inj₂ (inj₁ x)) green → inj₂ (inj₁ x) ; (inj₂ (inj₁ x)) blue → inj₂ (inj₂ x)
               ; (inj₂ (inj₂ y)) red → inj₁ y ; (inj₂ (inj₂ y)) green → inj₂ (inj₁ y) ; (inj₂ (inj₂ y)) blue → inj₂ (inj₂ y)}
-    ; getput = λ { (inj₁ x) red → refl ; (inj₁ x) green → refl ; (inj₁ x) blue → refl
-                 ; (inj₂ (inj₁ x)) red → refl ; (inj₂ (inj₁ x)) green → refl ; (inj₂ (inj₁ x)) blue → refl
-                 ; (inj₂ (inj₂ y)) red → refl ; (inj₂ (inj₂ y)) green → refl ; (inj₂ (inj₂ y)) blue → refl}
+    ; getput = λ { {inj₁ x} {red} → refl ; {inj₁ x} {green} → refl ; {inj₁ x} {blue} → refl
+                 ; {inj₂ (inj₁ x)} {red} → refl ; {inj₂ (inj₁ x)} {green} → refl ; {inj₂ (inj₁ x)} {blue} → refl
+                 ; {inj₂ (inj₂ y)} {red} → refl ; {inj₂ (inj₂ y)} {green} → refl ; {inj₂ (inj₂ y)} {blue} → refl}
     ; putget = λ { (inj₁ x) → refl ; (inj₂ (inj₁ x)) → refl ; (inj₂ (inj₂ y)) → refl}
     ; putput = λ { (inj₁ x) red red → refl ; (inj₁ x) green red → refl ; (inj₁ x) blue red → refl
                  ; (inj₁ x) red green → refl ; (inj₁ x) green green → refl ; (inj₁ x) blue green → refl
