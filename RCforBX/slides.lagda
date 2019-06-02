@@ -17,6 +17,7 @@
 \usepackage{stmaryrd}
 %\usepackage{proof}
 \usepackage{ucs}
+\usepackage{listings}
 
 %%
 
@@ -92,6 +93,10 @@ $\displaystyle
 \usecolortheme{crane}
 \setbeamertemplate{navigation symbols}{}
 \setbeamertemplate{page number in head/foot}{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% set up listings
+\lstset{language=Haskell,basicstyle=\footnotesize} % maybe even \scriptsize ?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -235,16 +240,19 @@ Based on a `reversible' core:
 \end{center}
 \end{frame}
 
+
 %% *************************************************************************
-%% Haskell definition:
-%%
-%% data Lens s a = Lens { view :: s -> a, set :: s -> a -> s }
-%%
-%% Small example in Haskell
+\begin{frame}[fragile]{Lens in Haskell}
+\begin{lstlisting}
+data Lens s a = Lens { view :: s -> a, set :: s -> a -> s }
+\end{lstlisting}
+\pause
+Example?
 %%   (JC: why? what's the point being made by the example?)
-%%
-%% Laws? Optimizations?
-%%
+\pause
+Laws? Optimizations?
+\end{frame}
+
 %% *************************************************************************
 %% Lens in Agda
 %%
