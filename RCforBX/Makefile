@@ -1,6 +1,6 @@
 all: slides.pdf
 
-slides.pdf : latex/slides.tex
+slides.pdf : latex/slides.tex latex/Equiv.tex
 	pdflatex latex/slides.tex
 	bibtex RCforBX
 	pdflatex latex/slides.tex
@@ -17,3 +17,6 @@ latex/RCforBX.tex : RCforBX.lagda
 
 latex/slides.tex : slides.lagda
 	agda --latex -i . -i ../Univalence slides.lagda
+
+latex/Equiv.tex : ../Univalence/Equiv.lagda
+	agda --latex -i . -i ../Univalence ../Univalence/Equiv.lagda

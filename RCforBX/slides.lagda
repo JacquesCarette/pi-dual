@@ -1,7 +1,8 @@
 \documentclass[11pt]{beamer}
 
 \usepackage{amssymb,amsthm,amsmath}
-\usepackage{agda}
+\usepackage{latex/agda}
+\usepackage{catchfilebetweentags}
 \usepackage{lmodern}
 \usepackage{textgreek}
 \usepackage[LGR,TS1,T1]{fontenc}
@@ -135,6 +136,9 @@ $\displaystyle
 
 \begin{document}
 \maketitle
+
+% needs to go inside document, to suppress too much extra space between blocks
+\AgdaNoSpaceAroundCode{}
 
 \begin{code}[hide]
 {-# OPTIONS --without-K #-}
@@ -270,19 +274,51 @@ record GS-Lens {ℓs ℓa : Level} (S : Set ℓs) (A : Set ℓa) : Set (ℓs ⊔
     putput  : (s : S) (a a' : A) → set (set s a) a' ≡ set s a'
 open GS-Lens
 \end{code}
+%% Write example above in Agda ??
 
+Works... but the proofs can be tedious.
 \end{frame}
-%%
-%% Write example above in Agda
-%%
-%% Ok but no help doing proofs of getput, putget, putput
-%%
+
 %% Better (and **equivalent**) formulation in Agda
-%%
 %% Lens1 (no need to mess with setoids)
+\begin{frame}{Lens in Agda 2}
+\only<1,3-5>{
+Or, the return of constant-complement lenses:
+\begin{code}
+record Lens₁ {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
+  constructor ∃-lens
+  field
+    {C} : Set ℓ
+    iso : S ≃ (C × A)
+\end{code}
+}
+\only<2>{
+where
+\ExecuteMetaData[latex/Equiv.tex]{isqinv}
+\vspace*{1.5mm}
+\ExecuteMetaData[latex/Equiv.tex]{equiv}
+}
+\onslide<4>{
+\begin{code}
+sound : {ℓ : Level} {S A : Set ℓ} → Lens₁ S A → GS-Lens S A
+\end{code}
+\begin{code}[hide]
+sound (∃-lens (f , qinv g α β)) = record
+  { get = λ s → proj₂ (f s)
+  ; set = λ s a → g (proj₁ (f s) , a)
+  ; getput = cong proj₂ (α _)
+  ; putget = β
+  ; putput = λ s a a' → cong g (cong₂ _,_ (cong proj₁ (α _)) P.refl) }
+\end{code}
+}
+\onslide<5>{
+\AgdaFunction{complete} requires moving to \AgdaRecord{Setoid}, which we'll
+elide here -- see online code.
+}
+\end{frame}
+
 %%
 %% Show same example; can now exploit work on type equivalences
-%%   (JC: Ah, now I see the point! Need to pick it carefully)
 %%
 %% *************************************************************************
 %% Even better we have proof-relevant type equivalences
@@ -323,57 +359,14 @@ open GS-Lens
 %%   \item (many more, insert citations throughout)
 %% \end{enumerate}
 %%
-\section{Lenses}
-
-A common theme in the literature on lenses is that the function
-$\mathit{get}$ discards some information from the source to create a
-view, and that this information can be explicitly represented using
-the \emph{constant-complement} technique from the database
-literature. In other words, lenses can viewed as elements of $\exists\
-C. S \simeq C × A$ where $\simeq$ is type equivalence.
-
-This observation is what connects lenses to type equivalences and
-hence to reversible programming. The main contribution of the paper is
-to exploit various canonical constructions and completness results in
-the world of reversible programming and export them to the world of
-bidirectional programming with lenses (and other optics).
-
-Although correct in principle, a straightforward encoding of
-\emph{constant-complement lenses} as $\Sigma\ C. S \simeq C × A$ is
-not satisfactory: a $\AgdaRecord{GS-Lens}$ does not reveal any sort of
-complement $C$; so the constant-complement lenses should not
-either. To do this, we should somehow hide our choice of $C$.  We
-could use a variety of tricks to do this, but all would rely on
-features of Agda which do not have well-understood meta-theory.
-Instead, we will rely on \emph{discipline} to not access the actual
-$C$. Note that because $\AgdaFunction{Set}~ℓ$ does not allow
-introspection, actually getting one's hands on this $C$ still does not
-reveal very much!
 
 We can use the formulation $∃\ C. S \simeq C × A$ as the basis for a
 first definitions of isomorphism-based lens. We make $C$ implicit, so as to
 reduce the temptation to examine it. This formulation will not be
 entirely adequate, but is very close to our final definition.
-\begin{code}
-record Lens₁ {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
-  constructor ∃-lens
-  field
-    {C} : Set ℓ
-    iso : S ≃ (C × A)
-\end{code}
 
 Given an $\AgdaRecord{Lens₁}$, we can build a \AgdaRecord{GS-Lens}, so
 that this is certainly sound:
-
-\begin{code}
-sound : {ℓ : Level} {S A : Set ℓ} → Lens₁ S A → GS-Lens S A
-sound (∃-lens (f , qinv g α β)) = record
-  { get = λ s → proj₂ (f s)
-  ; set = λ s a → g (proj₁ (f s) , a)
-  ; getput = cong proj₂ (α _)
-  ; putget = β
-  ; putput = λ s a a' → cong g (cong₂ _,_ (cong proj₁ (α _)) P.refl) }
-\end{code}
 
 \noindent It is important to notice that the conversion above only uses the
 \AgdaField{iso} part of the \AgdaRecord{Lens₁}.
