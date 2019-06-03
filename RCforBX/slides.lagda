@@ -298,7 +298,7 @@ where
 \vspace*{1.5mm}
 \ExecuteMetaData[latex/Equiv.tex]{equiv}
 }
-\onslide<4>{
+\onslide<4-5>{
 \begin{code}
 sound : {ℓ : Level} {S A : Set ℓ} → Lens₁ S A → GS-Lens S A
 \end{code}
@@ -312,14 +312,47 @@ sound (∃-lens (f , qinv g α β)) = record
 \end{code}
 }
 \onslide<5>{
-\AgdaFunction{complete} requires moving to \AgdaRecord{Setoid}, which we'll
-elide here -- see online code.
+\vspace*{1.5mm}
+\noindent \AgdaFunction{complete} requires moving to \AgdaRecord{Setoid} --
+see online code.
+\vspace*{1.5mm}
+\begin{code}
+_≈_under_ : ∀ {ℓ} {S A : Set ℓ} → (s t : S) (l : GS-Lens S A) → Set ℓ
+_≈_under_ s t l = ∀ a → set l s a ≡ set l t a
+\end{code}
 }
 \end{frame}
 
 %%
 %% Show same example; can now exploit work on type equivalences
-%%
+\begin{frame}{Exploiting type equivalences}
+\begin{minipage}{0.49\textwidth}
+\begin{code}
+module _ {A B D : Set} where
+ l₁ : Lens₁ A A
+ l₁ = ∃-lens uniti⋆equiv
+ l₂ : Lens₁ (B × A) A
+ l₂ = ∃-lens id≃
+ l₃ : Lens₁ (B × A) B
+ l₃ = ∃-lens swap⋆equiv
+ l₄ : Lens₁ (D × (B × A)) A
+ l₄ = ∃-lens assocl⋆equiv
+ l₅ : Lens₁ ⊥ A
+ l₅ = ∃-lens factorzequiv
+ l₆ : Lens₁ ((D × A) ⊎ (B × A)) A
+ l₆ = ∃-lens factorequiv
+\end{code}
+\end{minipage}
+\begin{minipage}{0.49\textwidth}
+$\AgdaFunction{uniti⋆equiv}~:~A ≃ (⊤ × A)$\\
+$\AgdaFunction{id≃}~:~A ≃ A$\\
+$\AgdaFunction{swap⋆equiv}~:~A × B ≃ B × A$\\
+$\AgdaFunction{assocl⋆equiv}~:~(A × B) × C ≃ A × (B × C)$\\
+$\AgdaFunction{factorzequiv}~:~⊥ ≃ (⊥ × A)$\\
+$\AgdaFunction{factorequiv}~:~((A × D) ⊎ (B × D)) ≃ ((A ⊎ B) × D)$
+\end{minipage}
+\end{frame}
+
 %% *************************************************************************
 %% Even better we have proof-relevant type equivalences
 %%
@@ -360,60 +393,8 @@ elide here -- see online code.
 %% \end{enumerate}
 %%
 
-We can use the formulation $∃\ C. S \simeq C × A$ as the basis for a
-first definitions of isomorphism-based lens. We make $C$ implicit, so as to
-reduce the temptation to examine it. This formulation will not be
-entirely adequate, but is very close to our final definition.
-
-Given an $\AgdaRecord{Lens₁}$, we can build a \AgdaRecord{GS-Lens}, so
-that this is certainly sound:
-
 \noindent It is important to notice that the conversion above only uses the
 \AgdaField{iso} part of the \AgdaRecord{Lens₁}.
-
-The question is, is this \emph{complete}, in the sense that we can
-also go in the other direction? To achieve this, we must
-manufacture an appropriate constant complement.  We certainly
-know what $S$ contains all the necessary information for this but
-is in some sense ``too big''.  But it is instructive to see what
-happens when we try.
-
-Roughly speaking the forward part of the isomorphism is forced:
-given an $s:S$, there is only one way to get an $A$, and that is
-via \AgdaFunction{get}. To get an $S$ back, there are two choices:
-either use $s$ itself, or call \AgdaFunction{set}; the laws of
-\AgdaRecord{GS-Lens} say that either will actually work.
-In the backwards direction of the isomorphism,
-the laws help in narrowing down the choices: basically, we want the
-$s′ : S$ where $\AgdaFunction{get s′} ≡ a$, and so we again
-use \AgdaFunction{set} for the purpose:
-
-\begin{spec}
-incomplete : {ℓ : Level} {S A : Set ℓ} → GS-Lens S A → Lens₁ S A
-incomplete {ℓ} {S} {A} l =
-  ∃-lens ((λ s → s , get l s) ,
-         qinv (λ { (s , a) → set l s a })
-              (λ { (s , a) → cong₂ _,_ hole (getput l s a)})
-               λ s → putget l s)
-\end{spec}
-That almost gets us there. The one hole we can't fill says
-\begin{spec}
-    where
-      hole : {s : S} {a : A} → set l s a ≡ s
-      hole = {!!}
-\end{spec}
-But that will only ever happen if $\AgdaFunction{get s}$ was already $a$ (by
-\AgdaField{putget}).
-
-Of course, we already knew this would happen: $S$ is too big. Basically, it is
-too big by exactly the inverse image of $A$ by \AgdaFunction{get}.
-
-Thus our next move is to make that part of $S$ not matter. In other words,
-rather than using the \emph{type} $S$ as a proxy, we want to use a
-\AgdaRecord{Setoid} where $s, t : S$ will be regarded as the same if they
-only differ in their $A$ component.  It is convenient to also define a
-function \AgdaFunction{lens} that lifts type isomorphisms (which work over
-propositional equality) to the \AgdaRecord{Setoid} setting.
 
 \begin{code}
 record ∃-Lens {a s : Level} (S : Set s) (A : Set a) : Set (suc (a ⊔ s)) where
@@ -460,7 +441,7 @@ complete : {ℓ : Level} {S A : Set ℓ} → GS-Lens S A → ∃-Lens S A
 complete {ℓ} {S} {A} l = ll
   {C = record
     { Carrier = S
-    ; _≈_ = λ s t → ∀ (a : A) → set l s a ≡ set l t a
+    ; _≈_ = _≈_under l
     ; isEquivalence = record { refl = λ _ → P.refl ; sym = λ i≈j a → P.sym (i≈j a)
                              ; trans = λ i≈j j≈k a → P.trans (i≈j a) (j≈k a) } }}
    (record
@@ -572,31 +553,6 @@ complete~\cite{Fiore:2004,fiore-remarks} for isomorphisms
 of finite types.  Furthermore, it is also universal
 for hardware combinational
 circuits~\cite{James:2012:IE:2103656.2103667}.
-
-\subsection{Examples}
-We can express a 3-bit word reversal operation as follows:
-
-\ensuremath{\mathit{reverse} : \mathit{word}_3 \leftrightarrow \mathit{word}_3}
-
-\ensuremath{\mathit{reverse} = \swapt \odot (\swapt  \otimes  \idc)~ \odot \assocrt}
-
-\noindent We can check that \ensuremath{\mathit{reverse}} does the right thing by
-applying it to a value \ensuremath{(v_1, (v_2, v_3))} and writing out the full
-reduction, which can be visualized as:
-\[\begin{array}{rlr}
- & (v_1, (v_2, v_3)) \\
- \swapt & ((v_2, v_3), v_1) \\
- \swapt \otimes  \idc & ((v_3, v_2), v_1) \\
- \assocrt & (v_3, (v_2, v_1)) \\
- \end{array}\]
-
-There are several universal primitives for conventional (irreversible)
-hardware circuits, such as \ensuremath{\mathit{nand}} and \ensuremath{\mathit{fanout}}. In the case
-of reversible hardware circuits, the canonical universal primitive is
-the Toffoli gate~\cite{Toffoli:1980}. The Toffoli gate takes three
-boolean inputs: if the first two inputs are \ensuremath{\mathit{true}} then the third
-bit is negated. The Toffoli gate, and its simple cousin the $\mathit{cnot}$ gate, are both
-expressible in the programming language $\Pi$.
 
 \subsection{Equivalences between Equivalences}
 \label{sec:pi2}
