@@ -3,12 +3,13 @@
 \usepackage{amssymb,amsthm,amsmath}
 \usepackage{latex/agda}
 \usepackage{catchfilebetweentags}
+\usepackage{graphicx}
 \usepackage{lmodern}
+\usepackage[utf8x]{inputenc}
 \usepackage{textgreek}
 \usepackage[LGR,TS1,T1]{fontenc}
-\usepackage[utf8x]{inputenc}
+\usepackage{newunicodechar}
 %\usepackage{comment}
-\usepackage{graphicx}
 %\usepackage{tikz}
 %\usepackage{tikz-cd}
 %\usepackage[nocenter]{qtree}
@@ -81,13 +82,19 @@ $\displaystyle
 
 % Unicode declarations
 
-% \DeclareUnicodeCharacter{9679}{\ensuremath{\bullet}}
+\DeclareUnicodeCharacter{9679}{\ensuremath{\bullet}}
+
+%\newunicodechar{●}{\ensuremath{\bullet}}
+%\newunicodechar{→}{\ensuremath{\mathnormal\to}}
+%\newunicodechar{ℓ}{\ensuremath{\ell}}
+%\newunicodechar{⊔}{\ensuremath{\lub}}
+%\newunicodechar{≡}{\ensuremath{\equiv}}
 
 \DeclareMathAlphabet{\mymathbb}{U}{bbold}{m}{n}
 
 % TIKZ declarations
-% \tikzstyle{func}=[rectangle,draw,fill=black!20,minimum size=1.9em,
-%  text width=2.4em, text centered]
+%\tikzstyle{func}=[rectangle,draw,fill=black!20,minimum size=1.9em,
+% text width=2.4em, text centered]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% set up beamer
 \usetheme{Boadilla}
@@ -401,7 +408,7 @@ Plain Curry-Howard: $A ∧ A ≡ A$ implies $A × A ⟷ A$ (equi-inhabitation).
 \end{frame}
 
 \begin{frame}{Type Equivalences}
-\begin{minipage}{0.48\textwidth}
+\begin{minipage}{0.43\textwidth}
 \begin{center}
 Semiring
 \end{center}
@@ -421,7 +428,7 @@ a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
 \end{array}\]
 \end{minipage}
 \pause
-\begin{minipage}{0.48\textwidth}
+\begin{minipage}{0.55\textwidth}
 \begin{center}
 Types
 \end{center}
@@ -443,17 +450,272 @@ Types
 \]
 \end{minipage}
 \end{frame}
+
+%% Categorify!
+\begin{frame}[fragile]{Categorify: weak symmetric Rig Groupoids!}
+\only<1>{
+Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, $c_3 : t_1 \leftrightarrow t_2$, and $c_4 : t_3 \leftrightarrow t_4$. \\
+Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_1 \leftrightarrow t_3$, and $a_4 : t_2 \leftrightarrow t_4$.
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+\Rule{}
+  {c_1 \Leftrightarrow c_3 \quad c_2 \Leftrightarrow c_4}
+  {c_1 \oplus c_2 \Leftrightarrow c_3 \oplus c_4}
+  {}
+\qquad
+\Rule{}
+  {c_1 \Leftrightarrow c_3 \quad c_2 \Leftrightarrow c_4}
+  {c_1 \otimes c_2 \Leftrightarrow c_3 \otimes c_4}
+  {}
+\\
+  {(a_1 \odot a_3) \oplus (a_2 \odot a_4) \Leftrightarrow (a_1 \oplus a_2) \odot (a_3 \oplus a_4)}
+\\
+  {(a_1 \odot a_3) \otimes (a_2 \odot a_4) \Leftrightarrow (a_1 \otimes a_2) \odot (a_3 \otimes a_4)}
+\end{array}\]
+}
+\only<2>{
+Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 : t_3 \leftrightarrow t_4$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {c_1 \odot (c_2 \odot c_3) \Leftrightarrow (c_1 \odot c_2) \odot c_3}
+\\
+  {(c_1 \oplus (c_2 \oplus c_3)) \odot \assoclp \Leftrightarrow \assoclp \odot ((c_1 \oplus c_2) \oplus c_3)}
+\\
+  {(c_1 \otimes (c_2 \otimes c_3)) \odot \assoclt \Leftrightarrow \assoclt \odot ((c_1 \otimes c_2) \otimes c_3)}
+\\
+  {((c_1 \oplus c_2) \oplus c_3) \odot \assocrp \Leftrightarrow \assocrp \odot (c_1 \oplus (c_2 \oplus c_3))}
+\\
+  {((c_1 \otimes c_2) \otimes c_3) \odot \assocrt \Leftrightarrow \assocrt \odot (c_1 \otimes (c_2 \otimes c_3))}
+\\
+  {\assocrp \odot \assocrp \Leftrightarrow ((\assocrp \oplus \idc) \odot \assocrp) \odot (\idc \oplus \assocrp)}
+\\
+  {\assocrt \odot \assocrt \Leftrightarrow ((\assocrt \otimes \idc) \odot \assocrt) \odot (\idc \otimes \assocrt)}
+\end{array}\]
+}
+\only<3>{
+Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, and $c_3 : t_5 \leftrightarrow t_6$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {((c_1 \oplus c_2) \otimes c_3) \odot \dist \Leftrightarrow \dist \odot ((c_1 \otimes c_3) \oplus (c_2 \otimes c_3))}
+\\
+  {(c_1 \otimes (c_2 \oplus c_3)) \odot \distl \Leftrightarrow \distl \odot ((c_1 \otimes c_2) \oplus (c_1 \otimes c_3))}
+\\
+  {((c_1 \otimes c_3) \oplus (c_2 \otimes c_3)) \odot \factor \Leftrightarrow \factor \odot ((c_1 \oplus c_2) \otimes c_3)}
+\\
+  {((c_1 \otimes c_2) \oplus (c_1 \otimes c_3)) \odot \factorl \Leftrightarrow \factorl \odot (c_1 \otimes (c_2 \oplus c_3))}
+\end{array}\]
+}
+\only<4>{
+Let $c_0, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c_4, c_5 : t_3 \leftrightarrow t_4$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\idc \odot \, c_0 \Leftrightarrow c_0}
+\quad
+  {c_0 \, \odot \idc \, \Leftrightarrow c_0}
+\quad
+  {c_0\,\, \odot\,!\, c_0 \Leftrightarrow \idc}
+\quad
+  {!\, c_0 \odot c_0 \Leftrightarrow \idc}
+\\
+  {\idc \oplus \, \idc \, \Leftrightarrow \idc}
+\qquad
+  {\idc \otimes \, \idc \, \Leftrightarrow \idc}
+\\
+  {c_0 \Leftrightarrow c_0}
+\quad
+\Rule{}
+  {c_1 \Leftrightarrow c_2 \quad c_2 \Leftrightarrow c_3}
+  {c_1 \Leftrightarrow c_3}
+  {}
+\quad
+\Rule{}
+  {c_1 \Leftrightarrow c_4 \quad c_2 \Leftrightarrow c_5}
+  {c_1 \odot c_2 \Leftrightarrow c_4 \odot c_5}
+  {}
+\end{array}\]
+}
+\only<5>{
+Let $c_0 : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c_3 : t_1 \leftrightarrow t_2$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\identlp \odot c_3 \Leftrightarrow (c_0 \oplus c_3) \odot \identlp}
+\qquad
+  {\identrp \odot (c_0 \oplus c_3) \Leftrightarrow c_3 \odot \identrp}
+\\
+  {\identlsp \odot c_3 \Leftrightarrow (c_3 \oplus c_0) \odot \identlsp}
+\qquad
+  {\identrsp \odot (c_3 \oplus c_0) \Leftrightarrow c_3 \odot \identrsp}
+\\
+  {\identlt \odot c_3 \Leftrightarrow (c_1 \otimes c_3) \odot \identlt}
+\qquad
+  {\identrt \odot (c_1 \otimes c_3) \Leftrightarrow c_3 \odot \identrp}
+\\
+  {\identlst \odot c_3 \Leftrightarrow (c_3 \otimes c_1) \odot \identlst}
+\qquad
+  {\identrst \odot (c_3 \otimes c_1) \Leftrightarrow c_3 \odot \identrst}
+\\
+  {\identlt \Leftrightarrow \distl \odot (\identlt \oplus \identlt)}
+\\
+\identlp \Leftrightarrow \swapp \odot \identlsp
+\qquad
+\identlt \Leftrightarrow \swapt \odot \identlst
+\end{array}\]
+}
+\only<6>{
+Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\swapp \odot (c_1 \oplus c_2) \Leftrightarrow (c_2 \oplus c_1) \odot \swapp}
+\quad
+  {\swapt \odot (c_1 \otimes c_2) \Leftrightarrow (c_2 \otimes c_1) \odot \swapt}
+\\
+  {(\assocrp \odot \swapp) \odot \assocrp \Leftrightarrow ((\swapp \oplus \idc) \odot \assocrp) \odot (\idc \oplus \swapp)}
+\\
+  {(\assoclp \odot \swapp) \odot \assoclp \Leftrightarrow ((\idc \oplus \swapp) \odot \assoclp) \odot (\swapp \oplus \idc)}
+\\
+  {(\assocrt \odot \swapt) \odot \assocrt \Leftrightarrow ((\swapt \otimes \idc) \odot \assocrt) \odot (\idc \otimes \swapt)}
+\\
+  {(\assoclt \odot \swapt) \odot \assoclt \Leftrightarrow ((\idc \otimes \swapt) \odot \assoclt) \odot (\swapt \otimes \idc)}
+\end{array}\]
+
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {\identlsp \oplus \idc ~\Leftrightarrow~ \assocrp \odot (\idc \oplus \, \identlp)}
+\\
+  {\identlst \otimes \idc ~\Leftrightarrow~ \assocrt \odot (\idc \otimes \, \identlt)}
+\end{array}\]
+}
+\only<7>{
+Let $c : t_1 \leftrightarrow t_2$:
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {(c \otimes \idc) \odot \absorbl \Leftrightarrow \absorbl \odot \idc}
+\quad
+  {(\idc \, \otimes c) \odot \absorbr \Leftrightarrow \absorbr \odot \idc}
+\\
+  {\idc \odot \, \factorzl \Leftrightarrow \factorzl \odot (\idc \otimes c)}
+\quad
+  {\idc \odot \, \factorzr \Leftrightarrow \factorzr \odot (c \otimes \idc)}
+\\
+  {\absorbr \Leftrightarrow \absorbl}
+\\
+  {\absorbr \Leftrightarrow (\distl \odot (\absorbr \oplus \absorbr)) \odot \identlp}
+\\
+  {\identlst \Leftrightarrow \absorbr}
+\qquad
+  {\absorbl \Leftrightarrow \swapt \odot \absorbr}
+\\
+  {\absorbr \Leftrightarrow (\assoclt \odot (\absorbr \otimes \idc)) \odot \absorbr}
+\\
+  {(\idc \otimes \absorbr) \odot \absorbl \Leftrightarrow (\assoclt \odot (\absorbl \otimes \idc)) \odot \absorbr}
+\\
+  {\idc \otimes \, \identlp \Leftrightarrow (\distl \odot (\absorbl \oplus \idc)) \odot \identlp}
+\end{array}\]
+}
+\only<8>{
+\[\def\arraystretch{1.3}
+\begin{array}{c}
+  {((\assoclp \otimes \idc) \odot \dist) \odot (\dist \oplus \idc) \Leftrightarrow (\dist \odot (\idc \oplus \dist)) \odot \assoclp}
+\\
+  {\assoclt \odot \distl \Leftrightarrow ((\idc \otimes \distl) \odot \distl) \odot (\assoclt \oplus \assoclt)}
+\end{array}\]
+\vspace{ -0.5em}
+\[\def\arraystretch{1.3}
+\begin{array}{rcl}
+  (\distl \odot (\dist \oplus \dist)) \odot \assoclp &\Leftrightarrow&
+   \dist \odot (\distl \oplus \distl) \odot \assoclp ~\odot \\
+&& (\assocrp \oplus \idc) ~\odot \\
+&& ((\idc \oplus \swapp) \oplus \idc) ~\odot \\
+&&      (\assoclp \oplus \idc)
+\end{array}\]
+
+\[\def\arraystretch{1.3}
+\begin{array}{rcl}
+  (\idc \otimes \swapp) \odot \distl &\Leftrightarrow& \distl \odot \swapp
+\\
+  \dist \odot (\swapt \oplus \swapt) &\Leftrightarrow & \swapt \odot \distl
+\end{array}\]
+}
+\end{frame}
+
+\begin{frame}{So what?}
+Up shot: coherence theorem (like the one for monoidal categories).\\
+\vspace*{1.5mm}
+Sound and complete set of rewrites / optimization rules for type equivalences.\\
+\end{frame}
+
 %%
 %% *************************************************************************
 %%
 %% Exploring the space of "lens programs"
 %% -- Colour
 %% -- Toffoli
-%%
-%% *************************************************************************
-%% Revisit example above; can we do something with level 2 equivalences?
-%%   (JC: again, I'm not sure we have such an example 'in hand'. So I'm
-%%    a bit afraid of going down this route)
+\begin{frame}{More lens programs}
+\begin{code}
+data Colour : Set where red green blue : Colour
+
+∃-Colour-in-A+A+A : (A : Set) → Lens₁ (A ⊎ A ⊎ A) Colour
+\end{code}
+
+\pause
+\begin{code}[hide]
+∃-Colour-in-A+A+A A = ∃-lens eq
+ where
+  f : A ⊎ A ⊎ A → A × Colour
+  f (inj₁ x) = x , red
+  f (inj₂ (inj₁ x)) = x , green
+  f (inj₂ (inj₂ x)) = x , blue
+  g : A × Colour → A ⊎ A ⊎ A
+  g (a , red) = inj₁ a
+  g (a , green) = inj₂ (inj₁ a)
+  g (a , blue) = inj₂ (inj₂ a)
+  eq : (A ⊎ A ⊎ A) ≃ (A × Colour)
+  eq = f , qinv g (λ { (a , red) → refl ; (a , green) → refl ; (a , blue) → refl})
+                  λ { (inj₁ x) → refl ; (inj₂ (inj₁ x)) → refl ; (inj₂ (inj₂ y)) → refl}
+\end{code}
+\begin{code}
+GS-Colour-in-A+A+A : (A : Set) → GS-Lens (A ⊎ A ⊎ A) Colour
+\end{code}
+
+\vspace*{1.5mm}
+For $n ∈ ℕ$ and $n A$, \AgdaRecord{Lens₁} proof terms $O(n)$,
+\AgdaRecord{GS-Lens} are \textcolor{red}{$O(n^3)$}.\\
+\begin{code}[hide]
+GS-Colour-in-A+A+A A = record
+  { get = λ { (inj₁ x) → red ; (inj₂ (inj₁ x)) → green ; (inj₂ (inj₂ y)) → blue}
+  ; set = λ { (inj₁ x) red → inj₁ x ; (inj₁ x) green → inj₂ (inj₁ x) ; (inj₁ x) blue → inj₂ (inj₂ x)
+            ; (inj₂ (inj₁ x)) red → inj₁ x ; (inj₂ (inj₁ x)) green → inj₂ (inj₁ x) ; (inj₂ (inj₁ x)) blue → inj₂ (inj₂ x)
+            ; (inj₂ (inj₂ y)) red → inj₁ y ; (inj₂ (inj₂ y)) green → inj₂ (inj₁ y) ; (inj₂ (inj₂ y)) blue → inj₂ (inj₂ y)}
+  ; getput = λ { {inj₁ x} {red} → refl ; {inj₁ x} {green} → refl ; {inj₁ x} {blue} → refl
+               ; {inj₂ (inj₁ x)} {red} → refl ; {inj₂ (inj₁ x)} {green} → refl ; {inj₂ (inj₁ x)} {blue} → refl
+               ; {inj₂ (inj₂ y)} {red} → refl ; {inj₂ (inj₂ y)} {green} → refl ; {inj₂ (inj₂ y)} {blue} → refl}
+  ; putget = λ { (inj₁ x) → refl ; (inj₂ (inj₁ x)) → refl ; (inj₂ (inj₂ y)) → refl}
+  ; putput = λ { (inj₁ x) red red → refl ; (inj₁ x) green red → refl ; (inj₁ x) blue red → refl
+               ; (inj₁ x) red green → refl ; (inj₁ x) green green → refl ; (inj₁ x) blue green → refl
+               ; (inj₁ x) red blue → refl ; (inj₁ x) green blue → refl ; (inj₁ x) blue blue → refl
+
+               ; (inj₂ (inj₁ x)) red red → refl ; (inj₂ (inj₁ x)) green red → refl ; (inj₂ (inj₁ x)) blue red → refl
+               ; (inj₂ (inj₁ x)) red green → refl ; (inj₂ (inj₁ x)) green green → refl ; (inj₂ (inj₁ x)) blue green → refl
+               ; (inj₂ (inj₁ x)) red blue → refl ; (inj₂ (inj₁ x)) green blue → refl ; (inj₂ (inj₁ x)) blue blue → refl
+
+               ; (inj₂ (inj₂ y)) red red → refl ; (inj₂ (inj₂ y)) green red → refl ; (inj₂ (inj₂ y)) blue red → refl
+               ; (inj₂ (inj₂ y)) red green → refl ; (inj₂ (inj₂ y)) green green → refl ; (inj₂ (inj₂ y)) blue green → refl
+               ; (inj₂ (inj₂ y)) red blue → refl ; (inj₂ (inj₂ y)) green blue → refl ; (inj₂ (inj₂ y)) blue blue → refl}
+  }
+\end{code}
+\pause
+\vspace*{2.5mm}
+Inspired by Quantum Computing:
+\begin{code}
+gcnot-equiv : {A B C : Set} →
+  ((A ⊎ B) × (C ⊎ C)) ≃ ((A ⊎ B) × (C ⊎ C))
+gcnot-equiv = factorequiv ● id≃ ⊎≃ (id≃ ×≃ swap₊equiv) ● distequiv
+
+gcnot-lens : {A B C : Set} → Lens₁ ((A ⊎ B) × (C ⊎ C))  (C ⊎ C)
+gcnot-lens {A} {B} = ∃-lens gcnot-equiv
+\end{code}
+
+\end{frame}
 %%
 %% *************************************************************************
 %% Many extensions to lenses
@@ -461,12 +723,30 @@ Types
 %% http://oleg.fi/gists/posts/2018-12-12-find-correct-laws.html
 %% with more kinds of lenses and questions about which laws they should satisfy
 %%
+\begin{frame}{Optics}
+\begin{center}\begin{tabular}{ll}\hline
+Equality & $S = A$ \\ \hline
+Iso & $S ≃ A$ \\ \hline
+Lens & $∃C. S ≃ C × A$ \\
+Prism & $∃C . S ≃ C + A$ \\
+Achroma & $∃C. S ≃ (⊤ ⊎ C) × A)$ \\
+Affine & $∃C, D. S ≃ D ⊎ (C × A)$ \\ \hline
+Grate & $∃I. S ≃ I → A$ \\ \hline
+Setter & $∃ F : \mathit{Set} → \mathit{Set}. S ≃ F A$ \\ \hline
+\end{tabular}\end{center}
+\end{frame}
 %% *************************************************************************
 %% Geometric interpretation of optics
+\begin{frame}{Geometric interpretation}
+\begin{center}
+\begin{tabular}{lll} \hline
+Iso & $S ≃ A$ & $S$ is $A$ up to change of coordinates (CoC) \\
+Lens & $∃C. S ≃ C × A$ & $S$ is a \emph{cartesian product} over $A$, up to CoC \\
+Prism & $∃C . S ≃ C + A$ & $S$ has a \emph{partition} into $A$ and $C$, up to CoC \\ \hline
+\end{tabular}
+\end{center}
+\end{frame}
 %%
-%% *************************************************************************
-%% Framework of type equivalences carries smoothly (including optimization)
-
 
 \end{document}
 
@@ -541,401 +821,11 @@ complete {ℓ} {S} {A} l = ll
      })
 \end{code}
 
-Grenrus~\cite{oleg-blog} gives a completely different type which also works --- but
-the completeness proofs requires both proof irrelevance and function extensionality
-(crucially), while our proof works in a much simpler setting.
-
-\section{Proof-relevant type equivalences}
-
-Our principal means of building lenses, \AgdaFunction{lens}, takes as
-input a \emph{type equivalence}.  These are called \emph{proof relevant}
-because different witnesses (proofs) of an equivalence are
-not assumed to be the same.  For example, there are two
-non-equivalent ways to prove that $A × A \simeq A × A$, namely
-the identity and ``swap''.
-
-Our starting point will be a basic type theory with the empty
-type ($\bot$), the unit type ($\top$), the sum type ($\presumtype$), and
-the product ($\preprodtype$) type. But rather than focusing on
-\emph{functions} between these types, we will instead look at
-\emph{equivalences}.
-
-%%%%%%%%%
-\subsection{Type Equivalences}
-
-\noindent The Curry-Howard correspondence teaches that logical
-expressions form a commutative semiring -- and leads us to
-expect that types
-too form a commutative semiring. And indeed they do -- at least up to
-\emph{type isomorphism}.  The reader unfamiliar with these can
-find a leisurely introduction in~\cite{CaretteJamesSabryArxiv}. We
-will furthermore assume that the reader is already familiar with
-the basic definitions around \emph{type equivalences}.
-That types, with ($\bot, \top, \presumtype,
-\preprodtype$) interpreted as ($0, 1, +, ×$) and strict
-equality replaced with equivalence $\simeq$
-form a commutative semiring is a basic result of type theory.
-
-However, we might be misled by the Curry-Howard correspondence:
-In logic, it is true that $A \lor A = A$ and
-$A \land A = A$. However, neither $A \presumtype A$ nor $A \preprodtype A$ are
-equivalent to $A$. They are however \emph{equi-inhabited}. This is
-a fancy way of saying
-\[ A \presumtype A \ \text{is inhabited} \qquad \Leftrightarrow \qquad A \
-  \text{is inhabited} \] The above is the real \textit{essence} of the
-Curry-Howard correspondence.  In other words, classical Curry-Howard
-tells us about \emph{logical equivalence} of types; there are indeed functions
-$f : A \presumtype A \rightarrow A$ and $g : A \rightarrow A \presumtype A$;
-however, they are not inverses.
-
-\begin{figure}[t]
-\begin{minipage}{0.48\textwidth}
-\[\begin{array}{rcl}
-a &=& a \\
-\\
-0 + a &=& a \\
-a + b &=& b + a \\
-a + (b + c) &=& (a + b) + c \\
-\\
-1 \cdot a &=& a \\
-a \cdot b &=& b \cdot a \\
-a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
-\\
-0 \cdot a &=& 0 \\
-(a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
-\end{array}\]
-\end{minipage}
-\begin{minipage}{0.48\textwidth}
-\[
-\begin{array}{rrcll}
-& A & \simeq & A &\\
-\\
-&  \bot \presumtype A & \simeq & A &\\
-&  A \presumtype B & \simeq & B \presumtype A &\\
-&  A \presumtype (B \presumtype C) & \simeq & (A \presumtype B) \presumtype C &\\
-\\
-&  \top \preprodtype A & \simeq & A &\\
-&  A \preprodtype B & \simeq & B \preprodtype A &\\
-&  A \preprodtype (B \preprodtype C) & \simeq & (A \preprodtype B) \preprodtype C &\\
-\\
-& \bot \preprodtype A & \simeq & \bot &\\
-& (A \presumtype B) \preprodtype C & \simeq & (A \preprodtype C) \presumtype (B \preprodtype C) &
-\end{array}
-\]
-\end{minipage}
-\caption{Semiring equalities and type isomorphisms.}
-\label{type-isos}
-\end{figure}
-
-The generators for our type isomorphisms will exactly be those
-of a semiring --- we place them side-by-side in
-Fig.~\ref{type-isos}.  Each is also named --- the details can be found
-both in~\cite{Carette2016,Carette2018} and in the online repository
-\url{http://github.com/JacquesCarette/pi-dual} (in file
-\texttt{Univalence/TypeEquiv.agda}).  There, a programming
-language named $\Pi$ is created to denote type isomorphisms.
-
-This set of isomorphisms is known to be sound and
-complete~\cite{Fiore:2004,fiore-remarks} for isomorphisms
-of finite types.  Furthermore, it is also universal
-for hardware combinational
-circuits~\cite{James:2012:IE:2103656.2103667}.
-
-\subsection{Equivalences between Equivalences}
-\label{sec:pi2}
-
-Just as types can be shown equivalent, type isomorphisms
-also induce a ``higher dimensional'' set of equivalences.
-To illustrate, consider two equivalences that both
-map between the types $A + B$ and $C+D$:
-
-\begin{center}
-\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.8}]
-  \draw[>=latex,<->,double,red,thick] (2.25,-1.2) -- (2.25,-2.9) ;
-  \draw[fill] (-2,-1.5) circle [radius=0.025];
-  \node[below] at (-2.1,-1.5) {$A$};
-  \node[below] at (-2.1,-1.9) {$+$};
-  \draw[fill] (-2,-2.5) circle [radius=0.025];
-  \node[below] at (-2.1,-2.5) {$B$};
-
-  \draw[fill] (6.5,-1.5) circle [radius=0.025];
-  \node[below] at (6.7,-1.5) {$C$};
-  \node[below] at (6.7,-1.9) {$+$};
-  \draw[fill] (6.5,-2.5) circle [radius=0.025];
-  \node[below] at (6.7,-2.5) {$D$};
-
-  \draw[<-] (-2,-1.5) to[bend left] (1,0.5) ;
-  \draw[<-] (-2,-2.5) to[bend left] (1,-0.5) ;
-  \draw[->] (3.5,0.5) to[bend left] (6.5,-1.45) ;
-  \draw[->] (3.5,-0.5) to[bend left] (6.5,-2.45) ;
-
-  \draw[<-] (-2,-1.5) to[bend right] (1,-3.5) ;
-  \draw[<-] (-2,-2.5) to[bend right] (1,-4.5) ;
-  \draw[->] (3.5,-3.5) to[bend right] (6.5,-1.55) ;
-  \draw[->] (3.5,-4.5) to[bend right] (6.5,-2.55) ;
-
-
-  \draw     (2,0.5)  -- (2.5,0.5)  ;
-  \draw     (2,-0.5) -- (2.5,-0.5) ;
-
-  \draw     (2.5,0.5)  -- (3.5,-0.5)  ;
-  \draw     (2.5,-0.5) -- (3.5,0.5) ;
-
-  \draw     (1,-3.5)  -- (2,-4.5)    ;
-  \draw     (1,-4.5) -- (2,-3.5)   ;
-
-  \draw     (2,-3.5)  -- (2.5,-3.5)    ;
-  \draw     (2,-4.5) -- (2.5,-4.5)   ;
-
-  \path (1.5,0.5) node (tc1) [func] {$c_1$};
-  \path (1.5,-0.5) node (tc2) [func] {$c_2$};
-  \path (3,-4.5) node (bc1) [func] {$c_1$};
-  \path (3,-3.5) node (bc2) [func] {$c_2$};
-\end{tikzpicture}
-\end{center}
-The top path is
-$(c_1~\oplus~c_2)~\odot~\swapp$ and the bottom path
-$\swapp~\odot~(c_2~\oplus~c_1)$. These are equivalent --
-and in fact denote the same permutation.
-And, of course, not
-all programs between the same types are equivalent. The simplest example
-are the two automorphisms of $1+1$, namely $\idc$ and $\swapp$.
-
-The language of type isomorphisms and equivalences between
-them has a strong connection to \emph{univalent universes} in
-HoTT~\cite{Carette2018}. Based on this connection, we refer to the
-types as being at level-0, to the equivalences between types as being
-at level-1, and to the
-equivalences between equivalences of types (i.e., this subsection)
-as being at level-2.
-
-The basic type equivalences were defined by using all the
-proof terms of commutative semirings. What we need
-now is to understand how \emph{proofs} of algebraic identities should be
-considered equivalent. Classical algebra does not help, as proofs
-are not considered first-class citizens. However,
-another route is available to us: since the work of
-Hofmann and Streicher~\cite{hofmann96thegroupoid}, we know that
-one can model types as \emph{groupoids}.  The additional
-structure comes from explicitly modeling the ``identity
-types'': instead of regarding all terms which witness
-the equality of (say) $a$ and $b$ of type $A$ as being
-indistinguishable, we posit that there may in fact be many,
-i.e. proof relevance.
-
-Thus, rather than looking at (untyped) commutative semirings, we
-should look at a \emph{typed} version. This process frequently goes by
-the moniker of ``categorification.''  We want a categorical algebra,
-where the basic objects are groupoids (to model our types), and where
-there is a natural notion of $+$ and $*$.  At first, we hit what seems
-like a serious stumbling block: the category of all groupoids, \Gpd,
-have neither co-products nor products. However, we don't want to work
-internally in \Gpd -- we want operations \emph{on} groupoids. In other
-words, we want something akin to symmetric monoidal categories, but
-with two interacting monoidal structures.  Luckily, this already
-exists: the categorical analog to (commutative) semirings are
-(symmetric) Rig Categories~\cite{laplaza72,kelly74}.  This
-straightforwardly generalizes to symmetric Rig Groupoids.
-
-How does this help? Coherence conditions! Symmetric monoidal categories,
-to start somewhere simple, do not just introduce natural transformations
-like the associator $\alpha$ and the left and right unitors ($\lambda$
-and~$\rho$ respectively), but also coherence conditions that these must satisfy.
-Looking, for example, at just the additive fragment (i.e. with just $0$,
-$1$ and $+$ for the types, $\odot$ and $\oplus$ as combinators, and
-only the terms so expressible), the sub-language would correspond,
-denotationally, to exactly symmetric monoidal groupoids. And
-here we have \emph{equations between equations}, aka
-commutative diagrams.  Transporting these coherence conditions, for
-example those that express that various transformations are \emph{natural},
-to our setting gives a list of equations between isomorphisms.
-Furthermore, all the natural transformations
-that arise are in fact natural \emph{isomorphisms} -- and thus
-reversible.
-
-We can in fact prove that all the coherence conditions
-of symmetric Rig Groupoids holds for the groupoid
-interpretation of types~\cite{Carette2016}.  This is somewhat tedious
-given the sheer numbers involved, but when properly formulated,
-relatively straightforward, up to a couple of tricky cases.
-
-But why are these particular coherence laws? Are they all necessary?
-Conversely are they, in some appropriate sense, sufficient? This is
-the so-called \emph{coherence problem}. Mac Lane, in his farewell address
-as President of the American Mathematical Society~\cite{MacLane1976} gives
-a good introduction and overview of such problems.  A more modern
-interpretation (which can nevertheless be read into Mac Lane's own
-exposition) would read as follows: given a set of equalities on abstract
-words, regarded as a rewrite system, and two means of rewriting a word
-in that language to another, is there some suitable notion of canonical
-form that expresses the essential uniqueness of the non-trivial
-rewrites?  Note how this word-and-rewrite problem is essentially
-independent of the eventual interpretation. But one must take some care,
-as there are obvious degenerate cases (involving ``trivial'' equations
-involving $0$ or $1$) which lead to non-uniqueness. The landmark
-results, first by Kelly-Mac Lane~\cite{KELLY197197} for closed
-symmetric monoidal categories, then (independently) Laplaza and
-Kelly~\cite{laplaza72,kelly74} for symmetric Rig Categories, is
-that indeed there are sound and complete coherence conditions that
-insure that all the ``obvious'' equalities between different abstract
-words in these systems give rise to commutative diagrams. The
-``obvious'' equalities come from \emph{syzygies} or
-\emph{critical pairs} of the system of equations.
-The problem is far from trivial --- Fiore et al.~\cite{Fiore-2008}
-document some publications where the coherence set is in
-fact incorrect. They furthermore give a quite general algorithm
-to derive such coherence conditions.
-
-\section{Exploring the Lens landscape}
-
-Given that we have a sound and complete set of primitive type equivalences
-(and combinators),
-we can explore what this means for actually programming lenses. Many papers
-have explored the most general settings for lenses, we will instead look
-inside the implementations.  This will
-reveal the \emph{inner structure} of lenses, rather than focusing on their
-macro structure.
-
-\subsection{Simple Lenses}
-Let's explore the simplest lenses first.  For a \AgdaRecord{GS-Lens}, the simplest is
-when \AgdaField{get} is the identity, which forces the rest:
-
-\begin{code}
-module _ (A B D E : Set) where
-  open ∃-Lens
-
-  AA-gs-lens : GS-Lens A A
-  AA-gs-lens = record { get = id ; set = λ _ → id
-    ; getput = P.refl ; putget = λ _ → P.refl ; putput = λ _ _ _ → P.refl }
-\end{code}
-
-What does that correspond to as a \AgdaRecord{∃-Lens}? Here, we can easily
-guess the complement by solving the equation $A ≃ C × A$ for $C$: $C$ must
-be $\AgdaSymbol{⊤}$. But then the $\AgdaRecord{∃-Lens}$ isn't quite as simple as above:
-\begin{code}
-  AA-∃-lens : ∃-Lens A A
-  AA-∃-lens = lens uniti⋆equiv
-\end{code}
-\noindent where $\AgdaFunction{uniti⋆equiv}$ has type
-$A ≃ (⊤ × A)$. In other words, as the complement is not actually
-present in $A$, it must be introduced. $\AgdaFunction{uniti⋆equiv}$
-names the ``multiplicative unit introduction equivalence''. From
-here on, we will not expand on the names, trusting that they
-can be guessed by the reader.
-
-What about in the other direction, what is the \AgdaRecord{∃-Lens} whose
-underlying isomorphism is the identity?
-\begin{code}
-  BAA-∃-lens : ∃-Lens (B × A) A
-  BAA-∃-lens = lens id≃
-\end{code}
-\noindent Since our definition of \AgdaRecord{∃-Lens} is right-biased
-(we are looking for isomorphisms of shape $S ≃ C × A$), the above lens
-extracts the $A$ on the right.  Of course, there is another lens which
-switches the roles of $A$ and $B$ --- and this leaves a trace on the
-isomorphism:
-\begin{code}
-  BAB-∃-lens : ∃-Lens (B × A) B
-  BAB-∃-lens = lens swap⋆equiv
-\end{code}
-
-Thus, looking at type equivalences, which ones return a type
-of shape $C × A$ ?  We have already seen \AIC{uniti⋆l},
-\AIC{id⟷} and \AIC{swap⋆} arise. That leaves four:
-\AIC{assocl⋆}, \AIC{factorz}, \AIC{factor} and \AIC{×≃}.
-These occur as follows:
-\begin{code}
-  DBA-lens : ∃-Lens (D × (B × A)) A
-  DBA-lens = lens assocl⋆equiv
-
-  ⊥-lens : ∃-Lens ⊥ A
-  ⊥-lens = lens factorzequiv
-
-  ⊎-lens : ∃-Lens ((D × A) ⊎ (B × A)) A
-  ⊎-lens = lens factorequiv
-
-  ⊗-lens : (E ≃ B) → (D ≃ A) → ∃-Lens (E × D) A
-  ⊗-lens iso₁ iso₂ = lens (iso₁ ×≃ iso₂)
-\end{code}
-
-The first is a basic administrative ``reshaping''. The second
-takes a bit more thought, but is easily explained: if we promise
-an impossible source, it is easy to promise to return something
-arbitrary in return!
-
-The $\AgdaFunction{⊎-lens}$ is interesting, because it allows us
-to see a constant complement in a type which itself is not a
-product -- it is, however, equivalent to one. The last uses the
-full power of equivalences, to see an $A$ where, a priori, one
-does not seem to exist at all.
-
-Lastly, we also have lens composition:
-\begin{code}
-  ∘-lens : ∃-Lens D B → ∃-Lens B A → ∃-Lens D A
-  ∘-lens l₁ l₂ = ll ((×-assoc ∘F (idF ×-inverse ∃-Lens.iso l₂)) ∘F ∃-Lens.iso l₁)
-\end{code}
-The above gives us our first \emph{lens program} consisting of a composition of
-four more basic equivalences. However, it is ``lower level'' as we can only
-extract $\AgdaRecord{Setoid}$-based equivalences from a $\AgdaRecord{∃-Lens}$.
-The necessary code is quite straightforward (and available in the literate
-Agda source of this paper).
-
 \subsection{Unusual lenses}
 
-It is possible to create lenses for things which are
-not ``in'' a type at all --- an example is most instructive.
-For completeness, both \AgdaRecord{GS-Lens} and \AgdaRecord{∃-Lens}
-will be given.
-
 Let us consider a type \verb|Colour| with exactly $3$ inhabitants,
-\begin{code}
-module _ {A : Set} where
-  data Colour : Set where red green blue : Colour
-\end{code}
-
-First, a \AgdaRecord{∃-Lens} built ``by hand'':
-\begin{code}
-  ∃-Colour-in-A+A+A : ∃-Lens (A ⊎ A ⊎ A) Colour
-  ∃-Colour-in-A+A+A = lens eq
-   where
-    f : A ⊎ A ⊎ A → A × Colour
-    f (inj₁ x) = x , red
-    f (inj₂ (inj₁ x)) = x , green
-    f (inj₂ (inj₂ x)) = x , blue
-    g : A × Colour → A ⊎ A ⊎ A
-    g (a , red) = inj₁ a
-    g (a , green) = inj₂ (inj₁ a)
-    g (a , blue) = inj₂ (inj₂ a)
-    eq : (A ⊎ A ⊎ A) ≃ (A × Colour)
-    eq = f , qinv g (λ { (a , red) → refl ; (a , green) → refl ; (a , blue) → refl})
-                    λ { (inj₁ x) → refl ; (inj₂ (inj₁ x)) → refl ; (inj₂ (inj₂ y)) → refl}
-\end{code}
 The equivalence is not too painful to establish. But let's do
 the same for the \verb|GS-Lens|:
-\begin{code}
-  GS-Colour-in-A+A+A : GS-Lens (A ⊎ A ⊎ A) Colour
-  GS-Colour-in-A+A+A = record
-    { get = λ { (inj₁ x) → red ; (inj₂ (inj₁ x)) → green ; (inj₂ (inj₂ y)) → blue}
-    ; set = λ { (inj₁ x) red → inj₁ x ; (inj₁ x) green → inj₂ (inj₁ x) ; (inj₁ x) blue → inj₂ (inj₂ x)
-              ; (inj₂ (inj₁ x)) red → inj₁ x ; (inj₂ (inj₁ x)) green → inj₂ (inj₁ x) ; (inj₂ (inj₁ x)) blue → inj₂ (inj₂ x)
-              ; (inj₂ (inj₂ y)) red → inj₁ y ; (inj₂ (inj₂ y)) green → inj₂ (inj₁ y) ; (inj₂ (inj₂ y)) blue → inj₂ (inj₂ y)}
-    ; getput = λ { {inj₁ x} {red} → refl ; {inj₁ x} {green} → refl ; {inj₁ x} {blue} → refl
-                 ; {inj₂ (inj₁ x)} {red} → refl ; {inj₂ (inj₁ x)} {green} → refl ; {inj₂ (inj₁ x)} {blue} → refl
-                 ; {inj₂ (inj₂ y)} {red} → refl ; {inj₂ (inj₂ y)} {green} → refl ; {inj₂ (inj₂ y)} {blue} → refl}
-    ; putget = λ { (inj₁ x) → refl ; (inj₂ (inj₁ x)) → refl ; (inj₂ (inj₂ y)) → refl}
-    ; putput = λ { (inj₁ x) red red → refl ; (inj₁ x) green red → refl ; (inj₁ x) blue red → refl
-                 ; (inj₁ x) red green → refl ; (inj₁ x) green green → refl ; (inj₁ x) blue green → refl
-                 ; (inj₁ x) red blue → refl ; (inj₁ x) green blue → refl ; (inj₁ x) blue blue → refl
-
-                 ; (inj₂ (inj₁ x)) red red → refl ; (inj₂ (inj₁ x)) green red → refl ; (inj₂ (inj₁ x)) blue red → refl
-                 ; (inj₂ (inj₁ x)) red green → refl ; (inj₂ (inj₁ x)) green green → refl ; (inj₂ (inj₁ x)) blue green → refl
-                 ; (inj₂ (inj₁ x)) red blue → refl ; (inj₂ (inj₁ x)) green blue → refl ; (inj₂ (inj₁ x)) blue blue → refl
-
-                 ; (inj₂ (inj₂ y)) red red → refl ; (inj₂ (inj₂ y)) green red → refl ; (inj₂ (inj₂ y)) blue red → refl
-                 ; (inj₂ (inj₂ y)) red green → refl ; (inj₂ (inj₂ y)) green green → refl ; (inj₂ (inj₂ y)) blue green → refl
-                 ; (inj₂ (inj₂ y)) red blue → refl ; (inj₂ (inj₂ y)) green blue → refl ; (inj₂ (inj₂ y)) blue blue → refl}
-    }
-\end{code}
 
 Note how the \AgdaRecord{∃-Lens} is linear in the size of the enumerated type, including
 the proofs, whilst \AgdaRecord{GS-Lens} is quadratic for the function size, and cubic in
@@ -959,55 +849,6 @@ An interesting interpretation of $A \uplus A \uplus A \simeq A × \AgdaRecord{Co
 is that we can freely move tagging
 of data $A$ with \textit{finite information} between type-level tags and value-level
 tags at will.
-
-\subsection{Lenses from reversible circuits}
-
-Consider the following lens, built from a generalized \texttt{cnot} gate:
-\begin{code}
-  gcnot-equiv : {A B C : Set} → ((A ⊎ B) × (C ⊎ C)) ≃ ((A ⊎ B) × (C ⊎ C))
-  gcnot-equiv = factorequiv ● id≃ ⊎≃ (id≃ ×≃ swap₊equiv) ● distequiv
-
-  gcnot-lens : {A B C : Set} → ∃-Lens ((A ⊎ B) × (C ⊎ C))  (C ⊎ C)
-  gcnot-lens {A} {B} = lens gcnot-equiv
-\end{code}
-The above lens is rather unusual in that it dynamically chooses between
-passing the $C ⊎ C$ value through as-is or swapped, depending on the first
-parameter. The corresponding $\AgdaRecord{GS-Lens}$ would be considerably
-more complex to write (and prove correct).
-
-The same can be done with a (generalized) Toffoli gate, which ends up being
-controlled by the conjunction of two values instead of just one, but otherwise
-introduces no new ideas.
-
-There are quite a few ways to witness the equivalence using an
-isomorphism: \[ E = ((A ⊎ B) × (C ⊎ C)) ≃ ((A ⊎ B) × (C ⊎ C)) \]
-Recall from Sec. 3 that the level-2 programs are equivalences between
-isomorphisms. Indeed, these equivalences can be used to show the
-equivalence of different implementations of \AgdaFunction{gcnot-lens}
-that use different ways of establishing $E$. More generally the
-level-2 equivalences can be used to simplify, optimize, and reason
-about lens programs.
-
-
-%% Level 2 of $\Pi$ lets us look at relations between isomorphisms.
-%% In particular, we can see when some lens/prims/etc are simplifiable
-%% to something simpler.
-%%
-%% Note that factor/distrib is crucial to move between them all.
-
-\subsection{Completeness}
-
-The $\Pi$ language is \emph{complete} for equivalences, in the sense that
-any two type which can be written as a sum-of-products over arbitrarily many
-variables are equivalent if and only if there is a term of $\Pi$ which witnesses
-this equivalence.  In other words,
-
-\begin{theorem}
-Suppose $S$ and $A$ are two types belonging to the language of the
-semiring of types $T\left[x_{1},\ldots,x_{n}\right]$ over $n$ variables.
-If $∃C. S ≃ C × A$ is inhabited, then there is a term of $\Pi$ witnessing
-the equivalence.
-\end{theorem}
 
 \section{Optics}
 
@@ -1176,24 +1017,6 @@ Grate~\cite{grate} moves us to a rather different world, one that
 involves function types. And Setter is more general still, where all
 we know is that $S$ is isomorphic to some \emph{container} of $A$s.
 
-\section{Discussion}
-
-\subsection{Categorical approaches}
-
-So why all the complications with \texttt{Profunctor} (see
-e.g.~\cite{achromatic})? Basically, that is mostly Haskell-isms: by
-relying on \emph{Free Theorems}, one can get the type system to reject
-a lot of ill-formed lenses, though, of course, not all. Optics, in
-Agda and using equivalences turn out to be \emph{simpler}, not harder!
-
-Another thread is via the Yoneda
-lemma~\cite{Boisseau:2018:YNK:3243631.3236779}. Of course, one can see
-this here too: the existentials correspond to a co-end, and the
-isomorphisms are exactly what is in the Hom-set. But we get more
-mileage from looking ``under the hood'' to see the fundamental
-\textbf{programming language} underlying Optics, rather than jumping
-to abstractions too early.
-
 \begin{comment}
 \subsection{Laws}
 
@@ -1235,239 +1058,3 @@ complete set of equations that hold for those which are
 needed if wants a \emph{global} optimizer --- there is much room for future
 research in this area.  The complete system is rather daunting: over $200$
 equations!
-
-\section{Conclusion}
-
-We have shown that the approach to optics via type equivalences, in a
-dependently typed language, is quite enlightening. Surprisingly, it is
-no more difficult than dealing with optics in other languages. In fact,
-the error messages we got from Agda were considerably clearer than when
-doing \texttt{Profunctor}-optics in Haskell.
-
-The connection to reversible programming (and thence to quantum computing)
-is intriguing; while it has been known for a long time, it appears to have
-not been sufficiently investigated.  Perhaps what was missing was the right
-dependently-typed setting to bring forth the deep connections.
-
-\bibliographystyle{alpha}
-\bibliography{cites,cites2}
-%inline the .bbl file directly for mailing to authors.
-
-\end{document}
-
-
-
-\begin{figure}[t]
-Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, $c_3 : t_1 \leftrightarrow t_2$, and $c_4 : t_3 \leftrightarrow t_4$. \\
-Let $a_1 : t_5 \leftrightarrow t_1$,  $a_2 : t_6 \leftrightarrow t_2$, $a_3 : t_1 \leftrightarrow t_3$, and $a_4 : t_2 \leftrightarrow t_4$.
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-\Rule{}
-  {c_1 \Leftrightarrow c_3 \quad c_2 \Leftrightarrow c_4}
-  {c_1 \oplus c_2 \Leftrightarrow c_3 \oplus c_4}
-  {}
-\qquad
-\Rule{}
-  {c_1 \Leftrightarrow c_3 \quad c_2 \Leftrightarrow c_4}
-  {c_1 \otimes c_2 \Leftrightarrow c_3 \otimes c_4}
-  {}
-\\
-  {(a_1 \odot a_3) \oplus (a_2 \odot a_4) \Leftrightarrow (a_1 \oplus a_2) \odot (a_3 \oplus a_4)}
-\\
-  {(a_1 \odot a_3) \otimes (a_2 \odot a_4) \Leftrightarrow (a_1 \otimes a_2) \odot (a_3 \otimes a_4)}
-\end{array}\]
-\caption{\label{fige}Signatures of level-2 $\Pi$-combinators: functors}
-\end{figure}
-
-\begin{figure}[t]
-Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 : t_3 \leftrightarrow t_4$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {c_1 \odot (c_2 \odot c_3) \Leftrightarrow (c_1 \odot c_2) \odot c_3}
-\\
-  {(c_1 \oplus (c_2 \oplus c_3)) \odot \assoclp \Leftrightarrow \assoclp \odot ((c_1 \oplus c_2) \oplus c_3)}
-\\
-  {(c_1 \otimes (c_2 \otimes c_3)) \odot \assoclt \Leftrightarrow \assoclt \odot ((c_1 \otimes c_2) \otimes c_3)}
-\\
-  {((c_1 \oplus c_2) \oplus c_3) \odot \assocrp \Leftrightarrow \assocrp \odot (c_1 \oplus (c_2 \oplus c_3))}
-\\
-  {((c_1 \otimes c_2) \otimes c_3) \odot \assocrt \Leftrightarrow \assocrt \odot (c_1 \otimes (c_2 \otimes c_3))}
-\\
-  {\assocrp \odot \assocrp \Leftrightarrow ((\assocrp \oplus \idc) \odot \assocrp) \odot (\idc \oplus \assocrp)}
-\\
-  {\assocrt \odot \assocrt \Leftrightarrow ((\assocrt \otimes \idc) \odot \assocrt) \odot (\idc \otimes \assocrt)}
-\end{array}\]
-\caption{\label{figj}Signatures of level-2 $\Pi$-combinators: associativity}
-\end{figure}
-
-\begin{center}
-\begin{tikzcd}[column sep=normal]
-   & (A \times (B \times C)) \times D \arrow [dr, "\assocrt"] & \\
-((A \times B) \times C) \times D \arrow [ur, "\assocrt \otimes \mathit{id}\leftrightarrow"]
-   \arrow [d, "\assocrt"] &
-       & A \times ((B \times C) \times D) \arrow [d, "\mathit{id}\leftrightarrow \otimes \assocrt" ]\\
-(A \times B) \times (C \times D) \arrow [rr, "\assocrt"] & & A \times (B \times (C \times D))
-\end{tikzcd}
-\end{center}
-
-\begin{figure}[t]
-Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, and $c_3 : t_5 \leftrightarrow t_6$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {((c_1 \oplus c_2) \otimes c_3) \odot \dist \Leftrightarrow \dist \odot ((c_1 \otimes c_3) \oplus (c_2 \otimes c_3))}
-\\
-  {(c_1 \otimes (c_2 \oplus c_3)) \odot \distl \Leftrightarrow \distl \odot ((c_1 \otimes c_2) \oplus (c_1 \otimes c_3))}
-\\
-  {((c_1 \otimes c_3) \oplus (c_2 \otimes c_3)) \odot \factor \Leftrightarrow \factor \odot ((c_1 \oplus c_2) \otimes c_3)}
-\\
-  {((c_1 \otimes c_2) \oplus (c_1 \otimes c_3)) \odot \factorl \Leftrightarrow \factorl \odot (c_1 \otimes (c_2 \oplus c_3))}
-\end{array}\]
-\caption{\label{figi}Signatures of level-2 $\Pi$-combinators: distributivity and factoring}
-\end{figure}
-
-\begin{figure}[t]
-Let $c_0, c_1, c_2, c_3 : t_1 \leftrightarrow t_2$ and $c_4, c_5 : t_3 \leftrightarrow t_4$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {\idc \odot \, c_0 \Leftrightarrow c_0}
-\quad
-  {c_0 \, \odot \idc \, \Leftrightarrow c_0}
-\quad
-  {c_0\,\, \odot\,!\, c_0 \Leftrightarrow \idc}
-\quad
-  {!\, c_0 \odot c_0 \Leftrightarrow \idc}
-\\
-  {\idc \oplus \, \idc \, \Leftrightarrow \idc}
-\qquad
-  {\idc \otimes \, \idc \, \Leftrightarrow \idc}
-\\
-  {c_0 \Leftrightarrow c_0}
-\quad
-\Rule{}
-  {c_1 \Leftrightarrow c_2 \quad c_2 \Leftrightarrow c_3}
-  {c_1 \Leftrightarrow c_3}
-  {}
-\quad
-\Rule{}
-  {c_1 \Leftrightarrow c_4 \quad c_2 \Leftrightarrow c_5}
-  {c_1 \odot c_2 \Leftrightarrow c_4 \odot c_5}
-  {}
-\end{array}\]
-\caption{\label{figh}Signatures of level-2 $\Pi$-combinators: identity and composition}
-\end{figure}
-
-\begin{figure}[t]
-Let $c_0 : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c_3 : t_1 \leftrightarrow t_2$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {\identlp \odot c_3 \Leftrightarrow (c_0 \oplus c_3) \odot \identlp}
-\qquad
-  {\identrp \odot (c_0 \oplus c_3) \Leftrightarrow c_3 \odot \identrp}
-\\
-  {\identlsp \odot c_3 \Leftrightarrow (c_3 \oplus c_0) \odot \identlsp}
-\qquad
-  {\identrsp \odot (c_3 \oplus c_0) \Leftrightarrow c_3 \odot \identrsp}
-\\
-  {\identlt \odot c_3 \Leftrightarrow (c_1 \otimes c_3) \odot \identlt}
-\qquad
-  {\identrt \odot (c_1 \otimes c_3) \Leftrightarrow c_3 \odot \identrp}
-\\
-  {\identlst \odot c_3 \Leftrightarrow (c_3 \otimes c_1) \odot \identlst}
-\qquad
-  {\identrst \odot (c_3 \otimes c_1) \Leftrightarrow c_3 \odot \identrst}
-\\
-  {\identlt \Leftrightarrow \distl \odot (\identlt \oplus \identlt)}
-\\
-\identlp \Leftrightarrow \swapp \odot \identlsp
-\qquad
-\identlt \Leftrightarrow \swapt \odot \identlst
-\end{array}\]
-\caption{\label{figg}Signatures of level-2 $\Pi$-combinators: unit}
-\end{figure}
-
-\begin{figure}[t]
-Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {\swapp \odot (c_1 \oplus c_2) \Leftrightarrow (c_2 \oplus c_1) \odot \swapp}
-\quad
-  {\swapt \odot (c_1 \otimes c_2) \Leftrightarrow (c_2 \otimes c_1) \odot \swapt}
-\\
-  {(\assocrp \odot \swapp) \odot \assocrp \Leftrightarrow ((\swapp \oplus \idc) \odot \assocrp) \odot (\idc \oplus \swapp)}
-\\
-  {(\assoclp \odot \swapp) \odot \assoclp \Leftrightarrow ((\idc \oplus \swapp) \odot \assoclp) \odot (\swapp \oplus \idc)}
-\\
-  {(\assocrt \odot \swapt) \odot \assocrt \Leftrightarrow ((\swapt \otimes \idc) \odot \assocrt) \odot (\idc \otimes \swapt)}
-\\
-  {(\assoclt \odot \swapt) \odot \assoclt \Leftrightarrow ((\idc \otimes \swapt) \odot \assoclt) \odot (\swapt \otimes \idc)}
-\end{array}\]
-\caption{\label{figf}Signatures of level-2 $\Pi$-combinators: commutativity and associativity}
-\end{figure}
-
-\begin{figure}[t]
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {\identlsp \oplus \idc ~\Leftrightarrow~ \assocrp \odot (\idc \oplus \, \identlp)}
-\\
-  {\identlst \otimes \idc ~\Leftrightarrow~ \assocrt \odot (\idc \otimes \, \identlt)}
-\end{array}\]
-\caption{\label{figd}Signatures of level-2 $\Pi$-combinators: unit and associativity}
-\end{figure}
-
-\begin{figure}[t]
-Let $c : t_1 \leftrightarrow t_2$:
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {(c \otimes \idc) \odot \absorbl \Leftrightarrow \absorbl \odot \idc}
-\quad
-  {(\idc \, \otimes c) \odot \absorbr \Leftrightarrow \absorbr \odot \idc}
-\\
-  {\idc \odot \, \factorzl \Leftrightarrow \factorzl \odot (\idc \otimes c)}
-\quad
-  {\idc \odot \, \factorzr \Leftrightarrow \factorzr \odot (c \otimes \idc)}
-\\
-  {\absorbr \Leftrightarrow \absorbl}
-\\
-  {\absorbr \Leftrightarrow (\distl \odot (\absorbr \oplus \absorbr)) \odot \identlp}
-\\
-  {\identlst \Leftrightarrow \absorbr}
-\qquad
-  {\absorbl \Leftrightarrow \swapt \odot \absorbr}
-\\
-  {\absorbr \Leftrightarrow (\assoclt \odot (\absorbr \otimes \idc)) \odot \absorbr}
-\\
-  {(\idc \otimes \absorbr) \odot \absorbl \Leftrightarrow (\assoclt \odot (\absorbl \otimes \idc)) \odot \absorbr}
-\\
-  {\idc \otimes \, \identlp \Leftrightarrow (\distl \odot (\absorbl \oplus \idc)) \odot \identlp}
-\end{array}\]
-\caption{\label{figc}Signatures of level-2 $\Pi$-combinators: zero}
-\end{figure}
-
-\begin{figure}[t]
-\[\def\arraystretch{1.3}
-\begin{array}{c}
-  {((\assoclp \otimes \idc) \odot \dist) \odot (\dist \oplus \idc) \Leftrightarrow (\dist \odot (\idc \oplus \dist)) \odot \assoclp}
-\\
-  {\assoclt \odot \distl \Leftrightarrow ((\idc \otimes \distl) \odot \distl) \odot (\assoclt \oplus \assoclt)}
-\end{array}\]
-\vspace{ -0.5em}
-\[\def\arraystretch{1.3}
-\begin{array}{rcl}
-  (\distl \odot (\dist \oplus \dist)) \odot \assoclp &\Leftrightarrow&
-   \dist \odot (\distl \oplus \distl) \odot \assoclp ~\odot \\
-&& (\assocrp \oplus \idc) ~\odot \\
-&& ((\idc \oplus \swapp) \oplus \idc) ~\odot \\
-&&      (\assoclp \oplus \idc)
-\end{array}\]
-\caption{\label{figb}Signatures of level-2 $\Pi$-combinators: associativity and distributivity}
-\end{figure}
-
-\begin{figure}[t]
-\[\def\arraystretch{1.3}
-\begin{array}{rcl}
-  (\idc \otimes \swapp) \odot \distl &\Leftrightarrow& \distl \odot \swapp
-\\
-  \dist \odot (\swapt \oplus \swapt) &\Leftrightarrow & \swapt \odot \distl
-\end{array}\]
-\caption{\label{figa}Signatures of level-2 $\Pi$-combinators: commutativity and distributivity}
-\end{figure}
