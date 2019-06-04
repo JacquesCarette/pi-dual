@@ -312,6 +312,7 @@ sound (∃-lens (f , qinv g α β)) = record
 \end{code}
 }
 \onslide<5>{
+
 \vspace*{1.5mm}
 \noindent \AgdaFunction{complete} requires moving to \AgdaRecord{Setoid} --
 see online code.
@@ -355,12 +356,31 @@ $\AgdaFunction{factorequiv}~:~((A × D) ⊎ (B × D)) ≃ ((A ⊎ B) × D)$
 
 %% *************************************************************************
 %% Even better we have proof-relevant type equivalences
+
+\begin{frame}[fragile]{Proof relevance}
+Different proofs that $A × A ≃ A × A$ give different lenses:
+\begin{code}
+ l₇ : Lens₁ (A × A) A
+ l₇ = ∃-lens id≃
+ l₈ : Lens₁ (A × A) A
+ l₈ = ∃-lens swap⋆equiv
+\end{code}
+
+\vspace*{1.5mm}
+Plain Curry-Howard gives $A × A ⟷ A$ (equi-inhabitation).
+\end{frame}
+
+\begin{frame}{Type Equivalences}
+semirings! weak Rig Groupoids...
+\end{frame}
 %%
 %% A bit of Pi detour with connections to category theory and/or HoTT
 %%
 %% *************************************************************************
 %%
 %% Exploring the space of "lens programs"
+%% -- Colour
+%% -- Toffoli
 %%
 %% *************************************************************************
 %% Revisit example above; can we do something with level 2 equivalences?
@@ -389,7 +409,6 @@ $\AgdaFunction{factorequiv}~:~((A × D) ⊎ (B × D)) ≃ ((A ⊎ B) × D)$
 %%   \item Oleg Grenrus' \textit{Finding correct (lens) laws}~\cite{oleg-blog},
 %%   \item The paper \textit{Synthesizing Bijective Lenses}~\cite{Miltner2018},
 %%   \item Twan van Laarhoven's blog \textit{Isomorphism Lenses},
-%%   \item (many more, insert citations throughout)
 %% \end{enumerate}
 %%
 
