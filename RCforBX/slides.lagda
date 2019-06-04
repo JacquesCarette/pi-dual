@@ -444,8 +444,6 @@ Types
 \end{minipage}
 \end{frame}
 %%
-%% A bit of Pi detour with connections to category theory and/or HoTT
-%%
 %% *************************************************************************
 %%
 %% Exploring the space of "lens programs"
@@ -1131,77 +1129,6 @@ and equivalence on the first field. This is roughly equivalent to what
 Grenrus showed~\cite{oleg-blog}, but without the need for proof irrelevance
 in the meta-theory, as we build it in to our \AgdaRecord{Setoid} instead.
 
-\AgdaHide{
-\begin{code}
-prism-sound′ : {ℓ : Level} {S A : Set ℓ} → ∃-Prism S A → BI-Prism S A
-prism-sound′ {S = S} {A} (∃-prism p) =
-  let f = to p ⟨$⟩_
-      g = from p ⟨$⟩_ in record
-    { belongs = λ s → [ const nothing , just ]′ (f s)
-    ; inject = g ∘ inj₂
-    ; belongsinject = bi
-    ; belongs≡just→inject = refine
-    }
-    where
-      bi : (a : A) → [ const nothing , just ]′ (to p ⟨$⟩ (from p ⟨$⟩ inj₂ a)) ≡ just a
-      bi a with to p ⟨$⟩ (from p ⟨$⟩ inj₂ a) | right-inverse-of p (inj₂ a)
-      bi a | inj₁ x | lift ()
-      bi a | inj₂ y | pf = cong just pf
-      refine : (s : S) (a : A) → [ const nothing , just ]′ (to p ⟨$⟩ s) ≡ just a →
-                         from p ⟨$⟩ inj₂ a ≡ s
-      refine s a pf with to p ⟨$⟩ s | inspect (to p ⟨$⟩_) s
-      refine s a () | inj₁ x | _
-      refine s .y refl | inj₂ y | [ eq ] = trans (cong (from p ⟨$⟩_) (sym eq)) (left-inverse-of p s)
-
-prism-complete : {ℓ : Level} {S A : Set ℓ} → BI-Prism S A → ∃-Prism S A
-prism-complete {ℓ} {S} {A} bi = ∃-prism {C = D} (record
-  { to = record { _⟨$⟩_ = fwd ; cong = λ { refl → Setoid.reflexive Z (cong fwd refl) } }
-  ; from = record { _⟨$⟩_ = bwd ; cong = λ {i} {j} → cong-bwd {i} {j} }
-  ; inverse-of = record
-    { left-inverse-of = left
-    ; right-inverse-of = right
-    } })
-  where
-    open BI-Prism
-    D : Setoid ℓ ℓ
-    D = record
-      { Carrier = Σ S (λ s → belongs bi s ≡ nothing)
-      ; _≈_ = λ x y → proj₁ x ≡ proj₁ y
-      ; isEquivalence = record { refl = refl ; sym = sym ; trans = trans }
-      }
-    Z = D ⊎S P.setoid A
-    fwd : (x : S) → Σ S (λ s → belongs bi s ≡ nothing) ⊎ A
-    fwd x with belongs bi x | inspect (belongs bi) x
-    fwd x | just x₁ | _ = inj₂ x₁
-    fwd x | nothing | [ eq ] = inj₁ (x , eq)
-    bwd : (x : Σ S (λ s → belongs bi s ≡ nothing) ⊎ A) → S
-    bwd (inj₁ (s , pf))  = s
-    bwd (inj₂ a)         = inject bi a
-    cong-bwd : {i j : Σ S (λ s → belongs bi s ≡ nothing) ⊎ A} → Setoid._≈_ Z i j → bwd i ≡ bwd j
-    cong-bwd {inj₁ x} {inj₁ x₁} ≈ = ≈
-    cong-bwd {inj₁ x} {inj₂ y} (lift ())
-    cong-bwd {inj₂ y} {inj₁ x} (lift ())
-    cong-bwd {inj₂ y} {inj₂ y₁} ≈ = cong (inject bi) ≈
-    left : (x : S) → bwd (fwd x) ≡ x
-    left x with belongs bi x | inspect (belongs bi) x
-    left x | just x₁ | [ eq ] = belongs≡just→inject bi x x₁ eq
-    left x | nothing | [ eq ] = refl
-    contra : {Y : Set ℓ} {y : Y} → (Maybe {ℓ} Y ∋ nothing)  ≡ (Maybe Y ∋ just y) → ⊥
-    contra ()
-    right : (x : Σ S (λ s → belongs bi s ≡ nothing) ⊎ A) → Setoid._≈_ Z (fwd (bwd x))  x
-    right (inj₁ x) with belongs bi (proj₁ x) | inspect (belongs bi) (proj₁ x)
-    right (inj₁ (s , snd)) | just x₁ | [ eq ] = lift (contra (trans (sym snd) eq))
-    right (inj₁ x) | nothing | yyy = refl
-    right (inj₂ y) with belongs bi (inject bi y) | inspect (belongs bi) (inject bi y)
-    right (inj₂ y) | just x | [ eq ] = just-injective (trans (sym eq) (belongsinject bi y))
-    right (inj₂ y) | nothing | [ eq ] = lift (contra (trans (sym eq) (belongsinject bi y)))
-\end{code}
-}
-Note that there is one more way, again equivalent, of defining a prism:
-rather than using $\AgdaRecord{Maybe} A$, use $S ⊎ A$ and replace
-$\AgdaField{belongs}$ with
-$\lambda s → \AgdaFunction{Data.Sum.map} (\AgdaFunction{const} s) \AgdaFunction{id} (f s)$.
-
 \subsection{Other Optics}
 
 A number of additional optics have been put forth. Their salient
@@ -1328,206 +1255,7 @@ dependently-typed setting to bring forth the deep connections.
 
 \end{document}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-%% Stuff cut out from above.
 
-\subsection{A Language of Type Equivalences}
-
-\begin{figure}[t]
-\[
-\begin{array}{rrcll}
-\idc :& t & \iso & t &: \idc \\
-\\
-\identlp :&  0 \sumtype t & \iso & t &: \identrp \\
-\swapp :&  t_1 \sumtype t_2 & \iso & t_2 \sumtype t_1 &: \swapp \\
-\assoclp :&  t_1 \sumtype (t_2 \sumtype t_3) & \iso & (t_1 \sumtype t_2) \sumtype t_3 &: \assocrp \\
-\\
-\identlt :&  1 {\prodtype} t & \iso & t &: \identrt \\
-\swapt :&  t_1 {\prodtype} t_2 & \iso & t_2 {\prodtype} t_1 &: \swapt \\
-\assoclt :&  t_1 {\prodtype} (t_2 {\prodtype} t_3) & \iso & (t_1 {\prodtype} t_2) {\prodtype} t_3 &: \assocrt \\
-\\
-\absorbr :&~ 0 {\prodtype} t & \iso & 0 ~ &: \factorzl \\
-\dist :&~ (t_1 \sumtype t_2) {\prodtype} t_3 & \iso & (t_1 {\prodtype} t_3) \sumtype (t_2 {\prodtype} t_3)~ &: \factor
-\end{array}
-\]
-\caption{$\Pi$-terms.}
-\label{pi-terms}
-\end{figure}
-
-This gives us the denotational semantics for types and for
-equivalences. From this, we want to
-a programming language, which we call $\Pi$,
-where we have ground terms whose denotation are
-all $16$ type isomorphisms of Fig.~\ref{type-isos}.
-We can simply do this literally. To make the
-analogy with commutative semirings stand out even more, we will use
-$0, 1, \sumtype$, and ${\prodtype}$ at the type level, and will denote
-``equivalence'' by $\iso$.  Thus Fig.~\ref{pi-terms} shows the
-``constants'' of the language.  As these all come in symmetric pairs
-(some of which are self-symmetric), we give names for both directions.
-Note how we have continued with the spirit of Curry-Howard: the terms
-of $\Pi$ are \emph{proof terms}, but rather than being witnesses of
-inhabitation, they are witnesses of equivalences. Thus we get an
-unexpected programming language design:
-
-\begin{center}
-\fbox{ The proof terms denoting commutative semiring equivalences
-  induce the terms of $\Pi$.}
-\end{center}
-\vspace*{3mm}
-
-\begin{figure}[t]
-\[
-\Rule{}
-{\jdg{}{}{c_1 : t_1 \iso t_2} \quad \vdash c_2 : t_2 \iso t_3}
-{\jdg{}{}{c_1 \odot c_2 : t_1 \iso t_3}}
-{}
-\qquad
-\Rule{}
-{\jdg{}{}{c_1 : t_1 \iso t_2} \quad \vdash c_2 : t_3 \iso t_4}
-{\jdg{}{}{c_1 \oplus c_2 : t_1 \sumtype t_3 \iso t_2 \sumtype t_4}}
-{}
-\]
-\[
-\Rule{}
-{\jdg{}{}{c_1 : t_1 \iso t_2} \quad \vdash c_2 : t_3 \iso t_4}
-{\jdg{}{}{c_1 \otimes c_2 : t_1 {\prodtype} t_3 \iso t_2 {\prodtype} t_4}}
-{}
-\]
-\caption{$\Pi$-combinators.}
-\label{pi-combinators}
-\end{figure}
-
-\noindent
-Of course, one does not get a programming language with just typed
-constants! We need to put together multiple equivalences to form
-other equivalences. There are
-in fact three ways to do this: sequential composition $\odot$, choice
-composition $\oplus$ (sometimes called juxtaposition), and parallel
-composition $\otimes$. See Fig.~\ref{pi-combinators} for the
-signatures. The construction $c_1 \odot c_2$ corresponds to performing
-$c_1$ first, then $c_2$, and is the usual notion of composition.
-The construction $c_1 \oplus c_2$ chooses to
-perform $c_1$ or $c_2$ depending on whether the input is labelled
-$\textsf{left}$ or $\textsf{right}$ respectively. Finally the
-construction $c_1 \otimes c_2$ operates on a product structure, and
-applies $c_1$ to the first component and $c_2$ to the second.
-
-\begin{figure}[t]
-\[
-\Rule{}
-{\jdg{}{}{c_1 : t_1 \iso t_2}}
-{\jdg{}{}{\ !\ c_1 : t_2 \iso t_1}}
-{}
-\]
-\caption{Derived $\Pi$-combinator.}
-\label{derived-pi-combinator}
-\end{figure}
-
-Embedded in our definition of $\Pi$ is a conscious design decision: to make the
-terms of $\Pi$ \emph{syntactically} reversible. In other words, to
-every $\Pi$ constant, there is another $\Pi$ constant which is its
-inverse. As this is used frequently, we give it the short name $!$,
-and its type is given in Fig.~\ref{derived-pi-combinator}. This
-combinator is \emph{defined}, by pattern matching on the syntax of
-its argument and structural recursion.
-This is not the only choice.  Another would be to add a
-$\mathit{flip}$ combinator to the language; we could then remove
-quite a few combinators as redundant. The drawback is that many
-programs in $\Pi$ become longer. Furthermore, some of the symmetry
-at ``higher levels'' (see next section) is also lost. Since the
-extra burden of language definition and of proofs is quite low, we
-prefer the structural symmetry over a minimalistic language definition.
-
-\begin{figure}[t]
-\[
-\begin{array}{rrcll}
-\identlsp :&  t \sumtype 0 & \iso & t &: \identrsp \\
-\identlst :&  t {\prodtype} 1 & \iso & t &: \identrst \\
-\\
-\absorbl :&~ t {\prodtype} 0 & \iso & 0 ~ &: \factorzr \\
-\distl :&~ t_1 {\prodtype} (t_2 \sumtype t_3) & \iso & (t_1 {\prodtype} t_2) \sumtype (t_1 {\prodtype} t_3)~ &: \factorl
-\end{array}
-\]
-\caption{Additional $\Pi$-terms.}
-\label{more-pi}
-\end{figure}
-
-We also make a second design decision, which is to make the $\Pi$
-language itself symmetric in another sense: we want both left
-and right introduction/elimination rules for units, $0$ absorption
-and distributivity. Specifically, we add the $\Pi$-terms of
-Fig.~\ref{more-pi} to our language. These are redundant because
-of $\swapp$ and $\swapt$, but will later enable shorter programs
-and more elegant presentation of program transformations.
-
-%%%%%%%%%
-\subsection{Operational Semantics}
-\label{sec:opsem}
-
-It is then quite straightforward to give an operational semantics to
-$\Pi$: we write a ``forward evaluator'' which, given a
-program program \ensuremath{c : b_1 \leftrightarrow b_2} in \ensuremath{\Pi },
-and a value \ensuremath{ v_1 : b_1}, returns a value of type $b_2$. Of course,
-what makes $\Pi$ interesting is that we can also write a ``backward
-evaluator'' from values of type $b_2$ to values of type $b_1$. Furthermore
-we can prove that these are exact inverses. Given our denotational semantics,
-this should not be surprising. As the details are straightforward but
-verbose, we elide them. As we mentioned before, $!$ is a defined combinator.
-Only a few cases need commenting on.
-
-Since there are no values that have the type \ensuremath{0}, the
-reductions for the combinators \identlp, \identrp, \identlsp, and
-\identrsp\ omit the impossible cases. \factorzr\ and \factorzl\
-likewise do not appear as they have no possible cases at all. However,
-\absorbr\ and \absorbl\ are treated slightly differently: rather than
-\emph{eagerly} assuming they are impossible, the purported inhabitant
-of $0$ given on one side is passed on to the other side. The reason
-for this choice will have to wait for Sec.~\ref{langeqeq} when we
-explain some higher-level symmetries (see Fig.~\ref{figc}).
-
-%%%%%%%%%
-\subsection{Further features}
-
-The language $\Pi$ also captures ideas around the size of types, aka
-cardinality, and their relation to type equivalences.
-
-Combinators of \ensuremath{\Pi } can be written in terms of the
-operators described previously or via a graphical language similar in
-spirit to those developed for Geometry of Interaction
-\cite{DBLP:conf/popl/Mackie95} and string diagrams for category
-theory~\cite{BLUTE1996229,selinger-graphical}.
-\ensuremath{\Pi } combinators expressed in this graphical language
-look like ``wiring diagrams.'' Values take the form of ``particles''
-that flow along the wires. Computation is expressed by the flow of
-particles.
-
-The interested reader can
-find more details for both features in~\cite{CaretteJamesSabryArxiv}.
-
-Lastly, in previous work~\cite{Carette2016}, we had shown that
-the denotational and operational semantics correspond, and given
-a constructive proof of this. In other words, to each $\Pi$
-combinator we can associate an equivalence between the denotation
-of each type, which has all the obvious desirable properties we
-would want from such an association.
-
-%%%%%%%%%
-\subsection{A Language of Equivalences between Type Equivalences}
-\label{langeqeq}
-
-As motivated in the previous section, the equivalences between type
-equivalences are perfectly modeled by the coherence conditions of weak
-Rig Groupoids. Syntactically, we take the easiest way there: simply
-make every coherence isomorphism into a programming construct. These
-constructs are collected in several figures (Fig.~\ref{figj} to
-Fig.~\ref{figa}). We present these without much comment as this
-would take us too far afield. \jc{cite}
-
-Conveniently, the various coherence conditions can be naturally
-grouped into ``related'' laws.  Each group basically captures the
-interactions between compositions of level-1 $\Pi$ combinators.
 
 \begin{figure}[t]
 Let $c_1 : t_1 \leftrightarrow t_2$, $c_2 : t_3 \leftrightarrow t_4$, $c_3 : t_1 \leftrightarrow t_2$, and $c_4 : t_3 \leftrightarrow t_4$. \\
@@ -1571,13 +1299,6 @@ Let $c_1 : t_1 \leftrightarrow t_2$,  $c_2 : t_2 \leftrightarrow t_3$, and $c_3 
 \end{array}\]
 \caption{\label{figj}Signatures of level-2 $\Pi$-combinators: associativity}
 \end{figure}
-
-The bottom line in Fig.~\ref{figj} is actually a linear
-restatement of the famous ``pentagon diagram'' stating a
-particular coherence condition for monoidal categories~\cite{KELLY197197}.
-To make the relation between $\Pi$ as a language and the
-language of category theory, the figure below displays
-the same morphism but in categorical terms.
 
 \begin{center}
 \begin{tikzcd}[column sep=normal]
@@ -1664,21 +1385,6 @@ Let $c_0 : 0 \leftrightarrow 0$, $c_1 : 1 \leftrightarrow 1$, and $c_3 : t_1 \le
 \caption{\label{figg}Signatures of level-2 $\Pi$-combinators: unit}
 \end{figure}
 
-The constructs in Fig.~\ref{figg} may at first blush look similarly straightforward,
-but deserve some pause. One obvious question: What is the point of
-$c_0 : 0 \leftrightarrow 0$, isn't it just the identity combinator $\idc$
-for $A = 0$ (as defined in Fig.~\ref{type-isos})? Operationally, $c_0$
-is indeed indistinguishable from $\idc$. However, there are multiple syntactic
-ways of writing down combinators of type $0 \leftrightarrow 0$, and the
-first combinator in Fig.~\ref{figg} applies to all of them uniformly.
-This is another subtle aspect of coherence: all reasoning must be valid for
-all possible models, not just the one we have in mind. So even though
-operational reasoning may suggest that some relations \emph{may} be
-true between combinators, it can also mislead. The same reasoning
-applies to $c_1 : 1 \leftrightarrow 1$.  The first $8$ combinators can
-then be read as basic coherence for unit introduction and elimination,
-in both additive and multiplicative cases.
-
 \begin{figure}[t]
 Let $c_1 : t_1 \leftrightarrow t_2$ and $c_2 : t_3 \leftrightarrow t_4$:
 \[\def\arraystretch{1.3}
@@ -1737,39 +1443,6 @@ Let $c : t_1 \leftrightarrow t_2$:
 \caption{\label{figc}Signatures of level-2 $\Pi$-combinators: zero}
 \end{figure}
 
-The constructs in Fig.~\ref{figc} are significantly more subtle, as they
-deal with combinators involving $0$, aka an impossibility.  For example,
-\[  {(c \otimes \idc_{0}) \odot \absorbl \Leftrightarrow \absorbl \odot \idc_{0}}
-\]
-(where we have explicitly annotated the types of $\idc$ for increased clarity)
-tells us that of the two ways of transforming from $t_1  *\  0$ to $0$,
-namely first doing some arbitrary transformation $c$ from $t_1$ to $t_2$ and
-(in parallel) leaving $0$ alone then eliminating $0$, or first eliminating $0$
-then doing the identity (at $0$), are equivalent. This is the ``naturality'' of
-$\absorbl$. One item to note is the fact that this combinator is not
-irreducible, as the $\idc$ on the right can be eliminated. But that is actually
-a property visible at an even higher level (which we will not touch in this
-paper).  The next $3$ are similarly expressing the naturality of $\absorbr$,
-$\factorzl$ and $\factorzr$.
-
-The next combinator, $\absorbr \Leftrightarrow \absorbl$, is
-particularly fascinating: while it says something simple --- that the
-two obvious ways of transforming $0 * 0$ into $0$, namely absorbing
-either the left or right $0$ --- it implies something subtle.  A
-straightforward proof of $\absorbl$ which proceeds by saying that
-$0 * t$ cannot be inhabited because the first member of the pair
-cannot, is not in fact equivalent to $\absorbr$ on $0 * 0$.  However,
-if we instead define $\absorbl$ to ``transport'' the putative
-impossible first member of the pair to its (equally impossible)
-output, then these do form equivalent pairs.
-
-There are further subtle issues when the types
-involved are asymmetric: they do not have the same occurrences
-on the left and right. Such cases are particularly troublesome for
-finding normal forms. Laplaza~\cite{laplaza72} certainly comments on this,
-but in mostly terse and technical terms. Blute et al.~\cite{BLUTE1996229}
-offer much more intuitive explanations.
-
 \begin{figure}[t]
 \[\def\arraystretch{1.3}
 \begin{array}{c}
@@ -1798,17 +1471,3 @@ offer much more intuitive explanations.
 \end{array}\]
 \caption{\label{figa}Signatures of level-2 $\Pi$-combinators: commutativity and distributivity}
 \end{figure}
-
-Unfortunately, giving a detailed example would take us too far afield. \jc{cite}
-
-\renewcommand{\AgdaIndentSpace}{\AgdaSpace{}$\;\;$}
-
-We will however mention one last interpretation.
-Recalling that the $\lambda$-calculus arises as the internal language
-of Cartesian Closed Categories (Elliott~\cite{Elliott-2017} gives a particularly
-readable account of this), we can think of $\Pi$ in similar terms, but
-for symmetric Rig Groupoids instead.  Programs at level-2 of $\Pi$
-are a ``linear'' representation of a 2-categorial commutative
-diagram! In fact, it is a painfully verbose version thereof, as it
-includes many \emph{refocusing} steps because our language does not
-build associativity into its syntax. Categorical diagrams usually do.
