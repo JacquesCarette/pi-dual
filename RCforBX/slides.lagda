@@ -6,7 +6,7 @@
 \usepackage{lmodern}
 \usepackage{textgreek}
 \usepackage[LGR,TS1,T1]{fontenc}
-%\usepackage[utf8]{inputenc}
+\usepackage[utf8x]{inputenc}
 %\usepackage{comment}
 \usepackage{graphicx}
 %\usepackage{tikz}
@@ -257,8 +257,17 @@ data Lens s a = Lens { view :: s -> a, set :: s -> a -> s }
 \pause
 Example?
 %%   (JC: why? what's the point being made by the example?)
+\begin{lstlisting}
+fst :: Lens (a , b) a
+fst = Lens { view = \(a,b) -> a , set = \(a,b) a' -> (a',b) }
+\end{lstlisting}
 \pause
 Laws? Optimizations?
+\begin{lstlisting}
+view (set s a) == a
+set s (view s) == s
+set (set s a) a' == set s a'
+\end{lstlisting}
 \end{frame}
 
 %% *************************************************************************
@@ -277,6 +286,17 @@ open GS-Lens
 %% Write example above in Agda ??
 
 Works... but the proofs can be tedious.
+\begin{code}[hide]
+module fst₁ where
+\end{code}
+\begin{code}
+  fst : {A B : Set} → GS-Lens (A × B) A
+  fst = record { get = λ {(a , b) → a}
+               ; set = λ {(a , b) a' → (a' , b)}
+               ; getput = λ {s} {a} → refl
+               ; putget = λ { (a , b) → refl }
+               ; putput = λ { (a₀ , b) a₁ a₂ → refl } }
+\end{code}
 \end{frame}
 
 %% Better (and **equivalent**) formulation in Agda
@@ -291,6 +311,14 @@ record Lens₁ {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
     {C} : Set ℓ
     iso : S ≃ (C × A)
 \end{code}
+\begin{code}[hide]
+module fst₂ where
+\end{code}
+\begin{code}
+  fst : {A B : Set} → Lens₁ (A × B) A
+  fst = ∃-lens swap⋆equiv
+\end{code}
+
 }
 \only<2>{
 where
