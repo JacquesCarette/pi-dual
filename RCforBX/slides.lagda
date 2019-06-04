@@ -137,8 +137,8 @@ $\displaystyle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \title{Optics and Type Equivalences}
-\author[Carette, Sabry]{Jacques Carette, Amr Sabry}
-\institute{}
+\author[Carette, Sabry]{Jacques Carette, Amr Sabry with some help from Chao-Hong Chen}
+\institute{McMaster and Indiana}
 \date{}
 
 \begin{document}
@@ -266,7 +266,7 @@ Example:
 %%   (JC: why? what's the point being made by the example?)
 \begin{lstlisting}
 _1 :: Lens (a , b) a
-_1 = Lens { view = fst , set = \s a -> (a, snd b) }
+_1 = Lens { view = fst , set = \s a -> (a, snd s) }
 \end{lstlisting}
 \pause
 Laws? Optimizations?
@@ -293,6 +293,7 @@ open GS-Lens
 %% Write example above in Agda ??
 
 Works... but the proofs can be tedious in larger examples (later)
+\pause
 \begin{code}[hide]
 module fst₁ where
 \end{code}
@@ -382,11 +383,17 @@ module _ {A B D : Set} where
 \end{code}
 \end{minipage}
 \begin{minipage}{0.49\textwidth}
-$\AgdaFunction{uniti⋆equiv}~:~A ≃ (⊤ × A)$\\
+\vspace*{8pt}
+$\AgdaFunction{uniti⋆equiv}~:~A ≃ (⊤ × A)$\\ \vspace*{-5pt}
+
 $\AgdaFunction{id≃}~:~A ≃ A$\\
-$\AgdaFunction{swap⋆equiv}~:~A × B ≃ B × A$\\
-$\AgdaFunction{assocl⋆equiv}~:~(A × B) × C ≃ A × (B × C)$\\
-$\AgdaFunction{factorzequiv}~:~⊥ ≃ (⊥ × A)$\\
+
+$\AgdaFunction{swap⋆equiv}~:~A × B ≃ B × A$\\ \vspace*{-5pt}
+
+$\AgdaFunction{assocl⋆equiv}~:~(A × B) × C ≃ A × (B × C)$\\ \vspace*{-5pt}
+
+$\AgdaFunction{factorzequiv}~:~⊥ ≃ (⊥ × A)$\\ \vspace*{-5pt}
+
 $\AgdaFunction{factorequiv}~:~((A × D) ⊎ (B × D)) ≃ ((A ⊎ B) × D)$
 \end{minipage}
 \end{frame}
@@ -728,23 +735,29 @@ gcnot-lens {A} {B} = ∃-lens gcnot-equiv
 Equality & $S = A$ \\ \hline
 Iso & $S ≃ A$ \\ \hline
 Lens & $∃C. S ≃ C × A$ \\
-Prism & $∃C . S ≃ C + A$ \\
+\textcolor{red}{Prism} & \textcolor{red}{$∃C . S ≃ C + A$} \\
 Achroma & $∃C. S ≃ (⊤ ⊎ C) × A)$ \\
 Affine & $∃C, D. S ≃ D ⊎ (C × A)$ \\ \hline
 Grate & $∃I. S ≃ I → A$ \\ \hline
 Setter & $∃ F : \mathit{Set} → \mathit{Set}. S ≃ F A$ \\ \hline
 \end{tabular}\end{center}
+Interfaces for Lens, Prism, etc: $∃$-free equivalent!
 \end{frame}
 %% *************************************************************************
 %% Geometric interpretation of optics
 \begin{frame}{Geometric interpretation}
 \begin{center}
 \begin{tabular}{lll} \hline
-Iso & $S ≃ A$ & $S$ is $A$ up to change of coordinates (CoC) \\
-Lens & $∃C. S ≃ C × A$ & $S$ is a \emph{cartesian product} over $A$, up to CoC \\
-Prism & $∃C . S ≃ C + A$ & $S$ has a \emph{partition} into $A$ and $C$, up to CoC \\ \hline
+Iso & $S ≃ A$ & $S$ is $A$ \textcolor{blue}{up to change of coordinates (CoC)} \\
+Lens & $∃C. S ≃ C × A$ & $S$ is a \emph{cartesian product} over $A$,
+  \textcolor{blue}{up to CoC} \\
+Prism & $∃C . S ≃ C + A$ & $S$ has a \emph{partition} into $A$ and $C$,
+  \textcolor{blue}{up to CoC} \\ \hline
 \end{tabular}
 \end{center}
+
+\vspace*{2cm}
+\Large Take home: \textcolor{red}{Really dig into PL for change of coordinates}
 \end{frame}
 %%
 
