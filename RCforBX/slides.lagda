@@ -255,11 +255,11 @@ Based on a `reversible' core:
 data Lens s a = Lens { view :: s -> a, set :: s -> a -> s }
 \end{lstlisting}
 \pause
-Example?
+Example:
 %%   (JC: why? what's the point being made by the example?)
 \begin{lstlisting}
-fst :: Lens (a , b) a
-fst = Lens { view = \(a,b) -> a , set = \(a,b) a' -> (a',b) }
+_1 :: Lens (a , b) a
+_1 = Lens { view = fst , set = \s a -> (a, snd b) }
 \end{lstlisting}
 \pause
 Laws? Optimizations?
@@ -285,24 +285,24 @@ open GS-Lens
 \end{code}
 %% Write example above in Agda ??
 
-Works... but the proofs can be tedious.
+Works... but the proofs can be tedious in larger examples (later)
 \begin{code}[hide]
 module fst₁ where
 \end{code}
 \begin{code}
   fst : {A B : Set} → GS-Lens (A × B) A
-  fst = record { get = λ {(a , b) → a}
-               ; set = λ {(a , b) a' → (a' , b)}
-               ; getput = λ {s} {a} → refl
-               ; putget = λ { (a , b) → refl }
-               ; putput = λ { (a₀ , b) a₁ a₂ → refl } }
+  fst = record { get = proj₁
+               ; set = λ s a → (a , proj₂ s)
+               ; getput = refl
+               ; putget = λ _ → refl
+               ; putput = λ _ _ _ → refl }
 \end{code}
 \end{frame}
 
 %% Better (and **equivalent**) formulation in Agda
 %% Lens1 (no need to mess with setoids)
 \begin{frame}{Lens in Agda 2}
-\only<1,3-5>{
+\only<1-2,4-6>{
 Or, the return of constant-complement lenses:
 \begin{code}
 record Lens₁ {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
@@ -311,6 +311,9 @@ record Lens₁ {ℓ : Level} (S : Set ℓ) (A : Set ℓ) : Set (suc ℓ) where
     {C} : Set ℓ
     iso : S ≃ (C × A)
 \end{code}
+}
+\visible<2>{
+\vspace*{0.5mm}
 \begin{code}[hide]
 module fst₂ where
 \end{code}
@@ -318,15 +321,14 @@ module fst₂ where
   fst : {A B : Set} → Lens₁ (A × B) A
   fst = ∃-lens swap⋆equiv
 \end{code}
-
 }
-\only<2>{
+\only<3>{
 where
 \ExecuteMetaData[latex/Equiv.tex]{isqinv}
 \vspace*{1.5mm}
 \ExecuteMetaData[latex/Equiv.tex]{equiv}
 }
-\onslide<4-5>{
+\onslide<5-6>{
 \begin{code}
 sound : {ℓ : Level} {S A : Set ℓ} → Lens₁ S A → GS-Lens S A
 \end{code}
@@ -339,7 +341,7 @@ sound (∃-lens (f , qinv g α β)) = record
   ; putput = λ s a a' → cong g (cong₂ _,_ (cong proj₁ (α _)) P.refl) }
 \end{code}
 }
-\onslide<5>{
+\onslide<6>{
 
 \vspace*{1.5mm}
 \noindent \AgdaFunction{complete} requires moving to \AgdaRecord{Setoid} --
@@ -394,12 +396,52 @@ Different proofs that $A × A ≃ A × A$ give different lenses:
  l₈ = ∃-lens swap⋆equiv
 \end{code}
 
-\vspace*{1.5mm}
-Plain Curry-Howard gives $A × A ⟷ A$ (equi-inhabitation).
+\vspace*{2.5mm}
+Plain Curry-Howard: $A ∧ A ≡ A$ implies $A × A ⟷ A$ (equi-inhabitation).
 \end{frame}
 
 \begin{frame}{Type Equivalences}
-semirings! weak Rig Groupoids...
+\begin{minipage}{0.48\textwidth}
+\begin{center}
+Semiring
+\end{center}
+\[\begin{array}{rcl}
+a &=& a \\
+\\
+0 + a &=& a \\
+a + b &=& b + a \\
+a + (b + c) &=& (a + b) + c \\
+\\
+1 \cdot a &=& a \\
+a \cdot b &=& b \cdot a \\
+a \cdot (b \cdot c) &=& (a \cdot b) \cdot c \\
+\\
+0 \cdot a &=& 0 \\
+(a + b) \cdot c &=& (a \cdot c) + (b \cdot c)
+\end{array}\]
+\end{minipage}
+\pause
+\begin{minipage}{0.48\textwidth}
+\begin{center}
+Types
+\end{center}
+\[
+\begin{array}{rrcll}
+& A & \simeq & A &\\
+\\
+&  \bot \presumtype A & \simeq & A &\\
+&  A \presumtype B & \simeq & B \presumtype A &\\
+&  A \presumtype (B \presumtype C) & \simeq & (A \presumtype B) \presumtype C &\\
+\\
+&  \top \preprodtype A & \simeq & A &\\
+&  A \preprodtype B & \simeq & B \preprodtype A &\\
+&  A \preprodtype (B \preprodtype C) & \simeq & (A \preprodtype B) \preprodtype C &\\
+\\
+& \bot \preprodtype A & \simeq & \bot &\\
+& (A \presumtype B) \preprodtype C & \simeq & (A \preprodtype C) \presumtype (B \preprodtype C) &
+\end{array}
+\]
+\end{minipage}
 \end{frame}
 %%
 %% A bit of Pi detour with connections to category theory and/or HoTT
