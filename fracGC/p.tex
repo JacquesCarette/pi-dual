@@ -295,6 +295,41 @@ X -> X * Y * 1/Y
 \end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A Comonad for Pi}
+
+Adding variables to Pi first?
+
+\newcommand{\alt}{~|~}
+\newcommand{\inlv}[1]{\ensuremath{\mathit{inl}(v)}}
+\newcommand{\inrv}[1]{\ensuremath{\mathit{inr}(v)}}
+\newcommand{\pointed}[2]{[#1 \bullet #2]}
+
+Plain Pi over finite types:
+\[\begin{array}{lrcl}
+\textit{Value types} & t &::=& 0 \alt 1 \alt t+t \alt t*t \\
+\textit{Values}      & v &::=& \star \alt \inlv{v} \alt \inrv{v} \alt (v,v) \\
+\textit{Level-1 types} &&& t \leftrightarrow t \\
+\textit{Level-1 programs} & c &::=& \cdots \\
+\textit{Level-2 types} &&& c \Leftrightarrow c \\
+\textit{Level-2 programs} & \alpha &::=& \cdots 
+\end{array}\]
+
+Now we define pointed types $\pointed{t}{v}$ which are a record
+consisting of a value type together with a value of that type. Both
+the level-1 and level-2 program lift naturally to the world of pointed
+types but instead of manually rewriting everything we use the fact
+that pointed types form a comonad. So for example, given a level-1
+program we should be able to just use \textsf{extend} to compose
+instead of plain composition of combinators??
+
+Then we can define $\eta$ and $\epsilon$ in the comonadic world.
+
+
+
+
+
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Fractional Pi}
 
 Adding variables to Pi first? 
