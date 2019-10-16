@@ -268,5 +268,11 @@ data _⬌_ : U/ → U/ → Set where
   ε : {PA : U/} → PA ⊠ 1/ PA ⬌ ⇑ (record { ● = tt }) 
   -- need to check points are the same!
 
+-- Use space denotation
+⟦_⟧/ : U/ → Set
+⟦ ⇑ {A} _ ⟧/ = {!!}
+⟦ 1/ P ⟧/ = {!!}
+⟦ P ⊞ P₁ ⟧/ = {!!}
+⟦ P ⊠ P₁ ⟧/ = {!!} 
 
 ------------------------------------------------------------------------------
