@@ -4,7 +4,11 @@ module C where
 
 open import Data.Empty using (⊥)
 open import Data.Unit using (⊤; tt)
-open import Data.Nat using (ℕ; _+_; _*_)
+open import Data.Nat using (ℕ)
+open import Data.Integer as ℤ using (ℤ; +_; -[1+_])
+open import Data.Rational
+  using (ℚ; _/_; _+_; _*_)
+  renaming (1/_ to recip)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Relation.Binary.Core using (IsEquivalence)
@@ -23,6 +27,12 @@ data U : Set where
   ONE   : U
   PLUS  : U → U → U
   TIMES : U → U → U
+
+∣_∣ : U → ℚ
+∣ ZERO ∣ = + 0 / 1
+∣ ONE ∣ = + 1 / 1
+∣ PLUS A B ∣ = ∣ A ∣ + ∣ B ∣ 
+∣ TIMES A B ∣ = ∣ A ∣ * ∣ B ∣  
 
 -- Combinators 
 
@@ -178,7 +188,6 @@ TRUE = inj₂ tt
 POINTED : {A : U} → ⟦ A ⟧ → Pointed ⟦ A ⟧
 POINTED v = record { ● = v } 
 
-
 BOOL² : U
 BOOL² = TIMES BOOL BOOL
 
@@ -261,18 +270,23 @@ data U/ : Set where
   _⊞_  : U/ → U/ → U/
   _⊠_  : U/ → U/ → U/
 
+-- Use space denotation: the denotation of a fractional type is a base
+-- type and a number representing the heap size.
+
+⟦_⟧/ : U/ → Set × ℚ
+⟦ ⇑ {A} _ ⟧/ = ⟦ A ⟧ , ∣ A ∣
+⟦ 1/ P ⟧/ with ⟦ P ⟧/
+... | (S , n) = S , recip n -- need proof that n is not 0 
+⟦ P₁ ⊞ P₂ ⟧/ with ⟦ P₁ ⟧/ | ⟦ P₂ ⟧/
+... | (S₁ , n₁) | (S₂ , n₂) = (S₁ ⊎ S₂) , (n₁ + n₂) 
+⟦ P₁ ⊠ P₂ ⟧/ with ⟦ P₁ ⟧/ | ⟦ P₂ ⟧/
+... | (S₁ , n₁) | (S₂ , n₂) = (S₁ × S₂) , (n₁ * n₂) 
+
 data _⬌_ : U/ → U/ → Set where
   lift : {A B : U} {a : ⟦ A ⟧} {b : ⟦ B ⟧} →
          (A ⟷ B) → (⇑ (record { ● = a }) ⬌ ⇑ (record { ● = b }))
   η : {PA : U/} → ⇑ (record { ● = tt }) ⬌ PA ⊠ 1/ PA
   ε : {PA : U/} → PA ⊠ 1/ PA ⬌ ⇑ (record { ● = tt }) 
   -- need to check points are the same!
-
--- Use space denotation
-⟦_⟧/ : U/ → Set
-⟦ ⇑ {A} _ ⟧/ = {!!}
-⟦ 1/ P ⟧/ = {!!}
-⟦ P ⊞ P₁ ⟧/ = {!!}
-⟦ P ⊠ P₁ ⟧/ = {!!} 
 
 ------------------------------------------------------------------------------
