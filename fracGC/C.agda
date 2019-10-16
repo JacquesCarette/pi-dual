@@ -139,13 +139,22 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 ------------------------------------------------------------------------------
 -- Pointed types comonad
 
-data Pointed (A : Set) : Set where
-  ∙ : A → Pointed A
+record Pointed (A : Set) : Set where
+  field
+    ● : A
+
+open Pointed
 
 pcomonad : RawComonad Pointed
 pcomonad = record {
-  extract = λ P → {!!};
-  extend = λ f P → ∙ (f P)
+  extract = ●; 
+  extend = λ f P → record { ● = f P }
   }
+
+eval● : {A B : U} → (A ⟷ B) → Pointed ⟦ A ⟧ → Pointed ⟦ B ⟧
+eval● c v = (RawComonad.extend pcomonad)
+              ((λ p → eval c (RawComonad.extract pcomonad p)))
+              v
+
 
 ------------------------------------------------------------------------------
