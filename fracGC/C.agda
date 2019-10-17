@@ -5,12 +5,12 @@ module C where
 open import Data.Empty using (⊥)
 open import Data.Unit using (⊤; tt)
 open import Data.Nat using (ℕ)
-open import Data.Integer as ℤ using (ℤ; +_; -[1+_])
+open import Data.Integer as ℤ using (ℤ; +_; -[1+_]; ∣_∣)
 open import Data.Rational
-  using (ℚ; _/_; _+_; _*_)
+  using (ℚ; _/_; _+_; _*_; _≢0)
   renaming (1/_ to recip)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
-open import Data.Product using (_×_; _,_; proj₁; proj₂)
+open import Data.Product -- using (_×_; _,_; proj₁; proj₂)
 open import Relation.Binary.Core using (IsEquivalence)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; cong₂; module ≡-Reasoning)
@@ -28,11 +28,11 @@ data U : Set where
   PLUS  : U → U → U
   TIMES : U → U → U
 
-∣_∣ : U → ℚ
-∣ ZERO ∣ = + 0 / 1
-∣ ONE ∣ = + 1 / 1
-∣ PLUS A B ∣ = ∣ A ∣ + ∣ B ∣ 
-∣ TIMES A B ∣ = ∣ A ∣ * ∣ B ∣  
+∣_∣U : U → ℚ
+∣ ZERO ∣U = + 0 / 1
+∣ ONE ∣U = + 1 / 1
+∣ PLUS A B ∣U = ∣ A ∣U + ∣ B ∣U
+∣ TIMES A B ∣U = ∣ A ∣U * ∣ B ∣U  
 
 -- Combinators 
 
@@ -273,14 +273,14 @@ data U/ : Set where
 -- Use space denotation: the denotation of a fractional type is a base
 -- type and a number representing the heap size.
 
-⟦_⟧/ : U/ → Set × ℚ
-⟦ ⇑ {A} _ ⟧/ = ⟦ A ⟧ , ∣ A ∣
+⟦_⟧/ : U/ → Set × (Σ[ p ∈  ℚ ] (∣ ℚ.numerator p ∣ ≢0))
+⟦ ⇑ {A} _ ⟧/ = ⟦ A ⟧ , ∣ A ∣U , {!!}
 ⟦ 1/ P ⟧/ with ⟦ P ⟧/
-... | (S , n) = S , recip n -- need proof that n is not 0 
+... | (S , n , notz) = S , recip n {notz}, {!!} 
 ⟦ P₁ ⊞ P₂ ⟧/ with ⟦ P₁ ⟧/ | ⟦ P₂ ⟧/
-... | (S₁ , n₁) | (S₂ , n₂) = (S₁ ⊎ S₂) , (n₁ + n₂) 
+... | (S₁ , n₁ , notz1) | (S₂ , n₂ , notz2) = (S₁ ⊎ S₂) , (n₁ + n₂) , {!!} 
 ⟦ P₁ ⊠ P₂ ⟧/ with ⟦ P₁ ⟧/ | ⟦ P₂ ⟧/
-... | (S₁ , n₁) | (S₂ , n₂) = (S₁ × S₂) , (n₁ * n₂) 
+... | (S₁ , n₁ , notz1) | (S₂ , n₂ , notz2) = (S₁ × S₂) , (n₁ * n₂) , {!!} 
 
 data _⬌_ : U/ → U/ → Set where
   lift : {A B : U} {a : ⟦ A ⟧} {b : ⟦ B ⟧} →
