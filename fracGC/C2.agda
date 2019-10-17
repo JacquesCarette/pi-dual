@@ -43,16 +43,29 @@ data U● where
   RETURN  : U → U● 
   RECIP   : U● → U●
 
+⟦_⟧ : (A : U) → Set × ℚ
+⟦_⟧● : (A : U●) → Set × (Σ[ p ∈  ℚ ] (∣ ℚ.numerator p ∣ ≢0))
+
+⟦ ZERO ⟧ = ⊥ , + 0 / 1
+⟦ ONE ⟧ = ⊤ , + 1 / 1
+⟦ PLUS t₁ t₂ ⟧ with ⟦ t₁ ⟧ | ⟦ t₂ ⟧
+... | S₁ , n₁ | S₂ , n₂ = (S₁ ⊎ S₂) , (n₁ + n₂)
+⟦ TIMES t₁ t₂ ⟧ with ⟦ t₁ ⟧ | ⟦ t₂ ⟧
+... | S₁ , n₁ | S₂ , n₂ = (S₁ × S₂) , (n₁ * n₂)
+⟦ EXTRACT t ⟧ with ⟦ t ⟧●
+... | S , n , _ = S , n
+
+⟦ RETURN ZERO ⟧● = {!!}
+⟦ RETURN ONE ⟧● = {!!}
+⟦ RETURN (PLUS A A₁) ⟧● = {!!}
+⟦ RETURN (TIMES A A₁) ⟧● = {!!}
+⟦ RETURN (EXTRACT x) ⟧● = {!!} 
+⟦ RECIP A ⟧● = {!!} 
+
+
 ------------------------------------------------------------------------------
 
 {--
-⟦_⟧ : (A : U) → Set
-⟦ ZERO ⟧ = ⊥ 
-⟦ ONE ⟧ = ⊤
-⟦ PLUS t₁ t₂ ⟧ = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
-⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-⟦ U ⟧ = ? 
-
 record Set• : Set₁ where
   constructor •[_,_]
   field
