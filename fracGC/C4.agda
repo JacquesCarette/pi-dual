@@ -11,10 +11,10 @@ open import Relation.Binary.PropositionalEquality
 open import Relation.Binary.Core
 open import Relation.Nullary
 
-infix  70 _×ᵤ_
-infix  60 _+ᵤ_
-infix  40 _↔_
-infixr 50 _◎_
+infix  70 _⊠_
+infix  60 _⊞_
+infix  40 _⬌_
+infixr 50 _○_
 
 -----------------------------------------------------------------------------
 
@@ -31,6 +31,8 @@ data 𝕌 where
 
 data 𝕌● where
     _●_ : (t : 𝕌) → ⟦ t ⟧ → 𝕌●
+    _⊞_ : 𝕌● → 𝕌● → 𝕌● 
+    _⊠_ : 𝕌● → 𝕌● → 𝕌● 
     𝟙/_ : 𝕌● → 𝕌● 
 
 ⟦ 𝟘 ⟧ = ⊥
@@ -39,75 +41,40 @@ data 𝕌● where
 ⟦ t₁ ×ᵤ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
 
 ⟦ t ● v ⟧● = ⟦ t ⟧ , v
+⟦ t₁ ⊞ t₂ ⟧● with ⟦ t₁ ⟧● | ⟦ t₂ ⟧●  -- wedge sum ? 
+... | (S₁ , v₁) | (S₂ , v₂) = (S₁ ⊎ S₂) , {!!} 
+⟦ t₁ ⊠ t₂ ⟧● with ⟦ t₁ ⟧● | ⟦ t₂ ⟧●  -- smash product ? 
+... | (S₁ , v₁) | (S₂ , v₂) = (S₁ × S₂) , (v₁ , v₂)
 ⟦ 𝟙/ T ⟧● with ⟦ T ⟧●
 ... | S , v = (Σ[ x ∈ S ] x ≡ v → ⊤) , λ { (w , w≡v) → tt }
 
 -----------------------------------------------------------------------------
 
-data _↔_ : 𝕌 → 𝕌 → Set where
-  unite₊l : {t : 𝕌} → 𝟘 +ᵤ t ↔ t
-  uniti₊l : {t : 𝕌} → t ↔ 𝟘 +ᵤ t
-  unite₊r : {t : 𝕌} → t +ᵤ 𝟘 ↔ t
-  uniti₊r : {t : 𝕌} → t ↔ t +ᵤ 𝟘
-  swap₊   : {t₁ t₂ : 𝕌} → t₁ +ᵤ t₂ ↔ t₂ +ᵤ t₁
-  assocl₊ : {t₁ t₂ t₃ : 𝕌} → t₁ +ᵤ (t₂ +ᵤ t₃) ↔ (t₁ +ᵤ t₂) +ᵤ t₃
-  assocr₊ : {t₁ t₂ t₃ : 𝕌} → (t₁ +ᵤ t₂) +ᵤ t₃ ↔ t₁ +ᵤ (t₂ +ᵤ t₃)
-  unite⋆l : {t : 𝕌} → 𝟙 ×ᵤ t ↔ t
-  uniti⋆l : {t : 𝕌} → t ↔ 𝟙 ×ᵤ t
-  unite⋆r : {t : 𝕌} → t ×ᵤ 𝟙 ↔ t
-  uniti⋆r : {t : 𝕌} → t ↔ t ×ᵤ 𝟙
-  swap⋆   : {t₁ t₂ : 𝕌} → t₁ ×ᵤ t₂ ↔ t₂ ×ᵤ t₁
-  assocl⋆ : {t₁ t₂ t₃ : 𝕌} → t₁ ×ᵤ (t₂ ×ᵤ t₃) ↔ (t₁ ×ᵤ t₂) ×ᵤ t₃
-  assocr⋆ : {t₁ t₂ t₃ : 𝕌} → (t₁ ×ᵤ t₂) ×ᵤ t₃ ↔ t₁ ×ᵤ (t₂ ×ᵤ t₃)
-  absorbr : {t : 𝕌} → 𝟘 ×ᵤ t ↔ 𝟘
-  absorbl : {t : 𝕌} → t ×ᵤ 𝟘 ↔ 𝟘
-  factorzr : {t : 𝕌} → 𝟘 ↔ t ×ᵤ 𝟘
-  factorzl : {t : 𝕌} → 𝟘 ↔ 𝟘 ×ᵤ t
-  dist    : {t₁ t₂ t₃ : 𝕌} → (t₁ +ᵤ t₂) ×ᵤ t₃ ↔ (t₁ ×ᵤ t₃) +ᵤ (t₂ ×ᵤ t₃)
-  factor  : {t₁ t₂ t₃ : 𝕌} → (t₁ ×ᵤ t₃) +ᵤ (t₂ ×ᵤ t₃) ↔ (t₁ +ᵤ t₂) ×ᵤ t₃
-  distl   : {t₁ t₂ t₃ : 𝕌} → t₁ ×ᵤ (t₂ +ᵤ t₃) ↔ (t₁ ×ᵤ t₂) +ᵤ (t₁ ×ᵤ t₃)
-  factorl : {t₁ t₂ t₃ : 𝕌 } → (t₁ ×ᵤ t₂) +ᵤ (t₁ ×ᵤ t₃) ↔ t₁ ×ᵤ (t₂ +ᵤ t₃)
-  id↔     : {t : 𝕌} → t ↔ t
-  _◎_     : {t₁ t₂ t₃ : 𝕌} → (t₁ ↔ t₂) → (t₂ ↔ t₃) → (t₁ ↔ t₃)
-  _⊕_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ +ᵤ t₂ ↔ t₃ +ᵤ t₄)
-  _⊗_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ ×ᵤ t₂ ↔ t₃ ×ᵤ t₄)
-
-{--
+data _⬌_ : 𝕌● → 𝕌● → Set where
+  swap₊   : {T₁ T₂ : 𝕌●} → T₁ ⊞ T₂ ⬌ T₂ ⊞ T₁
+  assocl₊ : {T₁ T₂ T₃ : 𝕌●} → T₁ ⊞ (T₂ ⊞ T₃) ⬌ (T₁ ⊞ T₂) ⊞ T₃
+  assocr₊ : {T₁ T₂ T₃ : 𝕌●} → (T₁ ⊞ T₂) ⊞ T₃ ⬌ T₁ ⊞ (T₂ ⊞ T₃)
+  unite⋆l : {T : 𝕌●} → (𝟙 ● tt) ⊠ T ⬌ T
+  uniti⋆l : {T : 𝕌●} → T ⬌ (𝟙 ● tt) ⊠ T
+  unite⋆r : {T : 𝕌●} → T ⊠ (𝟙 ● tt) ⬌ T
+  uniti⋆r : {T : 𝕌●} → T ⬌ T ⊠ (𝟙 ● tt)
+  swap⋆   : {T₁ T₂ : 𝕌●} → T₁ ⊠ T₂ ⬌ T₂ ⊠ T₁
+  assocl⋆ : {T₁ T₂ T₃ : 𝕌●} → T₁ ⊠ (T₂ ⊠ T₃) ⬌ (T₁ ⊠ T₂) ⊠ T₃
+  assocr⋆ : {T₁ T₂ T₃ : 𝕌●} → (T₁ ⊠ T₂) ⊠ T₃ ⬌ T₁ ⊠ (T₂ ⊠ T₃)
+  dist    : {T₁ T₂ T₃ : 𝕌●} → (T₁ ⊞ T₂) ⊠ T₃ ⬌ (T₁ ⊠ T₃) ⊞ (T₂ ⊠ T₃)
+  factor  : {T₁ T₂ T₃ : 𝕌●} → (T₁ ⊠ T₃) ⊞ (T₂ ⊠ T₃) ⬌ (T₁ ⊞ T₂) ⊠ T₃
+  distl   : {T₁ T₂ T₃ : 𝕌●} → T₁ ⊠ (T₂ ⊞ T₃) ⬌ (T₁ ⊠ T₂) ⊞ (T₁ ⊠ T₃)
+  factorl : {T₁ T₂ T₃ : 𝕌● } → (T₁ ⊠ T₂) ⊞ (T₁ ⊠ T₃) ⬌ T₁ ⊠ (T₂ ⊞ T₃)
+  id⬌  : {T : 𝕌●} → T ⬌ T
+  _○_ : {T₁ T₂ T₃ : 𝕌●} → (T₁ ⬌ T₂) → (T₂ ⬌ T₃) → (T₁ ⬌ T₃)
+  _➕_ : {T₁ T₂ T₃ T₄ : 𝕌●} → (T₁ ⬌ T₃) → (T₂ ⬌ T₄) → (T₁ ⊞ T₂ ⬌ T₃ ⊞ T₄)
+  _✖_ : {T₁ T₂ T₃ T₄ : 𝕌●} → (T₁ ⬌ T₃) → (T₂ ⬌ T₄) → (T₁ ⊠ T₂ ⬌ T₃ ⊠ T₄)
   -- new combinators
-  extract : {t : 𝕌} {v : ⟦ t ⟧} → ● t [ v ] ↔ t
-  extend  : (● t₁ [ v₁ ] ↔ t₂) → (● t₁ [ v₁ ] ↔ ● t₂ [ ? ])
-  η : {t : 𝕌} {v : ⟦ t ⟧} → 𝟙 ↔ ● t [ v ] ×ᵤ 𝟙/● t [ v ]
-  ε : {t : 𝕌} {v : ⟦ t ⟧} → ● t [ v ] ×ᵤ 𝟙/● t [ v ] ↔ 𝟙
---}
-
+  η : {T : 𝕌●} → (𝟙 ● tt) ⬌ (T ⊠ (𝟙/ T))
+  ε : {T : 𝕌●} → (T ⊠ (𝟙/ T)) ⬌ (𝟙 ● tt)
 
 {--
-𝕌dec : (t : 𝕌) → Decidable (_≡_ {A = ⟦ t ⟧})
-𝕌dec 𝟘 ()
-𝕌dec 𝟙 tt tt = yes refl
-𝕌dec (t₁ +ᵤ t₂) (inj₁ x) (inj₁ y) with 𝕌dec t₁ x y
-𝕌dec (t₁ +ᵤ t₂) (inj₁ x) (inj₁ .x) | yes refl = yes refl
-𝕌dec (t₁ +ᵤ t₂) (inj₁ x) (inj₁ y)  | no ¬p = no (λ {refl → ¬p refl})
-𝕌dec (t₁ +ᵤ t₂) (inj₁ x) (inj₂ y) = no (λ ())
-𝕌dec (t₁ +ᵤ t₂) (inj₂ x) (inj₁ y) = no (λ ())
-𝕌dec (t₁ +ᵤ t₂) (inj₂ x) (inj₂ y) with 𝕌dec t₂ x y
-𝕌dec (t₁ +ᵤ t₂) (inj₂ x) (inj₂ .x) | yes refl = yes refl
-𝕌dec (t₁ +ᵤ t₂) (inj₂ x) (inj₂ y) | no ¬p = no (λ {refl → ¬p refl})
-𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , y₂) with 𝕌dec t₁ x₁ x₂ | 𝕌dec t₂ y₁ y₂
-𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (.x₁ , .y₁) | yes refl | yes refl = yes refl
-𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (.x₁ , y₂) | yes refl | no ¬p = no (λ p → ¬p (cong proj₂ p))
-𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , .y₁) | no ¬p | yes refl = no (λ p → ¬p (cong proj₁ p))
-𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , y₂) | no ¬p | no ¬p₁ = no (λ p → ¬p (cong proj₁ p))
-𝕌dec ● t [ v ] (.v , refl) (.v , refl) = yes refl
-𝕌dec 𝟙/● t [ v ] ○ ○ = yes refl
-
-interp : {t₁ t₂ : 𝕌} → (t₁ ↔ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
-interp unite₊l (inj₁ ())
-interp unite₊l (inj₂ v) = v
-interp uniti₊l v = inj₂ v
-interp unite₊r (inj₁ v) = v
-interp unite₊r (inj₂ ())
-interp uniti₊r v = inj₁ v
+interp : {T₁ T₂ : 𝕌●} → (T₁ ⬌ T₂) → ⟦ T₁ ⟧● → ⟦ T₂ ⟧● -- Σ[ A ∈ Set ] A
 interp swap₊ (inj₁ v) = inj₂ v
 interp swap₊ (inj₂ v) = inj₁ v
 interp assocl₊ (inj₁ v) = inj₁ (inj₁ v)
@@ -123,10 +90,6 @@ interp uniti⋆r v = v , tt
 interp swap⋆ (v₁ , v₂) = v₂ , v₁
 interp assocl⋆ (v₁ , v₂ , v₃) = (v₁ , v₂) , v₃
 interp assocr⋆ ((v₁ , v₂) , v₃) = v₁ , v₂ , v₃
-interp absorbr (() , v)
-interp absorbl (v , ())
-interp factorzr ()
-interp factorzl ()
 interp dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
 interp dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
 interp factor (inj₁ (v₁ , v₃)) = inj₁ v₁ , v₃
@@ -136,14 +99,10 @@ interp distl (v₁ , inj₂ v₃) = inj₂ (v₁ , v₃)
 interp factorl (inj₁ (v₁ , v₂)) = v₁ , inj₁ v₂
 interp factorl (inj₂ (v₁ , v₃)) = v₁ , inj₂ v₃
 interp id↔ v = v
-interp (c₁ ◎ c₂) v = interp c₂ (interp c₁ v)
-interp (c₁ ⊕ c₂) (inj₁ v) = inj₁ (interp c₁ v)
-interp (c₁ ⊕ c₂) (inj₂ v) = inj₂ (interp c₂ v)
-interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ , interp c₂ v₂
-interp (η {t} {v}) tt = (v , refl) , ○
-interp ε v = tt
-interp ext (v , refl) = v
-interp (ret {t} {v}) x with 𝕌dec t x v
-interp (ret {_} {.x}) x | yes refl = x , refl
-interp (ret {_} {v}) x | no ¬p = {!!}  -- stuck
+interp (c₁ ○ c₂) v = interp c₂ (interp c₁ v)
+interp (c₁ ➕ c₂) (inj₁ v) = inj₁ (interp c₁ v)
+interp (c₁ ➕ c₂) (inj₂ v) = inj₂ (interp c₂ v)
+interp (c₁ ✖ c₂) (v₁ , v₂) = interp c₁ v₁ , interp c₂ v₂
+interp (η {T}) tt = ? 
+interp ε (v , rv) = ? 
 --}
