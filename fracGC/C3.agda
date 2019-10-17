@@ -16,6 +16,9 @@ infix  60 _+ᵤ_
 infix  40 _↔_
 infixr 50 _◎_
 
+data ◯ : Set where
+  ○ : ◯
+
 -- Pi
 mutual
   data 𝕌 : Set where
@@ -32,7 +35,7 @@ mutual
   ⟦ t₁ +ᵤ t₂ ⟧ = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
   ⟦ t₁ ×ᵤ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
   ⟦ ● t [ v ] ⟧ = Σ[ x ∈ ⟦ t ⟧ ] x ≡ v
-  ⟦ 𝟙/● t [ v ] ⟧ = ⊤  -- all information is in the type
+  ⟦ 𝟙/● t [ v ] ⟧ = ◯  -- all information is in the type, so the value is just a token
   
   data _↔_ : 𝕌 → 𝕌 → Set where
     unite₊l : {t : 𝕌} → 𝟘 +ᵤ t ↔ t
@@ -90,7 +93,7 @@ mutual
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , .y₁) | no ¬p | yes refl = no (λ p → ¬p (cong proj₁ p))
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , y₂) | no ¬p | no ¬p₁ = no (λ p → ¬p (cong proj₁ p))
 𝕌dec ● t [ v ] (.v , refl) (.v , refl) = yes refl
-𝕌dec 𝟙/● t [ v ] tt tt = yes refl
+𝕌dec 𝟙/● t [ v ] ○ ○ = yes refl
 
 interp : {t₁ t₂ : 𝕌} → (t₁ ↔ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
 interp unite₊l (inj₁ ())
@@ -131,7 +134,7 @@ interp (c₁ ◎ c₂) v = interp c₂ (interp c₁ v)
 interp (c₁ ⊕ c₂) (inj₁ v) = inj₁ (interp c₁ v)
 interp (c₁ ⊕ c₂) (inj₂ v) = inj₂ (interp c₂ v)
 interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ , interp c₂ v₂
-interp (η {t} {v}) tt = (v , refl) , tt
+interp (η {t} {v}) tt = (v , refl) , ○
 interp ε v = tt
 interp ext (v , refl) = v
 interp (ret {t} {v}) x with 𝕌dec t x v
