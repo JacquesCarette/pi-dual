@@ -4,12 +4,15 @@ module C4 where
 open import Data.Bool
 open import Data.Empty
 open import Data.Unit
+open import Data.Nat
 open import Data.Sum
 open import Data.Product
+open import Data.Universe
 open import Function
 open import Relation.Binary.PropositionalEquality
 open import Relation.Binary.Core
 open import Relation.Nullary
+open import Level
 
 infix  70 _⊠_
 infix  60 _⊞_
@@ -42,7 +45,7 @@ data 𝕌● where
 
 ⟦ t ● v ⟧● = ⟦ t ⟧ , v
 ⟦ t₁ ⊞ t₂ ⟧● with ⟦ t₁ ⟧● | ⟦ t₂ ⟧●  -- wedge sum ? 
-... | (S₁ , v₁) | (S₂ , v₂) = (S₁ ⊎ S₂) , {!!} 
+... | (S₁ , v₁) | (S₂ , v₂) = (S₁ ⊎ S₂) , inj₁ v₁
 ⟦ t₁ ⊠ t₂ ⟧● with ⟦ t₁ ⟧● | ⟦ t₂ ⟧●  -- smash product ? 
 ... | (S₁ , v₁) | (S₂ , v₂) = (S₁ × S₂) , (v₁ , v₂)
 ⟦ 𝟙/ T ⟧● with ⟦ T ⟧●
@@ -73,36 +76,30 @@ data _⬌_ : 𝕌● → 𝕌● → Set where
   η : {T : 𝕌●} → (𝟙 ● tt) ⬌ (T ⊠ (𝟙/ T))
   ε : {T : 𝕌●} → (T ⊠ (𝟙/ T)) ⬌ (𝟙 ● tt)
 
-{--
-interp : {T₁ T₂ : 𝕌●} → (T₁ ⬌ T₂) → ⟦ T₁ ⟧● → ⟦ T₂ ⟧● -- Σ[ A ∈ Set ] A
-interp swap₊ (inj₁ v) = inj₂ v
-interp swap₊ (inj₂ v) = inj₁ v
-interp assocl₊ (inj₁ v) = inj₁ (inj₁ v)
-interp assocl₊ (inj₂ (inj₁ v)) = inj₁ (inj₂ v)
-interp assocl₊ (inj₂ (inj₂ v)) = inj₂ v
-interp assocr₊ (inj₁ (inj₁ v)) = inj₁ v
-interp assocr₊ (inj₁ (inj₂ v)) = inj₂ (inj₁ v)
-interp assocr₊ (inj₂ v) = inj₂ (inj₂ v)
-interp unite⋆l v = proj₂ v
-interp uniti⋆l v = tt , v
-interp unite⋆r v = proj₁ v
-interp uniti⋆r v = v , tt
-interp swap⋆ (v₁ , v₂) = v₂ , v₁
-interp assocl⋆ (v₁ , v₂ , v₃) = (v₁ , v₂) , v₃
-interp assocr⋆ ((v₁ , v₂) , v₃) = v₁ , v₂ , v₃
-interp dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
-interp dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
-interp factor (inj₁ (v₁ , v₃)) = inj₁ v₁ , v₃
-interp factor (inj₂ (v₂ , v₃)) = inj₂ v₂ , v₃
-interp distl (v₁ , inj₁ v₂) = inj₁ (v₁ , v₂)
-interp distl (v₁ , inj₂ v₃) = inj₂ (v₁ , v₃)
-interp factorl (inj₁ (v₁ , v₂)) = v₁ , inj₁ v₂
-interp factorl (inj₂ (v₁ , v₃)) = v₁ , inj₂ v₃
-interp id↔ v = v
-interp (c₁ ○ c₂) v = interp c₂ (interp c₁ v)
-interp (c₁ ➕ c₂) (inj₁ v) = inj₁ (interp c₁ v)
-interp (c₁ ➕ c₂) (inj₂ v) = inj₂ (interp c₂ v)
-interp (c₁ ✖ c₂) (v₁ , v₂) = interp c₁ v₁ , interp c₂ v₂
-interp (η {T}) tt = ? 
-interp ε (v , rv) = ? 
---}
+interp : {T₁ T₂ : 𝕌●} → (T₁ ⬌ T₂) →
+  let S₁ , v₁ = ⟦ T₁ ⟧●
+      S₂ , v₂ = ⟦ T₂ ⟧●
+  in Σ[ w₁ ∈ S₁ ] v₁ ≡ w₁ → Σ[ w₂ ∈ S₂ ] v₂ ≡ w₂
+interp swap₊ (inj₁ v , p) = inj₂ v , {!!}
+interp swap₊ (inj₂ v , p) = inj₁ v , {!!}
+interp assocl₊ V = {!!}
+interp assocr₊ V = {!!}
+interp unite⋆l V = {!!}
+interp uniti⋆l V = {!!}
+interp unite⋆r V = {!!}
+interp uniti⋆r V = {!!}
+interp swap⋆ V = {!!}
+interp assocl⋆ V = {!!}
+interp assocr⋆ V = {!!}
+interp dist V = {!!}
+interp factor V = {!!}
+interp distl V = {!!}
+interp factorl V = {!!}
+interp id⬌ V = V
+interp (c₁ ○ c₂) V = {!!}
+interp (c₁ ➕ c₂) V = {!!}
+interp (c₁ ✖ c₂) V = {!!}
+interp (η {T}) (tt , refl) with ⟦ T ⟧●
+... | (S , v) = (v , λ { ( w , w≡v ) → tt}), {!!} 
+interp ε ((v , f) , p) = f (v , {!!}) , {!!} 
+
