@@ -44,7 +44,7 @@ data 𝕌● where
 ⟦ t₁ ×ᵤ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
 
 ⟦ t ● v ⟧● = ⟦ t ⟧ , v
-⟦ t₁ ⊞ t₂ ⟧● with ⟦ t₁ ⟧● | ⟦ t₂ ⟧●  -- wedge sum ? 
+⟦ t₁ ⊞ t₂ ⟧● with ⟦ t₁ ⟧● | ⟦ t₂ ⟧●  -- can't interp swap anymore; wedge sum ? 
 ... | (S₁ , v₁) | (S₂ , v₂) = (S₁ ⊎ S₂) , inj₁ v₁
 ⟦ t₁ ⊠ t₂ ⟧● with ⟦ t₁ ⟧● | ⟦ t₂ ⟧●  -- smash product ? 
 ... | (S₁ , v₁) | (S₂ , v₂) = (S₁ × S₂) , (v₁ , v₂)
@@ -80,7 +80,7 @@ interp : {T₁ T₂ : 𝕌●} → (T₁ ⬌ T₂) →
   let S₁ , v₁ = ⟦ T₁ ⟧●
       S₂ , v₂ = ⟦ T₂ ⟧●
   in Σ[ w₁ ∈ S₁ ] v₁ ≡ w₁ → Σ[ w₂ ∈ S₂ ] v₂ ≡ w₂
-interp swap₊ (inj₁ v , p) = inj₂ v , {!!}
+interp swap₊ (inj₁ v , refl) = {!!} 
 interp swap₊ (inj₂ v , p) = inj₁ v , {!!}
 interp assocl₊ V = {!!}
 interp assocr₊ V = {!!}

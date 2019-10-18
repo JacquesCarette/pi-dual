@@ -107,7 +107,6 @@ data _⟷_ : U → U → Set where
 ⟦ PLUS t₁ t₂ ⟧ = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
 ⟦ TIMES t₁ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
 
-
 eval : {A B : U} → (A ⟷ B) → ⟦ A ⟧ → ⟦ B ⟧
 eval unite₊l (inj₂ v) = v 
 eval uniti₊l v  = inj₂ v 
@@ -150,6 +149,7 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 -- Pointed types comonad
 
 record Pointed (A : Set) : Set where
+  constructor ⇑
   field
     ● : A
 
@@ -158,13 +158,13 @@ open Pointed
 pcomonad : RawComonad Pointed
 pcomonad = record {
   extract = ●; 
-  extend = λ f P → record { ● = f P }
+  extend = λ f P → ⇑ (f P) 
   }
 
+open RawComonad pcomonad
+
 eval● : {A B : U} → (A ⟷ B) → Pointed ⟦ A ⟧ → Pointed ⟦ B ⟧
-eval● c v = (RawComonad.extend pcomonad)
-              ((λ p → eval c (RawComonad.extract pcomonad p)))
-              v
+eval● c v = extend (λ p → eval c (extract p)) v
 
 -- Examples
 
@@ -265,28 +265,35 @@ infix 30 _⬌_
 infixl 50 _⊠_ _⊞_
 
 data U/ : Set where
-  ⇑  : {A : U} → Pointed ⟦ A ⟧ → U/
+  ret  : {A : U} → Pointed ⟦ A ⟧ → U/
   1/ : U/ → U/
   _⊞_  : U/ → U/ → U/
   _⊠_  : U/ → U/ → U/
 
+{--
 -- Use space denotation: the denotation of a fractional type is a base
 -- type and a number representing the heap size.
-
 ⟦_⟧/ : U/ → Set × (Σ[ p ∈  ℚ ] (∣ ℚ.numerator p ∣ ≢0))
-⟦ ⇑ {A} _ ⟧/ = ⟦ A ⟧ , ∣ A ∣U , {!!}
+⟦ ret {A} _ ⟧/ = ⟦ A ⟧ , ∣ A ∣U , {!!}
 ⟦ 1/ P ⟧/ with ⟦ P ⟧/
 ... | (S , n , notz) = S , recip n {notz}, {!!} 
 ⟦ P₁ ⊞ P₂ ⟧/ with ⟦ P₁ ⟧/ | ⟦ P₂ ⟧/
 ... | (S₁ , n₁ , notz1) | (S₂ , n₂ , notz2) = (S₁ ⊎ S₂) , (n₁ + n₂) , {!!} 
 ⟦ P₁ ⊠ P₂ ⟧/ with ⟦ P₁ ⟧/ | ⟦ P₂ ⟧/
 ... | (S₁ , n₁ , notz1) | (S₂ , n₂ , notz2) = (S₁ × S₂) , (n₁ * n₂) , {!!} 
+--}
+
+⟦_⟧/ : U/ → Σ[ A ∈ Set ] A
+⟦ ret {A} r ⟧/ = {!!}
+⟦ 1/ P ⟧/ = {!!}
+⟦ P₁ ⊞ P₂ ⟧/ = {!!}
+⟦ P₁ ⊠ P₂ ⟧/ = {!!} 
 
 data _⬌_ : U/ → U/ → Set where
   lift : {A B : U} {a : ⟦ A ⟧} {b : ⟦ B ⟧} →
-         (A ⟷ B) → (⇑ (record { ● = a }) ⬌ ⇑ (record { ● = b }))
-  η : {PA : U/} → ⇑ (record { ● = tt }) ⬌ PA ⊠ 1/ PA
-  ε : {PA : U/} → PA ⊠ 1/ PA ⬌ ⇑ (record { ● = tt }) 
+         (A ⟷ B) → (ret (⇑ a) ⬌ ret (⇑ b))
+  η : {PA : U/} → ret (⇑ tt) ⬌ PA ⊠ 1/ PA
+  ε : {PA : U/} → PA ⊠ 1/ PA ⬌ ret (⇑ tt)
   -- need to check points are the same!
 
 ------------------------------------------------------------------------------
