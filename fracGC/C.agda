@@ -70,9 +70,6 @@ data _⟷_ : U → U → Set where
   _⊗_     : {t₁ t₂ t₃ t₄ : U} → 
             (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (TIMES t₁ t₂ ⟷ TIMES t₃ t₄)
 
--- Every combinator has an inverse. There are actually many
--- syntactically different inverses but they are all equivalent.
-
 ! : {t₁ t₂ : U} → (t₁ ⟷ t₂) → (t₂ ⟷ t₁)
 ! unite₊l   = uniti₊l
 ! uniti₊l   = unite₊l
@@ -191,9 +188,6 @@ POINTED v = record { ● = v }
 BOOL² : U
 BOOL² = TIMES BOOL BOOL
 
-------------------------------------------------------------------------------
--- Many ways of negating a BOOL.
-
 NOT : BOOL ⟷ BOOL
 NOT = swap₊
 
@@ -261,14 +255,58 @@ t2 = eval● TOFFOLI (POINTED (TRUE , (TRUE , FALSE)))
 ------------------------------------------------------------------------------
 -- Fractionals
 
+infixr 20 _◡_
 infix 30 _⬌_
-infixl 50 _⊠_ _⊞_
+infixl 40 _⊞₁_ _⊞₂_
+infixl 50 _⊠_ 
 
 data U/ : Set where
   ret  : {A : U} → Pointed ⟦ A ⟧ → U/
   1/ : U/ → U/
-  _⊞_  : U/ → U/ → U/
+  _⊞₁_  : U/ → U/ → U/
+  _⊞₂_  : U/ → U/ → U/
   _⊠_  : U/ → U/ → U/
+
+⟦_⟧/ : U/ → Σ[ A ∈ Set ] A
+⟦ ret {A} r ⟧/ = ⟦ A ⟧ , ● r
+⟦ 1/ P ⟧/ with ⟦ P ⟧/
+... | S , v = (Σ[ x ∈ S ] x ≡ v → ⊤), λ { (w , w≡v) → tt}
+⟦ P₁ ⊞₁ P₂ ⟧/ with ⟦ P₁ ⟧/ | ⟦ P₂ ⟧/
+... | (S₁ , v₁) | (S₂ , v₂) = (S₁ ⊎ S₂) , inj₁ v₁
+⟦ P₁ ⊞₂ P₂ ⟧/ with ⟦ P₁ ⟧/ | ⟦ P₂ ⟧/
+... | (S₁ , v₁) | (S₂ , v₂) = (S₁ ⊎ S₂) , inj₂ v₂
+⟦ P₁ ⊠ P₂ ⟧/ with ⟦ P₁ ⟧/ | ⟦ P₂ ⟧/
+... | (S₁ , v₁) | (S₂ , v₂) = (S₁ × S₂) , (v₁ , v₂)
+
+data _⬌_ : U/ → U/ → Set where
+  lift : {A B : U} {a : ⟦ A ⟧} {b : ⟦ B ⟧} →
+         (A ⟷ B) → (ret (⇑ a) ⬌ ret (⇑ b))
+  split : {A B : U} {a : ⟦ A ⟧} {b : ⟦ B ⟧} →
+         ret (⇑ (a , b)) ⬌ ret (⇑ a) ⊠ ret (⇑ b)
+  unsplit : {A B : U} {a : ⟦ A ⟧} {b : ⟦ B ⟧} →
+         ret (⇑ a) ⊠ ret (⇑ b) ⬌ ret (⇑ (a , b)) 
+  swap⋆/   : {T₁ T₂ : U/} → T₁ ⊠ T₂ ⬌ T₂ ⊠ T₁
+  assocr⋆/ : {T₁ T₂ T₃ : U/} → (T₁ ⊠ T₂) ⊠ T₃ ⬌ T₁ ⊠ (T₂ ⊠ T₃)
+  _◡_ : {PA₁ PA₂ PA₃ : U/} →
+        (PA₁ ⬌ PA₂) → (PA₂ ⬌ PA₃) → (PA₁ ⬌ PA₃)
+  _➕₁_ : {T₁ T₂ T₃ T₄ : U/} → (T₁ ⬌ T₃) → (T₂ ⬌ T₄) → (T₁ ⊞₁ T₂ ⬌ T₃ ⊞₁ T₄)
+  _➕₂_ : {T₁ T₂ T₃ T₄ : U/} → (T₁ ⬌ T₃) → (T₂ ⬌ T₄) → (T₁ ⊞₂ T₂ ⬌ T₃ ⊞₂ T₄)
+  _✖_ : {T₁ T₂ T₃ T₄ : U/} → (T₁ ⬌ T₃) → (T₂ ⬌ T₄) → (T₁ ⊠ T₂ ⬌ T₃ ⊠ T₄)
+  η : {PA : U/} → ret (⇑ tt) ⬌ PA ⊠ 1/ PA
+  ε : {PA : U/} → PA ⊠ 1/ PA ⬌ ret (⇑ tt)
+
+zigzag : {A : U} {v : ⟦ A ⟧} → ret (⇑ v) ⬌ ret (⇑ v)
+zigzag {v = v} =
+  (lift {b = (tt , v)} uniti⋆l) ◡
+  split ◡
+  (η ✖ lift {b = v} id⟷ ) ◡
+  assocr⋆/ ◡
+  (lift {b = v} id⟷ ✖ swap⋆/) ◡
+  (lift {b = v} id⟷ ✖ ε) ◡
+  unsplit ◡
+  lift unite⋆r
+
+------------------------------------------------------------------------------
 
 {--
 -- Use space denotation: the denotation of a fractional type is a base
@@ -282,18 +320,5 @@ data U/ : Set where
 ⟦ P₁ ⊠ P₂ ⟧/ with ⟦ P₁ ⟧/ | ⟦ P₂ ⟧/
 ... | (S₁ , n₁ , notz1) | (S₂ , n₂ , notz2) = (S₁ × S₂) , (n₁ * n₂) , {!!} 
 --}
-
-⟦_⟧/ : U/ → Σ[ A ∈ Set ] A
-⟦ ret {A} r ⟧/ = {!!}
-⟦ 1/ P ⟧/ = {!!}
-⟦ P₁ ⊞ P₂ ⟧/ = {!!}
-⟦ P₁ ⊠ P₂ ⟧/ = {!!} 
-
-data _⬌_ : U/ → U/ → Set where
-  lift : {A B : U} {a : ⟦ A ⟧} {b : ⟦ B ⟧} →
-         (A ⟷ B) → (ret (⇑ a) ⬌ ret (⇑ b))
-  η : {PA : U/} → ret (⇑ tt) ⬌ PA ⊠ 1/ PA
-  ε : {PA : U/} → PA ⊠ 1/ PA ⬌ ret (⇑ tt)
-  -- need to check points are the same!
 
 ------------------------------------------------------------------------------
