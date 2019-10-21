@@ -268,6 +268,12 @@ t3 = lift TOFFOLI
 t5 : ∀ {b₁ b₂} → ⇑ (FALSE , (b₁ , b₂)) ⬌ ⇑ (FALSE , (b₁ , b₂))
 t5 = lift TOFFOLI
 
+--t6 : ∀ {b₁ b₂} → ⇑ (b₁ , (FALSE , b₂)) ⬌ ⇑ (b₁ , (FALSE , b₂))
+--t6 = lift TOFFOLI
+
+t7 : ∀ {b} → ⇑ (TRUE , (TRUE , b)) ⬌ ⇑ (TRUE , (TRUE , eval NOT b))
+t7 = lift TOFFOLI
+
 {--
 
 ------------------------------------------------------------------------------
