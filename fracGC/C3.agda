@@ -14,7 +14,7 @@ open import Relation.Nullary
 infix  70 _×ᵤ_
 infix  60 _+ᵤ_
 infix  40 _↔_
-infixr 50 _◎_
+infixr 50 _⊚_
 
 data ◯ : Set where
   ○ : ◯
@@ -61,7 +61,7 @@ mutual
     distl   : {t₁ t₂ t₃ : 𝕌} → t₁ ×ᵤ (t₂ +ᵤ t₃) ↔ (t₁ ×ᵤ t₂) +ᵤ (t₁ ×ᵤ t₃)
     factorl : {t₁ t₂ t₃ : 𝕌 } → (t₁ ×ᵤ t₂) +ᵤ (t₁ ×ᵤ t₃) ↔ t₁ ×ᵤ (t₂ +ᵤ t₃)
     id↔     : {t : 𝕌} → t ↔ t
-    _◎_     : {t₁ t₂ t₃ : 𝕌} → (t₁ ↔ t₂) → (t₂ ↔ t₃) → (t₁ ↔ t₃)
+    _⊚_     : {t₁ t₂ t₃ : 𝕌} → (t₁ ↔ t₂) → (t₂ ↔ t₃) → (t₁ ↔ t₃)
     _⊕_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ +ᵤ t₂ ↔ t₃ +ᵤ t₄)
     _⊗_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ ×ᵤ t₂ ↔ t₃ ×ᵤ t₄)
     -- new combinators
@@ -124,7 +124,7 @@ interp distl (v₁ , inj₂ v₃) = inj₂ (v₁ , v₃)
 interp factorl (inj₁ (v₁ , v₂)) = v₁ , inj₁ v₂
 interp factorl (inj₂ (v₁ , v₃)) = v₁ , inj₂ v₃
 interp id↔ v = v
-interp (c₁ ◎ c₂) v = interp c₂ (interp c₁ v)
+interp (c₁ ⊚ c₂) v = interp c₂ (interp c₁ v)
 interp (c₁ ⊕ c₂) (inj₁ v) = inj₁ (interp c₁ v)
 interp (c₁ ⊕ c₂) (inj₂ v) = inj₂ (interp c₂ v)
 interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ , interp c₂ v₂
@@ -134,3 +134,30 @@ interp ext (v , refl) = v
 interp (ret {t} {v}) x with 𝕌dec t x v
 interp (ret {_} {.x}) x | yes refl = x , refl
 interp (ret {_} {v}) x | no ¬p = {!!}  -- stuck
+
+𝟚 : 𝕌
+𝟚 = 𝟙 +ᵤ 𝟙
+
+𝔽 𝕋 : ⟦ 𝟚 ⟧
+𝔽 = inj₁ tt
+𝕋 = inj₂ tt
+
+
+--   ─────┬────⊕───  ───────
+--        |    |   ⨉
+--     ┌──⊕────┴───  ───┐
+--     └────────────────┘
+id' : 𝟚 ↔ 𝟚
+id' = uniti⋆r ⊚ (id↔ ⊗ η {v = 𝔽}) ⊚ assocl⋆ ⊚
+      (((id↔ ⊗ ext) ⊚ xorr ⊚ xorl ⊚ swap⋆ ⊚ (id↔ ⊗ ret)) ⊗ id↔) ⊚
+      assocr⋆ ⊚ (id↔ ⊗ ε {v = 𝔽}) ⊚ unite⋆r
+      where
+      xorr xorl : 𝟚 ×ᵤ 𝟚 ↔ 𝟚 ×ᵤ 𝟚
+      xorr = dist ⊚ (id↔ ⊕ (id↔ ⊗ swap₊)) ⊚ factor
+      xorl = distl ⊚ (id↔ ⊕ (swap₊ ⊗ id↔)) ⊚ factorl
+
+ex1 : interp id' 𝕋 ≡ 𝕋
+ex1 = refl
+
+ex2 : interp id' 𝔽 ≡ 𝔽
+ex2 = refl
