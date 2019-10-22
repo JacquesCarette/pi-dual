@@ -163,6 +163,12 @@ open RawComonad pcomonad
 eval● : {A B : U} → (A ⟷ B) → Pointed ⟦ A ⟧ → Pointed ⟦ B ⟧
 eval● c v = extend (λ p → eval c (extract p)) v
 
+-- Write in comonadic style now
+
+data _⬌_ : {A B : U} → Pointed ⟦ A ⟧ → Pointed ⟦ B ⟧ → Set where
+  lift : {A B : U} {v : ⟦ A ⟧} → 
+         (c : A ⟷ B) → ⇑ v ⬌ eval● c (⇑ v)
+
 -- Examples
 
 infixr 2  _⟷⟨_⟩_
@@ -252,6 +258,24 @@ t1 = eval● NOT (POINTED FALSE)
 t2 : Pointed ⟦ TIMES BOOL BOOL² ⟧ 
 t2 = eval● TOFFOLI (POINTED (TRUE , (TRUE , FALSE)))
 
+t3 : ⇑ (TRUE , (TRUE , FALSE)) ⬌ ⇑ (TRUE , (TRUE , TRUE))
+t3 = lift TOFFOLI
+
+--Incorrect so doesn't type check
+--t4 : ⇑ (TRUE , (FALSE , FALSE)) ⬌ ⇑ (TRUE , (FALSE , TRUE))
+--t4 = lift TOFFOLI
+
+t5 : ∀ {b₁ b₂} → ⇑ (FALSE , (b₁ , b₂)) ⬌ ⇑ (FALSE , (b₁ , b₂))
+t5 = lift TOFFOLI
+
+--t6 : ∀ {b₁ b₂} → ⇑ (b₁ , (FALSE , b₂)) ⬌ ⇑ (b₁ , (FALSE , b₂))
+--t6 = lift TOFFOLI
+
+t7 : ∀ {b} → ⇑ (TRUE , (TRUE , b)) ⬌ ⇑ (TRUE , (TRUE , eval NOT b))
+t7 = lift TOFFOLI
+
+{--
+
 ------------------------------------------------------------------------------
 -- Fractionals
 
@@ -322,3 +346,4 @@ zigzag {v = v} =
 --}
 
 ------------------------------------------------------------------------------
+--}
