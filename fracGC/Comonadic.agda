@@ -174,4 +174,9 @@ zigzag b =
   (id⟷ ⊗ ε b) ◎                      -- POINTED TWO * ONE
   unite⋆r 
 
+test1 = eval (zigzag #f) (⇑ #f refl)      -- (⇑ #f refl)
+-- test2 = eval (zigzag #f) (⇑ #t refl)   -- typechecks if given proof #f=#t
+-- test3 = eval (zigzag #t) (⇑ #f refl)   -- typechecks if given proof #f=#t
+test4 = eval (zigzag #t) (⇑ #t refl)      -- (⇑ #t refl) 
+
 ------------------------------------------------------------------------------
