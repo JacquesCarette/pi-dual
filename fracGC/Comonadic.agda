@@ -94,6 +94,13 @@ data _⟷_ where
   extend : {t₁ t₂ : U} → {v₁ : ⟦ t₁ ⟧} → 
            (c : POINTED t₁ {v₁} ⟷ t₂) →
            (POINTED t₁ {v₁} ⟷ POINTED t₂ {eval c (⇑ v₁ refl)})
+  tensorl : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} →
+           POINTED (TIMES t₁ t₂) {(v₁ , v₂)} ⟷
+           TIMES (POINTED t₁ {v₁}) (POINTED t₂ {v₂})
+  tensorr : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} →
+           TIMES (POINTED t₁ {v₁}) (POINTED t₂ {v₂}) ⟷
+           POINTED (TIMES t₁ t₂) {(v₁ , v₂)} 
+           
   -- fractionals
   η : {t : U} → (v : ⟦ t ⟧) → ONE ⟷ TIMES (POINTED t {v}) (RECIP t {v})
   ε : {t : U} → (v : ⟦ t ⟧) → TIMES (POINTED t {v}) (RECIP t {v}) ⟷ ONE
@@ -137,7 +144,34 @@ eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 eval extract p = ● p
 eval (extend {v₁ = v₁} c) p with ● p | v≡● p
 eval (extend {v₁ = .v₂} c) p | v₂ | refl = ⇑ (eval c (⇑ v₂ refl)) refl
+eval tensorl p with ● p | v≡● p
+... | (v₁ , v₂) | refl = ⇑ v₁ refl , ⇑ v₂ refl 
+eval tensorr (p₁ , p₂) with ● p₁ | v≡● p₁ | ● p₂ | v≡● p₂
+... | v₁ | refl | v₂ | refl = ⇑ (v₁ , v₂) refl 
 eval (η v) tt = ⇑ v refl , λ w v≡w → tt
 eval (ε v) (p , f) = f (● p) (v≡● p)
+
+------------------------------------------------------------------------------
+
+TWO : U
+TWO = PLUS ONE ONE
+
+𝟚 : Set
+𝟚 = ⟦ TWO ⟧
+
+#f #t : 𝟚
+#f = inj₁ tt
+#t = inj₂ tt
+
+
+zigzag : ∀ b → POINTED TWO {b} ⟷ POINTED TWO {b}
+zigzag b =
+  (extend (extract ◎ uniti⋆l)) ◎       -- POINTED (ONE * TWO)
+  tensorl ◎                            -- POINTED ONE * POINTED TWO
+  ((extract ◎ η b) ⊗ id⟷) ◎          -- (POINTED TWO * RECIP TWO) * POINTED TWO
+  assocr⋆ ◎                            -- POINTED TWO * (RECIP TWO * POINTED TWO)
+  (id⟷ ⊗ swap⋆) ◎                    -- POINTED TWO * (POINTED TWO * RECIP TWO)
+  (id⟷ ⊗ ε b) ◎                      -- POINTED TWO * ONE
+  unite⋆r 
 
 ------------------------------------------------------------------------------
