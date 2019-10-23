@@ -296,19 +296,15 @@ fig2b : ∀ {v w} →
         POINTED (TIMES BOOL (TIMES BOOL (TIMES BOOL BOOL))) {v} ⟷ 
         POINTED (TIMES BOOL (TIMES BOOL (TIMES BOOL BOOL))) {w}
 fig2b = lift uniti⋆r ◎
-        tensorl ◎ (tensorl ⊗ id⟷) ◎ ((id⟷ ⊗ tensorl) ⊗ id⟷) ◎ 
-        {!!}
+        tensorl ◎ (tensorl ⊗ id⟷) ◎ ((id⟷ ⊗ tensorl) ⊗ id⟷) ◎
+        ((id⟷ ⊗ (id⟷ ⊗ tensorl)) ⊗ id⟷) ◎
+        -- (B * (B * (B * B))) * 1
+        (id⟷ ⊗ (extract ◎ η #f)) ◎
+        -- (B * (B * (B * B))) * (B * 1/B)
+        assocl⋆ ◎ (assocr⋆ ⊗ id⟷) ◎ ((id⟷ ⊗ assocr⋆) ⊗ id⟷) ◎
+        ((id⟷ ⊗ (id⟷ ⊗ assocr⋆)) ⊗ id⟷) ◎ 
+        -- (B * (B * (B * (B * B)))) * 1/B
+        {!!} 
 
 ------------------------------------------------------------------------------
 
-{--
-zigzag : ∀ b → POINTED TWO {b} ⟷ POINTED TWO {b}
-zigzag b =
-  lift uniti⋆l ◎                       -- POINTED (ONE * TWO)
-  tensorl ◎                            -- POINTED ONE * POINTED TWO
-  ((extract ◎ η b) ⊗ id⟷) ◎          -- (POINTED TWO * RECIP TWO) * POINTED TWO
-  assocr⋆ ◎                            -- POINTED TWO * (RECIP TWO * POINTED TWO)
-  (id⟷ ⊗ swap⋆) ◎                    -- POINTED TWO * (POINTED TWO * RECIP TWO)
-  (id⟷ ⊗ ε b) ◎                      -- POINTED TWO * ONE
-  unite⋆r 
---}
