@@ -280,16 +280,6 @@ fig2a : 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ⟷
         𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹
 fig2a = CONTROLLED (CONTROLLED (CONTROLLED NOT))
 
-_∧_ : ⟦ 𝟚 ⟧ → ⟦ 𝟚 ⟧ → ⟦ 𝟚 ⟧
-inj₁ tt ∧ b = 𝔽
-inj₂ tt ∧ b = b
-
-_^_ : ⟦ 𝟚 ⟧ → ⟦ 𝟚 ⟧ → ⟦ 𝟚 ⟧
-inj₁ x ^ inj₁ x₁ = 𝔽
-inj₁ x ^ inj₂ y = 𝕋
-inj₂ y ^ inj₁ x = 𝕋
-inj₂ y ^ inj₂ y₁ = 𝔽
-
 fig2b : ∀ {a b c d} →
         ● 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 [ a , b , c , d ] ⟷ 
         ● 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 [ eval fig2a (a , b , c , d) ]
@@ -303,6 +293,17 @@ fig2b = lift uniti⋆r ⊚
         ((id⟷ ⊗ (id⟷ ⊗ assocr⋆)) ⊗ id⟷) ⊚ 
         -- (B * (B * (B * (B * B)))) * 1/B
         {!!}
+
+fig2b' : 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ⟷ ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) ×ᵤ 𝟙/● 𝔹 [ 𝔽 ]
+fig2b' = uniti⋆r ⊚ (id⟷ ⊗ η 𝔽) ⊚ assocl⋆ ⊚ (((id⟷ ⊗ extract) ⊚ C) ⊗ id⟷)
+  where
+  C : ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) ⟷ ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹)
+  C = (swap⋆ ⊗ id⟷) ⊚ assocr⋆ ⊚ (swap⋆ ⊗ id⟷) ⊚ assocr⋆ ⊚ (id⟷ ⊗ CONTROLLED (CONTROLLED NOT)) -- first ccnot
+    ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id⟷) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id⟷)                                       -- move it back
+    ⊚ (assocl⋆ ⊗ id⟷) ⊚ assocr⋆ ⊚ (id⟷ ⊗ swap⋆) ⊚ (id⟷ ⊗ CONTROLLED (CONTROLLED NOT))         -- second ccnot
+    ⊚ (id⟷ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (assocr⋆ ⊗ id⟷)                                               -- move it back
+    ⊚ (swap⋆ ⊗ id⟷) ⊚ assocr⋆ ⊚ (swap⋆ ⊗ id⟷) ⊚ assocr⋆ ⊚ (id⟷ ⊗ CONTROLLED (CONTROLLED NOT)) -- third ccnot
+    ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id⟷) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id⟷)                                       -- move it back
 
 ------------------------------------------------------------------------------
 
