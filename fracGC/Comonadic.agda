@@ -152,10 +152,24 @@ eval (η v) tt = ⇑ v refl , λ w v≡w → tt
 eval (ε v) (p , f) = f (● p) (v≡● p)
 
 ------------------------------------------------------------------------------
--- Examples
+-- Set up for examples
 
-TWO : U
+infixr 2  _⟷⟨_⟩_
+infix  3  _□
+
+_⟷⟨_⟩_ : (t₁ : U) {t₂ : U} {t₃ : U} →
+          (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
+_ ⟷⟨ α ⟩ β = α ◎ β
+
+_□ : (t : U) → {t : U} → (t ⟷ t)
+_□ t = id⟷
+
+TWO BOOL : U
 TWO = PLUS ONE ONE
+BOOL  = PLUS ONE ONE
+
+BOOL² : U
+BOOL² = TIMES BOOL BOOL
 
 𝟚 : Set
 𝟚 = ⟦ TWO ⟧
@@ -167,6 +181,9 @@ TWO = PLUS ONE ONE
 lift : {t₁ t₂ : U} {v₁ : ⟦ t₁ ⟧} → 
        (c : t₁ ⟷ t₂) → (POINTED t₁ {v₁} ⟷ POINTED t₂ {eval c v₁})
 lift c = extend (extract ◎ c) 
+
+------------------------------------------------------------------------------
+-- Examples
 
 zigzag : ∀ b → POINTED TWO {b} ⟷ POINTED TWO {b}
 zigzag b =
@@ -183,27 +200,7 @@ test1 = eval (zigzag #f) (⇑ #f refl)      -- (⇑ #f refl)
 -- test3 = eval (zigzag #t) (⇑ #f refl)   -- typechecks if given proof #f=#t
 test4 = eval (zigzag #t) (⇑ #t refl)      -- (⇑ #t refl) 
 
--- More conventional PI examples
-
-infixr 2  _⟷⟨_⟩_
-infix  3  _□
-
-_⟷⟨_⟩_ : (t₁ : U) {t₂ : U} {t₃ : U} →
-          (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
-_ ⟷⟨ α ⟩ β = α ◎ β
-
-_□ : (t : U) → {t : U} → (t ⟷ t)
-_□ t = id⟷
-
-BOOL : U
-BOOL  = PLUS ONE ONE
-
-FALSE TRUE : ⟦ BOOL ⟧
-FALSE = inj₁ tt
-TRUE = inj₂ tt
-
-BOOL² : U
-BOOL² = TIMES BOOL BOOL
+-- Conventional PI examples
 
 NOT : BOOL ⟷ BOOL
 NOT = swap₊
@@ -261,22 +258,18 @@ SWAP13 = SWAP23 ◎ SWAP12 ◎ SWAP23
 ROTR   = SWAP12 ◎ SWAP23
 ROTL   = SWAP13 ◎ SWAP23
 
---
-
 t3 : ∀ {b₁ b₂} → 
      POINTED (TIMES BOOL BOOL²) {(#f , (b₁ , b₂))} ⟷
      POINTED (TIMES BOOL BOOL²) {(#f , (b₁ , b₂))}
 t3 = lift  TOFFOLI
 
---This does not typecheck. Good
 {--
+The following do not typecheck. Good
+
 t4 : POINTED (TIMES BOOL BOOL²) {(#t , (#f , #f))} ⟷
      POINTED (TIMES BOOL BOOL²) {(#t , (#f , #t))}
 t4 = lift TOFFOLI
---}
 
--- This does not typecheck. Good
-{--
 t5 : ∀ {b₁ b₂} → 
      POINTED (TIMES BOOL BOOL²) {(b₁ , (#f , b₂))} ⟷
      POINTED (TIMES BOOL BOOL²) {(b₁ , (#f , b₂))}
@@ -288,4 +281,34 @@ t6 : ∀ {b} →
      POINTED (TIMES BOOL BOOL²) {(#t , (#t , eval NOT b))}
 t6 = lift TOFFOLI
 
+-- Ancilla examples from literature
+
+-- Fig. 2 in Ricercar
+
+CONTROLLED : {A : U} → (A ⟷ A) → (TIMES BOOL A ⟷ TIMES BOOL A)
+CONTROLLED c = dist ◎ (id⟷ ⊕ (id⟷ ⊗ c)) ◎ factor
+
+fig2a : TIMES BOOL (TIMES BOOL (TIMES BOOL BOOL)) ⟷ 
+        TIMES BOOL (TIMES BOOL (TIMES BOOL BOOL))
+fig2a = CONTROLLED (CONTROLLED (CONTROLLED NOT))
+
+fig2b : ∀ {v w} →
+        POINTED (TIMES BOOL (TIMES BOOL (TIMES BOOL BOOL))) {v} ⟷ 
+        POINTED (TIMES BOOL (TIMES BOOL (TIMES BOOL BOOL))) {w}
+fig2b = lift uniti⋆r ◎
+        tensorl ◎ (tensorl ⊗ id⟷) ◎ ((id⟷ ⊗ tensorl) ⊗ id⟷) ◎ 
+        {!!}
+
 ------------------------------------------------------------------------------
+
+{--
+zigzag : ∀ b → POINTED TWO {b} ⟷ POINTED TWO {b}
+zigzag b =
+  lift uniti⋆l ◎                       -- POINTED (ONE * TWO)
+  tensorl ◎                            -- POINTED ONE * POINTED TWO
+  ((extract ◎ η b) ⊗ id⟷) ◎          -- (POINTED TWO * RECIP TWO) * POINTED TWO
+  assocr⋆ ◎                            -- POINTED TWO * (RECIP TWO * POINTED TWO)
+  (id⟷ ⊗ swap⋆) ◎                    -- POINTED TWO * (POINTED TWO * RECIP TWO)
+  (id⟷ ⊗ ε b) ◎                      -- POINTED TWO * ONE
+  unite⋆r 
+--}
