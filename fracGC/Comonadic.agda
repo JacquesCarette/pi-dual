@@ -162,14 +162,13 @@ _ ⟷⟨ α ⟩ β = α ⊚ β
 _□ : (t : 𝕌) → {t : 𝕌} → (t ⟷ t)
 _□ t = id⟷
 
-𝟚 𝔹 : 𝕌
-𝟚 = 𝟙 +ᵤ 𝟙
+𝔹 : 𝕌
 𝔹 = 𝟙 +ᵤ 𝟙
 
 𝔹² : 𝕌
 𝔹² = 𝔹 ×ᵤ 𝔹
 
-𝔽 𝕋 : ⟦ 𝟚 ⟧
+𝔽 𝕋 : ⟦ 𝔹 ⟧
 𝔽 = inj₁ tt
 𝕋 = inj₂ tt
 
@@ -180,7 +179,7 @@ lift c = extend (extract ⊚ c)
 ------------------------------------------------------------------------------
 -- Examples
 
-zigzag : ∀ b → ● 𝟚 [ b ] ⟷ ● 𝟚 [ b ]
+zigzag : ∀ b → ● 𝔹 [ b ] ⟷ ● 𝔹 [ b ]
 zigzag b =
   lift uniti⋆l ⊚                       -- POINTED (ONE * TWO)
   tensorl ⊚                            -- POINTED ONE * POINTED TWO
@@ -286,32 +285,69 @@ fig2a : 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ⟷
         𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹
 fig2a = CONTROLLED (CONTROLLED (CONTROLLED NOT))
 
-{--
-fig2b : ∀ {a b c d} →
-        ● 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 [ a , b , c , d ] ⟷ 
-        ● 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 [ eval fig2a (a , b , c , d) ]
-fig2b = lift uniti⋆r ⊚
-        tensorl ⊚ (tensorl ⊗ id⟷) ⊚ ((id⟷ ⊗ tensorl) ⊗ id⟷) ⊚
-        ((id⟷ ⊗ (id⟷ ⊗ tensorl)) ⊗ id⟷) ⊚
-        -- (B * (B * (B * B))) * 1
-        (id⟷ ⊗ (extract ⊚ η 𝔽)) ⊚
-        -- (B * (B * (B * B))) * (B * 1/B)
-        assocl⋆ ⊚ (assocr⋆ ⊗ id⟷) ⊚ ((id⟷ ⊗ assocr⋆) ⊗ id⟷) ⊚
-        ((id⟷ ⊗ (id⟷ ⊗ assocr⋆)) ⊗ id⟷) ⊚ 
-        -- (B * (B * (B * (B * B)))) * 1/B
-        {!!}
---}
+-- first write the circuit with the additional ancilla      
 
-fig2b' : 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ⟷ ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) ×ᵤ 𝟙/● 𝔹 [ 𝔽 ]
-fig2b' = uniti⋆r ⊚ (id⟷ ⊗ η 𝔽) ⊚ assocl⋆ ⊚ (((id⟷ ⊗ extract) ⊚ C) ⊗ id⟷)
-  where
-  C : ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) ⟷ ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹)
-  C = (swap⋆ ⊗ id⟷) ⊚ assocr⋆ ⊚ (swap⋆ ⊗ id⟷) ⊚ assocr⋆ ⊚ (id⟷ ⊗ CONTROLLED (CONTROLLED NOT)) -- first ccnot
-    ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id⟷) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id⟷)                                       -- move it back
-    ⊚ (assocl⋆ ⊗ id⟷) ⊚ assocr⋆ ⊚ (id⟷ ⊗ swap⋆) ⊚ (id⟷ ⊗ CONTROLLED (CONTROLLED NOT))         -- second ccnot
-    ⊚ (id⟷ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (assocr⋆ ⊗ id⟷)                                               -- move it back
-    ⊚ (swap⋆ ⊗ id⟷) ⊚ assocr⋆ ⊚ (swap⋆ ⊗ id⟷) ⊚ assocr⋆ ⊚ (id⟷ ⊗ CONTROLLED (CONTROLLED NOT)) -- third ccnot
-    ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id⟷) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id⟷)                                       -- move it back
+fig2b' : ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) ⟷ ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹)
+fig2b' =
+  (swap⋆ ⊗ id⟷) ⊚
+  assocr⋆ ⊚
+  (swap⋆ ⊗ id⟷) ⊚
+  assocr⋆ ⊚
+  (id⟷ ⊗ CONTROLLED (CONTROLLED NOT))  -- first ccnot
+  ⊚
+  assocl⋆ ⊚
+  (swap⋆ ⊗ id⟷) ⊚
+  assocl⋆ ⊚
+  (swap⋆ ⊗ id⟷)                        -- move it back
+  ⊚
+  (assocl⋆ ⊗ id⟷) ⊚
+  assocr⋆ ⊚
+  (id⟷ ⊗ swap⋆) ⊚
+  (id⟷ ⊗ CONTROLLED (CONTROLLED NOT))  -- second ccnot
+  ⊚
+  (id⟷ ⊗ swap⋆) ⊚
+  assocl⋆ ⊚
+  (assocr⋆ ⊗ id⟷)                      -- move it back
+  ⊚
+  (swap⋆ ⊗ id⟷) ⊚
+  assocr⋆ ⊚
+  (swap⋆ ⊗ id⟷) ⊚
+  assocr⋆ ⊚
+  (id⟷ ⊗ CONTROLLED (CONTROLLED NOT))  -- third ccnot
+  ⊚
+  assocl⋆ ⊚
+  (swap⋆ ⊗ id⟷) ⊚
+  assocl⋆ ⊚
+  (swap⋆ ⊗ id⟷)                        -- move it back
+
+tensor4 : ∀ {a b c d e} →
+          (● 𝔹 [ a ] ×ᵤ ● 𝔹 [ b ] ×ᵤ ● 𝔹 [ c ] ×ᵤ ● 𝔹 [ d ])  ×ᵤ ● 𝔹 [ 𝔽 ] ⟷
+          ● ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) [ (a , b , c , d) , e ]
+tensor4 = {!!} 
+
+itensor4 : ∀ {a b c d e} →
+          ● ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) [ (a , b , c , d) , e ] ⟷
+          (● 𝔹 [ a ] ×ᵤ ● 𝔹 [ b ] ×ᵤ ● 𝔹 [ c ] ×ᵤ ● 𝔹 [ d ])  ×ᵤ ● 𝔹 [ 𝔽 ]
+          
+itensor4 = {!!} 
+
+fig2b : ∀ {a b c d} →
+        let (x , y , z , w) =
+              eval (CONTROLLED (CONTROLLED (CONTROLLED NOT))) (a , b , c , d)
+        in ● 𝔹 [ a ] ×ᵤ ● 𝔹 [ b ] ×ᵤ ● 𝔹 [ c ] ×ᵤ ● 𝔹 [ d ] ⟷
+           ● 𝔹 [ x ] ×ᵤ ● 𝔹 [ y ] ×ᵤ ● 𝔹 [ z ] ×ᵤ ● 𝔹 [ w ]
+{--
+fig2b : ● 𝔹 [ 𝔽 ] ×ᵤ ● 𝔹 [ 𝔽 ] ×ᵤ ● 𝔹 [ 𝔽 ] ×ᵤ ● 𝔹 [ 𝔽 ] ⟷
+        ● 𝔹 [ 𝔽 ] ×ᵤ ● 𝔹 [ 𝔽 ] ×ᵤ ● 𝔹 [ 𝔽 ] ×ᵤ ● 𝔹 [ 𝔽 ]
+--}
+fig2b = uniti⋆r ⊚
+        (id⟷ ⊗ η 𝔽) ⊚
+        assocl⋆ ⊚
+        (tensor4 ⊗ id⟷) ⊚
+        (lift fig2b' ⊗ id⟷) ⊚
+        (itensor4 ⊗ id⟷) ⊚
+        assocr⋆ ⊚
+        (id⟷ ⊗ ε 𝔽) ⊚
+        {!!} -- unite⋆r
 
 ------------------------------------------------------------------------------
-
