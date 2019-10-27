@@ -13,7 +13,7 @@ open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product -- using (_×_; _,_; proj₁; proj₂)
 open import Relation.Binary.Core using (IsEquivalence)
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; cong; cong₂; module ≡-Reasoning)
+  using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
 open import Category.Comonad
 
 infixr 70 _×ᵤ_
@@ -100,6 +100,10 @@ data _⟷_ where
   -- fractionals
   η : {t : 𝕌} → (v : ⟦ t ⟧) → 𝟙 ⟷ ● t [ v ] ×ᵤ 𝟙/● t [ v ]
   ε : {t : 𝕌} → (v : ⟦ t ⟧) → ● t [ v ] ×ᵤ 𝟙/● t [ v ] ⟷ 𝟙
+  -- prop eq
+  == : ∀ {t₁ t₂ : 𝕌} {v : ⟦ t₁ ⟧} {w w' : ⟦ t₂ ⟧} →
+       (● t₁ [ v ] ⟷ ● t₂ [ w ]) → (w ≡ w') → (● t₁ [ v ] ⟷ ● t₂ [ w' ])
+
 
 eval unite₊l (inj₂ v) = v 
 eval uniti₊l v  = inj₂ v 
@@ -148,6 +152,8 @@ eval (η v) tt = ⇑ v refl , λ w v≡w → tt
 eval (ε v) (p , f) = f (● p) (v≡● p)
 eval (plusl {v = v₁}) (⇑ ● refl) = ⇑ v₁ refl
 eval (plusr {v = v₂}) (⇑ ● refl) = ⇑ v₂ refl
+eval (== c eq) v with eval c v
+... | ⇑ w eq' = ⇑ w (trans (sym eq) eq') 
 
 ------------------------------------------------------------------------------
 -- Set up for examples
@@ -175,6 +181,14 @@ _□ t = id⟷
 lift : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} → 
        (c : t₁ ⟷ t₂) → (● t₁ [ v₁ ] ⟷ ● t₂ [ eval c v₁ ])
 lift c = extend (extract ⊚ c) 
+
+not : ⟦ 𝔹 ⟧ → ⟦ 𝔹 ⟧
+not (inj₁ tt) = inj₂ tt
+not (inj₂ tt) = inj₁ tt
+
+controlled : ∀ {A} → (⟦ A ⟧ → ⟦ A ⟧) → ⟦ 𝔹 ⟧ × ⟦ A ⟧ → ⟦ 𝔹 ⟧ × ⟦ A ⟧
+controlled f (inj₁ tt , a) = (inj₁ tt , a)
+controlled f (inj₂ tt , a) = (inj₂  tt , f a)
 
 ------------------------------------------------------------------------------
 -- Examples
@@ -320,38 +334,52 @@ fig2b' =
   assocl⋆ ⊚
   (swap⋆ ⊗ id⟷)                        -- move it back
 
-tensor4 : ∀ {a b c d} →
-          (● 𝔹 [ a ] ×ᵤ ● 𝔹 [ b ] ×ᵤ ● 𝔹 [ c ] ×ᵤ ● 𝔹 [ d ])  ×ᵤ ● 𝔹 [ 𝔽 ] ⟷
-          ● ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) [ (a , b , c , d) , 𝔽 ]
+-- then prove a theorem that specifies its semantics
+
+
+fig2b'≡ : (a b c d : ⟦ 𝔹 ⟧) →
+          let (_ , e) = eval fig2b' ((a , b , c , d) , 𝔽)
+          in e ≡ 𝔽
+fig2b'≡ a (inj₁ tt) c d = refl
+fig2b'≡ (inj₁ tt) (inj₂ tt) c d = refl
+fig2b'≡ (inj₂ tt) (inj₂ tt) c d = refl 
+
+tensor4 : ∀ {a b c d e} →
+          (● 𝔹 [ a ] ×ᵤ ● 𝔹 [ b ] ×ᵤ ● 𝔹 [ c ] ×ᵤ ● 𝔹 [ d ])  ×ᵤ ● 𝔹 [ e ] ⟷
+          ● ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) [ (a , b , c , d) , e ]
 tensor4 = {!!} 
 
-itensor4 : ∀ {a b c d} →
-          ● ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) [ (a , b , c , d) , 𝔽 ] ⟷
-          (● 𝔹 [ a ] ×ᵤ ● 𝔹 [ b ] ×ᵤ ● 𝔹 [ c ] ×ᵤ ● 𝔹 [ d ])  ×ᵤ ● 𝔹 [ 𝔽 ]
+itensor4 : ∀ {a b c d e} →
+          ● ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) [ (a , b , c , d) , e ] ⟷
+          (● 𝔹 [ a ] ×ᵤ ● 𝔹 [ b ] ×ᵤ ● 𝔹 [ c ] ×ᵤ ● 𝔹 [ d ])  ×ᵤ ● 𝔹 [ e ]
           
 itensor4 = {!!} 
 
-{--
+-- now lift it 
+
 fig2b : ∀ {a b c d} →
-        let (x , y , z , w) =
-              eval (CONTROLLED (CONTROLLED (CONTROLLED NOT))) (a , b , c , d)
-        in ● 𝔹 [ a ] ×ᵤ ● 𝔹 [ b ] ×ᵤ ● 𝔹 [ c ] ×ᵤ ● 𝔹 [ d ] ⟷
+        let ((x , y , z , w) , e) = eval fig2b' ((a , b , c , d) , 𝔽)
+        in e ≡ 𝔽 ×
+           ● 𝔹 [ a ] ×ᵤ ● 𝔹 [ b ] ×ᵤ ● 𝔹 [ c ] ×ᵤ ● 𝔹 [ d ] ⟷
            ● 𝔹 [ x ] ×ᵤ ● 𝔹 [ y ] ×ᵤ ● 𝔹 [ z ] ×ᵤ ● 𝔹 [ w ]
---}
-fig2b : ● 𝔹 [ 𝔽 ] ×ᵤ ● 𝔹 [ 𝔽 ] ×ᵤ ● 𝔹 [ 𝔽 ] ×ᵤ ● 𝔹 [ 𝔽 ] ⟷
-        ● 𝔹 [ 𝔽 ] ×ᵤ ● 𝔹 [ 𝔽 ] ×ᵤ ● 𝔹 [ 𝔽 ] ×ᵤ ● 𝔹 [ 𝔽 ]
-fig2b = 
+fig2b {a} {b} {c} {d} =
+  let ((x , y , z , w) , _) = eval fig2b' ((a , b , c , d) , 𝔽)
+      e≡𝔽 = fig2b'≡ a b c d
+  in e≡𝔽 , 
         uniti⋆r ⊚
         -- (●𝔹[a] × ●𝔹[b] × ●𝔹[c] × ●𝔹[d]) × ●𝟙[tt]
         (id⟷ ⊗ η 𝔽) ⊚
         -- (●𝔹[a] × ●𝔹[b] × ●𝔹[c] × ●𝔹[d]) × (●𝔹[𝔽] x ●1/𝔹[𝔽])
         assocl⋆ ⊚
         -- ((●𝔹[a] × ●𝔹[b] × ●𝔹[c] × ●𝔹[d]) × ●𝔹[𝔽]) x ●1/𝔹[𝔽]
-        (tensor4 {𝔽} {𝔽} {𝔽} {𝔽} ⊗ id⟷) ⊚
+        (tensor4 ⊗ id⟷) ⊚
          -- ● ((𝔹 × 𝔹 × 𝔹 × 𝔹) × 𝔹) [ (a,b,c,d),𝔽 ] x ●1/𝔹[𝔽]
         (lift fig2b' ⊗ id⟷) ⊚
+         -- ● ((𝔹 × 𝔹 × 𝔹 × 𝔹) × 𝔹) [ (x,y,z,w),e ] x ●1/𝔹[𝔽]
+        ((== id⟷ (cong (λ H → ((x , y , z , w)) , H) e≡𝔽)) ⊗ id⟷) ⊚
          -- ● ((𝔹 × 𝔹 × 𝔹 × 𝔹) × 𝔹) [ (x,y,z,w),𝔽 ] x ●1/𝔹[𝔽]
-        (itensor4 {𝔽} {𝔽} {𝔽} {𝔽} ⊗ id⟷) ⊚
+        (itensor4 ⊗ id⟷) ⊚
+         -- ((●𝔹[x] × ●𝔹[y] × ●𝔹[z] × ●𝔹[w]) × ●𝔹[𝔽]) x ●1/𝔹[𝔽]
         assocr⋆ ⊚
         (id⟷ ⊗ ε 𝔽) ⊚
         unite⋆r
