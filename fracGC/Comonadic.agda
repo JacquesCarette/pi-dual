@@ -11,6 +11,7 @@ open import Data.Rational
   renaming (1/_ to recip)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product -- using (_×_; _,_; proj₁; proj₂)
+open import Data.Vec using (Vec; _∷_; [])
 open import Relation.Binary.Core using (IsEquivalence)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
@@ -103,7 +104,6 @@ data _⟷_ where
   -- prop eq
   == : ∀ {t₁ t₂ : 𝕌} {v : ⟦ t₁ ⟧} {w w' : ⟦ t₂ ⟧} →
        (● t₁ [ v ] ⟷ ● t₂ [ w ]) → (w ≡ w') → (● t₁ [ v ] ⟷ ● t₂ [ w' ])
-
 
 eval unite₊l (inj₂ v) = v 
 eval uniti₊l v  = inj₂ v 
@@ -336,7 +336,6 @@ fig2b' =
 
 -- then prove a theorem that specifies its semantics
 
-
 fig2b'≡ : (a b c d : ⟦ 𝔹 ⟧) →
           let (_ , e) = eval fig2b' ((a , b , c , d) , 𝔽)
           in e ≡ 𝔽
@@ -383,5 +382,24 @@ fig2b {a} {b} {c} {d} =
         assocr⋆ ⊚
         (id⟷ ⊗ ε 𝔽) ⊚
         unite⋆r
+
+------------------------------------------------------------------------------
+-- Space denotational semantics
+
+size : (t : 𝕌) → ℚ
+size t = {!!} 
+
+𝕊 : (t : 𝕌) → (size t ≡ (+ 0 / 1)) ⊎ 
+              (Σ ℕ (λ m → 
+              (Σ ℕ (λ n →
+              (Vec ⟦ t ⟧ m) ×
+              (Vec ⟦ t ⟧ n) ×
+              (((+ m / 1) * (recip (+ n / 1))) ≡ (+ 1 / 1))))))
+𝕊 = {!!} 
+
+-- Groupoids
+
+-- Groupoid for pointed 1/A is point and (size A) loops on point labeled (=
+-- a1), (= a2), (= a3), etc.
 
 ------------------------------------------------------------------------------
