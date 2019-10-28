@@ -34,6 +34,7 @@ open Pointed
 
 Recip : (A : Set) → (v : A) → Set
 Recip A v = (w : A) → (v ≡ w) → ⊤
+-- Recip A v = Pointed A v → ⊤
 
 --
 
@@ -54,8 +55,8 @@ data 𝕌 where
 ⟦ 𝟙 ⟧ = ⊤
 ⟦ t₁ +ᵤ t₂ ⟧ = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
 ⟦ t₁ ×ᵤ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-⟦ ● A [ v ] ⟧ = Pointed ⟦ A ⟧ v
-⟦ 𝟙/● A [ v ] ⟧ = Recip ⟦ A ⟧ v
+⟦ ● A [ v ] ⟧ = Pointed ⟦ A ⟧ v -- type has two points ● anv v such that v ≡ ● 
+⟦ 𝟙/● A [ v ] ⟧ = Recip ⟦ A ⟧ v -- type inhabited by just one function from Pointed A v to ⊤
 
 data _⟷_ where
   unite₊l : {t : 𝕌} → 𝟘 +ᵤ t ⟷ t
@@ -388,6 +389,19 @@ fig2b {a} {b} {c} {d} =
 
 size : (t : 𝕌) → ℚ
 size t = {!!} 
+
+-- size (Pointed A v) = size A
+-- size (1/A v) = 1/size A or
+
+{--
+Actually we need to separate cardinality of the type
+and the number of bits needed in memory (log factor)
+
+Write a version of eval that makes it clear that in plain pi every
+combinator preserves memory and that fractionals allow intermediate
+combinators to allocate memory and gc it. The fractional value's
+impact on memory is that it uses negative memory.
+--}
 
 𝕊 : (t : 𝕌) → (size t ≡ (+ 0 / 1)) ⊎ 
               (Σ ℕ (λ m → 
