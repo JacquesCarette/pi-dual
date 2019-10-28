@@ -86,7 +86,7 @@ data _⟷_ where
   _⊕_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (t₁ +ᵤ t₂ ⟷ t₃ +ᵤ t₄)
   _⊗_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (t₁ ×ᵤ t₂ ⟷ t₃ ×ᵤ t₄)
   -- comonad
-  -- not informnation preserving; not reversible
+  -- extract not information preserving; not reversible
   extract : {t : 𝕌} → {v : ⟦ t ⟧} → ● t [ v ] ⟷ t
   extend : {t₁ t₂ : 𝕌} → {v₁ : ⟦ t₁ ⟧} → 
            (c : ● t₁ [ v₁ ] ⟷ t₂) →
