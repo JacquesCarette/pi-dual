@@ -1,4 +1,4 @@
-{-# OPTIONS --without-K #-}
+{-# OPTIONS --without-K --allow-unsolved-metas #-}
 
 module Comonadic where
 
@@ -30,7 +30,7 @@ record Pointed (A : Set) (v : A) : Set where
     ● : A
     v≡● : v ≡ ● 
 
-open Pointed
+open Pointed public
 
 Recip : (A : Set) → (v : A) → Set
 Recip A v = (w : A) → (v ≡ w) → ⊤
