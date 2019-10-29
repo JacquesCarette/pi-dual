@@ -1,180 +1,57 @@
-%% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
 \documentclass[sigplan,10pt,review,anonymous]{acmart}
 \settopmatter{printfolios=true,printccs=false,printacmref=false}
-%% For double-blind review submission, w/ CCS and ACM Reference
-%\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true}
-%% For single-blind review submission, w/o CCS and ACM Reference (max submission space)
-%\documentclass[sigplan,review]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
-%% For single-blind review submission, w/ CCS and ACM Reference
-%\documentclass[sigplan,review]{acmart}\settopmatter{printfolios=true}
-%% For final camera-ready submission, w/ required CCS and ACM Reference
-%\documentclass[sigplan]{acmart}\settopmatter{}
-
-
-%% Conference information
-%% Supplied to authors by publisher for camera-ready submission;
-%% use defaults for review submission.
 \acmConference[PL'18]{ACM SIGPLAN Conference on Programming Languages}{January 01--03, 2018}{New York, NY, USA}
 \acmYear{2018}
-\acmISBN{} % \acmISBN{978-x-xxxx-xxxx-x/YY/MM}
-\acmDOI{} % \acmDOI{10.1145/nnnnnnn.nnnnnnn}
+\acmISBN{} 
+\acmDOI{} 
 \startPage{1}
-
-%% Copyright information
-%% Supplied to authors (based on authors' rights management selection;
-%% see authors.acm.org) by publisher for camera-ready submission;
-%% use 'none' for review submission.
 \setcopyright{none}
-%\setcopyright{acmcopyright}
-%\setcopyright{acmlicensed}
-%\setcopyright{rightsretained}
-%\copyrightyear{2018}           %% If different from \acmYear
-
-%% Bibliography style
 \bibliographystyle{ACM-Reference-Format}
-%% Citation style
-%\citestyle{acmauthoryear}  %% For author/year citations
-%\citestyle{acmnumeric}     %% For numeric citations
-%\setcitestyle{nosort}      %% With 'acmnumeric', to disable automatic
-                            %% sorting of references within a single citation;
-                            %% e.g., \cite{Smith99,Carpenter05,Baker12}
-                            %% rendered as [14,5,2] rather than [2,5,14].
-%\setcitesyle{nocompress}   %% With 'acmnumeric', to disable automatic
-                            %% compression of sequential references within a
-                            %% single citation;
-                            %% e.g., \cite{Baker12,Baker14,Baker16}
-                            %% rendered as [2,3,4] rather than [2-4].
+\citestyle{acmauthoryear} 
 
+\usepackage{booktabs}  
+\usepackage{subcaption} 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Note: Authors migrating a paper from traditional SIGPLAN
-%% proceedings format to PACMPL format must update the
-%% '\documentclass' and topmatter commands above; see
-%% 'acmart-pacmpl-template.tex'.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\alt}{~|~}
+\newcommand{\inlv}[1]{\ensuremath{\mathit{inl}(v)}}
+\newcommand{\inrv}[1]{\ensuremath{\mathit{inr}(v)}}
+\newcommand{\pointed}[2]{[#1 \bullet #2]}
 
-
-%% Some recommended packages.
-\usepackage{booktabs}   %% For formal tables:
-                        %% http://ctan.org/pkg/booktabs
-\usepackage{subcaption} %% For complex figures with subfigures/subcaptions
-                        %% http://ctan.org/pkg/subcaption
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
-%% Title information
-\title[Short Title]{Full Title}         %% [Short Title] is optional;
-                                        %% when present, will be used in
-                                        %% header instead of Full Title.
-\titlenote{with title note}             %% \titlenote is optional;
-                                        %% can be repeated if necessary;
-                                        %% contents suppressed with 'anonymous'
-\subtitle{Subtitle}                     %% \subtitle is optional
-\subtitlenote{with subtitle note}       %% \subtitlenote is optional;
-                                        %% can be repeated if necessary;
-                                        %% contents suppressed with 'anonymous'
-
-
-%% Author information
-%% Contents and number of authors suppressed with 'anonymous'.
-%% Each author should be introduced by \author, followed by
-%% \authornote (optional), \orcid (optional), \affiliation, and
-%% \email.
-%% An author may have multiple affiliations and/or emails; repeat the
-%% appropriate command.
-%% Many elements are not rendered, but should be provided for metadata
-%% extraction tools.
-
-%% Author with single affiliation.
-\author{First1 Last1}
-\authornote{with author1 note}          %% \authornote is optional;
-                                        %% can be repeated if necessary
-\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\title{Fractional Types}
+\author{Chao-Hong Chen}
 \affiliation{
-  \position{Position1}
-  \department{Department1}              %% \department is recommended
-  \institution{Institution1}            %% \institution is required
-  \streetaddress{Street1 Address1}
-  \city{City1}
-  \state{State1}
-  \postcode{Post-Code1}
-  \country{Country1}                    %% \country is recommended
+  \institution{Indiana University}
 }
-\email{first1.last1@inst1.edu}          %% \email is recommended
 
-%% Author with two affiliations and emails.
-\author{First2 Last2}
-\authornote{with author2 note}          %% \authornote is optional;
-                                        %% can be repeated if necessary
-\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\author{Vikraman Choudhury}
 \affiliation{
-  \position{Position2a}
-  \department{Department2a}             %% \department is recommended
-  \institution{Institution2a}           %% \institution is required
-  \streetaddress{Street2a Address2a}
-  \city{City2a}
-  \state{State2a}
-  \postcode{Post-Code2a}
-  \country{Country2a}                   %% \country is recommended
+  \institution{Indiana University}
 }
-\email{first2.last2@inst2a.com}         %% \email is recommended
+
+\author{Jacques Carette}
 \affiliation{
-  \position{Position2b}
-  \department{Department2b}             %% \department is recommended
-  \institution{Institution2b}           %% \institution is required
-  \streetaddress{Street3b Address2b}
-  \city{City2b}
-  \state{State2b}
-  \postcode{Post-Code2b}
-  \country{Country2b}                   %% \country is recommended
+  \institution{McMaster University}
 }
-\email{first2.last2@inst2b.org}         %% \email is recommended
 
+\author{Amr Sabry}
+\affiliation{
+  \institution{Indiana University}
+}
 
-%% Abstract
-%% Note: \begin{abstract}...\end{abstract} environment must come
-%% before \maketitle command
 \begin{abstract}
 Text of abstract \ldots.
 \end{abstract}
 
-
-%% 2012 ACM Computing Classification System (CSS) concepts
-%% Generate at 'http://dl.acm.org/ccs/ccs.cfm'.
-\begin{CCSXML}
-<ccs2012>
-<concept>
-<concept_id>10011007.10011006.10011008</concept_id>
-<concept_desc>Software and its engineering~General programming languages</concept_desc>
-<concept_significance>500</concept_significance>
-</concept>
-<concept>
-<concept_id>10003456.10003457.10003521.10003525</concept_id>
-<concept_desc>Social and professional topics~History of programming languages</concept_desc>
-<concept_significance>300</concept_significance>
-</concept>
-</ccs2012>
-\end{CCSXML}
-
-\ccsdesc[500]{Software and its engineering~General programming languages}
-\ccsdesc[300]{Social and professional topics~History of programming languages}
-%% End of generated code
-
-
-%% Keywords
-%% comma separated list
-\keywords{keyword1, keyword2, keyword3}  %% \keywords are mandatory in final camera-ready submission
-
-
-%% \maketitle
-%% Note: \maketitle command must come after title commands, author
-%% commands, abstract environment, Computing Classification System
-%% environment and commands, and keywords command.
 \maketitle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Extra for now}
 
 \begin{itemize}
 
@@ -234,18 +111,20 @@ write more efficient matrix transpositions (explain and citations).
 
 \end{itemize}
 
+Complexity perspective:
+\url{https://www.scottaaronson.com/papers/gates.pdf}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Extra for now}
+Quipper: \url{https://arxiv.org/pdf/1304.3390.pdf}; uses ancilla; one
+use is to compile irreversible circuits to reversible ones; need
+ancilla bits; more generally several quantum algorithms need ancilla
+bits (see below); in quipper de-allocation left to programmer.
 
-
-Complexity perspective: \url{https://www.scottaaronson.com/papers/gates.pdf}
-
-Quipper: \url{https://arxiv.org/pdf/1304.3390.pdf}; uses ancilla; one use is to compile irreversible circuits to reversible ones; need ancilla bits; more generally several quantum algorithms need ancilla bits (see below); in quipper de-allocation left to programmer.
-
-Ricercar tries to define rules for ancilla but not complete \url{https://msoeken.github.io/papers/2015_rc_2.pdf}
+Ricercar tries to define rules for ancilla but not complete
+\url{https://msoeken.github.io/papers/2015_rc_2.pdf}
  
-Leads to bugs as analyzed by \url{http://drops.dagstuhl.de/opus/volltexte/2019/10196/pdf/OASIcs-PLATEAU-2018-4.pdf}:
+Leads to bugs as analyzed by
+\url{http://drops.dagstuhl.de/opus/volltexte/2019/10196/pdf/OASIcs-PLATEAU-2018-4.pdf}:
+
 \begin{quote}
 
   Bug type 6: Incorrect composition of operations using mirroring Section 4.5 discussed how bugs in deallocating ancillary qubits can happen due to bad parameters. Here we see how bugs in deallocating ancillary qubits can happen due to incorrect composition of operations following a mirroring pattern. For example, in Table 7, the operations in rows 2 and 3 are respectively mirrored and undone in rows 6 and 5. These lines of code need careful reversal of every loop and every operation.
@@ -256,28 +135,78 @@ Leads to bugs as analyzed by \url{http://drops.dagstuhl.de/opus/volltexte/2019/1
 
 Uses of ancillas:
 \url{https://quantum.country/search}:
+
 \begin{quote}
-  There’s a rough heuristic worth noting here, which is that you can often convert if-then style thinking into quantum circuits. You introduce an ancilla qubit to store the outcome of evaluating the if condition. And then depending on the state of the ancilla, you perform the appropriate state manipulation. Finally, when possible you reverse the initial computation, resetting the ancilla to its original state so you can subsequently ignore it.
+  There’s a rough heuristic worth noting here, which is that you can
+  often convert if-then style thinking into quantum circuits. You
+  introduce an ancilla qubit to store the outcome of evaluating the if
+  condition. And then depending on the state of the ancilla, you
+  perform the appropriate state manipulation. Finally, when possible
+  you reverse the initial computation, resetting the ancilla to its
+  original state so you can subsequently ignore it.
 \end{quote}
 
 \url{https://www.nap.edu/read/25196/chapter/5#73}
 \begin{quote}
-  For error correction, one needs to replicate the state of a qubit onto a number of qubits. While the no cloning theorem prevents one from copying the state of a qubit directly onto another, one can create a redundant entangled qubit state of many qubits. The key is that the qubits to be entangled must start out in a known state. Qubits with a known state (for purposes of this discussion, it will be the state \verb.|0>.), called ``ancilla qubits,'' may be added to a computation for this purpose. Since the state of ancilla qubits are known, it is possible to create a simple circuit that makes the output state of all these ancilla qubits match the protected qubit: run each ancilla through a controlled-NOT gate, where the control is driven by the qubit that needs to be replicated. Assume that there is a qubit with state \verb.PSI. that we want to protect, where \verb.|PSI>. represents an arbitrary superposition state \verb.|PSI> = a0 |0> + a0 |1>. In the CNOT gate, the ancilla \verb.|0>. state will remain a \verb.|0>. state by the \verb.|0>. component of \verb.|PSI>., but it will be converted to \verb.|1>. by the \verb.|1>. component of \verb.|PSI>. The result of this operation is the newly entangled two-qubit state \verb.a0 |00> + a1 |11>., creating a system in which the ancilla qubit is now perfectly entangled with the first qubit. Adding more ancillas increases the distance of the repetition code.  \end{quote}
+  For error correction, one needs to replicate the state of a qubit
+  onto a number of qubits. While the no cloning theorem prevents one
+  from copying the state of a qubit directly onto another, one can
+  create a redundant entangled qubit state of many qubits. The key is
+  that the qubits to be entangled must start out in a known
+  state. Qubits with a known state (for purposes of this discussion,
+  it will be the state \verb.|0>.), called ``ancilla qubits,'' may be
+  added to a computation for this purpose. Since the state of ancilla
+  qubits are known, it is possible to create a simple circuit that
+  makes the output state of all these ancilla qubits match the
+  protected qubit: run each ancilla through a controlled-NOT gate,
+  where the control is driven by the qubit that needs to be
+  replicated. Assume that there is a qubit with state \verb.PSI. that
+  we want to protect, where \verb.|PSI>. represents an arbitrary
+  superposition state \verb.|PSI> = a0 |0> + a0 |1>. In the CNOT gate,
+  the ancilla \verb.|0>. state will remain a \verb.|0>. state by the
+  \verb.|0>. component of \verb.|PSI>., but it will be converted to
+  \verb.|1>. by the \verb.|1>. component of \verb.|PSI>. The result of
+  this operation is the newly entangled two-qubit state
+  \verb.a0 |00> + a1 |11>., creating a system in which the ancilla
+  qubit is now perfectly entangled with the first qubit. Adding more
+  ancillas increases the distance of the repetition code.  \end{quote}
 
 \url{https://www.sigarch.org/the-case-for-quantum-computing/}
 \begin{quote}
-  Imagine a 3-qubit quantum majority code in which a logical “0” is encoded as “000” and a logical “1” is encoded as “111.”  Just as with a classical majority code, a single bit-flip error can be corrected by restoring to the majority value.  Unlike a classical code, however, we can not directly measure the qubits else their quantum state will be destroyed.  Instead, we measure syndromes from each possible pair of qubits by interacting them with an ancilla, then measure each ancilla.  Although the errors to the qubits are actually continuous, the effect of measuring the ancilla is to discretize the errors, as well as inform us whether an error occurred so that it can be corrected.  With this methodology, quantum states are restored in a modular way for even a large quantum computer.  Furthermore, operations on error-corrected qubits can be viewed as digital rather than analog, and only a small number of universal operations (H, T, CNOT) are needed for universal quantum computation.  Through careful design and engineering, error correction codes and this small set of precise operations will lead to machines that could support practical quantum computation.
+  Imagine a 3-qubit quantum majority code in which a logical “0” is
+  encoded as “000” and a logical “1” is encoded as “111.”  Just as
+  with a classical majority code, a single bit-flip error can be
+  corrected by restoring to the majority value.  Unlike a classical
+  code, however, we can not directly measure the qubits else their
+  quantum state will be destroyed.  Instead, we measure syndromes from
+  each possible pair of qubits by interacting them with an ancilla,
+  then measure each ancilla.  Although the errors to the qubits are
+  actually continuous, the effect of measuring the ancilla is to
+  discretize the errors, as well as inform us whether an error
+  occurred so that it can be corrected.  With this methodology,
+  quantum states are restored in a modular way for even a large
+  quantum computer.  Furthermore, operations on error-corrected qubits
+  can be viewed as digital rather than analog, and only a small number
+  of universal operations (H, T, CNOT) are needed for universal
+  quantum computation.  Through careful design and engineering, error
+  correction codes and this small set of precise operations will lead
+  to machines that could support practical quantum computation.
 \end{quote}
 
 \url{https://homepages.cwi.nl/~rdewolf/qcnotesv2.pdf}
 \begin{quote}
-Using an ancilla qubit, it is possible to avoid doing any intermediate measurements in a quantum circuit. Show how this can be done.  Hint: instead of measuring the qubit, apply a CNOT that “copies” it to a new \verb.|0>.-qubit, which is then left alone until the end of the computation. Analyze what happens.
+  Using an ancilla qubit, it is possible to avoid doing any
+  intermediate measurements in a quantum circuit. Show how this can be
+  done.  Hint: instead of measuring the qubit, apply a CNOT that
+  “copies” it to a new \verb.|0>.-qubit, which is then left alone
+  until the end of the computation. Analyze what happens.
 \end{quote}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Reversible/Quantum Circuits and Ancilla Wires} 
 
-Early use of ancillas in Toffoli's paper to implement arbitrary reversible functions using a fixed number of 3 input gates \url{https://link.springer.com/content/pdf/10.1007%2F3-540-10003-2_104.pdf}
+Reversible/Quantum Circuits and Ancilla Wires: Early use of ancillas
+in Toffoli's paper to implement arbitrary reversible functions using a
+fixed number of 3 input gates
+\url{https://link.springer.com/content/pdf/10.1007%2F3-540-10003-2_104.pdf}
 
 Use examples from Ricercar
 
@@ -294,15 +223,9 @@ X -> X * Y * 1/Y
   -> Z
 \end{verbatim}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{A Comonad for Pi}
+A Comonad for Pi:
 
 Adding variables to Pi first?
-
-\newcommand{\alt}{~|~}
-\newcommand{\inlv}[1]{\ensuremath{\mathit{inl}(v)}}
-\newcommand{\inrv}[1]{\ensuremath{\mathit{inr}(v)}}
-\newcommand{\pointed}[2]{[#1 \bullet #2]}
 
 Plain Pi over finite types:
 \[\begin{array}{lrcl}
@@ -324,52 +247,21 @@ instead of plain composition of combinators??
 
 Then we can define $\eta$ and $\epsilon$ in the comonadic world.
 
-
-
-
-
- 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Fractional Pi}
-
 Adding variables to Pi first? 
  
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Denotations}
+Denotations:
  
-Positive rational numbers are a model. Apparently there is a categorification \url{https://alistairsavage.ca/pubs/Copelli-Categorification_of_the_Nonnegative_Rational_Numbers.pdf}
+Positive rational numbers are a model. Apparently there is a
+categorification
+\url{https://alistairsavage.ca/pubs/Copelli-Categorification_of_the_Nonnegative_Rational_Numbers.pdf}
 
 Use all the constructions name, coname, etc. and see what they do in this context!
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% Acknowledgments
-\begin{acks}                            %% acks environment is optional
-                                        %% contents suppressed with 'anonymous'
-  %% Commands \grantsponsor{<sponsorID>}{<name>}{<url>} and
-  %% \grantnum[<url>]{<sponsorID>}{<number>} should be used to
-  %% acknowledge financial support and will be used by metadata
-  %% extraction tools.
-  This material is based upon work supported by the
-  \grantsponsor{GS100000001}{National Science
-    Foundation}{http://dx.doi.org/10.13039/100000001} under Grant
-  No.~\grantnum{GS100000001}{nnnnnnn} and Grant
-  No.~\grantnum{GS100000001}{mmmmmmm}.  Any opinions, findings, and
-  conclusions or recommendations expressed in this material are those
-  of the author and do not necessarily reflect the views of the
-  National Science Foundation.
-\end{acks}
-
-
-%% Bibliography
-%\bibliography{bibfile}
-
-
-%% Appendix
+\bibliography{../cites.bib}
 \appendix
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Appendix}
 
-Text of appendix \ldots
-
 \end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
