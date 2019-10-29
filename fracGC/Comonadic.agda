@@ -5,12 +5,14 @@ module Comonadic where
 open import Data.Empty using (⊥)
 open import Data.Unit using (⊤; tt)
 open import Data.Nat using (ℕ)
-open import Data.Integer as ℤ using (ℤ; +_; -[1+_]; ∣_∣)
+  renaming (_+_ to _ℕ+_; _⊔_ to _ℕ⊔_)
+open import Data.Integer as ℤ using (ℤ; +_; -[1+_]; ∣_∣; _+_; _⊔_; -_)
 open import Data.Rational
-  using (ℚ; _/_; _+_; _*_; _≢0)
+  using (ℚ)
   renaming (1/_ to recip)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product -- using (_×_; _,_; proj₁; proj₂)
+open import Data.Maybe
 open import Data.Vec using (Vec; _∷_; [])
 open import Relation.Binary.Core using (IsEquivalence)
 open import Relation.Binary.PropositionalEquality
@@ -183,6 +185,25 @@ lift : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} →
        (c : t₁ ⟷ t₂) → (● t₁ [ v₁ ] ⟷ ● t₂ [ eval c v₁ ])
 lift c = extend (extract ⊚ c) 
 
+{--
+-- Is it possible to unlift ?
+
+unlift : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} → 
+         (● t₁ [ v₁ ] ⟷ t₂) → (t₁ ⟷ t₂) 
+unlift uniti₊l = {!!}
+unlift uniti₊r = {!!}
+unlift uniti⋆l = {!!}
+unlift uniti⋆r = {!!}
+unlift id⟷ = {!!}
+unlift (c₁ ⊚ c₂) = {!!}
+unlift extract = {!!}
+unlift (extend c) = {!!}
+unlift tensorl = {!!}
+unlift plusl = {!!}
+unlift plusr = {!!}
+unlift (== c q) = {!!} 
+--}
+
 not : ⟦ 𝔹 ⟧ → ⟦ 𝔹 ⟧
 not (inj₁ tt) = inj₂ tt
 not (inj₂ tt) = inj₁ tt
@@ -344,17 +365,15 @@ fig2b'≡ a (inj₁ tt) c d = refl
 fig2b'≡ (inj₁ tt) (inj₂ tt) c d = refl
 fig2b'≡ (inj₂ tt) (inj₂ tt) c d = refl 
 
-tensor4 : ∀ {a b c d e} →
+postulate
+  -- boring...
+  tensor4 : ∀ {a b c d e} →
           (● 𝔹 [ a ] ×ᵤ ● 𝔹 [ b ] ×ᵤ ● 𝔹 [ c ] ×ᵤ ● 𝔹 [ d ])  ×ᵤ ● 𝔹 [ e ] ⟷
           ● ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) [ (a , b , c , d) , e ]
-tensor4 = {!!} 
-
-itensor4 : ∀ {a b c d e} →
+  itensor4 : ∀ {a b c d e} →
           ● ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) [ (a , b , c , d) , e ] ⟷
           (● 𝔹 [ a ] ×ᵤ ● 𝔹 [ b ] ×ᵤ ● 𝔹 [ c ] ×ᵤ ● 𝔹 [ d ])  ×ᵤ ● 𝔹 [ e ]
           
-itensor4 = {!!} 
-
 -- now lift it 
 
 fig2b : ∀ {a b c d} →
@@ -387,6 +406,51 @@ fig2b {a} {b} {c} {d} =
 ------------------------------------------------------------------------------
 -- Space denotational semantics
 
+-- for each type, we calculate its memory requirements which are two
+-- numbers (m , z). The number m represents the amount of space need
+-- to store values of the type. The number z represents the effect of
+-- the value on space when it is executed. Ex. a gc process needs m
+-- bits to be stored but when run it releases z bits.
+
+-- For plain types, the number z is the log of the number of values
+-- (rounded up). For pointed types, the number m is 1 but z is the
+-- amount of space for the values of the underlying type. For
+-- fractional types, the number m is also 1 but z is negative, i.e.,
+-- we release memory. Note that log(1/X) is -log(X)
+
+space : (t : 𝕌) → Maybe (ℕ × ℤ)
+space 𝟘 = nothing
+space 𝟙 = just (0 , + 0)
+space (t₁ +ᵤ t₂) with space t₁ | space t₂
+... | just (m , z₁) | just (n , z₂) = just (1 ℕ+ (m ℕ⊔ n) , (+ 1) + (z₁ ⊔ z₂))
+... | just (m , z) | nothing = just (m , z)
+... | nothing | just (n , z) = just (n , z)
+... | nothing | nothing = nothing 
+space (t₁ ×ᵤ t₂) with space t₁ | space t₂
+... | just (m , z₁) | just (n , z₂) = just (m ℕ+ n , z₁ + z₂)
+... | just _ | nothing = nothing
+... | nothing | just _ = nothing
+... | nothing | nothing = nothing 
+space ● t [ _ ] with space t
+... | just (m , z) = just (1 , + m)  --- ???
+... | nothing = nothing -- impossible
+space 𝟙/● t [ _ ] with space t
+... | just (m , z) = just (m , - z)
+... | nothing = nothing -- impossible 
+
+encode : (t : 𝕌) → (v : ⟦ t ⟧) → ℕ
+encode 𝟙 tt = 0
+encode (t₁ +ᵤ t₂) (inj₁ v₁) = encode t₁ v₁
+encode (t₁ +ᵤ t₂) (inj₂ v₂) = {!encode t₂ v₂!}
+encode (t₁ ×ᵤ t₂) (v₁ , v₂) = {!!}
+encode ● t [ v ] w = {!!}
+encode 𝟙/● t [ f ] g = {!!} 
+
+-- write a version of eval that takes memory of the right size
+
+
+{--
+
 size : (t : 𝕌) → ℚ
 size t = {!!} 
 
@@ -415,5 +479,7 @@ impact on memory is that it uses negative memory.
 
 -- Groupoid for pointed 1/A is point and (size A) loops on point labeled (=
 -- a1), (= a2), (= a3), etc.
+
+--}
 
 ------------------------------------------------------------------------------
