@@ -49,7 +49,28 @@ Text of abstract \ldots.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-\paragraph*{Conservation of Information and Negative Entropy.} 
+\paragraph*{Conservation of Information.} If quantum field theory is
+correct (as it so far seems to be) then information, during any
+physical process, is neither created nor
+destroyed. Landauer~\cite{Landauer:1961,Landauer,bennett1985fundamental},
+Bennett~\cite{bennett2010notes,bennett2003notes,Bennett:1973:LRC},
+Fredkin~\cite{fredkin1982conservative} and others made compelling
+arguments that this physical principle induces a corresponding
+computational principle of ``conservation of information.'' This
+principle characterizes quantum computing and its classical
+restriction known as reversible computing.
+
+\paragraph*{Quantum (Reversible) Computing.} The quantum circuit model
+can be characterized as a classical reversible circuit model augmented
+with parallel operations modeling superpositions. Computations in the
+classical submodel can be formalized as isomorphisms on finite types,
+i.e., the types generated from the empty type 0, the unit type 1, and
+sums and products. Put differently, the principle of conservation of
+information is expressed as computating via sound and complete type
+isomorphisms~\cite{James:2012:IE:2103656.2103667} or type
+equivalences~\cite{DBLP:conf/esop/CaretteS16}.
+
+\paragraph*{Negative Entropy.}  
 According to the conventional theory of
 communication~\cite{Shannon1948}, a type with $N$ values is viewed as
 an abstract system that has $N$ distinguishable states where the
@@ -64,27 +85,14 @@ $A \times B$ where $A$ has two elements and $B$ has three elements can
 be thought of a composite system consisting of two independent
 unrelated subsystems.  Each state of the composite system therefore
 contains $\log{(2*3)} = \log{2} + \log{3}$ bits which is the sum of
-the information contained in each subsystem.
+the information contained in each subsystem. A \emph{fractional type}
+$\frac{1}{A}$ introduces negative entropy. For example, a type with
+cardinality $\frac{1}{8}$ has entropy $\log{\frac{1}{8}} = -3$. It is
+natural to interpret this negative entropy just like we interpret
+``negative money,'' as a resource (space or bandwidth) to be repaid
+(reclaimed) by some other part of the system.
 
-If quantum field theory is correct (as it so far seems to be) then
-information, during any physical process, is neither created nor
-destroyed. Landauer~\cite{Landauer:1961,Landauer,bennett1985fundamental},
-Bennett~\cite{bennett2010notes,bennett2003notes,Bennett:1973:LRC},
-Fredkin~\cite{fredkin1982conservative} and others made compelling
-arguments that this physical principle induces a corresponding
-computational principle of ``conservation of information.'' In the
-context of finite types, generated from the empty type 0, the unit
-type 1, and sums and products, this principle states that the
-foundational (i.e., physical) notion of computation is computation via
-type isomorphisms~\cite{James:2012:IE:2103656.2103667} or type
-equivalences~\cite{DBLP:conf/esop/CaretteS16}; these are both sound
-and complete with respect to cardinality-preserving maps. In this
-context, a \emph{fractional type} $\frac{1}{A}$ introduces negative
-entropy. For example, a type with cardinality $\frac{1}{8}$ has
-entropy $\log{\frac{1}{8}} = -3$. It is natural to interpret this
-negative entropy just like we interpret ``negative money,'' as a
-resource (space or bandwidth) to be repaid (reclaimed) by some other
-part of the system.
+\paragraph*{Temporary Storage using Ancilla Bits.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Motivating Example}
