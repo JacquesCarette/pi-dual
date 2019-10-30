@@ -57,18 +57,31 @@ Bennett~\cite{bennett2010notes,bennett2003notes,Bennett:1973:LRC},
 Fredkin~\cite{fredkin1982conservative} and others made compelling
 arguments that this physical principle induces a corresponding
 computational principle of ``conservation of information.'' This
-principle characterizes quantum computing and its classical
-restriction known as reversible computing.
+principle is indeed one of the defining characteristics of quantum
+computing and its classical restriction known as reversible computing.
 
-\paragraph*{Quantum (Reversible) Computing.} The quantum circuit model
-can be characterized as a classical reversible circuit model augmented
-with parallel operations modeling superpositions. Computations in the
-classical submodel can be formalized as isomorphisms on finite types,
-i.e., the types generated from the empty type 0, the unit type 1, and
-sums and products. Put differently, the principle of conservation of
-information is expressed as computating via sound and complete type
-isomorphisms~\cite{James:2012:IE:2103656.2103667} or type
-equivalences~\cite{DBLP:conf/esop/CaretteS16}.
+\paragraph*{Quantum and Reversible Computing.} The Toffoli gate is
+known to be universal for classical reversible
+circuits~\cite{Toffoli:1980}. Adding just one gate (the Hadamard gate)
+produces a universal set of primitives for quantum
+circuits~\cite{hadtoffuniv}. The ``only'' difference between the two
+circuit models is that quantum circuits can process superpositions of
+values (waves) in one step whereas classical circuits lack this form
+of parallelism. Most importantly, structurally the two circuits models
+are identical and one can derive properties valid for both families by
+focusing on the simpler classical model.
+
+Instead of using the Toffoli gate as a universal primitive for
+reversible classical circuits, one can exploit the full force of type
+theory and category theory by expressing reversible classical
+computations as \emph{isomorphisms over finite
+  types}~\cite{Fiore:2004,James:2012:IE:2103656.2103667} or
+\emph{equivalences over
+  groupoids}~\cite{DBLP:conf/esop/CaretteS16}. This perspective
+exposes interesting mathematical structure in reversible computations
+that we will exploit to solve the ``ancilla problem'' explained next. 
+
+\paragraph*{Temporary Storage using Ancilla Bits.}
 
 \paragraph*{Negative Entropy.}  
 According to the conventional theory of
@@ -91,8 +104,6 @@ cardinality $\frac{1}{8}$ has entropy $\log{\frac{1}{8}} = -3$. It is
 natural to interpret this negative entropy just like we interpret
 ``negative money,'' as a resource (space or bandwidth) to be repaid
 (reclaimed) by some other part of the system.
-
-\paragraph*{Temporary Storage using Ancilla Bits.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Motivating Example}
