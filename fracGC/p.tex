@@ -99,10 +99,9 @@ storage is only de-allocated when returned to its initial condition is
 a safety condition. Violating this condition destroys the symmetry
 between input and output making the circuits not reversible and, in
 the quantum model, causes irreversible decoherence problems. As
-reviewed in Sec.~\ref{sec:examples}, current proposals for reversible
-and quantum programming languages
-(e.g. Quipper~\cite{Green:2013:QSQ:2491956.2462177}), this safety
-condition is at the programmer's discretion whereas. 
+reviewed in Sec.~\ref{sec:examples}, ancilla have a number of critical
+applications and yet are poorly supported in current reversible and
+quantum programming languages making them a common source of bugs.
 
 \paragraph*{Negative Entropy.}  
 According to the conventional theory of
@@ -133,47 +132,35 @@ collection processes'' that reclaim temporary storage.
 \paragraph*{Outline.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Motivating Examples}
+\section{Ancilla Bits}
 \label{sec:examples}
+ 
+current proposals for reversible
+and quantum programming languages
+(e.g. Ricercar~\cite{10.1007/978-3-319-20860-2_13},
+Quipper~\cite{Green:2013:QSQ:2491956.2462177}), restrict ancilla bits
+to be used in nested scopes, have sound but incomplete laws for
+reasoning about the safety condition, and only guarantee safety via
+runtime checks.
  
 Toffoli4 using 2 Toffoli3: core of proof of universality; simple
 enough
 
-In-place matrix transpose: ease of programming, efficiency
-
-Example(s) from Quipper etc. with focus on safety condition
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Extra for now}
-
-\begin{itemize}
-
-\item Quantum computing hot.
-
-\item Unitary evolution; many algorithms promote classical reversible
-functions into unitary gates (examples, including some from Quipper)
-
-\item Common case: given a permutation between finite sets, find a
-  reversible program that implements it. Answer depends on the
-  available reversible primitives.
-
-\item Example, say we want to transpose a matrix, i.e., write a
-  permutation of type \verb|A*B <-> B*A| where \verb|A| and \verb|B|
-  are the dimensions. Wikipedia example
-  (\url{https://en.wikipedia.org/wiki/In-place_matrix_transposition}):
+In-place matrix transpose: ease of programming, efficiency. Say we
+want to transpose a matrix. Wikipedia example
+(\url{https://en.wikipedia.org/wiki/In-place_matrix_transposition}):
 \begin{verbatim}
 11 12 13 14 
 21 22 23 24 
 \end{verbatim}
-  transposed to
+transposed to
 \begin{verbatim}
 11 21
 12 22
 13 23
 14 24
 \end{verbatim}
-  Here \verb|A| is \verb|Nat x Nat| and \verb|B| is
-  \verb|Nat x Nat x Nat x Nat| and the input and output matrices are:
+In Pi, the input and output matrices are:
 \begin{verbatim}
 M   = (11 , 21) , (12 , 22) , (13, 23) , (14 , 24) 
 
@@ -190,31 +177,15 @@ transpose in constant space, i.e., performs an in-place matrix
 transposition. It is well know that with additional space, one can
 write more efficient matrix transpositions (explain and citations).
 
-\item So many reversible/quantum circuits allow the introduction of
-  so-called ancilla wires, which serve as scratch space (goes back to
-  Toffoli). The problem is that there is a discipline for using
-  ancilla bits: they need to be created in a known state and can only
-  be gc'ed when they are returned to the same state (explain).
+Example(s) from Quipper etc. with focus on safety condition. Quipper
+uses ancilla bits in several places; one use is to compile
+irreversible circuits to reversible ones; need ancilla bits; more
+generally several quantum algorithms need ancilla bits (see below); in
+quipper de-allocation left to programmer.
 
-\item No language knows how to automatically guarantee this condition;
-  left to the programmer (Quipper), or some (incomplete?) dynamic
-  checks (Ricercar).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Extra for now}
 
-\item We solve this using **fractional types**.   
-
-\end{itemize}
-
-Complexity perspective:
-\url{https://www.scottaaronson.com/papers/gates.pdf}
-
-Quipper: \url{https://arxiv.org/pdf/1304.3390.pdf}; uses ancilla; one
-use is to compile irreversible circuits to reversible ones; need
-ancilla bits; more generally several quantum algorithms need ancilla
-bits (see below); in quipper de-allocation left to programmer.
-
-Ricercar tries to define rules for ancilla but not complete
-\url{https://msoeken.github.io/papers/2015_rc_2.pdf}
- 
 Leads to bugs as analyzed by
 \url{http://drops.dagstuhl.de/opus/volltexte/2019/10196/pdf/OASIcs-PLATEAU-2018-4.pdf}:
 
