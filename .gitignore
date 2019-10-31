@@ -1,5 +1,4 @@
 .hgignore
-
 *.o
 \#*.*
 *.cmo
@@ -29,6 +28,7 @@ OMakeroot.omc
 *.subc.pdf
 *.subc.tex
 *.vrb
+*.ptb
 .subcode_cache*
 *.orig
 *.pdf.eps
@@ -36,3 +36,4 @@ OMakeroot.omc
 subcode
 *.agdai
 .DS_Store
+*.swp
