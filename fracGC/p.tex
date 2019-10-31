@@ -303,6 +303,15 @@ Plain Pi over finite types:
 \textit{Level-2 programs} & \alpha &::=& \cdots 
 \end{array}\]
 
+Add eta/epsilon leading to \verb|C3.agda|. This code has a runtime
+check like current solutions but is more general allowing non-scoped
+ancilla allocation and de-allocation. Show examples.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Comonad}
+
+Comonad to keep track to value in focus 
+
 Now we define pointed types $\pointed{t}{v}$ which are a record
 consisting of a value type together with a value of that type. Both
 the level-1 and level-2 program lift naturally to the world of pointed
@@ -312,10 +321,21 @@ program we should be able to just use \textsf{extend} to compose
 instead of plain composition of combinators??
 
 Then we can define $\eta$ and $\epsilon$ in the comonadic world.
+ 
+Exploit dependent types to reify proofs in the type system. Type
+checking requires (partial) eval. Once we have a proof can we somehow
+go back to \verb|C3.agda| and remove the runtime check?
+
+Polymorphic type for ancilla?
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Trace?}
+  
+Add multiplicative trace, do SAT solver
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Space Denotational Semantics}
-
+  
 Positive rational numbers are a model. Apparently there is a
 categorification
 \url{https://alistairsavage.ca/pubs/Copelli-Categorification_of_the_Nonnegative_Rational_Numbers.pdf}
