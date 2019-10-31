@@ -11,12 +11,6 @@ open import Relation.Binary.PropositionalEquality
 
 open import Comonadic
 
-pointed-contr : {A : Set} {v : A} {p : Pointed A v} → ⇑ v refl ≡ p
-pointed-contr {p = ⇑ v refl} = refl
-
-pointed-all-paths : {A : Set} {v : A} {p q : Pointed A v} → p ≡ q
-pointed-all-paths {p = p} {q} = trans (sym pointed-contr) pointed-contr
-
 bwd : {A B : 𝕌} → (A ⟷ B) → ⟦ B ⟧ → ⟦ A ⟧
 bwd unite₊l v = inj₂ v
 bwd uniti₊l (inj₂ v) = v

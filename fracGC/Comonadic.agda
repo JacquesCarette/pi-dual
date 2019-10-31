@@ -30,9 +30,15 @@ record Pointed (A : Set) (v : A) : Set where
   constructor ⇑
   field
     ● : A
-    v≡● : v ≡ ● 
+    v≡● : v ≡ ●
 
 open Pointed public
+
+pointed-contr : {A : Set} {v : A} {p : Pointed A v} → ⇑ v refl ≡ p
+pointed-contr {p = ⇑ v refl} = refl
+
+pointed-all-paths : {A : Set} {v : A} {p q : Pointed A v} → p ≡ q
+pointed-all-paths {p = p} {q} = trans (sym pointed-contr) pointed-contr
 
 Recip : (A : Set) → (v : A) → Set
 Recip A v = (w : A) → (v ≡ w) → ⊤
@@ -40,9 +46,9 @@ Recip A v = (w : A) → (v ≡ w) → ⊤
 
 --
 
-data 𝕌 : Set 
+data 𝕌 : Set
 ⟦_⟧ : (A : 𝕌) → Set
-data _⟷_ : 𝕌 → 𝕌 → Set 
+data _⟷_ : 𝕌 → 𝕌 → Set
 eval : {A B : 𝕌} → (A ⟷ B) → ⟦ A ⟧ → ⟦ B ⟧
 
 data 𝕌 where
@@ -53,12 +59,13 @@ data 𝕌 where
   ●_[_]   : (A : 𝕌) → ⟦ A ⟧ → 𝕌
   𝟙/●_[_] : (A : 𝕌) → ⟦ A ⟧ → 𝕌
 
-⟦ 𝟘 ⟧ = ⊥ 
+⟦ 𝟘 ⟧ = ⊥
 ⟦ 𝟙 ⟧ = ⊤
 ⟦ t₁ +ᵤ t₂ ⟧ = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
 ⟦ t₁ ×ᵤ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-⟦ ● A [ v ] ⟧ = Pointed ⟦ A ⟧ v -- type has two points ● anv v such that v ≡ ● 
+⟦ ● A [ v ] ⟧ = Pointed ⟦ A ⟧ v -- type has a parameter v and a point ● such that v ≡ ●
 ⟦ 𝟙/● A [ v ] ⟧ = Recip ⟦ A ⟧ v -- type inhabited by just one function from Pointed A v to ⊤
+
 
 data _⟷_ where
   unite₊l : {t : 𝕌} → 𝟘 +ᵤ t ⟷ t
@@ -90,7 +97,7 @@ data _⟷_ where
   -- comonad
   -- extract not information preserving; not reversible
   extract : {t : 𝕌} → {v : ⟦ t ⟧} → ● t [ v ] ⟷ t
-  extend : {t₁ t₂ : 𝕌} → {v₁ : ⟦ t₁ ⟧} → 
+  extend : {t₁ t₂ : 𝕌} → {v₁ : ⟦ t₁ ⟧} →
            (c : ● t₁ [ v₁ ] ⟷ t₂) →
            (● t₁ [ v₁ ] ⟷ ● t₂ [ eval c (⇑ v₁ refl) ])
   tensorl : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} →
@@ -108,14 +115,14 @@ data _⟷_ where
   == : ∀ {t₁ t₂ : 𝕌} {v : ⟦ t₁ ⟧} {w w' : ⟦ t₂ ⟧} →
        (● t₁ [ v ] ⟷ ● t₂ [ w ]) → (w ≡ w') → (● t₁ [ v ] ⟷ ● t₂ [ w' ])
 
-eval unite₊l (inj₂ v) = v 
-eval uniti₊l v  = inj₂ v 
+eval unite₊l (inj₂ v) = v
+eval uniti₊l v  = inj₂ v
 eval unite₊r (inj₁ v) = v
-eval uniti₊r v  = inj₁ v 
+eval uniti₊r v  = inj₁ v
 eval swap₊ (inj₁ v) = inj₂ v
 eval swap₊ (inj₂ v) = inj₁ v
 eval assocl₊ (inj₁ v) = inj₁ (inj₁ v)
-eval assocl₊ (inj₂ (inj₁ v)) = inj₁ (inj₂ v) 
+eval assocl₊ (inj₂ (inj₁ v)) = inj₁ (inj₂ v)
 eval assocl₊ (inj₂ (inj₂ v)) = inj₂ v
 eval assocr₊ (inj₁ (inj₁ v)) = inj₁ v
 eval assocr₊ (inj₁ (inj₂ v)) = inj₂ (inj₁ v)
@@ -127,36 +134,32 @@ eval uniti⋆r v = (v , tt)
 eval swap⋆ (v₁ , v₂)          = (v₂ , v₁)
 eval assocl⋆ (v₁ , (v₂ , v₃)) = ((v₁ , v₂) , v₃)
 eval assocr⋆ ((v₁ , v₂) , v₃) = (v₁ , (v₂ , v₃))
-eval absorbl () 
-eval absorbr () 
-eval factorzl () 
-eval factorzr () 
+eval absorbl ()
+eval absorbr ()
+eval factorzl ()
+eval factorzr ()
 eval dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
 eval dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
 eval factor (inj₁ (v₁ , v₃)) = (inj₁ v₁ , v₃)
 eval factor (inj₂ (v₂ , v₃)) = (inj₂ v₂ , v₃)
 eval distl (v , inj₁ v₁) = inj₁ (v , v₁)
-eval distl (v , inj₂ v₂) = inj₂ (v , v₂) 
+eval distl (v , inj₂ v₂) = inj₂ (v , v₂)
 eval factorl (inj₁ (v , v₁)) = (v , inj₁ v₁)
-eval factorl (inj₂ (v , v₂)) = (v , inj₂ v₂) 
+eval factorl (inj₂ (v , v₂)) = (v , inj₂ v₂)
 eval id⟷ v = v
 eval (c₁ ⊚ c₂) v = eval c₂ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
 eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
 eval extract p = ● p
-eval (extend {v₁ = v₁} c) p with ● p | v≡● p
-eval (extend {v₁ = .v₂} c) p | v₂ | refl = ⇑ (eval c (⇑ v₂ refl)) refl
-eval tensorl p with ● p | v≡● p
-... | (v₁ , v₂) | refl = ⇑ v₁ refl , ⇑ v₂ refl 
-eval tensorr (p₁ , p₂) with ● p₁ | v≡● p₁ | ● p₂ | v≡● p₂
-... | v₁ | refl | v₂ | refl = ⇑ (v₁ , v₂) refl 
+eval (extend {v₁ = v₁} c) p = ⇑ (eval c (⇑ (● p) (v≡● p))) (cong (eval c) pointed-all-paths)
+eval tensorl p = ⇑ (proj₁ (● p)) (cong proj₁ (v≡● p)) , ⇑ (proj₂ (● p)) (cong proj₂ (v≡● p))
+eval tensorr (p₁ , p₂) = ⇑ ((● p₁) , (● p₂)) (cong₂ _,_ (v≡● p₁) (v≡● p₂))
 eval (η v) tt = ⇑ v refl , λ w v≡w → tt
 eval (ε v) (p , f) = f (● p) (v≡● p)
 eval (plusl {v = v₁}) (⇑ ● refl) = ⇑ v₁ refl
 eval (plusr {v = v₂}) (⇑ ● refl) = ⇑ v₂ refl
-eval (== c eq) v with eval c v
-... | ⇑ w eq' = ⇑ w (trans (sym eq) eq') 
+eval (== c eq) v = let r = eval c v in ⇑ (● r) (trans (sym eq) (v≡● r))
 
 ------------------------------------------------------------------------------
 -- Set up for examples
@@ -181,15 +184,15 @@ _□ t = id⟷
 𝔽 = inj₁ tt
 𝕋 = inj₂ tt
 
-lift : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} → 
+lift : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} →
        (c : t₁ ⟷ t₂) → (● t₁ [ v₁ ] ⟷ ● t₂ [ eval c v₁ ])
-lift c = extend (extract ⊚ c) 
+lift c = extend (extract ⊚ c)
 
 {--
 -- Is it possible to unlift ?
 
-unlift : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} → 
-         (● t₁ [ v₁ ] ⟷ t₂) → (t₁ ⟷ t₂) 
+unlift : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} →
+         (● t₁ [ v₁ ] ⟷ t₂) → (t₁ ⟷ t₂)
 unlift uniti₊l = {!!}
 unlift uniti₊r = {!!}
 unlift uniti⋆l = {!!}
@@ -201,7 +204,7 @@ unlift (extend c) = {!!}
 unlift tensorl = {!!}
 unlift plusl = {!!}
 unlift plusr = {!!}
-unlift (== c q) = {!!} 
+unlift (== c q) = {!!}
 --}
 
 not : ⟦ 𝔹 ⟧ → ⟦ 𝔹 ⟧
@@ -223,12 +226,12 @@ zigzag b =
   assocr⋆ ⊚                            -- POINTED TWO * (RECIP TWO * POINTED TWO)
   (id⟷ ⊗ swap⋆) ⊚                    -- POINTED TWO * (POINTED TWO * RECIP TWO)
   (id⟷ ⊗ ε b) ⊚                      -- POINTED TWO * ONE
-  unite⋆r 
+  unite⋆r
 
 test1 = eval (zigzag 𝔽) (⇑ 𝔽 refl)      -- (⇑ #f refl)
 -- test2 = eval (zigzag 𝔽) (⇑ 𝕋 refl)   -- typechecks if given proof #f=#t
 -- test3 = eval (zigzag 𝕋) (⇑ 𝔽 refl)   -- typechecks if given proof #f=#t
-test4 = eval (zigzag 𝕋) (⇑ 𝕋 refl)      -- (⇑ #t refl) 
+test4 = eval (zigzag 𝕋) (⇑ 𝕋 refl)      -- (⇑ #t refl)
 
 -- Conventional PI examples
 
@@ -287,7 +290,7 @@ SWAP13 = SWAP23 ⊚ SWAP12 ⊚ SWAP23
 ROTR   = SWAP12 ⊚ SWAP23
 ROTL   = SWAP13 ⊚ SWAP23
 
-t3 : ∀ {b₁ b₂} → 
+t3 : ∀ {b₁ b₂} →
      ● (𝔹 ×ᵤ 𝔹²) [ 𝔽 , (b₁ , b₂) ] ⟷
      ● (𝔹 ×ᵤ 𝔹²) [ 𝔽 , (b₁ , b₂) ]
 t3 = lift TOFFOLI
@@ -299,7 +302,7 @@ t4 : ● (𝔹 ×ᵤ 𝔹²) [ 𝕋 , (𝔽 , 𝔽) ] ⟷
      ● (𝔹 ×ᵤ 𝔹²) [ 𝕋 , (𝔽 , 𝕋) ]
 t4 = lift TOFFOLI
 
-t5 : ∀ {b₁ b₂} → 
+t5 : ∀ {b₁ b₂} →
      ● (𝔹 ×ᵤ 𝔹²) [ b₁ , (𝔽 , b₂) ] ⟷
      ● (𝔹 ×ᵤ 𝔹²) [ b₁ , (𝔽 , b₂) ]
 t5 = lift TOFFOLI
@@ -317,11 +320,11 @@ t6 = lift TOFFOLI
 CONTROLLED : {A : 𝕌} → (A ⟷ A) → 𝔹 ×ᵤ A ⟷ 𝔹 ×ᵤ A
 CONTROLLED c = dist ⊚ (id⟷ ⊕ (id⟷ ⊗ c)) ⊚ factor
 
-fig2a : 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ⟷ 
+fig2a : 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ⟷
         𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹
 fig2a = CONTROLLED (CONTROLLED (CONTROLLED NOT))
 
--- first write the circuit with the additional ancilla      
+-- first write the circuit with the additional ancilla
 
 fig2b' : ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) ⟷ ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹)
 fig2b' =
@@ -363,7 +366,7 @@ fig2b'≡ : (a b c d : ⟦ 𝔹 ⟧) →
           in e ≡ 𝔽
 fig2b'≡ a (inj₁ tt) c d = refl
 fig2b'≡ (inj₁ tt) (inj₂ tt) c d = refl
-fig2b'≡ (inj₂ tt) (inj₂ tt) c d = refl 
+fig2b'≡ (inj₂ tt) (inj₂ tt) c d = refl
 
 postulate
   -- boring...
@@ -373,8 +376,8 @@ postulate
   itensor4 : ∀ {a b c d e} →
           ● ((𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) [ (a , b , c , d) , e ] ⟷
           (● 𝔹 [ a ] ×ᵤ ● 𝔹 [ b ] ×ᵤ ● 𝔹 [ c ] ×ᵤ ● 𝔹 [ d ])  ×ᵤ ● 𝔹 [ e ]
-          
--- now lift it 
+
+-- now lift it
 
 fig2b : ∀ {a b c d} →
         let ((x , y , z , w) , e) = eval fig2b' ((a , b , c , d) , 𝔽)
@@ -384,7 +387,7 @@ fig2b : ∀ {a b c d} →
 fig2b {a} {b} {c} {d} =
   let ((x , y , z , w) , _) = eval fig2b' ((a , b , c , d) , 𝔽)
       e≡𝔽 = fig2b'≡ a b c d
-  in e≡𝔽 , 
+  in e≡𝔽 ,
         uniti⋆r ⊚
         -- (●𝔹[a] × ●𝔹[b] × ●𝔹[c] × ●𝔹[d]) × ●𝟙[tt]
         (id⟷ ⊗ η 𝔽) ⊚
@@ -425,18 +428,18 @@ space (t₁ +ᵤ t₂) with space t₁ | space t₂
 ... | just (m , z₁) | just (n , z₂) = just (1 ℕ+ (m ℕ⊔ n) , (+ 1) + (z₁ ⊔ z₂))
 ... | just (m , z) | nothing = just (m , z)
 ... | nothing | just (n , z) = just (n , z)
-... | nothing | nothing = nothing 
+... | nothing | nothing = nothing
 space (t₁ ×ᵤ t₂) with space t₁ | space t₂
 ... | just (m , z₁) | just (n , z₂) = just (m ℕ+ n , z₁ + z₂)
 ... | just _ | nothing = nothing
 ... | nothing | just _ = nothing
-... | nothing | nothing = nothing 
+... | nothing | nothing = nothing
 space ● t [ _ ] with space t
 ... | just (m , z) = just (1 , + m)  --- ???
 ... | nothing = nothing -- impossible
 space 𝟙/● t [ _ ] with space t
 ... | just (m , z) = just (m , - z)
-... | nothing = nothing -- impossible 
+... | nothing = nothing -- impossible
 
 encode : (t : 𝕌) → (v : ⟦ t ⟧) → ℕ
 encode 𝟙 tt = 0
@@ -444,7 +447,7 @@ encode (t₁ +ᵤ t₂) (inj₁ v₁) = encode t₁ v₁
 encode (t₁ +ᵤ t₂) (inj₂ v₂) = {!encode t₂ v₂!}
 encode (t₁ ×ᵤ t₂) (v₁ , v₂) = {!!}
 encode ● t [ v ] w = {!!}
-encode 𝟙/● t [ f ] g = {!!} 
+encode 𝟙/● t [ f ] g = {!!}
 
 -- write a version of eval that takes memory of the right size
 
@@ -452,7 +455,7 @@ encode 𝟙/● t [ f ] g = {!!}
 {--
 
 size : (t : 𝕌) → ℚ
-size t = {!!} 
+size t = {!!}
 
 -- size (Pointed A v) = size A
 -- size (1/A v) = 1/size A or
@@ -467,13 +470,13 @@ combinators to allocate memory and gc it. The fractional value's
 impact on memory is that it uses negative memory.
 --}
 
-𝕊 : (t : 𝕌) → (size t ≡ (+ 0 / 1)) ⊎ 
-              (Σ ℕ (λ m → 
+𝕊 : (t : 𝕌) → (size t ≡ (+ 0 / 1)) ⊎
+              (Σ ℕ (λ m →
               (Σ ℕ (λ n →
               (Vec ⟦ t ⟧ m) ×
               (Vec ⟦ t ⟧ n) ×
               (((+ m / 1) * (recip (+ n / 1))) ≡ (+ 1 / 1))))))
-𝕊 = {!!} 
+𝕊 = {!!}
 
 -- Groupoids
 
