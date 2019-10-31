@@ -87,16 +87,22 @@ that we will exploit to solve the ``ancilla problem'' explained next.
 the Toffoli gate for classical reversible computing and of the
 combination of the Toffoli and Hadamard gates for quantum computing
 should not distract from efficiency and safety concerns. The theorems
-proving universality (i) assume that an unlimited amount of temporary
-storage may be
-used~\cite{Toffoli:1980,DBLP:conf/innovations/AaronsonGS17}, and (ii)
-that this temporary storage is returned to its initial state before
-de-allocation. The latter condition is necessary in order maintain
-symmetry between input and output in reversible circuits and to avoid
-decoherence problems in quantum computing, Unfortunately, in current
-proposals for reversible and quantum programming languages
-(e.g. Quipper~\cite{Green:2013:QSQ:2491956.2462177}), this condition
-is at the programmer's discretion.
+proving universality (i) assume that temporary storage (often called
+\emph{ancilla bits}) may be used~\cite{Toffoli:1980}, and (ii) that
+this temporary storage is returned to its initial state before
+de-allocation. Indeed if no temporary storage is allowed, the Toffoli
+gate is not universal~\cite{DBLP:conf/innovations/AaronsonGS17} and as
+we demonstrate using space-time tradeoffs in Sec.~\ref{sec:examples},
+the more temporary storage is allowed, the more efficient certain
+computations could become. The condition requiring that the temporary
+storage is only de-allocated when returned to its initial condition is
+a safety condition. Violating this condition destroys the symmetry
+between input and output making the circuits not reversible and, in
+the quantum model, causes irreversible decoherence problems. As
+reviewed in Sec.~\ref{sec:examples}, current proposals for reversible
+and quantum programming languages
+(e.g. Quipper~\cite{Green:2013:QSQ:2491956.2462177}), this safety
+condition is at the programmer's discretion whereas. 
 
 \paragraph*{Negative Entropy.}  
 According to the conventional theory of
@@ -118,11 +124,24 @@ $\frac{1}{A}$ introduces negative entropy. For example, a type with
 cardinality $\frac{1}{8}$ has entropy $\log{\frac{1}{8}} = -3$. It is
 natural to interpret this negative entropy just like we interpret
 ``negative money,'' as a resource (space or bandwidth) to be repaid
-(reclaimed) by some other part of the system.
+(reclaimed) by some other part of the system. Indeed, we will
+introduce such fractional types and use them to represent ``garbage
+collection processes'' that reclaim temporary storage.
+
+\paragraph*{Contributions.} 
+
+\paragraph*{Outline.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Motivating Example}
+\section{Motivating Examples}
+\label{sec:examples}
  
+Toffoli4 using 2 Toffoli3: core of proof of universality; simple
+enough
+
+In-place matrix transpose: ease of programming, efficiency
+
+Example(s) from Quipper etc. with focus on safety condition
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Extra for now}
