@@ -99,7 +99,7 @@ storage is only de-allocated when returned to its initial condition is
 a safety condition. Violating this condition destroys the symmetry
 between input and output making the circuits not reversible and, in
 the quantum model, causes irreversible decoherence problems. As
-reviewed in Sec.~\ref{sec:examples}, ancilla have a number of critical
+reviewed in Sec.~\ref{sec:examples}, ancilla bits have a number of critical
 applications and yet are poorly supported in current reversible and
 quantum programming languages making them a common source of bugs.
 
@@ -135,68 +135,9 @@ collection processes'' that reclaim temporary storage.
 \section{Ancilla Bits}
 \label{sec:examples}
  
-current proposals for reversible
-and quantum programming languages
-(e.g. Ricercar~\cite{10.1007/978-3-319-20860-2_13},
-Quipper~\cite{Green:2013:QSQ:2491956.2462177}), restrict ancilla bits
-to be used in nested scopes, have sound but incomplete laws for
-reasoning about the safety condition, and only guarantee safety via
-runtime checks.
+%%%
+\subsection{Applications}
  
-Toffoli4 using 2 Toffoli3: core of proof of universality; simple
-enough
-
-In-place matrix transpose: ease of programming, efficiency. Say we
-want to transpose a matrix. Wikipedia example
-(\url{https://en.wikipedia.org/wiki/In-place_matrix_transposition}):
-\begin{verbatim}
-11 12 13 14 
-21 22 23 24 
-\end{verbatim}
-transposed to
-\begin{verbatim}
-11 21
-12 22
-13 23
-14 24
-\end{verbatim}
-In Pi, the input and output matrices are:
-\begin{verbatim}
-M   = (11 , 21) , (12 , 22) , (13, 23) , (14 , 24) 
-
-trM = (11 , 12 , 13 , 14) , (21 , 22 , 23 , 23) 
-\end{verbatim}
-Say we are given a language like Pi that is sound and complete with
-respect to permutations on finite types, we would write the
-permutation like so.
-\begin{verbatim}
-WRITE PERMUTATION
-\end{verbatim}
-This code does not use additional space, i.e., it performs the matrix
-transpose in constant space, i.e., performs an in-place matrix
-transposition. It is well know that with additional space, one can
-write more efficient matrix transpositions (explain and citations).
-
-Example(s) from Quipper etc. with focus on safety condition. Quipper
-uses ancilla bits in several places; one use is to compile
-irreversible circuits to reversible ones; need ancilla bits; more
-generally several quantum algorithms need ancilla bits (see below); in
-quipper de-allocation left to programmer.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Extra for now}
-
-Leads to bugs as analyzed by
-\url{http://drops.dagstuhl.de/opus/volltexte/2019/10196/pdf/OASIcs-PLATEAU-2018-4.pdf}:
-
-\begin{quote}
-
-  Bug type 6: Incorrect composition of operations using mirroring Section 4.5 discussed how bugs in deallocating ancillary qubits can happen due to bad parameters. Here we see how bugs in deallocating ancillary qubits can happen due to incorrect composition of operations following a mirroring pattern. For example, in Table 7, the operations in rows 2 and 3 are respectively mirrored and undone in rows 6 and 5. These lines of code need careful reversal of every loop and every operation.
-
-  A common pattern in quantum programs involves performing operations (e.g., add), contingent on a set of qubits known as control qubits. Without language support, this pattern needs many lines of code and manual allocation of ancillary qubits. In the Scaffold code example in Table 7, rows 3 and 5 are just computing the intersection of qubits q, with the help of ancillary qubits initialized in row 1, in order to realize the controlled rotation operation in row 4. Furthermore, quantum algorithms often need varying numbers of control qubits in different parts of the algorithm, leading to replicated code from multiple versions of the same subroutine differing only by the number of control qubits.
-
-\end{quote}
-
 Uses of ancillas:
 \url{https://quantum.country/search}:
 
@@ -266,13 +207,73 @@ Uses of ancillas:
   until the end of the computation. Analyze what happens.
 \end{quote}
 
+%%%
+\subsection{Language Support}
+ 
+current proposals for reversible
+and quantum programming languages
+(e.g. Ricercar~\cite{10.1007/978-3-319-20860-2_13},
+Quipper~\cite{Green:2013:QSQ:2491956.2462177}), restrict ancilla bits
+to be used in nested scopes, have sound but incomplete laws for
+reasoning about the safety condition, and only guarantee safety via
+runtime checks.
 
-Reversible/Quantum Circuits and Ancilla Wires: Early use of ancillas
-in Toffoli's paper to implement arbitrary reversible functions using a
-fixed number of 3 input gates
+Leads to bugs as analyzed by
+\url{http://drops.dagstuhl.de/opus/volltexte/2019/10196/pdf/OASIcs-PLATEAU-2018-4.pdf}:
+
+\begin{quote}
+
+  Bug type 6: Incorrect composition of operations using mirroring Section 4.5 discussed how bugs in deallocating ancillary qubits can happen due to bad parameters. Here we see how bugs in deallocating ancillary qubits can happen due to incorrect composition of operations following a mirroring pattern. For example, in Table 7, the operations in rows 2 and 3 are respectively mirrored and undone in rows 6 and 5. These lines of code need careful reversal of every loop and every operation.
+
+  A common pattern in quantum programs involves performing operations (e.g., add), contingent on a set of qubits known as control qubits. Without language support, this pattern needs many lines of code and manual allocation of ancillary qubits. In the Scaffold code example in Table 7, rows 3 and 5 are just computing the intersection of qubits q, with the help of ancillary qubits initialized in row 1, in order to realize the controlled rotation operation in row 4. Furthermore, quantum algorithms often need varying numbers of control qubits in different parts of the algorithm, leading to replicated code from multiple versions of the same subroutine differing only by the number of control qubits.
+
+\end{quote}
+
+%%%
+\subsection{Examples}
+ 
+Toffoli4 using 2 Toffoli3: core of proof of universality; simple
+enough. Reversible/Quantum Circuits and Ancilla Wires: Early use of
+ancillas in Toffoli's paper to implement arbitrary reversible
+functions using a fixed number of 3 input gates
 \url{https://link.springer.com/content/pdf/10.1007%2F3-540-10003-2_104.pdf}
 
-Use examples from Ricercar
+In-place matrix transpose: ease of programming, efficiency. Say we
+want to transpose a matrix. Wikipedia example
+(\url{https://en.wikipedia.org/wiki/In-place_matrix_transposition}):
+\begin{verbatim}
+11 12 13 14 
+21 22 23 24 
+\end{verbatim}
+transposed to
+\begin{verbatim}
+11 21
+12 22
+13 23
+14 24
+\end{verbatim}
+In Pi, the input and output matrices are:
+\begin{verbatim}
+M   = (11 , 21) , (12 , 22) , (13, 23) , (14 , 24) 
+
+trM = (11 , 12 , 13 , 14) , (21 , 22 , 23 , 23) 
+\end{verbatim}
+Say we are given a language like Pi that is sound and complete with
+respect to permutations on finite types, we would write the
+permutation like so.
+\begin{verbatim}
+WRITE PERMUTATION
+\end{verbatim}
+This code does not use additional space, i.e., it performs the matrix
+transpose in constant space, i.e., performs an in-place matrix
+transposition. It is well know that with additional space, one can
+write more efficient matrix transpositions (explain and citations).
+
+Example(s) from Quipper etc. with focus on safety condition. Quipper
+uses ancilla bits in several places; one use is to compile
+irreversible circuits to reversible ones; need ancilla bits; more
+generally several quantum algorithms need ancilla bits (see below); in
+quipper de-allocation left to programmer.
 
 Is the below a possible example?
 \begin{verbatim}
@@ -287,7 +288,8 @@ X -> X * Y * 1/Y
   -> Z
 \end{verbatim}
 
-A Comonad for Pi:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Pi}
 
 Adding variables to Pi first?
 
@@ -311,10 +313,9 @@ instead of plain composition of combinators??
 
 Then we can define $\eta$ and $\epsilon$ in the comonadic world.
 
-Adding variables to Pi first? 
- 
-Denotations:
- 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Space Denotational Semantics}
+
 Positive rational numbers are a model. Apparently there is a
 categorification
 \url{https://alistairsavage.ca/pubs/Copelli-Categorification_of_the_Nonnegative_Rational_Numbers.pdf}
