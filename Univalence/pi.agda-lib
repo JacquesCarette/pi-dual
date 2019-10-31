@@ -1,0 +1,3 @@
+name: pi
+depend: standard-library
+include: .
