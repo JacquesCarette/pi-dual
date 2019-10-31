@@ -69,10 +69,12 @@ circuit models is that quantum circuits can process superpositions of
 values (waves) in one step whereas classical circuits lack this form
 of parallelism. Most importantly, structurally the two circuits models
 are identical and one can derive properties valid for both families by
-focusing on the simpler classical model.
+focusing on the simpler classical model. In fact, classical reversible
+computations are often used as ``subroutines'' of quantum
+computations.
 
 Instead of using the Toffoli gate as a universal primitive for
-reversible classical circuits, one can exploit the full force of type
+reversible classical circuits, one can leverage the full force of type
 theory and category theory by expressing reversible classical
 computations as \emph{isomorphisms over finite
   types}~\cite{Fiore:2004,James:2012:IE:2103656.2103667} or
@@ -81,7 +83,20 @@ computations as \emph{isomorphisms over finite
 exposes interesting mathematical structure in reversible computations
 that we will exploit to solve the ``ancilla problem'' explained next. 
 
-\paragraph*{Temporary Storage using Ancilla Bits.}
+\paragraph*{Temporary Storage using Ancilla Bits.} The universality of
+the Toffoli gate for classical reversible computing and of the
+combination of the Toffoli and Hadamard gates for quantum computing
+should not distract from efficiency and safety concerns. The theorems
+proving universality (i) assume that an unlimited amount of temporary
+storage may be
+used~\cite{Toffoli:1980,DBLP:conf/innovations/AaronsonGS17}, and (ii)
+that this temporary storage is returned to its initial state before
+de-allocation. The latter condition is necessary in order maintain
+symmetry between input and output in reversible circuits and to avoid
+decoherence problems in quantum computing, Unfortunately, in current
+proposals for reversible and quantum programming languages
+(e.g. Quipper~\cite{Green:2013:QSQ:2491956.2462177}), this condition
+is at the programmer's discretion.
 
 \paragraph*{Negative Entropy.}  
 According to the conventional theory of
