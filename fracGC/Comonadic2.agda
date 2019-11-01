@@ -177,3 +177,28 @@ trace {A} {B} {C} a f (c , choice) =
   where
     fixer : ⟦ C ⟧ → Set
     fixer d = (● C [ proj₂ (eval f (a , c)) ] ×ᵤ 𝟙/● C [ d ]) ⟷ (● C [ d ] ×ᵤ 𝟙/● C [ d ])
+
+-- Example in Sec. 4.3 from Abramsky's paper
+-- http://www.cs.ox.ac.uk/files/341/calco05.pdf
+
+x1 x2 x3 x4 : ⟦ (𝟙 +ᵤ 𝟙) +ᵤ (𝟙 +ᵤ 𝟙) ⟧
+x1 = inj₁ (inj₁ tt)
+x2 = inj₁ (inj₂ tt)
+x3 = inj₂ (inj₁ tt)
+x4 = inj₂ (inj₂ tt)
+
+-- first define permutation (opposite of one in paper for no
+-- particular reason)
+
+-- x1 ==> x4
+-- x2 ==> x1
+-- x3 ==> x3
+-- x4 ==> x2
+
+perm : (𝟙 +ᵤ 𝟙) +ᵤ (𝟙 +ᵤ 𝟙) ⟷ (𝟙 +ᵤ 𝟙) +ᵤ (𝟙 +ᵤ 𝟙)
+perm = (swap₊ ⊕ swap₊) ⊚
+       assocr₊ ⊚ (id⟷ ⊕ assocl₊) ⊚ (id⟷ ⊕ (swap₊ ⊕ id⟷)) ⊚
+       (id⟷ ⊕ assocr₊) ⊚ assocl₊ ⊚ (id⟷ ⊕ swap₊)
+
+-- tracedperm : 
+
