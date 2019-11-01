@@ -181,24 +181,21 @@ trace {A} {B} {C} a f (c , choice) =
 -- Example in Sec. 4.3 from Abramsky's paper
 -- http://www.cs.ox.ac.uk/files/341/calco05.pdf
 
-x1 x2 x3 x4 : ⟦ (𝟙 +ᵤ 𝟙) +ᵤ (𝟙 +ᵤ 𝟙) ⟧
-x1 = inj₁ (inj₁ tt)
-x2 = inj₁ (inj₂ tt)
-x3 = inj₂ (inj₁ tt)
-x4 = inj₂ (inj₂ tt)
+p : ∀ {A1 A2 A3 A4 : 𝕌} →
+    (A1 ×ᵤ A2) ×ᵤ (A3 ×ᵤ A4) ⟷ (A2 ×ᵤ A4) ×ᵤ (A3 ×ᵤ A1)
+p = (swap⋆ ⊗ swap⋆) ⊚
+       assocr⋆ ⊚ (id⟷ ⊗ assocl⋆) ⊚ (id⟷ ⊗ (swap⋆ ⊗ id⟷)) ⊚
+       (id⟷ ⊗ assocr⋆) ⊚ assocl⋆ ⊚ (id⟷ ⊗ swap⋆)
 
--- first define permutation (opposite of one in paper for no
--- particular reason)
+p' : ∀ {A1 A2 A3 A4 : 𝕌} →
+    ((A1 ×ᵤ A2) ×ᵤ A4) ×ᵤ A3 ⟷ ((A2 ×ᵤ A4) ×ᵤ A1) ×ᵤ A3
+p' = assocr⋆ ⊚ (id⟷ ⊗ swap⋆) ⊚ p ⊚ (id⟷ ⊗ swap⋆) ⊚ assocl⋆ 
 
--- x1 ==> x4
--- x2 ==> x1
--- x3 ==> x3
--- x4 ==> x2
+p'' : ((𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) ×ᵤ 𝔹 ⟷ ((𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) ×ᵤ 𝔹
+p'' = p'
 
-perm : (𝟙 +ᵤ 𝟙) +ᵤ (𝟙 +ᵤ 𝟙) ⟷ (𝟙 +ᵤ 𝟙) +ᵤ (𝟙 +ᵤ 𝟙)
-perm = (swap₊ ⊕ swap₊) ⊚
-       assocr₊ ⊚ (id⟷ ⊕ assocl₊) ⊚ (id⟷ ⊕ (swap₊ ⊕ id⟷)) ⊚
-       (id⟷ ⊕ assocr₊) ⊚ assocl₊ ⊚ (id⟷ ⊕ swap₊)
-
--- tracedperm : 
+tracedp : (v : ⟦ ((𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) ⟧) →
+          let ((v1 , v2) , v4) = v in
+          ● ((𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) [ v ] ⟷ ● ((𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) [ (v2 , v4) , v1 ]
+tracedp v = trace v p' (v , refl)
 
