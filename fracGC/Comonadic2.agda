@@ -205,3 +205,17 @@ p2' : (v : ⟦ 𝔹 ⟧) →
       ● 𝔹 [ v ] ⟷ ● 𝔹 [ proj₁ (proj₁ (eval p ((v , v) , (v , v)))) ]
 p2' v = trace v p2 ((v , (v , v)) , refl)
 
+-- Examples to build
+
+-- A <-> 1 / (1/A)
+-- 1 / (A x B) <-> 1/A x 1/B
+-- (A <-> B) -> (1/A <-> 1/B)
+-- 1/A x B is a space transformer; takes A space and returns B space
+-- denote space transformers as A -o B
+-- They can be applied (A -o B) x A <-> B
+-- They compose (A -o B) -> (B -o C) -> (A -o C)
+-- A/B x C/D <-> (A x C) / (B x D)
+-- A/C + B/C <-> (A + B) / C
+-- A/B + C/D <-> (A x D + B x C) / (B x D)
+
+-- SAT solver Sec. 5 from https://www.cs.indiana.edu/~sabry/papers/rational.pdf
