@@ -143,3 +143,13 @@ eval-bwd plusr p = pointed-all-paths
 eval-bwd (η v) (p , r) = cong₂ _,_ pointed-contr refl
 eval-bwd (ε v) tt = refl
 eval-bwd (== c eq) p = pointed-all-paths
+
+------------------------------------------------------------------
+-- note that 'dual' doesn't quite seem to work...
+
+-- name, coname
+name : {A B : 𝕌} → (f : A ⟷ B) → (v : ⟦ A ⟧ ) → 𝟙 ⟷ ● B [ eval f v ] ×ᵤ 𝟙/● A [ v ]
+name f v = η v ⊚ (lift f ⊗ id⟷)
+
+coname : {A B : 𝕌} → (f : A ⟷ B) → (v : ⟦ A ⟧ ) → ● A [ v ] ×ᵤ 𝟙/● B [ eval f v ] ⟷ 𝟙
+coname f v = (lift f ⊗ id⟷) ⊚ ε (eval f v)
