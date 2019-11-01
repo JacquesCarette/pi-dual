@@ -10,10 +10,11 @@ open import Data.Integer as ℤ using (ℤ; +_; -[1+_]; ∣_∣; _+_; _⊔_; -_)
 open import Data.Rational
   using (ℚ)
   renaming (1/_ to recip)
-open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_]′)
 open import Data.Product -- using (_×_; _,_; proj₁; proj₂)
 open import Data.Maybe
 open import Data.Vec using (Vec; _∷_; [])
+open import Function using (id)
 open import Relation.Binary.Core using (IsEquivalence)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
@@ -96,10 +97,12 @@ data _⟷_ where
   _⊗_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (t₁ ×ᵤ t₂ ⟷ t₃ ×ᵤ t₄)
   -- comonad
   -- extract not information preserving; not reversible
-  extract : {t : 𝕌} → {v : ⟦ t ⟧} → ● t [ v ] ⟷ t
-  extend : {t₁ t₂ : 𝕌} → {v₁ : ⟦ t₁ ⟧} →
-           (c : ● t₁ [ v₁ ] ⟷ t₂) →
-           (● t₁ [ v₁ ] ⟷ ● t₂ [ eval c (⇑ v₁ refl) ])
+  -- extract : {t : 𝕌} → {v : ⟦ t ⟧} → ● t [ v ] ⟷ t
+  canonical : {v : ⟦ 𝟙 ⟧} → ● 𝟙 [ v ] ⟷ 𝟙
+  canonical⁻¹ : {v : ⟦ 𝟙 ⟧} → 𝟙 ⟷ ● 𝟙 [ v ]
+  lift : {t₁ t₂ : 𝕌} → {v₁ : ⟦ t₁ ⟧} →
+           (c : t₁ ⟷ t₂) →
+           (● t₁ [ v₁ ] ⟷ ● t₂ [ eval c v₁ ])
   tensorl : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} →
             ● t₁ ×ᵤ t₂ [ v₁ , v₂ ] ⟷ ● t₁ [ v₁ ] ×ᵤ ● t₂ [ v₂ ]
   tensorr : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} →
@@ -151,8 +154,9 @@ eval (c₁ ⊚ c₂) v = eval c₂ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
 eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
-eval extract p = ● p
-eval (extend {v₁ = v₁} c) p = ⇑ (eval c (⇑ (● p) (v≡● p))) (cong (eval c) pointed-all-paths)
+eval canonical p = tt
+eval (canonical⁻¹ {tt}) tt = ⇑ tt refl
+eval (lift {v₁ = v₁} c) p = ⇑ (eval c (● p)) (cong (eval c) (v≡● p))
 eval tensorl p = ⇑ (proj₁ (● p)) (cong proj₁ (v≡● p)) , ⇑ (proj₂ (● p)) (cong proj₂ (v≡● p))
 eval tensorr (p₁ , p₂) = ⇑ ((● p₁) , (● p₂)) (cong₂ _,_ (v≡● p₁) (v≡● p₂))
 eval (η v) tt = ⇑ v refl , λ w v≡w → tt
@@ -184,10 +188,6 @@ _□ t = id⟷
 𝔽 = inj₁ tt
 𝕋 = inj₂ tt
 
-lift : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} →
-       (c : t₁ ⟷ t₂) → (● t₁ [ v₁ ] ⟷ ● t₂ [ eval c v₁ ])
-lift c = extend (extract ⊚ c)
-
 {--
 -- Is it possible to unlift ?
 
@@ -211,18 +211,21 @@ not : ⟦ 𝔹 ⟧ → ⟦ 𝔹 ⟧
 not (inj₁ tt) = inj₂ tt
 not (inj₂ tt) = inj₁ tt
 
+-- this version might look more contrived that the fully expanded
+-- one via pattern matching, but it generalizes better.
 controlled : ∀ {A} → (⟦ A ⟧ → ⟦ A ⟧) → ⟦ 𝔹 ⟧ × ⟦ A ⟧ → ⟦ 𝔹 ⟧ × ⟦ A ⟧
-controlled f (inj₁ tt , a) = (inj₁ tt , a)
-controlled f (inj₂ tt , a) = (inj₂  tt , f a)
+controlled f (b , a) = (b , [ (λ _ → a) , (λ _ → f a) ]′ b)
+-- controlled f (inj₁ tt , a) = (inj₁ tt , a  )
+-- controlled f (inj₂ tt , a) = (inj₂ tt , f a)
 
 ------------------------------------------------------------------------------
 -- Examples
 
 zigzag : ∀ b → ● 𝔹 [ b ] ⟷ ● 𝔹 [ b ]
 zigzag b =
-  lift uniti⋆l ⊚                       -- POINTED (ONE * TWO)
-  tensorl ⊚                            -- POINTED ONE * POINTED TWO
-  ((extract ⊚ η b) ⊗ id⟷) ⊚          -- (POINTED TWO * RECIP TWO) * POINTED TWO
+  uniti⋆l ⊚                            -- ONE * POINTED TWO
+  (canonical⁻¹ ⊗ id⟷) ⊚               -- POINTED ONE * POINTED TWO
+  ((canonical ⊚ η b) ⊗ id⟷) ⊚        -- (POINTED TWO * RECIP TWO) * POINTED TWO
   assocr⋆ ⊚                            -- POINTED TWO * (RECIP TWO * POINTED TWO)
   (id⟷ ⊗ swap⋆) ⊚                    -- POINTED TWO * (POINTED TWO * RECIP TWO)
   (id⟷ ⊗ ε b) ⊚                      -- POINTED TWO * ONE
@@ -364,7 +367,7 @@ fig2b' =
 fig2b'≡ : (a b c d : ⟦ 𝔹 ⟧) →
           let (_ , e) = eval fig2b' ((a , b , c , d) , 𝔽)
           in e ≡ 𝔽
-fig2b'≡ a (inj₁ tt) c d = refl
+fig2b'≡ a         (inj₁ tt) c d = refl
 fig2b'≡ (inj₁ tt) (inj₂ tt) c d = refl
 fig2b'≡ (inj₂ tt) (inj₂ tt) c d = refl
 
@@ -444,10 +447,10 @@ space 𝟙/● t [ _ ] with space t
 encode : (t : 𝕌) → (v : ⟦ t ⟧) → ℕ
 encode 𝟙 tt = 0
 encode (t₁ +ᵤ t₂) (inj₁ v₁) = encode t₁ v₁
-encode (t₁ +ᵤ t₂) (inj₂ v₂) = {!encode t₂ v₂!}
-encode (t₁ ×ᵤ t₂) (v₁ , v₂) = {!!}
-encode ● t [ v ] w = {!!}
-encode 𝟙/● t [ f ] g = {!!}
+encode (t₁ +ᵤ t₂) (inj₂ v₂) = encode t₂ v₂
+encode (t₁ ×ᵤ t₂) (v₁ , v₂) = encode t₁ v₁ ℕ+ encode t₂ v₂
+encode (● t [ v ]) w = 1
+encode (𝟙/● t [ f ]) g = 1
 
 -- write a version of eval that takes memory of the right size
 

@@ -12,6 +12,8 @@ open import Relation.Binary.PropositionalEquality
 open import Comonadic
 
 bwd : {A B : 𝕌} → (A ⟷ B) → ⟦ B ⟧ → ⟦ A ⟧
+bwd-eval : {A B : 𝕌} → (c : A ⟷ B) → (v : ⟦ A ⟧) → bwd c (eval c v) ≡ v
+
 bwd unite₊l v = inj₂ v
 bwd uniti₊l (inj₂ v) = v
 bwd unite₊r v = inj₁ v
@@ -44,8 +46,9 @@ bwd (c₁ ⊚ c₂) v = bwd c₁ (bwd c₂ v)
 bwd (c₁ ⊕ c₂) (inj₁ v) = inj₁ (bwd c₁ v)
 bwd (c₁ ⊕ c₂) (inj₂ v) = inj₂ (bwd c₂ v)
 bwd (c₁ ⊗ c₂) (v₁ , v₂) = (bwd c₁ v₁ , bwd c₂ v₂)
-bwd (extract {v = v}) p = ⇑ v refl
-bwd (extend {v₁ = v₁} p) v = ⇑ v₁ refl
+bwd (canonical {v}) tt = ⇑ v refl
+bwd canonical⁻¹ x = tt
+bwd (lift {_} {_} {v₁} c) (⇑ ●₁ v≡●₁) = ⇑ (bwd c ●₁) (trans (sym (bwd-eval c v₁)) (cong (bwd c) v≡●₁))
 bwd tensorl (p₁ , p₂) = ⇑ (● p₁ , ● p₂) (cong₂ _,_ (v≡● p₁) (v≡● p₂))
 bwd tensorr (⇑ (v₁ , v₂) p) = ⇑ v₁ (cong proj₁ p) , ⇑ v₂ (cong proj₂ p)
 bwd plusl p = ⇑ (inj₁ (● p)) (cong inj₁ (v≡● p))
@@ -54,7 +57,6 @@ bwd (η v) p = tt
 bwd (ε v) tt = (⇑ v refl) , λ w x → tt
 bwd (== c eq) v = bwd c (subst (Pointed ⟦ _ ⟧) (sym eq) v)
 
-bwd-eval : {A B : 𝕌} → (c : A ⟷ B) → (v : ⟦ A ⟧) → bwd c (eval c v) ≡ v
 bwd-eval unite₊l (inj₂ v) = refl
 bwd-eval uniti₊l v = refl
 bwd-eval unite₊r (inj₁ v) = refl
@@ -87,8 +89,9 @@ bwd-eval (c₁ ⊚ c₂) v = trans (cong (bwd c₁) (bwd-eval c₂ (eval c₁ v)
 bwd-eval (c₁ ⊕ c₂) (inj₁ v₁) = cong inj₁ (bwd-eval c₁ v₁)
 bwd-eval (c₁ ⊕ c₂) (inj₂ v₂) = cong inj₂ (bwd-eval c₂ v₂)
 bwd-eval (c₁ ⊗ c₂) (v₁ , v₂) = cong₂ _,_ (bwd-eval c₁ v₁) (bwd-eval c₂ v₂)
-bwd-eval extract p = pointed-contr
-bwd-eval (extend c) p = pointed-contr
+bwd-eval (canonical {v}) x = pointed-all-paths
+bwd-eval canonical⁻¹ tt = refl
+bwd-eval (lift c) v = pointed-all-paths
 bwd-eval tensorl p = pointed-all-paths
 bwd-eval tensorr (p₁ , p₂) = cong₂ _,_ pointed-all-paths pointed-all-paths
 bwd-eval plusl p = pointed-all-paths
@@ -130,8 +133,9 @@ eval-bwd (c₁ ⊚ c₂) v = trans (cong (eval c₂) (eval-bwd c₁ (bwd c₂ v)
 eval-bwd (c₁ ⊕ c₂) (inj₁ v) = cong inj₁ (eval-bwd c₁ v)
 eval-bwd (c₁ ⊕ c₂) (inj₂ v) = cong inj₂ (eval-bwd c₂ v)
 eval-bwd (c₁ ⊗ c₂) (v₃ , v₄) = cong₂ _,_ (eval-bwd c₁ v₃) (eval-bwd c₂ v₄)
-eval-bwd extract p = {!!} -- irreversible
-eval-bwd (extend c) p = pointed-all-paths
+eval-bwd (canonical {v}) tt = refl
+eval-bwd (canonical⁻¹) x = pointed-all-paths
+eval-bwd (lift c) x = pointed-all-paths
 eval-bwd tensorl p = cong₂ _,_ pointed-all-paths pointed-all-paths
 eval-bwd tensorr p = pointed-all-paths
 eval-bwd plusl p = pointed-all-paths
