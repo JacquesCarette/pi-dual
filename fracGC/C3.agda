@@ -6,7 +6,6 @@ open import Data.Empty
 open import Data.Unit
 open import Data.Sum
 open import Data.Product
-open import Function
 open import Relation.Binary.PropositionalEquality
 open import Relation.Binary.Core
 open import Relation.Nullary
@@ -36,7 +35,7 @@ mutual
   ⟦ t₁ ×ᵤ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
   ⟦ ● t [ v ] ⟧ = Σ[ x ∈ ⟦ t ⟧ ] x ≡ v
   ⟦ 𝟙/● t [ v ] ⟧ = ◯  -- all information is in the type, so the value is just a token
-  
+
   data _↔_ : 𝕌 → 𝕌 → Set where
     unite₊l : {t : 𝕌} → 𝟘 +ᵤ t ↔ t
     uniti₊l : {t : 𝕌} → t ↔ 𝟘 +ᵤ t
