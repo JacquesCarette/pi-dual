@@ -147,6 +147,11 @@ eval-bwd (== c eq) p = pointed-all-paths
 ------------------------------------------------------------------
 -- note that 'dual' doesn't quite seem to work...
 
+dual : {A B : 𝕌} → (f : A ⟷ B) → (v : ⟦ A ⟧ ) →
+                   (𝟙/● B [ eval f v ] ⟷ 𝟙/● A [ v ])
+dual f v = uniti⋆l ⊚ (η v ⊗ id⟷) ⊚ ((lift f ⊗ id⟷) ⊗ id⟷) ⊚
+  assocr⋆ ⊚ (id⟷ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (ε (eval f v) ⊗ id⟷) ⊚ unite⋆l 
+
 -- name, coname
 name : {A B : 𝕌} → (f : A ⟷ B) → (v : ⟦ A ⟧ ) → 𝟙 ⟷ ● B [ eval f v ] ×ᵤ 𝟙/● A [ v ]
 name f v = η v ⊚ (lift f ⊗ id⟷)
