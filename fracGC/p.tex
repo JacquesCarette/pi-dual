@@ -279,14 +279,24 @@ Is the below a possible example?
 \begin{verbatim}
 Say we already have a permutation A <-> B
 we can implement a permutation X <-> Z 
-when there exists Y such that A/X = Y = B/Z
+when there exists Y such that A = X * Y = Z * Y = B
 
 X -> X * Y * 1/Y 
   -> A * 1/Y
   -> B * 1/Y
   -> Y * Z * 1/Y
+  -> Z * Y * 1/Y
   -> Z
 \end{verbatim}
+This basically says, in the language of Lens, that
+when $A$ is isomorphic to $X \cross Y$ and
+$B$ is isomorphic to $Z \cross Y$, then
+$X$ is isomorphic to $Y$.
+
+Another way to think of it: for all isomorphic
+$A$ and $B$, whenever they can be factored with a
+common complement ($Y$), then the ``other pieces''
+(here $X$ and $Y$) are automatically isomorphic.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Pi}
