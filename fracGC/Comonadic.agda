@@ -188,25 +188,6 @@ _□ t = id⟷
 𝔽 = inj₁ tt
 𝕋 = inj₂ tt
 
-{--
--- Is it possible to unlift ?
-
-unlift : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} →
-         (● t₁ [ v₁ ] ⟷ t₂) → (t₁ ⟷ t₂)
-unlift uniti₊l = {!!}
-unlift uniti₊r = {!!}
-unlift uniti⋆l = {!!}
-unlift uniti⋆r = {!!}
-unlift id⟷ = {!!}
-unlift (c₁ ⊚ c₂) = {!!}
-unlift extract = {!!}
-unlift (extend c) = {!!}
-unlift tensorl = {!!}
-unlift plusl = {!!}
-unlift plusr = {!!}
-unlift (== c q) = {!!}
---}
-
 not : ⟦ 𝔹 ⟧ → ⟦ 𝔹 ⟧
 not (inj₁ tt) = inj₂ tt
 not (inj₂ tt) = inj₁ tt
