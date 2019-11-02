@@ -98,8 +98,8 @@ data _⟷_ where
   -- comonad
   -- extract not information preserving; not reversible
   -- extract : {t : 𝕌} → {v : ⟦ t ⟧} → ● t [ v ] ⟷ t
-  canonical : {v : ⟦ 𝟙 ⟧} → ● 𝟙 [ v ] ⟷ 𝟙
-  canonical⁻¹ : {v : ⟦ 𝟙 ⟧} → 𝟙 ⟷ ● 𝟙 [ v ]
+--  canonical : ● 𝟙 [ tt ] ⟷ 𝟙
+--  canonical⁻¹ : 𝟙 ⟷ ● 𝟙 [ tt ]
   lift : {t₁ t₂ : 𝕌} → {v₁ : ⟦ t₁ ⟧} →
            (c : t₁ ⟷ t₂) →
            (● t₁ [ v₁ ] ⟷ ● t₂ [ eval c v₁ ])
@@ -154,9 +154,9 @@ eval (c₁ ⊚ c₂) v = eval c₂ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
 eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
-eval canonical p = tt
-eval (canonical⁻¹ {tt}) tt = ⇑ tt refl
-eval (lift {v₁ = v₁} c) p = ⇑ (eval c (● p)) (cong (eval c) (v≡● p))
+--eval canonical _ = tt
+--eval canonical⁻¹ tt = ⇑ tt refl
+eval (lift c) p = ⇑ (eval c (● p)) (cong (eval c) (v≡● p))
 eval tensorl p = ⇑ (proj₁ (● p)) (cong proj₁ (v≡● p)) , ⇑ (proj₂ (● p)) (cong proj₂ (v≡● p))
 eval tensorr (p₁ , p₂) = ⇑ ((● p₁) , (● p₂)) (cong₂ _,_ (v≡● p₁) (v≡● p₂))
 eval (η v) tt = ⇑ v refl , λ w v≡w → tt
@@ -205,8 +205,7 @@ controlled f (b , a) = (b , [ (λ _ → a) , (λ _ → f a) ]′ b)
 zigzag : ∀ b → ● 𝔹 [ b ] ⟷ ● 𝔹 [ b ]
 zigzag b =
   uniti⋆l ⊚                            -- ONE * POINTED TWO
-  (canonical⁻¹ ⊗ id⟷) ⊚               -- POINTED ONE * POINTED TWO
-  ((canonical ⊚ η b) ⊗ id⟷) ⊚        -- (POINTED TWO * RECIP TWO) * POINTED TWO
+  (η b ⊗ id⟷) ⊚        -- (POINTED TWO * RECIP TWO) * POINTED TWO
   assocr⋆ ⊚                            -- POINTED TWO * (RECIP TWO * POINTED TWO)
   (id⟷ ⊗ swap⋆) ⊚                    -- POINTED TWO * (POINTED TWO * RECIP TWO)
   (id⟷ ⊗ ε b) ⊚                      -- POINTED TWO * ONE
@@ -394,16 +393,10 @@ fig2b {a} {b} {c} {d} =
 -- Space denotational semantics
 
 -- for each type, we calculate its memory requirements which are two
--- numbers (m , z). The number m represents the amount of space need
+-- numbers (m , z). The number m represents the amount of space needed
 -- to store values of the type. The number z represents the effect of
--- the value on space when it is executed. Ex. a gc process needs m
+-- the value on space when it is interpreted. Ex. a gc process needs m
 -- bits to be stored but when run it releases z bits.
-
--- For plain types, the number z is the log of the number of values
--- (rounded up). For pointed types, the number m is 1 but z is the
--- amount of space for the values of the underlying type. For
--- fractional types, the number m is also 1 but z is negative, i.e.,
--- we release memory. Note that log(1/X) is -log(X)
 
 space : (t : 𝕌) → Maybe (ℕ × ℤ)
 space 𝟘 = nothing
@@ -419,17 +412,25 @@ space (t₁ ×ᵤ t₂) with space t₁ | space t₂
 ... | nothing | just _ = nothing
 ... | nothing | nothing = nothing
 space ● t [ _ ] with space t
-... | just (m , z) = just (1 , + m)  --- ???
+... | just (m , z) = just (m , z)
 ... | nothing = nothing -- impossible
 space 𝟙/● t [ _ ] with space t
 ... | just (m , z) = just (m , - z)
 ... | nothing = nothing -- impossible
 
+-- The type t has m values
+-- we take a value and give it a canonical index
 encode : (t : 𝕌) → (v : ⟦ t ⟧) → ℕ
 encode 𝟙 tt = 0
 encode (t₁ +ᵤ t₂) (inj₁ v₁) = encode t₁ v₁
-encode (t₁ +ᵤ t₂) (inj₂ v₂) = encode t₂ v₂
-encode (t₁ ×ᵤ t₂) (v₁ , v₂) = encode t₁ v₁ ℕ+ encode t₂ v₂
+encode (t₁ +ᵤ t₂) (inj₂ v₂) with space t₁
+... | nothing = encode t₂ v₂
+... | just (m , z) = m ℕ+ encode t₂ v₂
+encode (t₁ ×ᵤ t₂) (v₁ , v₂) with space t₁ | space t₂
+... | nothing | _ = {!!} 
+... | _ | nothing = {!!} 
+... | just (m₁ , z₁) | just (m₂ , z₂) = 
+  {!!} -- encode t₁ v₁ ℕ+ encode t₂ v₂
 encode (● t [ v ]) w = 1
 encode (𝟙/● t [ f ]) g = 1
 
