@@ -2,9 +2,10 @@
 
 module Space where
 
-open import Data.Empty using (⊥)
-open import Data.Nat using (ℕ)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Data.Nat using (ℕ; suc)
   renaming (_+_ to _ℕ+_; _*_ to _ℕ*_; _⊔_ to _ℕ⊔_)
+open import Data.Nat.Properties using (*-zeroʳ)
 open import Data.Integer as ℤ using (ℤ; +_; -[1+_]; ∣_∣; _+_; _⊔_; -_)
 open import Data.Rational
   using (ℚ)
@@ -12,6 +13,7 @@ open import Data.Rational
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Maybe
+open import Relation.Nullary using (¬_)
 open import Relation.Binary.PropositionalEquality
   renaming ([_] to R[_])
   using (_≡_; refl; sym; trans; cong; inspect)
@@ -37,6 +39,8 @@ card (t₁ ×ᵤ t₂) = card t₁ ℕ* card t₂
 card ● t [ v ] = 1
 card 𝟙/● t [ v ] = 1
 
+-- If number of points is zero then it is impossible to find a value
+-- of the type
 0empty : {t : 𝕌} → card t ≡ 0 → (v : ⟦ t ⟧) → ⊥
 0empty {𝟘} _ ()
 0empty {𝟙} () tt
@@ -57,6 +61,26 @@ card 𝟙/● t [ v ] = 1
 0empty {● t [ v ]} () (⇑ .v refl)
 0empty {𝟙/● t [ v ]} () f
 
+-- Space needed to store a value of the given type
+
+space : (t : 𝕌) → {¬t≡0 : ¬ card t ≡ 0} → ℕ
+space 𝟘 {0ne} = ⊥-elim (0ne refl)
+space 𝟙 = 0 
+space (t₁ +ᵤ t₂) {pne} with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
+... | 0 | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (pne refl) 
+... | 0 | suc n | R[ s₁ ] | R[ s₂ ] =
+  space t₂ {λ t2≡0 → ⊥-elim (pne (trans (sym s₂) t2≡0))}
+... | suc m | 0 | R[ s₁ ] | R[ s₂ ] = {!!}
+... | suc m | suc n | R[ s₁ ] | R[ s₂ ] = {!!}
+space (t₁ ×ᵤ t₂) {pne} with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
+... | 0 | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (pne refl) 
+... | 0 | suc n | R[ s₁ ] | R[ s₂ ] = ⊥-elim (pne refl) 
+... | suc m | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (pne (*-zeroʳ (suc m)))
+... | suc m | suc n | R[ s₁ ] | R[ s₂ ] = {!!}
+space ● t [ v ] = {!!} 
+space 𝟙/● t [ v ] = {!!} 
+
+{--
 space : (t : 𝕌) → Maybe (ℕ × ℤ)
 space 𝟘 = nothing
 space 𝟙 = just (0 , + 0)
@@ -93,6 +117,7 @@ encode (t₁ ×ᵤ t₂) (v₁ , v₂) with space t₁ | space t₂
 encode (● t [ v ]) w = 1
 encode (𝟙/● t [ f ]) g = 1
 
+--}
 -- write a version of eval that takes memory of the right size
 
 
