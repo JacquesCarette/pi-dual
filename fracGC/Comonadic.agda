@@ -13,40 +13,20 @@ open import Data.Rational
 open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_]′)
 open import Data.Product -- using (_×_; _,_; proj₁; proj₂)
 open import Data.Maybe
-open import Data.Vec using (Vec; _∷_; [])
 open import Function using (id)
 open import Relation.Binary.Core using (IsEquivalence)
 open import Relation.Binary.PropositionalEquality
   renaming ([_] to R[_])
 --  using (_≡_; refl; sym; trans; cong; cong₂; inspect; module ≡-Reasoning)
 open import Category.Comonad
+open import Pointed
 
 infixr 70 _×ᵤ_
 infixr 60 _+ᵤ_
 infixr 50 _⊚_
 
 ------------------------------------------------------------------------------
--- Pi with fractionals comonad
-
-record Pointed (A : Set) (v : A) : Set where
-  constructor ⇑
-  field
-    ● : A
-    v≡● : v ≡ ●
-
-open Pointed public
-
-pointed-contr : {A : Set} {v : A} {p : Pointed A v} → ⇑ v refl ≡ p
-pointed-contr {p = ⇑ v refl} = refl
-
-pointed-all-paths : {A : Set} {v : A} {p q : Pointed A v} → p ≡ q
-pointed-all-paths {p = p} {q} = trans (sym pointed-contr) pointed-contr
-
-Recip : (A : Set) → (v : A) → Set
-Recip A v = (w : A) → (v ≡ w) → ⊤
--- Recip A v = Pointed A v → ⊤
-
---
+-- Pi with fractionals
 
 data 𝕌 : Set
 ⟦_⟧ : (A : 𝕌) → Set
@@ -449,9 +429,9 @@ encode (t₁ +ᵤ t₂) (inj₂ v₂) with space t₁
 ... | nothing = encode t₂ v₂
 ... | just (m , z) = m ℕ+ encode t₂ v₂
 encode (t₁ ×ᵤ t₂) (v₁ , v₂) with space t₁ | space t₂
-... | nothing | _ = {!!} 
-... | _ | nothing = {!!} 
-... | just (m₁ , z₁) | just (m₂ , z₂) = 
+... | nothing | _ = {!!}
+... | _ | nothing = {!!}
+... | just (m₁ , z₁) | just (m₂ , z₂) =
   {!!} -- encode t₁ v₁ ℕ+ encode t₂ v₂
 encode (● t [ v ]) w = 1
 encode (𝟙/● t [ f ]) g = 1
