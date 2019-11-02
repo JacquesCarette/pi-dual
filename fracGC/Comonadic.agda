@@ -379,26 +379,34 @@ fig2b {a} {b} {c} {d} =
 -- the value on space when it is interpreted. Ex. a gc process needs m
 -- bits to be stored but when run it releases z bits.
 
+-- Number of points in type
 card : (t : 𝕌) → ℕ
 card 𝟘 = 0
 card 𝟙 = 1
 card (t₁ +ᵤ t₂) = card t₁ ℕ+ card t₂
 card (t₁ ×ᵤ t₂) = card t₁ ℕ* card t₂
-card ● t [ v ] = card t
-card 𝟙/● t [ v ] = card t
+card ● t [ v ] = 1
+card 𝟙/● t [ v ] = 1
 
 0empty : {t : 𝕌} → card t ≡ 0 → (v : ⟦ t ⟧) → ⊥ 
 0empty {𝟘} _ ()
 0empty {𝟙} () tt
-0empty {t₁ +ᵤ t₂} s (inj₁ v₁) with card t₁ | card t₂ | inspect card t₁
-0empty {t₁ +ᵤ t₂} refl (inj₁ v₁) | ℕ.zero | ℕ.zero | R[ s₁ ] = 0empty {t₁} s₁ v₁ 
-0empty {t₁ +ᵤ t₂} s (inj₂ v₂) with card t₁ | card t₂ | inspect card t₂
-0empty {t₁ +ᵤ t₂} refl (inj₂ v₂) | ℕ.zero | ℕ.zero | R[ s₂ ] = 0empty {t₂} s₂ v₂
-0empty {t₁ ×ᵤ t₂} s (v₁ , v₂) with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
-0empty {t₁ ×ᵤ t₂} refl (v₁ , v₂) | ℕ.zero | _ | R[ s₁ ] | _ = 0empty {t₁} s₁ v₁
-0empty {t₁ ×ᵤ t₂} s (v₁ , v₂) | ℕ.suc n₁ | ℕ.zero | R[ s₁ ] | R[ s₂ ] = 0empty {t₂} s₂ v₂ 
-0empty {● t [ v ]} s (⇑ .v refl) = 0empty {t} s v
-0empty {𝟙/● t [ v ]} s f = 0empty {t} s v 
+0empty {t₁ +ᵤ t₂} s (inj₁ v₁)
+  with card t₁ | card t₂ | inspect card t₁
+0empty {t₁ +ᵤ t₂} refl (inj₁ v₁) | ℕ.zero | ℕ.zero | R[ s₁ ] =
+  0empty {t₁} s₁ v₁ 
+0empty {t₁ +ᵤ t₂} s (inj₂ v₂)
+  with card t₁ | card t₂ | inspect card t₂
+0empty {t₁ +ᵤ t₂} refl (inj₂ v₂) | ℕ.zero | ℕ.zero | R[ s₂ ] =
+  0empty {t₂} s₂ v₂
+0empty {t₁ ×ᵤ t₂} s (v₁ , v₂)
+  with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
+0empty {t₁ ×ᵤ t₂} refl (v₁ , v₂) | ℕ.zero | _ | R[ s₁ ] | _ =
+  0empty {t₁} s₁ v₁
+0empty {t₁ ×ᵤ t₂} s (v₁ , v₂) | ℕ.suc n₁ | ℕ.zero | R[ s₁ ] | R[ s₂ ] =
+  0empty {t₂} s₂ v₂ 
+0empty {● t [ v ]} () (⇑ .v refl)
+0empty {𝟙/● t [ v ]} () f 
 
 space : (t : 𝕌) → Maybe (ℕ × ℤ)
 space 𝟘 = nothing
