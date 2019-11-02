@@ -5,7 +5,7 @@ module Comonadic where
 open import Data.Empty using (⊥)
 open import Data.Unit using (⊤; tt)
 open import Data.Nat using (ℕ)
-  renaming (_+_ to _ℕ+_; _⊔_ to _ℕ⊔_)
+  renaming (_+_ to _ℕ+_; _*_ to _ℕ*_; _⊔_ to _ℕ⊔_)
 open import Data.Integer as ℤ using (ℤ; +_; -[1+_]; ∣_∣; _+_; _⊔_; -_)
 open import Data.Rational
   using (ℚ)
@@ -17,7 +17,8 @@ open import Data.Vec using (Vec; _∷_; [])
 open import Function using (id)
 open import Relation.Binary.Core using (IsEquivalence)
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; trans; cong; cong₂; module ≡-Reasoning)
+  renaming ([_] to R[_])
+--  using (_≡_; refl; sym; trans; cong; cong₂; inspect; module ≡-Reasoning)
 open import Category.Comonad
 
 infixr 70 _×ᵤ_
@@ -397,6 +398,27 @@ fig2b {a} {b} {c} {d} =
 -- to store values of the type. The number z represents the effect of
 -- the value on space when it is interpreted. Ex. a gc process needs m
 -- bits to be stored but when run it releases z bits.
+
+card : (t : 𝕌) → ℕ
+card 𝟘 = 0
+card 𝟙 = 1
+card (t₁ +ᵤ t₂) = card t₁ ℕ+ card t₂
+card (t₁ ×ᵤ t₂) = card t₁ ℕ* card t₂
+card ● t [ v ] = card t
+card 𝟙/● t [ v ] = card t
+
+0empty : {t : 𝕌} → card t ≡ 0 → (v : ⟦ t ⟧) → ⊥ 
+0empty {𝟘} _ ()
+0empty {𝟙} () tt
+0empty {t₁ +ᵤ t₂} s (inj₁ v₁) with card t₁ | card t₂ | inspect card t₁
+0empty {t₁ +ᵤ t₂} refl (inj₁ v₁) | ℕ.zero | ℕ.zero | R[ s₁ ] = 0empty {t₁} s₁ v₁ 
+0empty {t₁ +ᵤ t₂} s (inj₂ v₂) with card t₁ | card t₂ | inspect card t₂
+0empty {t₁ +ᵤ t₂} refl (inj₂ v₂) | ℕ.zero | ℕ.zero | R[ s₂ ] = 0empty {t₂} s₂ v₂
+0empty {t₁ ×ᵤ t₂} s (v₁ , v₂) with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
+0empty {t₁ ×ᵤ t₂} refl (v₁ , v₂) | ℕ.zero | _ | R[ s₁ ] | _ = 0empty {t₁} s₁ v₁
+0empty {t₁ ×ᵤ t₂} s (v₁ , v₂) | ℕ.suc n₁ | ℕ.zero | R[ s₁ ] | R[ s₂ ] = 0empty {t₂} s₂ v₂ 
+0empty {● t [ v ]} s (⇑ .v refl) = 0empty {t} s v
+0empty {𝟙/● t [ v ]} s f = 0empty {t} s v 
 
 space : (t : 𝕌) → Maybe (ℕ × ℤ)
 space 𝟘 = nothing
