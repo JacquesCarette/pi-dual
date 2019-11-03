@@ -5,7 +5,7 @@ module Space where
 open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Nat using (ℕ; suc)
   renaming (_+_ to _ℕ+_; _*_ to _ℕ*_; _⊔_ to _ℕ⊔_)
-open import Data.Nat.Properties using (+-identityʳ; *-zeroʳ; 1+n≢0)
+open import Data.Nat.Properties
 open import Data.Integer as ℤ using (ℤ; +_; -[1+_]; ∣_∣; _+_; _⊔_; -_)
 open import Data.Rational
   using (ℚ)
@@ -96,9 +96,41 @@ space 𝟙/● t [ v ] = - space t {λ t≡0 → 0empty t≡0 v}
 
 -- Every combinator preserves space effects
 
-space= : ∀ (t₁ t₂ : 𝕌) → (c : t₁ ⟷ t₂) → 
-         (card t₁ ≡ 0 × card t₂ ≡ 0) ⊎ space t₁ {{!!}} ≡ space t₂ {{!!}}
-space= t₁ t₂ c = {!!} 
+space= : (t₁ t₂ : 𝕌) (C : t₁ ⟷ t₂) → ¬ (card t₁ ≡ 0) → (card t₁ ≡ card t₂)
+space= .(𝟘 +ᵤ t₂) t₂ unite₊l neq = refl
+space= t₁ .(𝟘 +ᵤ t₁) uniti₊l neq = refl
+space= .(t₂ +ᵤ 𝟘) t₂ unite₊r neq rewrite +-identityʳ (card t₂) = refl
+space= t₁ .(t₁ +ᵤ 𝟘) uniti₊r neq rewrite +-identityʳ (card t₁) = refl
+space= (t₁ +ᵤ t₂) _ swap₊ neq rewrite +-comm (card t₁) (card t₂) = refl
+space= (t₁ +ᵤ t₂ +ᵤ t₃) _ assocl₊ neq rewrite +-assoc (card t₁) (card t₂) (card t₃) = refl
+space= ((t₁ +ᵤ t₂) +ᵤ t₃) _ assocr₊ neq rewrite +-assoc (card t₁) (card t₂) (card t₃) = refl
+space= (𝟙 ×ᵤ t₂) t₂ unite⋆l neq rewrite +-identityʳ (card t₂) = refl
+space= t₁ (𝟙 ×ᵤ t₁) uniti⋆l neq rewrite +-identityʳ (card t₁) = refl
+space= (t₂ ×ᵤ 𝟙) t₂ unite⋆r neq rewrite *-identityʳ (card t₂) = refl
+space= t₁ (t₁ ×ᵤ 𝟙) uniti⋆r neq rewrite *-identityʳ (card t₁) = refl
+space= (t₁ ×ᵤ t₂) _ swap⋆ neq rewrite *-comm (card t₁) (card t₂) = refl
+space= (t₁ ×ᵤ t₂ ×ᵤ t₃) _ assocl⋆ neq rewrite *-assoc (card t₁) (card t₂) (card t₃) = refl
+space= ((t₁ ×ᵤ t₂) ×ᵤ t₃) _ assocr⋆ neq rewrite *-assoc (card t₁) (card t₂) (card t₃) = refl
+space= .(𝟘 ×ᵤ _) .𝟘 absorbr neq = refl
+space= (t ×ᵤ 𝟘) .𝟘 absorbl neq rewrite *-zeroʳ (card t) = refl
+space= .𝟘 (t ×ᵤ 𝟘) factorzr neq rewrite *-zeroʳ (card t) = refl
+space= .𝟘 .(𝟘 ×ᵤ _) factorzl neq = refl
+space= ((t₁ +ᵤ t₂) ×ᵤ t₃) _ dist neq rewrite *-distribʳ-+ (card t₃) (card t₁) (card t₂) = refl
+space= _ ((t₁ +ᵤ t₂) ×ᵤ t₃) factor neq rewrite *-distribʳ-+ (card t₃) (card t₁) (card t₂) = refl
+space= (t₃ ×ᵤ (t₁ +ᵤ t₂)) _ distl neq rewrite *-distribˡ-+ (card t₃) (card t₁) (card t₂) = refl
+space= _ (t₃ ×ᵤ (t₁ +ᵤ t₂)) factorl neq rewrite *-distribˡ-+ (card t₃) (card t₁) (card t₂) = refl
+space= t₁ .t₁ id⟷ neq = refl
+space= t₁ t₂ (c₁ ⊚ c₂) neq rewrite space= _ _ c₁ neq = space= _ _ c₂ (λ {p → neq (trans (space= _ _ c₁ neq) p)})
+space= (t₁ +ᵤ t₂) (t₃ +ᵤ t₄) (c₁ ⊕ c₂) neq = {!!}
+space= (t₁ ×ᵤ t₂) (t₃ ×ᵤ t₄) (c₁ ⊗ c₂) neq = {!!}
+space= .(● _ [ _ ]) .(● _ [ eval c _ ]) (lift c) neq = refl
+space= .(● _ ×ᵤ _ [ _ , _ ]) .(● _ [ _ ] ×ᵤ ● _ [ _ ]) tensorl neq = refl
+space= .(● _ [ _ ] ×ᵤ ● _ [ _ ]) .(● _ ×ᵤ _ [ _ , _ ]) tensorr neq = refl
+space= .(● _ +ᵤ _ [ inj₁ _ ]) .(● _ [ _ ]) plusl neq = refl
+space= .(● _ +ᵤ _ [ inj₂ _ ]) .(● _ [ _ ]) plusr neq = refl
+space= .𝟙 .(● _ [ v ] ×ᵤ 𝟙/● _ [ v ]) (η v) neq = refl
+space= .(● _ [ v ] ×ᵤ 𝟙/● _ [ v ]) .𝟙 (ε v) neq = refl
+space= .(● _ [ _ ]) .(● _ [ _ ]) (== c x) neq = refl
 
 -- Groupoid interpretation ???? Groupoid for pointed 1/A is point and
 -- (size A) loops on point labeled (= a1), (= a2), (= a3), etc.
