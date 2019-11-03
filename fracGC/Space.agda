@@ -61,16 +61,16 @@ card 𝟙/● t [ v ] = 1
 0empty {● t [ v ]} () (⇑ .v refl)
 0empty {𝟙/● t [ v ]} () f
 
--- Space needed to store a value of the given type
+-- Space effects 
 
--- m+1+n≢0 : ∀ m {n} → m + suc n ≢ 0
--- X : card t ≡ suc m
+-- For a pointed type, even though we only have one value, that value
+-- could be large and we need just as much space to store it as we
+-- would need for any value of the given type. For a fractional type,
+-- the effect is to de-allocate the space above.
 
--- Y : card t ≡ 0 ==> -- m+1+n≢0 0 (trans (sym X) Y)
-
-space : (t : 𝕌) → {¬t≡0 : ¬ card t ≡ 0} → ℕ
+space : (t : 𝕌) → {¬t≡0 : ¬ card t ≡ 0} → ℤ
 space 𝟘 {0ne} = ⊥-elim (0ne refl)
-space 𝟙 = 0 
+space 𝟙 = + 0 
 space (t₁ +ᵤ t₂) {pne} with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
 ... | 0 | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (pne refl) 
 ... | 0 | suc n | R[ s₁ ] | R[ s₂ ] =
@@ -80,90 +80,23 @@ space (t₁ +ᵤ t₂) {pne} with card t₁ | card t₂ | inspect card t₁ | in
     {λ t1≡0 →
       ⊥-elim (pne (trans (sym (trans s₁ (sym (+-identityʳ (suc m))))) t1≡0))}
 ... | suc m | suc n | R[ s₁ ] | R[ s₂ ] =
-  suc (space t₁ {λ t1≡0 → ⊥-elim (1+n≢0 (trans (sym s₁) t1≡0))} ℕ⊔
-       space t₂ {λ t2≡0 → ⊥-elim ((1+n≢0 (trans (sym s₂) t2≡0)))})
+  + 1 + (space t₁ {λ t1≡0 → ⊥-elim (1+n≢0 (trans (sym s₁) t1≡0))} ⊔
+         space t₂ {λ t2≡0 → ⊥-elim ((1+n≢0 (trans (sym s₂) t2≡0)))})
 space (t₁ ×ᵤ t₂) {pne} with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
 ... | 0 | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (pne refl) 
 ... | 0 | suc n | R[ s₁ ] | R[ s₂ ] = ⊥-elim (pne refl) 
 ... | suc m | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (pne (*-zeroʳ (suc m)))
 ... | suc m | suc n | R[ s₁ ] | R[ s₂ ] =
-  space t₁ {λ t1≡0 → ⊥-elim (1+n≢0 (trans (sym s₁) t1≡0))} ℕ+
+  space t₁ {λ t1≡0 → ⊥-elim (1+n≢0 (trans (sym s₁) t1≡0))} +
   space t₂ {λ t2≡0 → ⊥-elim (1+n≢0 (trans (sym s₂) t2≡0))}
-space ● t [ v ] = {!!} 
-space 𝟙/● t [ v ] = {!!} 
+space ● t [ v ]   = space t {λ t≡0 → 0empty t≡0 v} 
+space 𝟙/● t [ v ] = - space t {λ t≡0 → 0empty t≡0 v}  
 
-{--
-space : (t : 𝕌) → Maybe (ℕ × ℤ)
-space 𝟘 = nothing
-space 𝟙 = just (0 , + 0)
-space (t₁ +ᵤ t₂) with space t₁ | space t₂
-... | just (m , z₁) | just (n , z₂) = just (1 ℕ+ (m ℕ⊔ n) , (+ 1) + (z₁ ⊔ z₂))
-... | just (m , z) | nothing = just (m , z)
-... | nothing | just (n , z) = just (n , z)
-... | nothing | nothing = nothing
-space (t₁ ×ᵤ t₂) with space t₁ | space t₂
-... | just (m , z₁) | just (n , z₂) = just (m ℕ+ n , z₁ + z₂)
-... | just _ | nothing = nothing
-... | nothing | just _ = nothing
-... | nothing | nothing = nothing
-space ● t [ _ ] with space t
-... | just (m , z) = just (m , z)
-... | nothing = nothing -- impossible
-space 𝟙/● t [ _ ] with space t
-... | just (m , z) = just (m , - z)
-... | nothing = nothing -- impossible
+-- TODO
 
--- The type t has m values
--- we take a value and give it a canonical index
-encode : (t : 𝕌) → (v : ⟦ t ⟧) → ℕ
-encode 𝟙 tt = 0
-encode (t₁ +ᵤ t₂) (inj₁ v₁) = encode t₁ v₁
-encode (t₁ +ᵤ t₂) (inj₂ v₂) with space t₁
-... | nothing = encode t₂ v₂
-... | just (m , z) = m ℕ+ encode t₂ v₂
-encode (t₁ ×ᵤ t₂) (v₁ , v₂) with space t₁ | space t₂
-... | nothing | _ = {!!}
-... | _ | nothing = {!!}
-... | just (m₁ , z₁) | just (m₂ , z₂) =
-  {!!} -- encode t₁ v₁ ℕ+ encode t₂ v₂
-encode (● t [ v ]) w = 1
-encode (𝟙/● t [ f ]) g = 1
+-- Every combinator preserves space effects
 
---}
--- write a version of eval that takes memory of the right size
-
-
-{--
-
-size : (t : 𝕌) → ℚ
-size t = {!!}
-
--- size (Pointed A v) = size A
--- size (1/A v) = 1/size A or
-
-{--
-Actually we need to separate cardinality of the type
-and the number of bits needed in memory (log factor)
-
-Write a version of eval that makes it clear that in plain pi every
-combinator preserves memory and that fractionals allow intermediate
-combinators to allocate memory and gc it. The fractional value's
-impact on memory is that it uses negative memory.
---}
-
-𝕊 : (t : 𝕌) → (size t ≡ (+ 0 / 1)) ⊎
-              (Σ ℕ (λ m →
-              (Σ ℕ (λ n →
-              (Vec ⟦ t ⟧ m) ×
-              (Vec ⟦ t ⟧ n) ×
-              (((+ m / 1) * (recip (+ n / 1))) ≡ (+ 1 / 1))))))
-𝕊 = {!!}
-
--- Groupoids
-
--- Groupoid for pointed 1/A is point and (size A) loops on point labeled (=
--- a1), (= a2), (= a3), etc.
-
---}
+-- Groupoid interpretation ???? Groupoid for pointed 1/A is point and
+-- (size A) loops on point labeled (= a1), (= a2), (= a3), etc.
 
 ------------------------------------------------------------------------------
