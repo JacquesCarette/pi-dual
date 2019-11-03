@@ -131,7 +131,9 @@ eval (lift c) p = ⇑ (eval c (● p)) (cong (eval c) (v≡● p))
 eval tensorl p = ⇑ (proj₁ (● p)) (cong proj₁ (v≡● p)) , ⇑ (proj₂ (● p)) (cong proj₂ (v≡● p))
 eval tensorr (p₁ , p₂) = ⇑ ((● p₁) , (● p₂)) (cong₂ _,_ (v≡● p₁) (v≡● p₂))
 eval (η v) tt = ⇑ v refl , λ w v≡w → tt
+-- eval (η v) tt = ⇑ v {!!} , λ { w → {!!} }
 eval (ε v) (p , f) = f (● p) (v≡● p)
+-- eval (ε v) (p , f) = {!f p refl!} 
 eval (plusl {v = v₁}) (⇑ ● refl) = ⇑ v₁ refl
 eval (plusr {v = v₂}) (⇑ ● refl) = ⇑ v₂ refl
 eval (== c eq) v = let r = eval c v in ⇑ (● r) (trans (sym eq) (v≡● r))
