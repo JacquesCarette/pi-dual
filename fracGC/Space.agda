@@ -96,6 +96,10 @@ space 𝟙/● t [ v ] = - space t {λ t≡0 → 0empty t≡0 v}
 
 -- Every combinator preserves space effects
 
+space= : ∀ (t₁ t₂ : 𝕌) → (c : t₁ ⟷ t₂) → 
+         (card t₁ ≡ 0 × card t₂ ≡ 0) ⊎ space t₁ {{!!}} ≡ space t₂ {{!!}}
+space= t₁ t₂ c = {!!} 
+
 -- Groupoid interpretation ???? Groupoid for pointed 1/A is point and
 -- (size A) loops on point labeled (= a1), (= a2), (= a3), etc.
 
