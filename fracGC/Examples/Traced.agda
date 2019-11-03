@@ -1,6 +1,6 @@
 {-# OPTIONS --without-K #-}
 
-module Comonadic2 where
+module Examples.Traced where
 
 open import Data.Empty using (⊥)
 open import Data.Unit using (⊤; tt)
