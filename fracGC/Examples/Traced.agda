@@ -51,6 +51,18 @@ q' f1 f2 f3 f4 v u3 u3fix =
     u3′ = eval f3 u3
     u4 = eval f2 u2
 
+-- The point is that q' acts in a very particular way:
+q'-closed-form : {A1 U2 U3 U4 B1 : 𝕌} →
+  (f1 : A1 ⟷ U2) →
+  (f2 : U2 ⟷ U4) →
+  (f3 : U3 ⟷ U3) →
+  (f4 : U4 ⟷ B1) → (u3 : ⟦ U3 ⟧) (u3-fix : eval f3 u3 ≡ u3) → (v : ⟦ A1 ⟧) →
+  ● (eval (q' f1 f2 f3 f4 v u3 u3-fix) (⇑ v refl)) ≡ eval (f1 ⊚ f2 ⊚ f4) v
+q'-closed-form f1 f2 f3 f4 u3 u3fix v = refl
+
+---------------------------------------------------------------------------------
+-- I think the examples below are 'obsolete', in the sense that the one above
+-- is more faithful to the original, and more general too.  Delete?
 p : {A1 A2 A3 A4 : 𝕌} →
     (A1 ×ᵤ A2) ×ᵤ (A3 ×ᵤ A4) ⟷ (A2 ×ᵤ A4) ×ᵤ (A3 ×ᵤ A1)
 p = (swap⋆ ⊗ swap⋆) ⊚
@@ -70,6 +82,7 @@ p2' : (v : ⟦ 𝔹 ⟧) →
       ● 𝔹 [ v ] ⟷ ● 𝔹 [ proj₁ (proj₁ (eval p ((v , v) , (v , v)))) ]
 p2' v = trace v p2 ((v , (v , v)) , refl)
 
+---------------------------------------------------------------------------------
 -- Examples to build
 
 -- A <-> 1 / (1/A)
