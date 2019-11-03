@@ -4,9 +4,13 @@
 
 module Pointed where
 
-open import Data.Unit using (⊤)
+open import Data.Unit using (⊤; tt)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans)
+-- open import Level
+--   using (zero)
+-- open import Axiom.Extensionality.Propositional
+--   using (Extensionality)
 
 ------------------------------------------------------------------------------
 -- Pointed type: A type with a distinguished point
@@ -36,6 +40,15 @@ pointed-all-paths {p = p} {q} = trans (sym pointed-contr) pointed-contr
 Recip : (A : Set) → (v : A) → Set
 Recip A v = (w : A) → (v ≡ w) → ⊤
 -- Recip A v = Pointed A v → ⊤
+
+-- Recip is also contractible, if we're thinking of homotopy types.
+-- We need funext to prove it which is unsafe.
+
+-- posulate
+--   funext : Extensionality zero zero
+
+-- recip-contr : {A : Set} {v : A} {p : Recip A v} → (λ w p → tt) ≡ p
+-- recip-contr = funext (λ w → funext (λ p → refl))
 
 
 ------------------------------------------------------------------------------
