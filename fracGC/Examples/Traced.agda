@@ -12,6 +12,7 @@ open import Relation.Binary.PropositionalEquality
 open import Pointed
 open import PiFrac
 open import Trace
+open import Reasoning
 
 open import Examples.BooleanCircuits
 
@@ -20,20 +21,45 @@ open import Examples.BooleanCircuits
 -- Example in Sec. 4.3 from Abramsky's paper
 -- http://www.cs.ox.ac.uk/files/341/calco05.pdf
 
-p : ∀ {A1 A2 A3 A4 : 𝕌} →
+q : {A1 A2 A3 A4 B1 B2 B3 B4 : 𝕌} →
+  (f1 : A1 ⟷ B2) →
+  (f2 : A2 ⟷ B4) →
+  (f3 : A3 ⟷ B3) →
+  (f4 : A4 ⟷ B1) →
+  A1 ×ᵤ (A2 ×ᵤ (A3 ×ᵤ A4)) ⟷ B1 ×ᵤ (B2 ×ᵤ (B3 ×ᵤ B4))
+q {A1} {A2} {A3} {A4} {B1} {B2} {B3} {B4} f1 f2 f3 f4 =
+  (A1 ×ᵤ A2 ×ᵤ A3 ×ᵤ A4)     ⟷⟨ f1 ⊗ (f2 ⊗ (f3 ⊗ f4)) ⟩
+  (B2 ×ᵤ B4 ×ᵤ B3 ×ᵤ B1)     ⟷⟨ assocl⋆ ⟩
+  (B2 ×ᵤ B4) ×ᵤ (B3 ×ᵤ B1)   ⟷⟨ swap⋆ ⟩
+  (B3 ×ᵤ B1) ×ᵤ (B2 ×ᵤ B4)   ⟷⟨ swap⋆ ⊗ id⟷ ⟩
+  (B1 ×ᵤ B3) ×ᵤ (B2 ×ᵤ B4)   ⟷⟨ assocr⋆ ⊚ (id⟷ ⊗ assocl⋆) ⟩
+  B1 ×ᵤ ((B3 ×ᵤ B2) ×ᵤ B4)   ⟷⟨ id⟷ ⊗ ((swap⋆ ⊗ id⟷) ⊚ assocr⋆) ⟩
+  B1 ×ᵤ (B2 ×ᵤ (B3 ×ᵤ B4)) □
+
+q' : {A1 U2 U3 U4 B1 : 𝕌} →
+  (f1 : A1 ⟷ U2) →
+  (f2 : U2 ⟷ U4) →
+  (f3 : U3 ⟷ U3) →
+  (f4 : U4 ⟷ B1) → (v : ⟦ A1 ⟧) (u3 : ⟦ U3 ⟧)  → (u3-fix : eval f3 u3 ≡ u3) →
+  let u2 = eval f1 v in
+  let u4 = eval f2 u2 in
+  ● A1 [ v ] ⟷ ● B1 [ proj₁ (eval (q f1 f2 f3 f4) (v , u2 , u3 , u4)) ]
+q' f1 f2 f3 f4 v u3 u3fix =
+  trace v (q f1 f2 f3 f4) (( u2 , ( u3 , u4 ) ), cong₂ _,_ refl (cong₂ _,_ u3fix refl))
+  where
+    u2 = eval f1 v
+    u3′ = eval f3 u3
+    u4 = eval f2 u2
+
+p : {A1 A2 A3 A4 : 𝕌} →
     (A1 ×ᵤ A2) ×ᵤ (A3 ×ᵤ A4) ⟷ (A2 ×ᵤ A4) ×ᵤ (A3 ×ᵤ A1)
 p = (swap⋆ ⊗ swap⋆) ⊚
        assocr⋆ ⊚ (id⟷ ⊗ assocl⋆) ⊚ (id⟷ ⊗ (swap⋆ ⊗ id⟷)) ⊚
        (id⟷ ⊗ assocr⋆) ⊚ assocl⋆ ⊚ (id⟷ ⊗ swap⋆)
 
-p' : ∀ {A1 A2 A3 A4 : 𝕌} →
+p' : {A1 A2 A3 A4 : 𝕌} →
     ((A1 ×ᵤ A2) ×ᵤ A4) ×ᵤ A3 ⟷ ((A2 ×ᵤ A4) ×ᵤ A1) ×ᵤ A3
 p' = assocr⋆ ⊚ (id⟷ ⊗ swap⋆) ⊚ p ⊚ (id⟷ ⊗ swap⋆) ⊚ assocl⋆
-
-tracedp : (v : ⟦ ((𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) ⟧) →
-          let ((v1 , v2) , v4) = v in
-          ● ((𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) [ v ] ⟷ ● ((𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) [ (v2 , v4) , v1 ]
-tracedp v = trace v p' (v , refl)
 
 p2 : 𝔹 ×ᵤ (𝔹 ×ᵤ (𝔹 ×ᵤ 𝔹)) ⟷ 𝔹 ×ᵤ (𝔹 ×ᵤ (𝔹 ×ᵤ 𝔹))
 p2 = assocl⋆ ⊚ (swap⋆ ⊗ swap⋆) ⊚
