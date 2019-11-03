@@ -9,7 +9,10 @@ open import Data.Product
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; cong; cong₂; subst; module ≡-Reasoning)
 
-open import Comonadic
+open import Pointed
+open import PiFrac
+
+open import Examples.BooleanCircuits
 
 bwd : {A B : 𝕌} → (A ⟷ B) → ⟦ B ⟧ → ⟦ A ⟧
 bwd-eval : {A B : 𝕌} → (c : A ⟷ B) → (v : ⟦ A ⟧) → bwd c (eval c v) ≡ v
@@ -150,7 +153,7 @@ eval-bwd (== c eq) p = pointed-all-paths
 dual : {A B : 𝕌} → (f : A ⟷ B) → (v : ⟦ A ⟧ ) →
                    (𝟙/● B [ eval f v ] ⟷ 𝟙/● A [ v ])
 dual f v = uniti⋆l ⊚ (η v ⊗ id⟷) ⊚ ((lift f ⊗ id⟷) ⊗ id⟷) ⊚
-  assocr⋆ ⊚ (id⟷ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (ε (eval f v) ⊗ id⟷) ⊚ unite⋆l 
+  assocr⋆ ⊚ (id⟷ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (ε (eval f v) ⊗ id⟷) ⊚ unite⋆l
 
 -- name, coname
 name : {A B : 𝕌} → (f : A ⟷ B) → (v : ⟦ A ⟧ ) → 𝟙 ⟷ ● B [ eval f v ] ×ᵤ 𝟙/● A [ v ]
@@ -189,14 +192,14 @@ p = (swap⋆ ⊗ swap⋆) ⊚
 
 p' : ∀ {A1 A2 A3 A4 : 𝕌} →
     ((A1 ×ᵤ A2) ×ᵤ A4) ×ᵤ A3 ⟷ ((A2 ×ᵤ A4) ×ᵤ A1) ×ᵤ A3
-p' = assocr⋆ ⊚ (id⟷ ⊗ swap⋆) ⊚ p ⊚ (id⟷ ⊗ swap⋆) ⊚ assocl⋆ 
+p' = assocr⋆ ⊚ (id⟷ ⊗ swap⋆) ⊚ p ⊚ (id⟷ ⊗ swap⋆) ⊚ assocl⋆
 
 tracedp : (v : ⟦ ((𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) ⟧) →
           let ((v1 , v2) , v4) = v in
           ● ((𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) [ v ] ⟷ ● ((𝔹 ×ᵤ 𝔹) ×ᵤ 𝔹) [ (v2 , v4) , v1 ]
 tracedp v = trace v p' (v , refl)
 
-p2 : 𝔹 ×ᵤ (𝔹 ×ᵤ (𝔹 ×ᵤ 𝔹)) ⟷ 𝔹 ×ᵤ (𝔹 ×ᵤ (𝔹 ×ᵤ 𝔹)) 
+p2 : 𝔹 ×ᵤ (𝔹 ×ᵤ (𝔹 ×ᵤ 𝔹)) ⟷ 𝔹 ×ᵤ (𝔹 ×ᵤ (𝔹 ×ᵤ 𝔹))
 p2 = assocl⋆ ⊚ (swap⋆ ⊗ swap⋆) ⊚
        assocr⋆ ⊚ (id⟷ ⊗ assocl⋆) ⊚ (id⟷ ⊗ (swap⋆ ⊗ id⟷)) ⊚
        (id⟷ ⊗ assocr⋆) ⊚ assocl⋆ ⊚ (id⟷ ⊗ swap⋆) ⊚ assocr⋆

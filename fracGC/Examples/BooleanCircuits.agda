@@ -1,6 +1,6 @@
-{-# OPTIONS --without-K --allow-unsolved-metas #-}
+{-# OPTIONS --without-K #-}
 
-module Comonadic where
+module Examples.BooleanCircuits where
 
 open import Data.Empty using (⊥)
 open import Data.Unit using (⊤; tt)
@@ -11,19 +11,9 @@ open import Relation.Binary.PropositionalEquality
 
 open import Pointed
 open import PiFrac
+open import Reasoning
 
 ------------------------------------------------------------------------------
--- Set up for examples
-
-infixr 2  _⟷⟨_⟩_
-infix  3  _□
-
-_⟷⟨_⟩_ : (t₁ : 𝕌) {t₂ : 𝕌} {t₃ : 𝕌} →
-          (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
-_ ⟷⟨ α ⟩ β = α ⊚ β
-
-_□ : (t : 𝕌) → {t : 𝕌} → (t ⟷ t)
-_□ t = id⟷
 
 𝔹 : 𝕌
 𝔹 = 𝟙 +ᵤ 𝟙
