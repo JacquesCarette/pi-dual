@@ -95,7 +95,7 @@ bwd-eval tensorr (p₁ , p₂) = cong₂ _,_ pointed-all-paths pointed-all-paths
 bwd-eval plusl p = pointed-all-paths
 bwd-eval plusr p = pointed-all-paths
 bwd-eval (η v) tt = refl
-bwd-eval (ε v) (p , r) = cong₂ _,_ pointed-contr refl
+bwd-eval (ε v) (p , r) = cong₂ _,_ pointed-all-paths refl
 bwd-eval (== c eq) p = pointed-all-paths
 
 eval-bwd : {A B : 𝕌} → (c : A ⟷ B) → (v : ⟦ B ⟧) → eval c (bwd c v) ≡ v
@@ -136,6 +136,6 @@ eval-bwd tensorl p = cong₂ _,_ pointed-all-paths pointed-all-paths
 eval-bwd tensorr p = pointed-all-paths
 eval-bwd plusl p = pointed-all-paths
 eval-bwd plusr p = pointed-all-paths
-eval-bwd (η v) (p , r) = cong₂ _,_ pointed-contr refl
+eval-bwd (η v) (p , r) = cong₂ _,_ pointed-all-paths refl
 eval-bwd (ε v) tt = refl
 eval-bwd (== c eq) p = pointed-all-paths
