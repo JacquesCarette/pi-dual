@@ -5,7 +5,7 @@ module Space where
 open import Data.Empty using (⊥; ⊥-elim)
 open import Data.Nat using (ℕ; suc)
   renaming (_+_ to _ℕ+_; _*_ to _ℕ*_; _⊔_ to _ℕ⊔_)
-open import Data.Nat.Properties using (*-zeroʳ)
+open import Data.Nat.Properties using (+-identityʳ; *-zeroʳ; 1+n≢0)
 open import Data.Integer as ℤ using (ℤ; +_; -[1+_]; ∣_∣; _+_; _⊔_; -_)
 open import Data.Rational
   using (ℚ)
@@ -63,6 +63,11 @@ card 𝟙/● t [ v ] = 1
 
 -- Space needed to store a value of the given type
 
+-- m+1+n≢0 : ∀ m {n} → m + suc n ≢ 0
+-- X : card t ≡ suc m
+
+-- Y : card t ≡ 0 ==> -- m+1+n≢0 0 (trans (sym X) Y)
+
 space : (t : 𝕌) → {¬t≡0 : ¬ card t ≡ 0} → ℕ
 space 𝟘 {0ne} = ⊥-elim (0ne refl)
 space 𝟙 = 0 
@@ -70,13 +75,20 @@ space (t₁ +ᵤ t₂) {pne} with card t₁ | card t₂ | inspect card t₁ | in
 ... | 0 | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (pne refl) 
 ... | 0 | suc n | R[ s₁ ] | R[ s₂ ] =
   space t₂ {λ t2≡0 → ⊥-elim (pne (trans (sym s₂) t2≡0))}
-... | suc m | 0 | R[ s₁ ] | R[ s₂ ] = {!!}
-... | suc m | suc n | R[ s₁ ] | R[ s₂ ] = {!!}
+... | suc m | 0 | R[ s₁ ] | R[ s₂ ] =
+  space t₁
+    {λ t1≡0 →
+      ⊥-elim (pne (trans (sym (trans s₁ (sym (+-identityʳ (suc m))))) t1≡0))}
+... | suc m | suc n | R[ s₁ ] | R[ s₂ ] =
+  suc (space t₁ {λ t1≡0 → ⊥-elim (1+n≢0 (trans (sym s₁) t1≡0))} ℕ⊔
+       space t₂ {λ t2≡0 → ⊥-elim ((1+n≢0 (trans (sym s₂) t2≡0)))})
 space (t₁ ×ᵤ t₂) {pne} with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
 ... | 0 | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (pne refl) 
 ... | 0 | suc n | R[ s₁ ] | R[ s₂ ] = ⊥-elim (pne refl) 
 ... | suc m | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (pne (*-zeroʳ (suc m)))
-... | suc m | suc n | R[ s₁ ] | R[ s₂ ] = {!!}
+... | suc m | suc n | R[ s₁ ] | R[ s₂ ] =
+  space t₁ {λ t1≡0 → ⊥-elim (1+n≢0 (trans (sym s₁) t1≡0))} ℕ+
+  space t₂ {λ t2≡0 → ⊥-elim (1+n≢0 (trans (sym s₂) t2≡0))}
 space ● t [ v ] = {!!} 
 space 𝟙/● t [ v ] = {!!} 
 
