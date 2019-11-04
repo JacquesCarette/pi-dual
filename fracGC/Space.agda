@@ -13,10 +13,11 @@ open import Data.Rational
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Maybe
-open import Relation.Nullary using (¬_)
+open import Relation.Nullary using (¬_; yes; no)
 open import Relation.Binary.PropositionalEquality
   renaming ([_] to R[_])
   using (_≡_; refl; sym; trans; cong; inspect)
+open import Data.Unit using (⊤; tt)
 
 open import Pointed
 open import PiFrac
@@ -96,41 +97,51 @@ space 𝟙/● t [ v ] = - space t {λ t≡0 → 0empty t≡0 v}
 
 -- Every combinator preserves space effects
 
-space= : (t₁ t₂ : 𝕌) (C : t₁ ⟷ t₂) → ¬ (card t₁ ≡ 0) → (card t₁ ≡ card t₂)
-space= .(𝟘 +ᵤ t₂) t₂ unite₊l neq = refl
-space= t₁ .(𝟘 +ᵤ t₁) uniti₊l neq = refl
-space= .(t₂ +ᵤ 𝟘) t₂ unite₊r neq rewrite +-identityʳ (card t₂) = refl
-space= t₁ .(t₁ +ᵤ 𝟘) uniti₊r neq rewrite +-identityʳ (card t₁) = refl
-space= (t₁ +ᵤ t₂) _ swap₊ neq rewrite +-comm (card t₁) (card t₂) = refl
-space= (t₁ +ᵤ t₂ +ᵤ t₃) _ assocl₊ neq rewrite +-assoc (card t₁) (card t₂) (card t₃) = refl
-space= ((t₁ +ᵤ t₂) +ᵤ t₃) _ assocr₊ neq rewrite +-assoc (card t₁) (card t₂) (card t₃) = refl
-space= (𝟙 ×ᵤ t₂) t₂ unite⋆l neq rewrite +-identityʳ (card t₂) = refl
-space= t₁ (𝟙 ×ᵤ t₁) uniti⋆l neq rewrite +-identityʳ (card t₁) = refl
-space= (t₂ ×ᵤ 𝟙) t₂ unite⋆r neq rewrite *-identityʳ (card t₂) = refl
-space= t₁ (t₁ ×ᵤ 𝟙) uniti⋆r neq rewrite *-identityʳ (card t₁) = refl
-space= (t₁ ×ᵤ t₂) _ swap⋆ neq rewrite *-comm (card t₁) (card t₂) = refl
-space= (t₁ ×ᵤ t₂ ×ᵤ t₃) _ assocl⋆ neq rewrite *-assoc (card t₁) (card t₂) (card t₃) = refl
-space= ((t₁ ×ᵤ t₂) ×ᵤ t₃) _ assocr⋆ neq rewrite *-assoc (card t₁) (card t₂) (card t₃) = refl
-space= .(𝟘 ×ᵤ _) .𝟘 absorbr neq = refl
-space= (t ×ᵤ 𝟘) .𝟘 absorbl neq rewrite *-zeroʳ (card t) = refl
-space= .𝟘 (t ×ᵤ 𝟘) factorzr neq rewrite *-zeroʳ (card t) = refl
-space= .𝟘 .(𝟘 ×ᵤ _) factorzl neq = refl
-space= ((t₁ +ᵤ t₂) ×ᵤ t₃) _ dist neq rewrite *-distribʳ-+ (card t₃) (card t₁) (card t₂) = refl
-space= _ ((t₁ +ᵤ t₂) ×ᵤ t₃) factor neq rewrite *-distribʳ-+ (card t₃) (card t₁) (card t₂) = refl
-space= (t₃ ×ᵤ (t₁ +ᵤ t₂)) _ distl neq rewrite *-distribˡ-+ (card t₃) (card t₁) (card t₂) = refl
-space= _ (t₃ ×ᵤ (t₁ +ᵤ t₂)) factorl neq rewrite *-distribˡ-+ (card t₃) (card t₁) (card t₂) = refl
-space= t₁ .t₁ id⟷ neq = refl
-space= t₁ t₂ (c₁ ⊚ c₂) neq rewrite space= _ _ c₁ neq = space= _ _ c₂ (λ {p → neq (trans (space= _ _ c₁ neq) p)})
-space= (t₁ +ᵤ t₂) (t₃ +ᵤ t₄) (c₁ ⊕ c₂) neq = {!!}
-space= (t₁ ×ᵤ t₂) (t₃ ×ᵤ t₄) (c₁ ⊗ c₂) neq = {!!}
-space= .(● _ [ _ ]) .(● _ [ eval c _ ]) (lift c) neq = refl
-space= .(● _ ×ᵤ _ [ _ , _ ]) .(● _ [ _ ] ×ᵤ ● _ [ _ ]) tensorl neq = refl
-space= .(● _ [ _ ] ×ᵤ ● _ [ _ ]) .(● _ ×ᵤ _ [ _ , _ ]) tensorr neq = refl
-space= .(● _ +ᵤ _ [ inj₁ _ ]) .(● _ [ _ ]) plusl neq = refl
-space= .(● _ +ᵤ _ [ inj₂ _ ]) .(● _ [ _ ]) plusr neq = refl
-space= .𝟙 .(● _ [ v ] ×ᵤ 𝟙/● _ [ v ]) (η v) neq = refl
-space= .(● _ [ v ] ×ᵤ 𝟙/● _ [ v ]) .𝟙 (ε v) neq = refl
-space= .(● _ [ _ ]) .(● _ [ _ ]) (== c x) neq = refl
+card= : (t₁ t₂ : 𝕌) (C : t₁ ⟷ t₂) → (card t₁ ≡ card t₂)
+card= .(𝟘 +ᵤ t₂) t₂ unite₊l  = refl
+card= t₁ .(𝟘 +ᵤ t₁) uniti₊l  = refl
+card= .(t₂ +ᵤ 𝟘) t₂ unite₊r  rewrite +-identityʳ (card t₂) = refl
+card= t₁ .(t₁ +ᵤ 𝟘) uniti₊r  rewrite +-identityʳ (card t₁) = refl
+card= (t₁ +ᵤ t₂) _ swap₊  rewrite +-comm (card t₁) (card t₂) = refl
+card= (t₁ +ᵤ t₂ +ᵤ t₃) _ assocl₊  rewrite +-assoc (card t₁) (card t₂) (card t₃) = refl
+card= ((t₁ +ᵤ t₂) +ᵤ t₃) _ assocr₊  rewrite +-assoc (card t₁) (card t₂) (card t₃) = refl
+card= (𝟙 ×ᵤ t₂) t₂ unite⋆l  rewrite +-identityʳ (card t₂) = refl
+card= t₁ (𝟙 ×ᵤ t₁) uniti⋆l  rewrite +-identityʳ (card t₁) = refl
+card= (t₂ ×ᵤ 𝟙) t₂ unite⋆r  rewrite *-identityʳ (card t₂) = refl
+card= t₁ (t₁ ×ᵤ 𝟙) uniti⋆r  rewrite *-identityʳ (card t₁) = refl
+card= (t₁ ×ᵤ t₂) _ swap⋆  rewrite *-comm (card t₁) (card t₂) = refl
+card= (t₁ ×ᵤ t₂ ×ᵤ t₃) _ assocl⋆  rewrite *-assoc (card t₁) (card t₂) (card t₃) = refl
+card= ((t₁ ×ᵤ t₂) ×ᵤ t₃) _ assocr⋆  rewrite *-assoc (card t₁) (card t₂) (card t₃) = refl
+card= .(𝟘 ×ᵤ _) .𝟘 absorbr  = refl
+card= (t ×ᵤ 𝟘) .𝟘 absorbl  rewrite *-zeroʳ (card t) = refl
+card= .𝟘 (t ×ᵤ 𝟘) factorzr  rewrite *-zeroʳ (card t) = refl
+card= .𝟘 .(𝟘 ×ᵤ _) factorzl  = refl
+card= ((t₁ +ᵤ t₂) ×ᵤ t₃) _ dist  rewrite *-distribʳ-+ (card t₃) (card t₁) (card t₂) = refl
+card= _ ((t₁ +ᵤ t₂) ×ᵤ t₃) factor  rewrite *-distribʳ-+ (card t₃) (card t₁) (card t₂) = refl
+card= (t₃ ×ᵤ (t₁ +ᵤ t₂)) _ distl  rewrite *-distribˡ-+ (card t₃) (card t₁) (card t₂) = refl
+card= _ (t₃ ×ᵤ (t₁ +ᵤ t₂)) factorl  rewrite *-distribˡ-+ (card t₃) (card t₁) (card t₂) = refl
+card= t₁ .t₁ id⟷  = refl
+card= t₁ t₂ (c₁ ⊚ c₂)  rewrite card= _ _ c₁ | card= _ _ c₂ = refl
+card= (t₁ +ᵤ t₂) (t₃ +ᵤ t₄) (c₁ ⊕ c₂) rewrite card= _ _ c₁ | card= _ _ c₂ = refl
+card= (t₁ ×ᵤ t₂) (t₃ ×ᵤ t₄) (c₁ ⊗ c₂) rewrite card= _ _ c₁ | card= _ _ c₂ = refl
+card= .(● _ [ _ ]) .(● _ [ eval c _ ]) (lift c)  = refl
+card= .(● _ ×ᵤ _ [ _ , _ ]) .(● _ [ _ ] ×ᵤ ● _ [ _ ]) tensorl  = refl
+card= .(● _ [ _ ] ×ᵤ ● _ [ _ ]) .(● _ ×ᵤ _ [ _ , _ ]) tensorr  = refl
+card= .(● _ +ᵤ _ [ inj₁ _ ]) .(● _ [ _ ]) plusl  = refl
+card= .(● _ +ᵤ _ [ inj₂ _ ]) .(● _ [ _ ]) plusr  = refl
+card= .𝟙 .(● _ [ v ] ×ᵤ 𝟙/● _ [ v ]) (η v)  = refl
+card= .(● _ [ v ] ×ᵤ 𝟙/● _ [ v ]) .𝟙 (ε v)  = refl
+card= .(● _ [ _ ]) .(● _ [ _ ]) (== c x)  = refl
+
+space= : (t₁ t₂ : 𝕌) → (c : t₁ ⟷ t₂) → Set
+space= t₁ t₂ c with card t₁ ≟ 0
+space= t₁ t₂ c | yes _ = ⊤
+space= t₁ t₂ c | no  nz₁ = space t₁ {nz₁} ≡ space t₂ {λ nz₂ → nz₁ (trans (card= _ _ c) nz₂)}
+
+space≡ : (t₁ t₂ : 𝕌) → (c : t₁ ⟷ t₂) → space= t₁ t₂ c
+space≡ t₁ t₂ c with card t₁ ≟ 0
+space≡ t₁ t₂ c | yes _ = tt
+space≡ t₁ t₂ c | no nz₁ = {!!}
 
 -- Groupoid interpretation ???? Groupoid for pointed 1/A is point and
 -- (size A) loops on point labeled (= a1), (= a2), (= a3), etc.
