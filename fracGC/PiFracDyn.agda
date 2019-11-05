@@ -87,7 +87,8 @@ mutual
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (.x₁ , y₂) | yes refl | no ¬p = no (λ p → ¬p (cong proj₂ p))
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , .y₁) | no ¬p | yes refl = no (λ p → ¬p (cong proj₁ p))
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , y₂) | no ¬p | no ¬p₁ = no (λ p → ¬p (cong proj₁ p))
-𝕌dec ● t [ v ] (⇑ .v refl) (⇑ .v refl) = yes refl
+-- 𝕌dec ● t [ v ] (⇑ .v refl) (⇑ .v refl) = yes refl
+𝕌dec ● t [ v ] x y = yes pointed-all-paths 
 𝕌dec 𝟙/● t [ v ] ○ ○ = yes refl
 
 interp : {t₁ t₂ : 𝕌} → (t₁ ↔ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
@@ -129,11 +130,14 @@ interp (c₁ ⊚ c₂) v = interp c₂ (interp c₁ v)
 interp (c₁ ⊕ c₂) (inj₁ v) = inj₁ (interp c₁ v)
 interp (c₁ ⊕ c₂) (inj₂ v) = inj₂ (interp c₂ v)
 interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ , interp c₂ v₂
-interp (η {t} {v}) tt = ⇑ v refl , ○
+-- interp (η {t} {v}) tt = ⇑ v refl , ○
+interp (η {t} {v}) tt = (v , refl) , ○ 
 interp ε v = tt
-interp ext (⇑ v refl) = v
+-- interp ext (⇑ v refl) = v
+interp ext (v , refl) = v 
 interp (ret {t} {v}) x with 𝕌dec t x v
-interp (ret {_} {.x}) x | yes refl = ⇑ x refl
+-- interp (ret {_} {.x}) x | yes refl = ⇑ x refl
+interp (ret {_} {.x}) x | yes refl = x , refl 
 interp (ret {_} {v}) x | no ¬p = {!!} -- stuck; expecting v, seeing x which is not v
 
 𝟚 : 𝕌

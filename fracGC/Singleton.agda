@@ -5,7 +5,7 @@
 module Singleton where
 
 open import Data.Unit using (⊤; tt)
-open import Data.Product using (Σ; _,_)
+open import Data.Product 
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; subst)
 -- open import Level
@@ -45,6 +45,7 @@ prop-contr ϕ a = a , ϕ a
 --  The 'interesting' part is that the point is both a parameter
 --  and a field.
 
+{--
 record Singleton (A : Set) (v : A) : Set where
   constructor ⇑
   field
@@ -52,14 +53,15 @@ record Singleton (A : Set) (v : A) : Set where
     v≡● : v ≡ ●
 
 open Singleton public
+--}
 
--- Singleton : {A : Set} → (x : A) → Set
--- Singleton x = ∀ y → x ≡ y
-
+Singleton : (A : Set) → (v : A) → Set
+Singleton A v = ∃ (λ ● → v ≡ ●)
 
 -- Singleton types are contractible:
 pointed-contr : {A : Set} {v : A} → is-contr (Singleton A v)
-pointed-contr {A} {v} = ⇑ v refl , λ { (⇑ ● refl) → refl }
+--pointed-contr {A} {v} = ⇑ v refl , λ { (⇑ ● refl) → refl }
+pointed-contr {A} {v} = (v , refl) , λ { ( ● , refl) → refl } 
 
 -- and thus have all paths between them:
 pointed-all-paths : {A : Set} {v : A} {p q : Singleton A v} → p ≡ q
@@ -69,8 +71,14 @@ pointed-all-paths = contr-prop pointed-contr _ _
 -- The 'reciprocal' of a Singleton type is a function that accepts exactly
 -- that point, and returns no information. It acts as a 'witness' that
 -- the right point has been fed to it.
+{--
 Recip : (A : Set) → (v : A) → Set
 Recip A v = (w : A) → (v ≡ w) → ⊤
+--}
+
+Recip : (A : Set) → (v : A) → Set
+Recip A v = Singleton A v → ⊤ 
+
 -- Recip A v = Singleton A v → ⊤
 
 -- Recip is also contractible, if we're thinking of homotopy types.
