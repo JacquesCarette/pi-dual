@@ -10,6 +10,18 @@
 
 \usepackage{booktabs}  
 \usepackage{subcaption} 
+\usepackage{amssymb}
+\usepackage{bbm}
+\usepackage[greek,english]{babel}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage{autofe}
+\usepackage[references]{agda} 
+\usepackage{newunicodechar}
+
+\newunicodechar{𝕌}{$\mathbb{U}$}
+\newunicodechar{𝟙}{$1$}
+\newunicodechar{ᵤ}{${}_u$}
 
 \newcommand{\alt}{~|~}
 \newcommand{\inlv}[1]{\ensuremath{\mathit{inl}(v)}}
@@ -289,8 +301,8 @@ X -> X * Y * 1/Y
   -> Z
 \end{verbatim}
 This basically says, in the language of Lens, that
-when $A$ is isomorphic to $X \cross Y$ and
-$B$ is isomorphic to $Z \cross Y$, then
+when $A$ is isomorphic to $X \times Y$ and
+$B$ is isomorphic to $Z \times Y$, then
 $X$ is isomorphic to $Y$.
 
 Another way to think of it: for all isomorphic
@@ -300,8 +312,6 @@ common complement ($Y$), then the ``other pieces''
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Pi}
-
-Adding variables to Pi first?
 
 Plain Pi over finite types:
 \[\begin{array}{lrcl}
@@ -313,7 +323,39 @@ Plain Pi over finite types:
 \textit{Level-2 programs} & \alpha &::=& \cdots 
 \end{array}\]
 
-Add eta/epsilon leading to \verb|C3.agda|. This code has a runtime
+When ancilla bits are created they are created with a specific
+value. This value is encoded in the circuit. We use a Singleton type
+to remember this information. We add the following:
+
+\AgdaHide{
+\begin{code}
+infix  70 _×ᵤ_
+infix  60 _+ᵤ_
+infix  40 _↔_
+
+mutual 
+
+  data 𝕌 : Set where
+    𝟘 : 𝕌
+    𝟙 : 𝕌
+    _+ᵤ_ : 𝕌 → 𝕌 → 𝕌
+    _×ᵤ_ : 𝕌 → 𝕌 → 𝕌
+    ●_[_] : (t : 𝕌) → ⟦ t ⟧ → 𝕌
+    𝟙/●_[_] : (t : 𝕌) → ⟦ t ⟧ → 𝕌
+
+  ⟦_⟧ : 𝕌 → Set
+  ⟦ t ⟧ = ?
+
+  data _↔_ : 𝕌 → 𝕌 → Set where
+
+\end{code}
+}
+
+\begin{code}
+    η : {t : 𝕌}  {v : ⟦ t ⟧} → 𝟙 ↔ ● t [ v ] ×ᵤ 𝟙/● t [ v ]
+\end{code}
+
+Add eta/epsilon leading to \verb|PiFracDyn.agda|. This code has a runtime
 check like current solutions but is more general allowing non-scoped
 ancilla allocation and de-allocation. Show examples.
 
@@ -353,7 +395,7 @@ categorification
 Use all the constructions name, coname, etc. and see what they do in this context!
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\bibliography{../cites.bib}
+\bibliography{../../cites.bib}
 
 \end{document}
 
