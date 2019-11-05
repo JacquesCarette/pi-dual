@@ -329,6 +329,10 @@ to remember this information. We add the following:
 
 \AgdaHide{
 \begin{code}
+open import Data.Unit using (⊤; tt)
+open import Relation.Binary.PropositionalEquality
+  using (_≡_; refl; sym; trans; subst)
+
 infix  70 _×ᵤ_
 infix  60 _+ᵤ_
 infix  40 _↔_
@@ -344,7 +348,7 @@ mutual
     𝟙/●_[_] : (t : 𝕌) → ⟦ t ⟧ → 𝕌
 
   ⟦_⟧ : 𝕌 → Set
-  ⟦ t ⟧ = ?
+  ⟦ t ⟧ = ⊤
 
   data _↔_ : 𝕌 → 𝕌 → Set where
 
@@ -355,28 +359,27 @@ mutual
     η : {t : 𝕌}  {v : ⟦ t ⟧} → 𝟙 ↔ ● t [ v ] ×ᵤ 𝟙/● t [ v ]
 \end{code}
 
-Add eta/epsilon leading to \verb|PiFracDyn.agda|. This code has a runtime
-check like current solutions but is more general allowing non-scoped
-ancilla allocation and de-allocation. Show examples.
+The value of fractional type represents the ``garbage collector.''
+The garbage collector is specialized to collect a single value, which
+is the value used to create the ancilla value. At this point, if the
+garbage collector encounters a different value, it doesn't know what
+to do, and would need to throw an exception. This situation in
+\verb|PiFracDyn.agda| is similar to current solutions (e.g. Quipper)
+but actually more general as it allows non-scoped ancilla allocation
+and de-allocation. Show examples.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Comonad}
+\section{Dependently-Typed Garbage Collectors}
 
-Comonad to keep track to value in focus 
+The denotation of the fractional type is now:
+\begin{code}
+Recip : (A : Set) → (v : A) → Set
+Recip A v = (w : A) → (v ≡ w) → ⊤
+\end{code}
 
-Now we define pointed types $\pointed{t}{v}$ which are a record
-consisting of a value type together with a value of that type. Both
-the level-1 and level-2 program lift naturally to the world of pointed
-types but instead of manually rewriting everything we use the fact
-that pointed types form a comonad. So for example, given a level-1
-program we should be able to just use \textsf{extend} to compose
-instead of plain composition of combinators??
-
-Then we can define $\eta$ and $\epsilon$ in the comonadic world.
- 
 Exploit dependent types to reify proofs in the type system. Type
 checking requires (partial) eval. Once we have a proof can we somehow
-go back to \verb|C3.agda| and remove the runtime check?
+go back to \verb|PiFracDyn.agda| and remove the runtime check?
 
 Polymorphic type for ancilla?
 
