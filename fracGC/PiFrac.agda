@@ -23,9 +23,10 @@ infixr 50 _⊚_
 -- Pi with fractionals
 
 -- The following are all mutually dependent:
+
 data 𝕌 : Set                               -- 𝕌niverse of types
-⟦_⟧ : (A : 𝕌) → Set                         -- denotation of types
-data _⟷_ : 𝕌 → 𝕌 → Set                    -- type equivalences
+⟦_⟧ : (A : 𝕌) → Set                        -- denotation of types
+data _⟷_ : 𝕌 → 𝕌 → Set                     -- type equivalences
 eval : {A B : 𝕌} → (A ⟷ B) → ⟦ A ⟧ → ⟦ B ⟧ -- evaluating an equivalence
 
 data 𝕌 where
@@ -40,9 +41,8 @@ data 𝕌 where
 ⟦ 𝟙 ⟧ = ⊤
 ⟦ t₁ +ᵤ t₂ ⟧ = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
 ⟦ t₁ ×ᵤ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-⟦ ● A [ v ] ⟧ = Singleton ⟦ A ⟧ v -- type has a parameter v and a point ● such that v ≡ ●
-⟦ 𝟙/● A [ v ] ⟧ = Recip ⟦ A ⟧ v -- type inhabited by just one function from Singleton A v to ⊤
-
+⟦ ● A [ v ] ⟧ = Singleton ⟦ A ⟧ v
+⟦ 𝟙/● A [ v ] ⟧ = Recip ⟦ A ⟧ v
 
 data _⟷_ where
   unite₊l : {t : 𝕌} → 𝟘 +ᵤ t ⟷ t
@@ -71,7 +71,6 @@ data _⟷_ where
   _⊚_     : {t₁ t₂ t₃ : 𝕌} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
   _⊕_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (t₁ +ᵤ t₂ ⟷ t₃ +ᵤ t₄)
   _⊗_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (t₁ ×ᵤ t₂ ⟷ t₃ ×ᵤ t₄)
-  -----
   -- new operations on Singleton
   lift : {t₁ t₂ : 𝕌} → {v₁ : ⟦ t₁ ⟧} →
            (c : t₁ ⟷ t₂) →
@@ -127,24 +126,15 @@ eval (c₁ ⊚ c₂) v = eval c₂ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
 eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
--- eval (lift c) p = ⇑ (eval c (● p)) (cong (eval c) (v≡● p))
 eval (lift c) (w , v≡w) = eval c w , cong (eval c) v≡w 
--- eval tensorl p = ⇑ (proj₁ (● p)) (cong proj₁ (v≡● p)) , ⇑ (proj₂ (● p)) (cong proj₂ (v≡● p))
 eval tensorl ((w₁ , w₂) , vp≡wp) =
   (w₁ , cong proj₁ vp≡wp) , (w₂ , cong proj₂ vp≡wp)
--- eval tensorr (p₁ , p₂) = ⇑ ((● p₁) , (● p₂)) (cong₂ _,_ (v≡● p₁) (v≡● p₂))
-eval tensorr (p₁ , p₂) = {!!} 
--- eval (η v) tt = ⇑ v refl , λ w v≡w → tt
+eval tensorr ((w₁ , p₁) , (w₂ , p₂)) =
+  (w₁ , w₂) , cong₂ _,_ p₁ p₂ 
 eval (η v) tt = (v , refl) , λ _ → tt 
--- eval (η v) tt = ⇑ v {!!} , λ { w → {!!} }
--- eval (ε v) (p , f) = f (● p) (v≡● p)
 eval (ε v) (p , f) = f p 
--- eval (ε v) (p , f) = {!f p refl!} 
--- eval (plusl {v = v₁}) (⇑ ● refl) = ⇑ v₁ refl
-eval (plusl {v = v₁}) xx = {!!} 
--- eval (plusr {v = v₂}) (⇑ ● refl) = ⇑ v₂ refl
-eval (plusr {v = v₂}) xx = {!!} 
--- eval (== c eq) v = let r = eval c v in ⇑ (● r) (trans (sym eq) (v≡● r))
-eval (== c eq) v = {!!} 
+eval (plusl {v = .w₁}) (inj₁ w₁ , refl) = w₁ , refl 
+eval (plusr {v = v₂}) (inj₂ w₂ , refl) = w₂ , refl
+eval (== c eq) s₁ = let (w₂ , p) = eval c s₁ in w₂ , trans (sym eq) p 
 
 ------------------------------------------------------------------------------

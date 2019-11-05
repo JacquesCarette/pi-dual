@@ -48,10 +48,10 @@ zigzag b =
   (id⟷ ⊗ ε b) ⊚           -- POINTED TWO * ONE
   unite⋆r
 
-test1 = eval (zigzag 𝔽) (⇑ 𝔽 refl)      -- (⇑ #f refl)
--- test2 = eval (zigzag 𝔽) (⇑ 𝕋 refl)   -- typechecks if given proof #f=#t
--- test3 = eval (zigzag 𝕋) (⇑ 𝔽 refl)   -- typechecks if given proof #f=#t
-test4 = eval (zigzag 𝕋) (⇑ 𝕋 refl)      -- (⇑ #t refl)
+test1 = eval (zigzag 𝔽) (𝔽 , refl)      -- (⇑ #f refl)
+-- test2 = eval (zigzag 𝔽) (𝕋 , refl)   -- typechecks if given proof #f=#t
+-- test3 = eval (zigzag 𝕋) (𝔽 , refl)   -- typechecks if given proof #f=#t
+test4 = eval (zigzag 𝕋) (𝕋 , refl)      -- (⇑ #t refl)
 
 -- Conventional PI examples
 

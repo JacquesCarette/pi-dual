@@ -59,7 +59,7 @@ card 𝟙/● t [ v ] = 1
   0empty {t₁} s₁ v₁
 0empty {t₁ ×ᵤ t₂} s (v₁ , v₂) | ℕ.suc n₁ | ℕ.zero | R[ s₁ ] | R[ s₂ ] =
   0empty {t₂} s₂ v₂
-0empty {● t [ v ]} () (⇑ .v refl)
+0empty {● t [ v ]} () (.v , refl)
 0empty {𝟙/● t [ v ]} () f
 
 -- Space effects 

@@ -57,7 +57,7 @@ q'-closed-form : {A1 U2 U3 U4 B1 : 𝕌} →
   (f2 : U2 ⟷ U4) →
   (f3 : U3 ⟷ U3) →
   (f4 : U4 ⟷ B1) → (u3 : ⟦ U3 ⟧) (u3-fix : eval f3 u3 ≡ u3) → (v : ⟦ A1 ⟧) →
-  ● (eval (q' f1 f2 f3 f4 v u3 u3-fix) (⇑ v refl)) ≡ eval (f1 ⊚ f2 ⊚ f4) v
+  proj₁ (eval (q' f1 f2 f3 f4 v u3 u3-fix) (v , refl)) ≡ eval (f1 ⊚ f2 ⊚ f4) v
 q'-closed-form f1 f2 f3 f4 u3 u3fix v = refl
 
 ---------------------------------------------------------------------------------

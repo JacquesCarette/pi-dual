@@ -48,13 +48,13 @@ bwd (c₁ ⊚ c₂) v = bwd c₁ (bwd c₂ v)
 bwd (c₁ ⊕ c₂) (inj₁ v) = inj₁ (bwd c₁ v)
 bwd (c₁ ⊕ c₂) (inj₂ v) = inj₂ (bwd c₂ v)
 bwd (c₁ ⊗ c₂) (v₁ , v₂) = (bwd c₁ v₁ , bwd c₂ v₂)
-bwd (lift {_} {_} {v₁} c) (⇑ ●₁ v≡●₁) = ⇑ (bwd c ●₁) (trans (sym (bwd-eval c v₁)) (cong (bwd c) v≡●₁))
-bwd tensorl (p₁ , p₂) = ⇑ (● p₁ , ● p₂) (cong₂ _,_ (v≡● p₁) (v≡● p₂))
-bwd tensorr (⇑ (v₁ , v₂) p) = ⇑ v₁ (cong proj₁ p) , ⇑ v₂ (cong proj₂ p)
-bwd plusl p = ⇑ (inj₁ (● p)) (cong inj₁ (v≡● p))
-bwd plusr p = ⇑ (inj₂ (● p)) (cong inj₂ (v≡● p))
+bwd (lift {_} {_} {v₁} c) (●₁ , v≡●₁) = (bwd c ●₁) , (trans (sym (bwd-eval c v₁)) (cong (bwd c) v≡●₁))
+bwd tensorl ((w₁ , p₁) , (w₂ , p₂)) = (w₁ ,  w₂) , (cong₂ _,_ p₁ p₂)
+bwd tensorr ((v₁ , v₂) , p) = (v₁ , cong proj₁ p) , (v₂ , cong proj₂ p)
+bwd plusl (w , p) = (inj₁ w) , (cong inj₁ p)
+bwd plusr (w , p) = (inj₂ w) , (cong inj₂ p)
 bwd (η v) p = tt
-bwd (ε v) tt = (⇑ v refl) , λ w x → tt
+bwd (ε v) tt = (v , refl) , λ _ → tt
 bwd (== c eq) v = bwd c (subst (Singleton ⟦ _ ⟧) (sym eq) v)
 
 bwd-eval unite₊l (inj₂ v) = refl
