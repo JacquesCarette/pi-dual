@@ -132,7 +132,8 @@ eval tensorl ((w₁ , w₂) , vp≡wp) =
 eval tensorr ((w₁ , p₁) , (w₂ , p₂)) =
   (w₁ , w₂) , cong₂ _,_ p₁ p₂ 
 eval (η v) tt = (v , refl) , λ _ → tt 
-eval (ε v) (p , f) = f p 
+eval (ε v) (p , f) = tt -- f p
+-- LOOK HERE
 eval (plusl {v = .w₁}) (inj₁ w₁ , refl) = w₁ , refl 
 eval (plusr {v = v₂}) (inj₂ w₂ , refl) = w₂ , refl
 eval (== c eq) s₁ = let (w₂ , p) = eval c s₁ in w₂ , trans (sym eq) p 

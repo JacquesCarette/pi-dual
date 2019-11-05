@@ -138,8 +138,12 @@ interp ext (v , refl) = v
 interp (ret {t} {v}) x with 𝕌dec t x v
 -- interp (ret {_} {.x}) x | yes refl = ⇑ x refl
 interp (ret {_} {.x}) x | yes refl = x , refl 
-interp (ret {_} {v}) x | no ¬p = {!!} -- stuck; expecting v, seeing x which is not v
-
+interp (ret {_} {v}) x | no ¬p =
+  v , refl 
+  -- bogus of course but nothing prevents us from writing this
+  -- we are expecting v, seeing x which is not v
+  -- we should be stuck; raise an exception or something
+  
 𝟚 : 𝕌
 𝟚 = 𝟙 +ᵤ 𝟙
 
