@@ -1,8 +1,8 @@
 {-# OPTIONS --without-K --safe #-}
 
--- Pointed type and its 'inverse'
+-- Singleton type and its 'inverse'
 
-module Pointed where
+module Singleton where
 
 open import Data.Unit using (⊤; tt)
 open import Data.Product using (Σ; _,_)
@@ -41,33 +41,37 @@ prop-contr : {A : Set} → is-prop A → A → is-contr A
 prop-contr ϕ a = a , ϕ a
 
 ------------------------------------------------------------------------------
--- Pointed type: A type with a distinguished point
+-- Singleton type: A type with a distinguished point
 --  The 'interesting' part is that the point is both a parameter
 --  and a field.
 
-record Pointed (A : Set) (v : A) : Set where
+record Singleton (A : Set) (v : A) : Set where
   constructor ⇑
   field
     ● : A
     v≡● : v ≡ ●
 
-open Pointed public
+open Singleton public
 
--- Pointed types are contractible:
-pointed-contr : {A : Set} {v : A} → is-contr (Pointed A v)
+-- Singleton : {A : Set} → (x : A) → Set
+-- Singleton x = ∀ y → x ≡ y
+
+
+-- Singleton types are contractible:
+pointed-contr : {A : Set} {v : A} → is-contr (Singleton A v)
 pointed-contr {A} {v} = ⇑ v refl , λ { (⇑ ● refl) → refl }
 
 -- and thus have all paths between them:
-pointed-all-paths : {A : Set} {v : A} {p q : Pointed A v} → p ≡ q
+pointed-all-paths : {A : Set} {v : A} {p q : Singleton A v} → p ≡ q
 pointed-all-paths = contr-prop pointed-contr _ _
 
 ------------------------------------------------------------------------------
--- The 'reciprocal' of a Pointed type is a function that accepts exactly
+-- The 'reciprocal' of a Singleton type is a function that accepts exactly
 -- that point, and returns no information. It acts as a 'witness' that
 -- the right point has been fed to it.
 Recip : (A : Set) → (v : A) → Set
 Recip A v = (w : A) → (v ≡ w) → ⊤
--- Recip A v = Pointed A v → ⊤
+-- Recip A v = Singleton A v → ⊤
 
 -- Recip is also contractible, if we're thinking of homotopy types.
 -- We need funext to prove it which is not --safe
@@ -81,10 +85,10 @@ Recip A v = (w : A) → (v ≡ w) → ⊤
 
 ------------------------------------------------------------------------------
 
--- Recip' : {A : Set} {v : A} → Pointed A v → Set
+-- Recip' : {A : Set} {v : A} → Singleton A v → Set
 -- Recip' {A} {v} (⇑ w v≡w) = v ≡ w
 
--- Recip'-ptd : {A : Set} {v : A} → (p : Pointed A v) → Pointed (Recip' p) (v≡● p)
+-- Recip'-ptd : {A : Set} {v : A} → (p : Singleton A v) → Singleton (Recip' p) (v≡● p)
 -- Recip'-ptd (⇑ w v≡w) = ⇑ v≡w refl
 
 -- family of path types from arbitrary w to a fixed v

@@ -9,7 +9,7 @@ open import Data.Product
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; cong; cong₂; subst; module ≡-Reasoning)
 
-open import Pointed
+open import Singleton
 open import PiFrac
 open import Trace
 open import Reasoning

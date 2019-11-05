@@ -19,7 +19,7 @@ open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; cong; inspect)
 open import Data.Unit using (⊤; tt)
 
-open import Pointed
+open import Singleton
 open import PiFrac
 
 ------------------------------------------------------------------------------

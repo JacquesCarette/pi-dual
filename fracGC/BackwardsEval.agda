@@ -10,7 +10,7 @@ open import Data.Product using (_,_; proj₁; proj₂)
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; cong; cong₂; subst)
 
-open import Pointed
+open import Singleton
 open import PiFrac
 
 bwd : {A B : 𝕌} → (A ⟷ B) → ⟦ B ⟧ → ⟦ A ⟧
@@ -55,7 +55,7 @@ bwd plusl p = ⇑ (inj₁ (● p)) (cong inj₁ (v≡● p))
 bwd plusr p = ⇑ (inj₂ (● p)) (cong inj₂ (v≡● p))
 bwd (η v) p = tt
 bwd (ε v) tt = (⇑ v refl) , λ w x → tt
-bwd (== c eq) v = bwd c (subst (Pointed ⟦ _ ⟧) (sym eq) v)
+bwd (== c eq) v = bwd c (subst (Singleton ⟦ _ ⟧) (sym eq) v)
 
 bwd-eval unite₊l (inj₂ v) = refl
 bwd-eval uniti₊l v = refl

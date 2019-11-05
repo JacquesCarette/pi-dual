@@ -13,7 +13,7 @@ open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; cong; cong₂)
 
 -- The basic types we add:
-open import Pointed
+open import Singleton
 
 infixr 70 _×ᵤ_
 infixr 60 _+ᵤ_
@@ -40,8 +40,8 @@ data 𝕌 where
 ⟦ 𝟙 ⟧ = ⊤
 ⟦ t₁ +ᵤ t₂ ⟧ = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
 ⟦ t₁ ×ᵤ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-⟦ ● A [ v ] ⟧ = Pointed ⟦ A ⟧ v -- type has a parameter v and a point ● such that v ≡ ●
-⟦ 𝟙/● A [ v ] ⟧ = Recip ⟦ A ⟧ v -- type inhabited by just one function from Pointed A v to ⊤
+⟦ ● A [ v ] ⟧ = Singleton ⟦ A ⟧ v -- type has a parameter v and a point ● such that v ≡ ●
+⟦ 𝟙/● A [ v ] ⟧ = Recip ⟦ A ⟧ v -- type inhabited by just one function from Singleton A v to ⊤
 
 
 data _⟷_ where
@@ -72,7 +72,7 @@ data _⟷_ where
   _⊕_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (t₁ +ᵤ t₂ ⟷ t₃ +ᵤ t₄)
   _⊗_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (t₁ ×ᵤ t₂ ⟷ t₃ ×ᵤ t₄)
   -----
-  -- new operations on Pointed
+  -- new operations on Singleton
   lift : {t₁ t₂ : 𝕌} → {v₁ : ⟦ t₁ ⟧} →
            (c : t₁ ⟷ t₂) →
            (● t₁ [ v₁ ] ⟷ ● t₂ [ eval c v₁ ])
