@@ -330,6 +330,7 @@ to remember this information. We add the following:
 \AgdaHide{
 \begin{code}
 open import Data.Unit using (⊤; tt)
+open import Data.Product
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; subst)
 
@@ -352,12 +353,21 @@ mutual
 
   data _↔_ : 𝕌 → 𝕌 → Set where
 
+Singleton : (A : Set) → (v : A) → Set
+Singleton A v = ∃ (λ ● → v ≡ ●)
 \end{code}
 }
 
+\AgdaHide{
 \begin{code}
-    η : {t : 𝕌}  {v : ⟦ t ⟧} → 𝟙 ↔ ● t [ v ] ×ᵤ 𝟙/● t [ v ]
+postulate 
 \end{code}
+}
+\begin{code}
+  η : {t : 𝕌}  {v : ⟦ t ⟧} → 𝟙 ↔ ● t [ v ] ×ᵤ 𝟙/● t [ v ]
+\end{code}
+
+
 
 The value of fractional type represents the ``garbage collector.''
 The garbage collector is specialized to collect a single value, which
@@ -374,7 +384,7 @@ and de-allocation. Show examples.
 The denotation of the fractional type is now:
 \begin{code}
 Recip : (A : Set) → (v : A) → Set
-Recip A v = (w : A) → (v ≡ w) → ⊤
+Recip A v = Singleton A v → ⊤ 
 \end{code}
 
 Exploit dependent types to reify proofs in the type system. Type
