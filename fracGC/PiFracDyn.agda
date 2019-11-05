@@ -1,14 +1,16 @@
 {-# OPTIONS --without-K #-}
 
-module C3 where
+module PiFracDyn where
 open import Data.Bool
 open import Data.Empty
 open import Data.Unit
 open import Data.Sum
 open import Data.Product
-open import Relation.Binary.PropositionalEquality
+open import Relation.Binary.PropositionalEquality hiding ([_])
 open import Relation.Binary.Core
 open import Relation.Nullary
+
+open import Singleton
 
 infix  70 _×ᵤ_
 infix  60 _+ᵤ_
@@ -33,7 +35,8 @@ mutual
   ⟦ 𝟙 ⟧ = ⊤
   ⟦ t₁ +ᵤ t₂ ⟧ = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
   ⟦ t₁ ×ᵤ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
-  ⟦ ● t [ v ] ⟧ = Σ[ x ∈ ⟦ t ⟧ ] x ≡ v
+--  ⟦ ● t [ v ] ⟧ = Σ[ x ∈ ⟦ t ⟧ ] x ≡ v
+  ⟦ ● t [ v ] ⟧ = Singleton ⟦ t ⟧ v 
   ⟦ 𝟙/● t [ v ] ⟧ = ◯  -- all information is in the type, so the value is just a token
 
   data _↔_ : 𝕌 → 𝕌 → Set where
@@ -63,7 +66,6 @@ mutual
     _⊚_     : {t₁ t₂ t₃ : 𝕌} → (t₁ ↔ t₂) → (t₂ ↔ t₃) → (t₁ ↔ t₃)
     _⊕_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ +ᵤ t₂ ↔ t₃ +ᵤ t₄)
     _⊗_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ ×ᵤ t₂ ↔ t₃ ×ᵤ t₄)
-    -- new combinators
     η : {t : 𝕌} {v : ⟦ t ⟧} → 𝟙 ↔ ● t [ v ] ×ᵤ 𝟙/● t [ v ]
     ε : {t : 𝕌} {v : ⟦ t ⟧} → ● t [ v ] ×ᵤ 𝟙/● t [ v ] ↔ 𝟙
     ext : {t : 𝕌} {v : ⟦ t ⟧} → ● t [ v ] ↔ t
@@ -85,7 +87,7 @@ mutual
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (.x₁ , y₂) | yes refl | no ¬p = no (λ p → ¬p (cong proj₂ p))
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , .y₁) | no ¬p | yes refl = no (λ p → ¬p (cong proj₁ p))
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , y₂) | no ¬p | no ¬p₁ = no (λ p → ¬p (cong proj₁ p))
-𝕌dec ● t [ v ] (.v , refl) (.v , refl) = yes refl
+𝕌dec ● t [ v ] (⇑ .v refl) (⇑ .v refl) = yes refl
 𝕌dec 𝟙/● t [ v ] ○ ○ = yes refl
 
 interp : {t₁ t₂ : 𝕌} → (t₁ ↔ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
@@ -127,12 +129,12 @@ interp (c₁ ⊚ c₂) v = interp c₂ (interp c₁ v)
 interp (c₁ ⊕ c₂) (inj₁ v) = inj₁ (interp c₁ v)
 interp (c₁ ⊕ c₂) (inj₂ v) = inj₂ (interp c₂ v)
 interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ , interp c₂ v₂
-interp (η {t} {v}) tt = (v , refl) , ○
+interp (η {t} {v}) tt = ⇑ v refl , ○
 interp ε v = tt
-interp ext (v , refl) = v
+interp ext (⇑ v refl) = v
 interp (ret {t} {v}) x with 𝕌dec t x v
-interp (ret {_} {.x}) x | yes refl = x , refl
-interp (ret {_} {v}) x | no ¬p = {!!}  -- stuck
+interp (ret {_} {.x}) x | yes refl = ⇑ x refl
+interp (ret {_} {v}) x | no ¬p = {!!} -- stuck; expecting v, seeing x which is not v
 
 𝟚 : 𝕌
 𝟚 = 𝟙 +ᵤ 𝟙
