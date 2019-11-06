@@ -56,6 +56,8 @@ bwd plusr (w , p) = (inj₂ w) , (cong inj₂ p)
 bwd (η v) p = tt
 bwd (ε v) tt = (v , refl) , λ _ → tt
 bwd (== c eq) v = bwd c (subst (Singleton ⟦ _ ⟧) (sym eq) v)
+bwd (focus v) (.v , refl) = tt
+bwd unfocus v = v , {!!} 
 
 bwd-eval unite₊l (inj₂ v) = refl
 bwd-eval uniti₊l v = refl
@@ -97,6 +99,8 @@ bwd-eval plusr p = pointed-all-paths
 bwd-eval (η v) tt = refl
 bwd-eval (ε v) (p , r) = cong₂ _,_ pointed-all-paths refl
 bwd-eval (== c eq) p = pointed-all-paths
+bwd-eval (focus v) tt = {!!}
+bwd-eval unfocus (v , refl) = {!!} 
 
 eval-bwd : {A B : 𝕌} → (c : A ⟷ B) → (v : ⟦ B ⟧) → eval c (bwd c v) ≡ v
 eval-bwd unite₊l v = refl
@@ -139,3 +143,5 @@ eval-bwd plusr p = pointed-all-paths
 eval-bwd (η v) (p , r) = cong₂ _,_ pointed-all-paths refl
 eval-bwd (ε v) tt = refl
 eval-bwd (== c eq) p = pointed-all-paths
+eval-bwd (focus v) (v , refl) = {!!}
+eval-bwd unfocus v = {!!} 
