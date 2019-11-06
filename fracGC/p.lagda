@@ -311,7 +311,24 @@ common complement ($Y$), then the ``other pieces''
 (here $X$ and $Y$) are automatically isomorphic.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Pi}
+\section{Preliminaries}
+
+%%%%%
+\subsection{Singleton Types}
+
+Consider the type $\Sigma \mathbb{N} (\lambda n. n \equiv 5)$. Values
+of that type are a number $m$ and a proof that this is number is equal
+to 5. So we can have $(4 + 1, \textit{refl})$, $(2 + 3 ,
+\textit{refl})$, and so on. All these syntactically different values
+are identical to 5 and hence we can \emph{contract} the type to a
+single point at 5. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{PiFrac}
+
+%%%%%
+\subsection{Pi}
 
 Plain Pi over finite types:
 \[\begin{array}{lrcl}
@@ -322,6 +339,12 @@ Plain Pi over finite types:
 \textit{Level-2 types} &&& c \Leftrightarrow c \\
 \textit{Level-2 programs} & \alpha &::=& \cdots 
 \end{array}\]
+
+%%%%%
+\subsection{Adding Fractions}
+
+%%%%%
+\subsection{Ancilla}
 
 When ancilla bits are created they are created with a specific
 value. This value is encoded in the circuit. We use a Singleton type
