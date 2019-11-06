@@ -88,9 +88,25 @@ p2' v = trace v p2 ((v , (v , v)) , refl)
 -- A <-> 1 / (1/A)
 -- 1 / (A x B) <-> 1/A x 1/B
 -- (A <-> B) -> (1/A <-> 1/B)
+
+---------------------------------------------------------------------------------
+-- Intuition:
 -- 1/A x B is a space transformer; takes A space and returns B space
 -- denote space transformers as A -o B
--- They can be applied (A -o B) x A <-> B
+--
+-- Best we can do:
+-- we need Singletons, so |a -o b| is 1 component of a function.
+_-o_ : {A : 𝕌} → (a : ⟦ A ⟧) → {B : 𝕌} → (b : ⟦ B ⟧) → 𝕌
+_-o_ {A} a {B} b = 𝟙/● A [ a ] ×ᵤ ● B [ b ]
+
+-- It can be applied in a very special case:  (a -o b) x ● A [ a ] <-> ● B [ b ]
+app : {A B : 𝕌} {a : ⟦ A ⟧} {b : ⟦ B ⟧} → (a -o b) ×ᵤ ● A [ a ] ⟷ ● B [ b ]
+app {A} {B} {a} {b} =
+  (𝟙/● A [ a ] ×ᵤ ● B [ b ]) ×ᵤ ● A [ a ] ⟷⟨ swap⋆ ⊗ id⟷ ⟩
+  (● B [ b ] ×ᵤ 𝟙/● A [ a ]) ×ᵤ ● A [ a ] ⟷⟨ assocr⋆ ⊚ (id⟷ ⊗ (swap⋆ ⊚ ε a)) ⟩
+  ● B [ b ] ×ᵤ 𝟙                          ⟷⟨ unite⋆r ⟩
+  ● B [ b ] □
+
 -- They compose (A -o B) -> (B -o C) -> (A -o C)
 -- A/B x C/D <-> (A x C) / (B x D)
 -- A/C + B/C <-> (A + B) / C
