@@ -27,17 +27,18 @@ mutual
     𝟙 : 𝕌
     _+ᵤ_ : 𝕌 → 𝕌 → 𝕌
     _×ᵤ_ : 𝕌 → 𝕌 → 𝕌
-    ●_[_] : (t : 𝕌) → ⟦ t ⟧ → 𝕌
-    𝟙/●_[_] : (t : 𝕌) → ⟦ t ⟧ → 𝕌
+--    ●_[_] : (t : 𝕌) → ⟦ t ⟧ → 𝕌
+--    𝟙/●_[_] : (t : 𝕌) → ⟦ t ⟧ → 𝕌
+    𝟙/_ : (t : 𝕌) → 𝕌
 
   ⟦_⟧ : 𝕌 → Set
   ⟦ 𝟘 ⟧ = ⊥
   ⟦ 𝟙 ⟧ = ⊤
   ⟦ t₁ +ᵤ t₂ ⟧ = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
   ⟦ t₁ ×ᵤ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
---  ⟦ ● t [ v ] ⟧ = Σ[ x ∈ ⟦ t ⟧ ] x ≡ v
-  ⟦ ● t [ v ] ⟧ = Singleton ⟦ t ⟧ v 
-  ⟦ 𝟙/● t [ v ] ⟧ = ◯  -- all information is in the type, so the value is just a token
+--  ⟦ ● t [ v ] ⟧ = ⟦ t ⟧ -- Singleton ⟦ t ⟧ v 
+--  ⟦ 𝟙/● t [ v ] ⟧ = ◯  -- all information is in the type, so the value is just a token
+  ⟦ 𝟙/ t ⟧ = ◯
 
   data _↔_ : 𝕌 → 𝕌 → Set where
     unite₊l : {t : 𝕌} → 𝟘 +ᵤ t ↔ t
@@ -66,11 +67,14 @@ mutual
     _⊚_     : {t₁ t₂ t₃ : 𝕌} → (t₁ ↔ t₂) → (t₂ ↔ t₃) → (t₁ ↔ t₃)
     _⊕_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ +ᵤ t₂ ↔ t₃ +ᵤ t₄)
     _⊗_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ ×ᵤ t₂ ↔ t₃ ×ᵤ t₄)
-    η : {t : 𝕌} {v : ⟦ t ⟧} → 𝟙 ↔ ● t [ v ] ×ᵤ 𝟙/● t [ v ]
-    ε : {t : 𝕌} {v : ⟦ t ⟧} → ● t [ v ] ×ᵤ 𝟙/● t [ v ] ↔ 𝟙
-    ext : {t : 𝕌} {v : ⟦ t ⟧} → ● t [ v ] ↔ t
-    ret : {t : 𝕌} {v : ⟦ t ⟧} → t ↔ ● t [ v ]
+--    η : {t : 𝕌} {v : ⟦ t ⟧} → 𝟙 ↔ ● t [ v ] ×ᵤ 𝟙/● t [ v ]
+    η : {t : 𝕌} {v : ⟦ t ⟧} → 𝟙 ↔ t ×ᵤ (𝟙/ t)
+--    ε : {t : 𝕌} {v : ⟦ t ⟧} → ● t [ v ] ×ᵤ 𝟙/● t [ v ] ↔ 𝟙
+    ε : {t : 𝕌} {v : ⟦ t ⟧} → t ×ᵤ (𝟙/ t) ↔ 𝟙
+--    ext : {t : 𝕌} {v : ⟦ t ⟧} → ● t [ v ] ↔ t
+--    ret : {t : 𝕌} {v : ⟦ t ⟧} → t ↔ ● t [ v ]
 
+{--
 𝕌dec : (t : 𝕌) → Decidable (_≡_ {A = ⟦ t ⟧})
 𝕌dec 𝟘 ()
 𝕌dec 𝟙 tt tt = yes refl
@@ -88,8 +92,10 @@ mutual
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , .y₁) | no ¬p | yes refl = no (λ p → ¬p (cong proj₁ p))
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , y₂) | no ¬p | no ¬p₁ = no (λ p → ¬p (cong proj₁ p))
 -- 𝕌dec ● t [ v ] (⇑ .v refl) (⇑ .v refl) = yes refl
-𝕌dec ● t [ v ] x y = yes pointed-all-paths 
+-- 𝕌dec ● t [ v ] x y = yes pointed-all-paths
+𝕌dec ● t [ v ] x y = {!!} -- 
 𝕌dec 𝟙/● t [ v ] ○ ○ = yes refl
+--}
 
 interp : {t₁ t₂ : 𝕌} → (t₁ ↔ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
 interp unite₊l (inj₁ ())
@@ -130,19 +136,17 @@ interp (c₁ ⊚ c₂) v = interp c₂ (interp c₁ v)
 interp (c₁ ⊕ c₂) (inj₁ v) = inj₁ (interp c₁ v)
 interp (c₁ ⊕ c₂) (inj₂ v) = inj₂ (interp c₂ v)
 interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ , interp c₂ v₂
--- interp (η {t} {v}) tt = ⇑ v refl , ○
-interp (η {t} {v}) tt = (v , refl) , ○ 
-interp ε v = tt
--- interp ext (⇑ v refl) = v
-interp ext (v , refl) = v 
-interp (ret {t} {v}) x with 𝕌dec t x v
--- interp (ret {_} {.x}) x | yes refl = ⇑ x refl
-interp (ret {_} {.x}) x | yes refl = x , refl 
-interp (ret {_} {v}) x | no ¬p =
-  v , refl 
-  -- bogus of course but nothing prevents us from writing this
+--interp (η {t} {v}) tt = (v , refl) , ○ 
+interp (η {t} {v}) tt = v , ○ 
+interp (ε {t} {v}) (v' , ○) = tt -- if v ≡ v' then tt else throw Error
+-- interp ext (v , refl) = v
+-- interp ext v = v
+-- interp (ret {t} {v}) x with 𝕌dec t x v
+-- interp (ret {_} {.x}) x | yes refl = x , refl 
+-- interp (ret {_} {.x}) x | yes refl = x
+-- interp (ret {_} {v}) x | no ¬p = {!!} 
   -- we are expecting v, seeing x which is not v
-  -- we should be stuck; raise an exception or something
+-- interp (ret {t} {v}) x = x 
   
 𝟚 : 𝕌
 𝟚 = 𝟙 +ᵤ 𝟙
@@ -157,8 +161,17 @@ interp (ret {_} {v}) x | no ¬p =
 --     ┌──⊕────┴───  ───┐
 --     └────────────────┘
 id' : 𝟚 ↔ 𝟚
+{--
 id' = uniti⋆r ⊚ (id↔ ⊗ η {v = 𝔽}) ⊚ assocl⋆ ⊚
       (((id↔ ⊗ ext) ⊚ xorr ⊚ xorl ⊚ swap⋆ ⊚ (id↔ ⊗ ret)) ⊗ id↔) ⊚
+      assocr⋆ ⊚ (id↔ ⊗ ε {v = 𝔽}) ⊚ unite⋆r
+      where
+      xorr xorl : 𝟚 ×ᵤ 𝟚 ↔ 𝟚 ×ᵤ 𝟚
+      xorr = dist ⊚ (id↔ ⊕ (id↔ ⊗ swap₊)) ⊚ factor
+      xorl = distl ⊚ (id↔ ⊕ (swap₊ ⊗ id↔)) ⊚ factorl
+--}
+id' = uniti⋆r ⊚ (id↔ ⊗ η {v = 𝔽}) ⊚ assocl⋆ ⊚
+      ((xorr ⊚ xorl ⊚ swap⋆) ⊗ id↔) ⊚
       assocr⋆ ⊚ (id↔ ⊗ ε {v = 𝔽}) ⊚ unite⋆r
       where
       xorr xorl : 𝟚 ×ᵤ 𝟚 ↔ 𝟚 ×ᵤ 𝟚
@@ -178,6 +191,6 @@ ex2 = refl
 --     ┌─────    ──────┐
 --     └───────────────┘
 switch : 𝟙 ↔ 𝟙
-switch = uniti⋆r ⊚ (η {v = 𝔽} ⊗ η) ⊚ assocl⋆ ⊚
+switch = uniti⋆r ⊚ (η {v = 𝔽} ⊗ η {v = 𝔽}) ⊚ assocl⋆ ⊚
          (((swap⋆ ⊗ id↔) ⊚ assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔)
-         ⊚ assocr⋆ ⊚ (ε ⊗ ε) ⊚ unite⋆r
+         ⊚ assocr⋆ ⊚ (ε {v = 𝔽} ⊗ ε {v = 𝔽}) ⊚ unite⋆r
