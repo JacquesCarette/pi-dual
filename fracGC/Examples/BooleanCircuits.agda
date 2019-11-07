@@ -53,6 +53,9 @@ test1 = eval (zigzag 𝔽) (𝔽 , refl)      -- (⇑ #f refl)
 -- test3 = eval (zigzag 𝕋) (𝔽 , refl)   -- typechecks if given proof #f=#t
 test4 = eval (zigzag 𝕋) (𝕋 , refl)      -- (⇑ #t refl)
 
+zigzagU : ⟦ 𝔹 ⟧ → ⟦ 𝔹 ⟧ 
+zigzagU b = unfocus (eval (zigzag b) (focus b))
+
 -- Conventional PI examples
 
 NOT : 𝔹 ⟷ 𝔹

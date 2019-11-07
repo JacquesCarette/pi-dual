@@ -89,9 +89,6 @@ data _⟷_ where
   -- prop eq
   == : ∀ {t₁ t₂ : 𝕌} {v : ⟦ t₁ ⟧} {w w' : ⟦ t₂ ⟧} →
        (● t₁ [ v ] ⟷ ● t₂ [ w ]) → (w ≡ w') → (● t₁ [ v ] ⟷ ● t₂ [ w' ])
-  -- focus and unfocus
-  focus : {t : 𝕌} → (v : ⟦ t ⟧) → 𝟙 ⟷ ● t [ v ]
-  unfocus : {t : 𝕌} {v : ⟦ t ⟧} → ● t [ v ] ⟷ t
 
 eval unite₊l (inj₂ v) = v
 eval uniti₊l v  = inj₂ v
@@ -139,7 +136,12 @@ eval (ε v) (p , f) = f p
 eval (plusl {v = .w₁}) (inj₁ w₁ , refl) = w₁ , refl 
 eval (plusr {v = v₂}) (inj₂ w₂ , refl) = w₂ , refl
 eval (== c eq) s₁ = let (w₂ , p) = eval c s₁ in w₂ , trans (sym eq) p 
-eval (focus v) tt = v , refl
-eval unfocus (v , refl) = v 
+
+
+focus : {t : 𝕌} → (v : ⟦ t ⟧) → Singleton ⟦ t ⟧ v
+focus v = (v , refl)
+
+unfocus : {t : 𝕌} {v : ⟦ t ⟧} → Singleton ⟦ t ⟧ v → ⟦ t ⟧
+unfocus (v , refl) = v
 
 ------------------------------------------------------------------------------
