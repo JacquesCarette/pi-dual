@@ -6,6 +6,8 @@ open import Data.Empty
 open import Data.Unit
 open import Data.Sum
 open import Data.Product
+open import Data.Maybe
+open import Function
 open import Relation.Binary.PropositionalEquality hiding ([_])
 open import Relation.Binary.Core
 open import Relation.Nullary
@@ -76,7 +78,6 @@ mutual
     --    ext : {t : 𝕌} {v : ⟦ t ⟧} → ● t [ v ] ↔ t
     --    ret : {t : 𝕌} {v : ⟦ t ⟧} → t ↔ ● t [ v ]
 
-{--
 𝕌dec : (t : 𝕌) → Decidable (_≡_ {A = ⟦ t ⟧})
 𝕌dec 𝟘 ()
 𝕌dec 𝟙 tt tt = yes refl
@@ -93,53 +94,51 @@ mutual
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (.x₁ , y₂) | yes refl | no ¬p = no (λ p → ¬p (cong proj₂ p))
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , .y₁) | no ¬p | yes refl = no (λ p → ¬p (cong proj₁ p))
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , y₂) | no ¬p | no ¬p₁ = no (λ p → ¬p (cong proj₁ p))
--- 𝕌dec ● t [ v ] (⇑ .v refl) (⇑ .v refl) = yes refl
--- 𝕌dec ● t [ v ] x y = yes pointed-all-paths
-𝕌dec ● t [ v ] x y = {!!} -- 
-𝕌dec 𝟙/● t [ v ] ○ ○ = yes refl
---}
+𝕌dec (𝟙/ t) ○ ○ = yes refl
 
-interp : {t₁ t₂ : 𝕌} → (t₁ ↔ t₂) → ⟦ t₁ ⟧ → ⟦ t₂ ⟧
+interp : {t₁ t₂ : 𝕌} → (t₁ ↔ t₂) → ⟦ t₁ ⟧ → Maybe ⟦ t₂ ⟧
 interp unite₊l (inj₁ ())
-interp unite₊l (inj₂ v) = v
-interp uniti₊l v = inj₂ v
-interp unite₊r (inj₁ v) = v
+interp unite₊l (inj₂ v) = just v
+interp uniti₊l v = just (inj₂ v)
+interp unite₊r (inj₁ v) = just v
 interp unite₊r (inj₂ ())
-interp uniti₊r v = inj₁ v
-interp swap₊ (inj₁ v) = inj₂ v
-interp swap₊ (inj₂ v) = inj₁ v
-interp assocl₊ (inj₁ v) = inj₁ (inj₁ v)
-interp assocl₊ (inj₂ (inj₁ v)) = inj₁ (inj₂ v)
-interp assocl₊ (inj₂ (inj₂ v)) = inj₂ v
-interp assocr₊ (inj₁ (inj₁ v)) = inj₁ v
-interp assocr₊ (inj₁ (inj₂ v)) = inj₂ (inj₁ v)
-interp assocr₊ (inj₂ v) = inj₂ (inj₂ v)
-interp unite⋆l v = proj₂ v
-interp uniti⋆l v = tt , v
-interp unite⋆r v = proj₁ v
-interp uniti⋆r v = v , tt
-interp swap⋆ (v₁ , v₂) = v₂ , v₁
-interp assocl⋆ (v₁ , v₂ , v₃) = (v₁ , v₂) , v₃
-interp assocr⋆ ((v₁ , v₂) , v₃) = v₁ , v₂ , v₃
+interp uniti₊r v = just (inj₁ v)
+interp swap₊ (inj₁ v) = just (inj₂ v)
+interp swap₊ (inj₂ v) = just (inj₁ v)
+interp assocl₊ (inj₁ v) = just (inj₁ (inj₁ v))
+interp assocl₊ (inj₂ (inj₁ v)) = just (inj₁ (inj₂ v))
+interp assocl₊ (inj₂ (inj₂ v)) = just (inj₂ v)
+interp assocr₊ (inj₁ (inj₁ v)) = just (inj₁ v)
+interp assocr₊ (inj₁ (inj₂ v)) = just (inj₂ (inj₁ v))
+interp assocr₊ (inj₂ v) = just (inj₂ (inj₂ v))
+interp unite⋆l v = just (proj₂ v)
+interp uniti⋆l v = just (tt , v)
+interp unite⋆r v = just (proj₁ v)
+interp uniti⋆r v = just (v , tt)
+interp swap⋆ (v₁ , v₂) = just (v₂ , v₁)
+interp assocl⋆ (v₁ , v₂ , v₃) = just ((v₁ , v₂) , v₃)
+interp assocr⋆ ((v₁ , v₂) , v₃) = just (v₁ , v₂ , v₃)
 interp absorbr (() , v)
 interp absorbl (v , ())
 interp factorzr ()
 interp factorzl ()
-interp dist (inj₁ v₁ , v₃) = inj₁ (v₁ , v₃)
-interp dist (inj₂ v₂ , v₃) = inj₂ (v₂ , v₃)
-interp factor (inj₁ (v₁ , v₃)) = inj₁ v₁ , v₃
-interp factor (inj₂ (v₂ , v₃)) = inj₂ v₂ , v₃
-interp distl (v₁ , inj₁ v₂) = inj₁ (v₁ , v₂)
-interp distl (v₁ , inj₂ v₃) = inj₂ (v₁ , v₃)
-interp factorl (inj₁ (v₁ , v₂)) = v₁ , inj₁ v₂
-interp factorl (inj₂ (v₁ , v₃)) = v₁ , inj₂ v₃
-interp id↔ v = v
-interp (c₁ ⊚ c₂) v = interp c₂ (interp c₁ v)
-interp (c₁ ⊕ c₂) (inj₁ v) = inj₁ (interp c₁ v)
-interp (c₁ ⊕ c₂) (inj₂ v) = inj₂ (interp c₂ v)
-interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ , interp c₂ v₂
-interp (η {t} {v}) tt = v , ○ 
-interp (ε {t} {v}) (v' , ○) = tt -- if v ≡ v' then tt else throw Error
+interp dist (inj₁ v₁ , v₃) = just (inj₁ (v₁ , v₃))
+interp dist (inj₂ v₂ , v₃) = just (inj₂ (v₂ , v₃))
+interp factor (inj₁ (v₁ , v₃)) = just (inj₁ v₁ , v₃)
+interp factor (inj₂ (v₂ , v₃)) = just (inj₂ v₂ , v₃)
+interp distl (v₁ , inj₁ v₂) = just (inj₁ (v₁ , v₂))
+interp distl (v₁ , inj₂ v₃) = just (inj₂ (v₁ , v₃))
+interp factorl (inj₁ (v₁ , v₂)) = just (v₁ , inj₁ v₂)
+interp factorl (inj₂ (v₁ , v₃)) = just (v₁ , inj₂ v₃)
+interp id↔ v = just v
+interp (c₁ ⊚ c₂) v = interp c₁ v >>= interp c₂
+interp (c₁ ⊕ c₂) (inj₁ v) = interp c₁ v >>= just ∘ inj₁
+interp (c₁ ⊕ c₂) (inj₂ v) = interp c₂ v >>= just ∘ inj₂
+interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ >>= (λ v₁' → interp c₂ v₂ >>= λ v₂' → just (v₁' , v₂'))
+interp (η {t} {v}) tt = just (v , ○)
+interp (ε {t} {v}) (v' , ○) with 𝕌dec t v v'
+interp (ε {t} {v}) (v' , ○) | yes _ = just tt
+interp (ε {t} {v}) (v' , ○) | no  _ = nothing -- if v ≡ v' then tt else throw Error
 -- interp (η {t} {v}) tt = (v , refl) , ○ 
 -- interp ext (v , refl) = v
 -- interp ext v = v
@@ -180,10 +179,10 @@ id' = uniti⋆r ⊚ (id↔ ⊗ η {v = 𝔽}) ⊚ assocl⋆ ⊚
       xorr = dist ⊚ (id↔ ⊕ (id↔ ⊗ swap₊)) ⊚ factor
       xorl = distl ⊚ (id↔ ⊕ (swap₊ ⊗ id↔)) ⊚ factorl
 
-ex1 : interp id' 𝕋 ≡ 𝕋
+ex1 : interp id' 𝕋 ≡ just 𝕋
 ex1 = refl
 
-ex2 : interp id' 𝔽 ≡ 𝔽
+ex2 : interp id' 𝔽 ≡ just 𝔽
 ex2 = refl
 
 
