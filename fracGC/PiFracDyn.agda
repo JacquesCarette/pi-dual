@@ -12,8 +12,6 @@ open import Relation.Binary.PropositionalEquality hiding ([_])
 open import Relation.Binary.Core
 open import Relation.Nullary
 
-open import Singleton
-
 infix  70 _×ᵤ_
 infix  60 _+ᵤ_
 infix  40 _↔_
@@ -31,8 +29,6 @@ mutual
     _+ᵤ_ : 𝕌 → 𝕌 → 𝕌
     _×ᵤ_ : 𝕌 → 𝕌 → 𝕌
     𝟙/_ : (t : 𝕌) → 𝕌
-    -- ●_[_] : (t : 𝕌) → ⟦ t ⟧ → 𝕌
-    -- 𝟙/●_[_] : (t : 𝕌) → ⟦ t ⟧ → 𝕌
 
   ⟦_⟧ : 𝕌 → Set
   ⟦ 𝟘 ⟧ = ⊥
@@ -40,9 +36,6 @@ mutual
   ⟦ t₁ +ᵤ t₂ ⟧ = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
   ⟦ t₁ ×ᵤ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
   ⟦ 𝟙/ t ⟧ = ◯
-  --  ⟦ ● t [ v ] ⟧ = ⟦ t ⟧ -- Singleton ⟦ t ⟧ v 
-  --  ⟦ 𝟙/● t [ v ] ⟧ = ◯
-      -- all information is in the type, so the value is just a token
 
   data _↔_ : 𝕌 → 𝕌 → Set where
     unite₊l : {t : 𝕌} → 𝟘 +ᵤ t ↔ t
@@ -73,10 +66,6 @@ mutual
     _⊗_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ ×ᵤ t₂ ↔ t₃ ×ᵤ t₄)
     η : {t : 𝕌} {v : ⟦ t ⟧} → 𝟙 ↔ t ×ᵤ (𝟙/ t)
     ε : {t : 𝕌} {v : ⟦ t ⟧} → t ×ᵤ (𝟙/ t) ↔ 𝟙
-    --    η : {t : 𝕌} {v : ⟦ t ⟧} → 𝟙 ↔ ● t [ v ] ×ᵤ 𝟙/● t [ v ]
-    --    ε : {t : 𝕌} {v : ⟦ t ⟧} → ● t [ v ] ×ᵤ 𝟙/● t [ v ] ↔ 𝟙
-    --    ext : {t : 𝕌} {v : ⟦ t ⟧} → ● t [ v ] ↔ t
-    --    ret : {t : 𝕌} {v : ⟦ t ⟧} → t ↔ ● t [ v ]
 
 𝕌dec : (t : 𝕌) → Decidable (_≡_ {A = ⟦ t ⟧})
 𝕌dec 𝟘 ()
@@ -139,16 +128,9 @@ interp (η {t} {v}) tt = just (v , ○)
 interp (ε {t} {v}) (v' , ○) with 𝕌dec t v v'
 interp (ε {t} {v}) (v' , ○) | yes _ = just tt
 interp (ε {t} {v}) (v' , ○) | no  _ = nothing -- if v ≡ v' then tt else throw Error
--- interp (η {t} {v}) tt = (v , refl) , ○ 
--- interp ext (v , refl) = v
--- interp ext v = v
--- interp (ret {t} {v}) x with 𝕌dec t x v
--- interp (ret {_} {.x}) x | yes refl = x , refl 
--- interp (ret {_} {.x}) x | yes refl = x
--- interp (ret {_} {v}) x | no ¬p = {!!} 
-   -- we are expecting v, seeing x which is not v
--- interp (ret {t} {v}) x = x 
   
+--- Examples
+
 𝟚 : 𝕌
 𝟚 = 𝟙 +ᵤ 𝟙
 
@@ -156,35 +138,25 @@ interp (ε {t} {v}) (v' , ○) | no  _ = nothing -- if v ≡ v' then tt else thr
 𝔽 = inj₁ tt
 𝕋 = inj₂ tt
 
+xorr xorl : 𝟚 ×ᵤ 𝟚 ↔ 𝟚 ×ᵤ 𝟚
+xorr = dist ⊚ (id↔ ⊕ (id↔ ⊗ swap₊)) ⊚ factor
+xorl = distl ⊚ (id↔ ⊕ (swap₊ ⊗ id↔)) ⊚ factorl
+
 
 --   ─────┬────⊕───  ───────
 --        |    |   ⨉
 --     ┌──⊕────┴───  ───┐
 --     └────────────────┘
 id' : 𝟚 ↔ 𝟚
-{--
-id' = uniti⋆r ⊚ (id↔ ⊗ η {v = 𝔽}) ⊚ assocl⋆ ⊚
-      (((id↔ ⊗ ext) ⊚ xorr ⊚ xorl ⊚ swap⋆ ⊚ (id↔ ⊗ ret)) ⊗ id↔) ⊚
-      assocr⋆ ⊚ (id↔ ⊗ ε {v = 𝔽}) ⊚ unite⋆r
-      where
-      xorr xorl : 𝟚 ×ᵤ 𝟚 ↔ 𝟚 ×ᵤ 𝟚
-      xorr = dist ⊚ (id↔ ⊕ (id↔ ⊗ swap₊)) ⊚ factor
-      xorl = distl ⊚ (id↔ ⊕ (swap₊ ⊗ id↔)) ⊚ factorl
---}
 id' = uniti⋆r ⊚ (id↔ ⊗ η {v = 𝔽}) ⊚ assocl⋆ ⊚
       ((xorr ⊚ xorl ⊚ swap⋆) ⊗ id↔) ⊚
       assocr⋆ ⊚ (id↔ ⊗ ε {v = 𝔽}) ⊚ unite⋆r
-      where
-      xorr xorl : 𝟚 ×ᵤ 𝟚 ↔ 𝟚 ×ᵤ 𝟚
-      xorr = dist ⊚ (id↔ ⊕ (id↔ ⊗ swap₊)) ⊚ factor
-      xorl = distl ⊚ (id↔ ⊕ (swap₊ ⊗ id↔)) ⊚ factorl
 
 ex1 : interp id' 𝕋 ≡ just 𝕋
 ex1 = refl
 
 ex2 : interp id' 𝔽 ≡ just 𝔽
 ex2 = refl
-
 
 --     ┌──────  ───────┐
 --     └──────╲╱───────┘
@@ -193,5 +165,17 @@ ex2 = refl
 --     └───────────────┘
 switch : 𝟙 ↔ 𝟙
 switch = uniti⋆r ⊚ (η {v = 𝔽} ⊗ η {v = 𝔽}) ⊚ assocl⋆ ⊚
-         (((swap⋆ ⊗ id↔) ⊚ assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔)
-         ⊚ assocr⋆ ⊚ (ε {v = 𝔽} ⊗ ε {v = 𝔽}) ⊚ unite⋆r
+         (((swap⋆ ⊗ id↔) ⊚ assocr⋆ ⊚
+         (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚ assocr⋆ ⊚ 
+         (ε {v = 𝔽} ⊗ ε {v = 𝔽}) ⊚ unite⋆r
+
+bad : 𝟚 ↔ 𝟚
+bad = uniti⋆r ⊚ (id↔ ⊗ η {v = 𝔽}) ⊚ assocl⋆ ⊚
+      ((xorr ⊚ swap⋆) ⊗ id↔) ⊚
+      assocr⋆ ⊚ (id↔ ⊗ ε {v = 𝔽}) ⊚ unite⋆r
+
+ex3 : interp bad 𝔽 ≡ just 𝔽
+ex3 = refl
+
+ex4 : interp bad 𝕋 ≡ nothing
+ex4 = refl
