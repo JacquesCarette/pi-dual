@@ -182,3 +182,6 @@ ex4 = refl
 
 shouldn't_type_check : 𝟙 ↔ 𝟙
 shouldn't_type_check = η {v = 𝔽} ⊚ ε {v = 𝕋}
+
+ex5 : interp shouldn't_type_check tt ≡ nothing
+ex5 = refl
