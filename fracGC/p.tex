@@ -313,7 +313,13 @@ common complement ($Y$), then the ``other pieces''
 (here $X$ and $Y$) are automatically isomorphic.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{PiFrac}
+\section{Preliminaries: Pi}
+
+Our approach to reversible quantum programming based on type
+isomorphisms. Examples.
+
+Ancilla problem in the context of Pi using eta and epsilon 
+informally. 
 
 %%%%%
 \subsection{Pi}
@@ -328,38 +334,41 @@ Plain Pi over finite types:
 \textit{Level-2 programs} & \alpha &::=& \cdots 
 \end{array}\]
 
-%%%%%
-\subsection{Adding Fractions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{PiFrac: Generalizing Scoped Ancilla, Runtime Check}
 
-%%%%%
-\subsection{Ancilla}
+Formalize ancilla problem in the context of Pi using eta and epsilon
+as done in PiFracDyn; more general than scoped; still runtime
+check.
 
 When ancilla bits are created they are created with a specific
-value. This value is encoded in the circuit. We use a Singleton type
-to remember this information. We add the following:
+value. This value is encoded in the circuit. The value of fractional
+type represents the ``garbage collector.''  The garbage collector is
+specialized to collect a single value, which is the value used to
+create the ancilla value. At this point, if the garbage collector
+encounters a different value, it doesn't know what to do, and would
+need to throw an exception. This situation in \verb|PiFracDyn.agda| is
+similar to current solutions (e.g. Quipper) but actually more general
+as it allows non-scoped ancilla allocation and de-allocation. Show
+examples.
 
-ETA SIG
-
-The value of fractional type represents the ``garbage collector.''
-The garbage collector is specialized to collect a single value, which
-is the value used to create the ancilla value. At this point, if the
-garbage collector encounters a different value, it doesn't know what
-to do, and would need to throw an exception. This situation in
-\verb|PiFracDyn.agda| is similar to current solutions (e.g. Quipper)
-but actually more general as it allows non-scoped ancilla allocation
-and de-allocation. Show examples.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Generalizing to Non-Scoped Ancilla}
+%%%%%
+\subsection{Adding Fractions}
 
 Def. of universe is:
 
 \Udef{}
 
+%%%%%
+\subsection{Ancilla}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Dependently-Typed Garbage Collectors}
 
-%%%%%
+We use a Singleton type
+to remember this information. 
+
+%%%%% 
 \subsection{Singleton Types}
 
 Consider the type $\Sigma \mathbb{N} (\lambda n. n \equiv 5)$. Values
@@ -385,7 +394,7 @@ Polymorphic type for ancilla?
 Add multiplicative trace, do SAT solver
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Space Denotational Semantics}
+\section{Space Denotational Semantics?}
   
 Positive rational numbers are a model. Apparently there is a
 categorification
