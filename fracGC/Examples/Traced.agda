@@ -89,25 +89,30 @@ p2' v = trace v p2 ((v , (v , v)) , refl)
 -- 1 / (A x B) <-> 1/A x 1/B
 -- (A <-> B) -> (1/A <-> 1/B)
 
----------------------------------------------------------------------------------
 -- Intuition:
 -- 1/A x B is a space transformer; takes A space and returns B space
--- denote space transformers as A -o B
+-- denote space transformers as A ⊸ B
 --
 -- Best we can do:
--- we need Singletons, so |a -o b| is 1 component of a function.
-_-o_ : {A : 𝕌} → (a : ⟦ A ⟧) → {B : 𝕌} → (b : ⟦ B ⟧) → 𝕌
-_-o_ {A} a {B} b = 𝟙/● A [ a ] ×ᵤ ● B [ b ]
+-- we need Singletons, so |a ⊸ b| is 1 component of a function.
+_⊸_ : {A : 𝕌} → (a : ⟦ A ⟧) → {B : 𝕌} → (b : ⟦ B ⟧) → 𝕌
+_⊸_ {A} a {B} b = 𝟙/● A [ a ] ×ᵤ ● B [ b ]
 
--- It can be applied in a very special case:  (a -o b) x ● A [ a ] <-> ● B [ b ]
-app : {A B : 𝕌} {a : ⟦ A ⟧} {b : ⟦ B ⟧} → (a -o b) ×ᵤ ● A [ a ] ⟷ ● B [ b ]
+{--
+revrev : {A : 𝕌} {a : ⟦ A ⟧} {a⋆ : ⟦ 1/● A [ a ] ⟧}→
+         ● A [ a ] ⟷ 1/● A [ a⋆  ] 
+revrev = ? 
+--}
+
+-- It can be applied in a very special case:  (a ⊸ b) x ● A [ a ] <-> ● B [ b ]
+app : {A B : 𝕌} {a : ⟦ A ⟧} {b : ⟦ B ⟧} → (a ⊸ b) ×ᵤ ● A [ a ] ⟷ ● B [ b ]
 app {A} {B} {a} {b} =
   (𝟙/● A [ a ] ×ᵤ ● B [ b ]) ×ᵤ ● A [ a ] ⟷⟨ swap⋆ ⊗ id⟷ ⟩
   (● B [ b ] ×ᵤ 𝟙/● A [ a ]) ×ᵤ ● A [ a ] ⟷⟨ assocr⋆ ⊚ (id⟷ ⊗ (swap⋆ ⊚ ε a)) ⟩
   ● B [ b ] ×ᵤ 𝟙                          ⟷⟨ unite⋆r ⟩
   ● B [ b ] □
 
--- They compose (A -o B) -> (B -o C) -> (A -o C)
+-- They compose (A ⊸ B) -> (B ⊸ C) -> (A ⊸ C)
 -- A/B x C/D <-> (A x C) / (B x D)
 -- A/C + B/C <-> (A + B) / C
 -- A/B + C/D <-> (A x D + B x C) / (B x D)

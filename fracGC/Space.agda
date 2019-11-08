@@ -132,7 +132,6 @@ card= .(● _ +ᵤ _ [ inj₂ _ ]) .(● _ [ _ ]) plusr  = refl
 card= .𝟙 .(● _ [ v ] ×ᵤ 𝟙/● _ [ v ]) (η v)  = refl
 card= .(● _ [ v ] ×ᵤ 𝟙/● _ [ v ]) .𝟙 (ε v)  = refl
 card= .(● _ [ _ ]) .(● _ [ _ ]) (== c x)  = refl
-card= _ = {!!} 
 
 space= : (t₁ t₂ : 𝕌) → (c : t₁ ⟷ t₂) → Set
 space= t₁ t₂ c with card t₁ ≟ 0
