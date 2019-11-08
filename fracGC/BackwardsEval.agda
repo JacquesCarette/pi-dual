@@ -53,6 +53,8 @@ bwd tensorl ((w₁ , p₁) , (w₂ , p₂)) = (w₁ ,  w₂) , (cong₂ _,_ p₁
 bwd tensorr ((v₁ , v₂) , p) = (v₁ , cong proj₁ p) , (v₂ , cong proj₂ p)
 bwd plusl (w , p) = (inj₁ w) , (cong inj₁ p)
 bwd plusr (w , p) = (inj₂ w) , (cong inj₂ p)
+bwd fracl (f₁ , f₂) ((w₁ , w₂) , refl) = let _ = f₁ (w₁ , refl) ; _ = f₂ (w₂ , refl) in tt
+bwd (fracr {v₁ = v₁} {v₂ = v₂}) f = (λ _ → f ((v₁ , v₂) , refl)) , (λ _ → f ((v₁ , v₂) , refl))
 bwd (η v) p = tt
 bwd (ε v) tt = (v , refl) , λ _ → tt
 bwd (== c eq) v = bwd c (subst (Singleton ⟦ _ ⟧) (sym eq) v)
@@ -94,6 +96,8 @@ bwd-eval tensorl p = pointed-all-paths
 bwd-eval tensorr (p₁ , p₂) = cong₂ _,_ pointed-all-paths pointed-all-paths
 bwd-eval plusl p = pointed-all-paths
 bwd-eval plusr p = pointed-all-paths
+bwd-eval fracl f = {!!}  -- needs recip-all-paths
+bwd-eval fracr (f₁ , f₂) = {!!}
 bwd-eval (η v) tt = refl
 bwd-eval (ε v) (p , r) = cong₂ _,_ pointed-all-paths refl
 bwd-eval (== c eq) p = pointed-all-paths
@@ -136,6 +140,8 @@ eval-bwd tensorl p = cong₂ _,_ pointed-all-paths pointed-all-paths
 eval-bwd tensorr p = pointed-all-paths
 eval-bwd plusl p = pointed-all-paths
 eval-bwd plusr p = pointed-all-paths
+eval-bwd fracl (f₁ , f₂) = {!!} -- needs recip-all-paths
+eval-bwd fracr f = {!!}
 eval-bwd (η v) (p , r) = cong₂ _,_ pointed-all-paths refl
 eval-bwd (ε v) tt = refl
 eval-bwd (== c eq) p = pointed-all-paths

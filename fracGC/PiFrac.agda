@@ -83,12 +83,17 @@ data _⟷_ where
             ● (t₁ +ᵤ t₂) [ inj₁ v ] ⟷ ● t₁ [ v ]
   plusr : {t₁ t₂ : 𝕌} {v : ⟦ t₂ ⟧} →
             ● (t₁ +ᵤ t₂) [ inj₂ v ] ⟷ ● t₂ [ v ]
+  fracl : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} →
+            𝟙/● t₁ ×ᵤ t₂ [ v₁ , v₂ ] ⟷ 𝟙/● t₁ [ v₁ ] ×ᵤ 𝟙/● t₂ [ v₂ ]
+  fracr : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} →
+            𝟙/● t₁ [ v₁ ] ×ᵤ 𝟙/● t₂ [ v₂ ] ⟷ 𝟙/● t₁ ×ᵤ t₂ [ v₁ , v₂ ]
   -- fractionals
   η : {t : 𝕌} → (v : ⟦ t ⟧) → 𝟙 ⟷ ● t [ v ] ×ᵤ 𝟙/● t [ v ]
   ε : {t : 𝕌} → (v : ⟦ t ⟧) → ● t [ v ] ×ᵤ 𝟙/● t [ v ] ⟷ 𝟙
   -- prop eq
   == : ∀ {t₁ t₂ : 𝕌} {v : ⟦ t₁ ⟧} {w w' : ⟦ t₂ ⟧} →
        (● t₁ [ v ] ⟷ ● t₂ [ w ]) → (w ≡ w') → (● t₁ [ v ] ⟷ ● t₂ [ w' ])
+
 
 eval unite₊l (inj₂ v) = v
 eval uniti₊l v  = inj₂ v
@@ -135,6 +140,8 @@ eval (η v) tt = (v , refl) , λ _ → tt
 eval (ε v) (p , f) = f p
 eval (plusl {v = .w₁}) (inj₁ w₁ , refl) = w₁ , refl 
 eval (plusr {v = v₂}) (inj₂ w₂ , refl) = w₂ , refl
+eval (fracl {v₁ = v₁} {v₂ = v₂}) f = (λ _ → f ((v₁ , v₂) , refl)) , (λ _ → f ((v₁ , v₂) , refl))
+eval fracr (f₁ , f₂) ((w₁ , w₂) , refl) = let _ = f₁ (w₁ , refl) ; _ = f₂ (w₂ , refl) in tt
 eval (== c eq) s₁ = let (w₂ , p) = eval c s₁ in w₂ , trans (sym eq) p 
 
 
