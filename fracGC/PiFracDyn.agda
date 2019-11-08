@@ -179,3 +179,6 @@ ex3 = refl
 
 ex4 : interp bad 𝕋 ≡ nothing
 ex4 = refl
+
+shouldn't_type_check : 𝟙 ↔ 𝟙
+shouldn't_type_check = η {v = 𝔽} ⊚ ε {v = 𝕋}
