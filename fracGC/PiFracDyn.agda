@@ -185,3 +185,10 @@ shouldn't_type_check = η {v = 𝔽} ⊚ ε {v = 𝕋}
 
 ex5 : interp shouldn't_type_check tt ≡ nothing
 ex5 = refl
+
+more : 𝟙 ↔ 𝟙
+more = η {v = 𝔽} ⊚ (swap₊ ⊗ id↔) ⊚ ε {v = 𝕋}
+
+ex6 : interp more tt ≡ just tt
+ex6 = refl
+
