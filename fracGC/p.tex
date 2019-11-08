@@ -18,6 +18,10 @@
 \usepackage{autofe}
 \usepackage[references]{agda} 
 \usepackage{newunicodechar}
+\usepackage[nocenter]{qtree}
+\usepackage{tikz}
+\usetikzlibrary{cd}
+\usetikzlibrary{quotes}
 
 \newunicodechar{𝕌}{$\mathbb{U}$}
 \newunicodechar{𝟙}{$1$}
@@ -27,6 +31,56 @@
 \newcommand{\inlv}[1]{\ensuremath{\mathit{inl}(v)}}
 \newcommand{\inrv}[1]{\ensuremath{\mathit{inr}(v)}}
 \newcommand{\pointed}[2]{[#1 \bullet #2]}
+\newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
+\newcommand{\mm}{\texttt{\textminus}}
+\newcommand{\pp}{\texttt{+}}
+\newcommand{\inl}[1]{\textsf{inl}~#1}
+\newcommand{\inr}[1]{\textsf{inr}~#1}
+\newcommand{\idv}[3]{#2 \xrightarrow{#1} #3}
+\newcommand{\cp}[3]{#1\stackrel{#2}{\bullet}#3}
+\newcommand{\idt}[3]{#2 \equiv_{#1} #3}
+\newcommand{\idrt}[3]{#3 \equiv_{#1} #2}
+\newcommand{\refl}[1]{\textsf{refl}~#1}
+\newcommand{\lid}{\textsf{lid}}
+\newcommand{\rid}{\textsf{rid}}
+\newcommand{\linv}{l!}
+\newcommand{\rinv}{r!}
+\newcommand{\invinv}{!!}
+\newcommand{\assoc}{\circ}
+\newcommand{\identlp}{\mathit{unite}_+\mathit{l}}
+\newcommand{\identrp}{\mathit{uniti}_+\mathit{l}}
+\newcommand{\identlsp}{\mathit{unite}_+\mathit{r}}
+\newcommand{\identrsp}{\mathit{uniti}_+\mathit{r}}
+\newcommand{\swapp}{\mathit{swap}_+}
+\newcommand{\assoclp}{\mathit{assocl}_+}
+\newcommand{\assocrp}{\mathit{assocr}_+}
+\newcommand{\identlt}{\mathit{unite}_*\mathit{l}}
+\newcommand{\identrt}{\mathit{uniti}_*\mathit{l}}
+\newcommand{\identlst}{\mathit{unite}_*\mathit{r}}
+\newcommand{\identrst}{\mathit{uniti}_*\mathit{r}}
+\newcommand{\swapt}{\mathit{swap}_*}
+\newcommand{\assoclt}{\mathit{assocl}_*}
+\newcommand{\assocrt}{\mathit{assocr}_*}
+\newcommand{\absorbr}{\mathit{absorbr}}
+\newcommand{\absorbl}{\mathit{absorbl}}
+\newcommand{\factorzr}{\mathit{factorzr}}
+\newcommand{\factorzl}{\mathit{factorzl}}
+\newcommand{\dist}{\mathit{dist}}
+\newcommand{\factor}{\mathit{factor}}
+\newcommand{\distl}{\mathit{distl}}
+\newcommand{\factorl}{\mathit{factorl}}
+\newcommand{\distz}{\mathit{absorbr}}
+\newcommand{\iso}{\leftrightarrow}
+\newcommand{\proves}{\vdash}
+\newcommand{\idc}{\mathit{id}\!\!\leftrightarrow}
+\newcommand{\Rule}[4]{
+\makebox{{\rm #1}
+$\displaystyle
+\frac{\begin{array}{l}#2 \\\end{array}}
+{\begin{array}{l}#3      \\\end{array}}$
+ #4}}
+\newcommand{\jdg}[3]{#2 \proves_{#1} #3}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -333,6 +387,183 @@ Plain Pi over finite types:
 \textit{Level-2 types} &&& c \Leftrightarrow c \\
 \textit{Level-2 programs} & \alpha &::=& \cdots 
 \end{array}\]
+
+Focusing on finite types, the building blocks of type theory are: the
+empty type ($0$), the unit type ($1$), the sum type ($+$), and the
+product ($\times$) type. Before getting into the formal theory, let's
+consider the intuition that types are modeled by (topological) spaces
+and that type equivalence is modeled by possible \emph{deformations}
+of such spaces. Consider the space $(1 + 0) \times (1 + 1)$. This
+space is the product of two subspaces: the subspace $(1 + 0)$ which
+itself is the sum of the space~$1$ containing one point $\texttt{tt}$
+and the empty space~$0$ and the subspace $(1 + 1)$ which is the sum of
+two spaces each containing the one point $\texttt{tt}$. Any
+deformation of this space must at least preserve the number of points:
+we can neither create nor destroy points during any continuous
+deformation. Seeing that the number of points in our example space is
+2, a reasonable hypothesis is that we can deform the space above to
+any other space with 2 points such as $1 + 1$ or $1 + (1 + 0)$. What
+this really means is that we are treating the sum and product
+structure as malleable. Imagining a product structure as arranged in a
+grid, by stretching we can turn this structure to a sum structure
+arranged in a line, change the orientation of the grid by exchanging
+the axes, as well as other transformations that preserve the number of
+points using various ``symmetries.'' These symmetries capture, in a
+stylized manner, a rich collection of space-time
+tradeoffs~\cite{superstructural}. We formalize this intuition by
+saying that types form a \emph{commutative semiring} (up to type
+isomorphism).
+
+\begin{figure}[t]
+\[\begin{array}{rrcll}
+\idc :& \tau & \iso & \tau &: \idc \\
+\\
+\identlp :&  0 + \tau & \iso & \tau &: \identrp \\
+\swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
+\assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\
+\\
+\identlt :&  1 * \tau & \iso & \tau &: \identrt \\
+\swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
+\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
+\\
+\distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl \\
+\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor
+\end{array}\]
+\begin{center}
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
+{\jdg{}{}{c_1 \odot c_2 : \tau_1 \iso \tau_3}}
+{}
+\\
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
+{\jdg{}{}{c_1 \oplus c_2 : \tau_1 + \tau_3 \iso \tau_2 + \tau_4}}
+{}
+\qquad
+\Rule{}
+{\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
+{\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
+{}
+\end{center}
+\caption{$\Pi$-terms and combinators.}
+\label{pi-terms}
+\end{figure}
+
+Another model of types is to view each type $A$ as a collection of
+physical wires that can transmit $\|A\|$ distinct values where $\|A\|$
+is the size of a type, computed as: $\| 0 \| = 0$; $\| 1 \| = 1$; $\|
+A + B \| = \| A \| + \| B \|$; and $\| A \times B \| = \| A \| * \| B
+\|$. Thus the type $\mathbb{B} = 1 + 1$ corresponds to a wire that can
+transmit two values, i.e., bits, and the type $\mathbb{B} \times
+\mathbb{B} \times \mathbb{B}$ corresponds to a collection of wires
+that can transmit three bits. From that perspective, a type
+isomorphism between types $A$ and $B$ (such that $\|A\|=\|B\|=n$)
+models a \emph{reversible} combinational circuit that \emph{permutes}
+the $n$ different values. These type isomorphisms are collected in
+Fig.~\ref{pi-terms}. We call the resulting language $\Pi$.  It is
+known that these type isomorphisms are sound and complete for all
+permutations on finite types~\cite{Fiore:2004,fiore-remarks} and hence
+that they are \emph{complete} for expressing combinational
+circuits~\cite{fredkin1982conservative,James:2012:IE:2103656.2103667,Toffoli:1980}.
+
+So far, the types encode conventional data structures, i.e, sets of
+values and structured trees of values and the isomorphisms act on such
+conventional data structures. Universal computation models however
+fundamentally rely on the fact that \emph{programs are (or can be
+encoded as) data}, e.g., a Turing machine can be encoded as a string
+that another Turing machine (or even the same machine) can
+manipulate. In our setting, we ask whether the type isomorphisms in
+Fig.~\ref{pi-terms} can themselves be subject to (higher-level)
+reversible deformations? Before developing the theory, let's consider
+a small example consisting of two deformations between the types $A +
+B$ and $C+D$:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.4,every node/.style={scale=0.5}]
+  \draw[>=latex,<->,double,red,thick] (2.25,-1.2) -- (2.25,-2.9) ;
+  \draw (-2,-2) ellipse (0.9cm and 1cm);
+  \draw[fill] (-2,-1.5) circle [radius=0.025];
+  \node[left] at (-2.1,-1.5) {$A$};
+  \draw[fill] (-2,-2.5) circle [radius=0.025];
+  \node[left] at (-2.1,-2.5) {$B$};
+
+  \draw (6.5,-2) ellipse (0.9cm and 1cm);
+  \draw[fill] (6.5,-1.5) circle [radius=0.025];
+  \node[right] at (6.7,-1.5) {$C$};
+  \draw[fill] (6.5,-2.5) circle [radius=0.025];
+  \node[right] at (6.7,-2.5) {$D$};
+
+  \draw[-] (-2,-1.5) to[bend left] (1,0.5) ;
+  \draw[-] (-2,-2.5) to[bend left] (1,-0.5) ;
+  \draw[-] (3.5,0.5) to[bend left] (6.5,-1.45) ;
+  \draw[-] (3.5,-0.5) to[bend left] (6.5,-2.45) ;
+
+  \draw[-] (-2,-1.5) to[bend right] (1,-3.5) ;
+  \draw[-] (-2,-2.5) to[bend right] (1,-4.5) ;
+  \draw[-] (3.5,-3.5) to[bend right] (6.5,-1.55) ;
+  \draw[-] (3.5,-4.5) to[bend right] (6.5,-2.55) ;
+
+  \draw     (2.5,-3)  -- (3.5,-3) -- (3.5,-4) -- (2.5,-4) -- cycle ;
+  \draw     (2.5,-4)  -- (3.5,-4) -- (3.5,-5) -- (2.5,-5) -- cycle ;
+
+  \draw     (1,1)  -- (2,1) -- (2,0) -- (1,0) -- cycle ;
+  \draw     (1,0)  -- (2,0) -- (2,-1) -- (1,-1) -- cycle ;
+
+  \node at (3,-3.5) {$c_2$};
+  \node at (3,-4.5) {$c_1$};
+
+  \node at (1.5,0.5) {$c_1$};
+  \node at (1.5,-0.5) {$c_2$};
+
+  \draw     (2,0.5)  -- (2.5,0.5)  ;
+  \draw     (2,-0.5) -- (2.5,-0.5) ;
+
+  \draw     (2.5,0.5)  -- (3.5,-0.5)  ;
+  \draw     (2.5,-0.5) -- (3.5,0.5) ;
+
+  \draw     (1,-3.5)  -- (2,-4.5)    ;
+  \draw     (1,-4.5) -- (2,-3.5)   ;
+
+  \draw     (2,-3.5)  -- (2.5,-3.5)    ;
+  \draw     (2,-4.5) -- (2.5,-4.5)   ;
+
+\end{tikzpicture}
+\end{center}
+
+\noindent The top path is the $\Pi$ program
+$(c_1~\oplus~c_2)~\odot~\swapp$ which deforms the type $A$ by $c_1$,
+deforms the type $B$ by $c_2$, and deforms the resulting space by a
+twist that exchanges the two injections into the sum type. The bottom
+path performs the twist first and then deforms the type $A$ by $c_1$
+and the type $B$ by $c_2$ as before. If one could imagine the paths
+  as physical wires and the deformations $c_1$ and $c_2$ as arbitrary
+deformations on these wires then, holding the points $A$, $B$, $C$,
+and $D$ fixed, it is possible to rotate the top part of the diagram to
+become identical to the bottom one. That rotation can be undone
+(reversed), which takes the bottom part of the diagram into the top
+part.  In other words, there exists a deformation of the program
+$(c_1~\oplus~c_2)~\odot~\swapp$ to the program
+$\swapp \odot (c_2~\oplus~c_1)$. We can also show that this means
+that, as permutations, $(c_1~\oplus~c_2)~\odot~\swapp$ and
+$\swapp \odot (c_2~\oplus~c_1)$ are equal. This relation is
+non-trivial, as not all programs between the same types can be
+deformed into one another. The simplest example of inequivalent
+deformations are the two automorphisms of $1+1$, namely $\idc$ and
+$\swapp$.
+
+Developing a collection of ``templates'' for such higher-level
+equivalences is reasonably straightforward (see for example the work
+of Miller et al~\cite{Miller:2003:TBA:775832.775915}). To find a
+\emph{complete} set of equivalences is much more difficult. The idea
+developed in our previous work~\cite{DBLP:conf/esop/CaretteS16} relies
+on ``categorification'' and a classical result by
+Laplaza~\cite{laplaza}. We refer the interested reader to our previous
+work for the full set of \emph{complete} ``templates.'' A related
+idea~\cite{DBLP:journals/corr/CockettCS17} for a sound and complete
+set of equivalences on control-not gates is also developed in the
+context of the same monoidal categories as the ones we use suggesting
+that these categorical structures provide a common framework for
+reasoning about various classes of reversible circuits.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{PiFrac: Generalizing Scoped Ancilla, Runtime Check}
