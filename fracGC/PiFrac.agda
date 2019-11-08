@@ -79,10 +79,14 @@ data _⟷_ where
             ● t₁ ×ᵤ t₂ [ v₁ , v₂ ] ⟷ ● t₁ [ v₁ ] ×ᵤ ● t₂ [ v₂ ]
   tensorr : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} →
             ● t₁ [ v₁ ] ×ᵤ ● t₂ [ v₂ ] ⟷ ● t₁ ×ᵤ t₂ [ v₁ , v₂ ]
-  plusl : {t₁ t₂ : 𝕌} {v : ⟦ t₁ ⟧} →
+  plusll : {t₁ t₂ : 𝕌} {v : ⟦ t₁ ⟧} →
             ● (t₁ +ᵤ t₂) [ inj₁ v ] ⟷ ● t₁ [ v ]
-  plusr : {t₁ t₂ : 𝕌} {v : ⟦ t₂ ⟧} →
+  pluslr : {t₁ t₂ : 𝕌} {v : ⟦ t₁ ⟧} →
+             ● t₁ [ v ] ⟷ ● (t₁ +ᵤ t₂) [ inj₁ v ]
+  plusrl : {t₁ t₂ : 𝕌} {v : ⟦ t₂ ⟧} →
             ● (t₁ +ᵤ t₂) [ inj₂ v ] ⟷ ● t₂ [ v ]
+  plusrr : {t₁ t₂ : 𝕌} {v : ⟦ t₂ ⟧} →
+             ● t₂ [ v ] ⟷ ● (t₁ +ᵤ t₂) [ inj₂ v ]
   fracl : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} →
             𝟙/● t₁ ×ᵤ t₂ [ v₁ , v₂ ] ⟷ 𝟙/● t₁ [ v₁ ] ×ᵤ 𝟙/● t₂ [ v₂ ]
   fracr : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} →
@@ -138,8 +142,10 @@ eval tensorr ((w₁ , p₁) , (w₂ , p₂)) =
   (w₁ , w₂) , cong₂ _,_ p₁ p₂ 
 eval (η v) tt = (v , refl) , λ _ → tt 
 eval (ε v) (p , f) = f p
-eval (plusl {v = .w₁}) (inj₁ w₁ , refl) = w₁ , refl 
-eval (plusr {v = v₂}) (inj₂ w₂ , refl) = w₂ , refl
+eval (plusll {v = .w₁}) (inj₁ w₁ , refl) = w₁ , refl 
+eval pluslr (v₁ , refl) = inj₁ v₁ , refl
+eval (plusrl {v = .w₂}) (inj₂ w₂ , refl) = w₂ , refl
+eval plusrr (v₂ , refl) = inj₂ v₂ , refl
 eval (fracl {v₁ = v₁} {v₂ = v₂}) f = (λ _ → f ((v₁ , v₂) , refl)) , (λ _ → f ((v₁ , v₂) , refl))
 eval fracr (f₁ , f₂) ((w₁ , w₂) , refl) = let _ = f₁ (w₁ , refl) ; _ = f₂ (w₂ , refl) in tt
 eval (== c eq) s₁ = let (w₂ , p) = eval c s₁ in w₂ , trans (sym eq) p 

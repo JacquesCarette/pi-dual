@@ -127,8 +127,10 @@ card= (t₁ ×ᵤ t₂) (t₃ ×ᵤ t₄) (c₁ ⊗ c₂) rewrite card= _ _ c₁
 card= .(● _ [ _ ]) .(● _ [ eval c _ ]) (lift c)  = refl
 card= .(● _ ×ᵤ _ [ _ , _ ]) .(● _ [ _ ] ×ᵤ ● _ [ _ ]) tensorl  = refl
 card= .(● _ [ _ ] ×ᵤ ● _ [ _ ]) .(● _ ×ᵤ _ [ _ , _ ]) tensorr  = refl
-card= .(● _ +ᵤ _ [ inj₁ _ ]) .(● _ [ _ ]) plusl  = refl
-card= .(● _ +ᵤ _ [ inj₂ _ ]) .(● _ [ _ ]) plusr  = refl
+card= .(● _ +ᵤ _ [ inj₁ _ ]) .(● _ [ _ ]) plusll  = refl
+card= .(● _ [ _ ]) .(● _ +ᵤ _ [ inj₁ _ ]) pluslr = refl
+card= .(● _ +ᵤ _ [ inj₂ _ ]) .(● _ [ _ ]) plusrl  = refl
+card= .(● _ [ _ ]) .(● _ +ᵤ _ [ inj₂ _ ]) plusrr = refl
 card= .(𝟙/● _ ×ᵤ _ [ _ , _ ]) .(𝟙/● _ [ _ ] ×ᵤ 𝟙/● _ [ _ ]) fracl  = refl
 card= .(𝟙/● _ [ _ ] ×ᵤ 𝟙/● _ [ _ ]) .(𝟙/● _ ×ᵤ _ [ _ , _ ]) fracr  = refl
 card= .𝟙 .(● _ [ v ] ×ᵤ 𝟙/● _ [ v ]) (η v)  = refl
