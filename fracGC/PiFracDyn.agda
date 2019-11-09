@@ -228,8 +228,8 @@ ex2 = refl
 switch : 𝟙 ↔ 𝟙
 switch = uniti⋆r ⊚ (η𝟚 ⊗ η𝟚) ⊚ assocl⋆ ⊚
          (((swap⋆ ⊗ id↔) ⊚ assocr⋆ ⊚
-         (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚ assocr⋆ ⊚ 
-         (ε𝟚 ⊗ ε𝟚) ⊚ unite⋆r
+         (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚ 
+         assocr⋆ ⊚ (ε𝟚 ⊗ ε𝟚) ⊚ unite⋆r
 
 bad : 𝟚 ↔ 𝟚
 bad = uniti⋆r ⊚ (id↔ ⊗ η𝟚) ⊚ assocl⋆ ⊚

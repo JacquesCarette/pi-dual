@@ -1,15 +1,19 @@
 
 \newcommand{\Preamble}{%
 \begin{code}
+{-# OPTIONS --without-K #-}
 module _ where
 open import Data.Bool
 open import Data.Empty
 open import Data.Unit
+open import Data.Nat
+open import Data.Nat.Properties
 open import Data.Sum
 open import Data.Product
 open import Data.Maybe
 open import Function
-open import Relation.Binary.PropositionalEquality hiding ([_])
+open import Relation.Binary.PropositionalEquality
+  renaming ([_] to R[_])
 open import Relation.Binary.Core
 open import Relation.Nullary
 
@@ -25,18 +29,16 @@ data ◯ : Set where
 
 mutual
 \end{code}}
-
 \newcommand{\Udef}{%
 \begin{code}
   data 𝕌 : Set where
-    𝟘 : 𝕌
-    𝟙 : 𝕌
-    _+ᵤ_ : 𝕌 → 𝕌 → 𝕌
-    _×ᵤ_ : 𝕌 → 𝕌 → 𝕌
-    𝟙/_ : 𝕌 → 𝕌
+    𝟘     : 𝕌
+    𝟙     : 𝕌
+    _+ᵤ_  : 𝕌 → 𝕌 → 𝕌
+    _×ᵤ_  : 𝕌 → 𝕌 → 𝕌
+    𝟙/_   : 𝕌 → 𝕌
 \end{code}}
-
-\newcommand{\End}{%
+\newcommand{\CodeA}{%
 \begin{code}
   ⟦_⟧ : 𝕌 → Set
   ⟦ 𝟘 ⟧ = ⊥
@@ -72,8 +74,63 @@ mutual
     _⊚_     : {t₁ t₂ t₃ : 𝕌} → (t₁ ↔ t₂) → (t₂ ↔ t₃) → (t₁ ↔ t₃)
     _⊕_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ +ᵤ t₂ ↔ t₃ +ᵤ t₄)
     _⊗_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ ×ᵤ t₂ ↔ t₃ ×ᵤ t₄)
-    η : {t : 𝕌} {v : ⟦ t ⟧} → 𝟙 ↔ t ×ᵤ (𝟙/ t)
-    ε : {t : 𝕌} {v : ⟦ t ⟧} → t ×ᵤ (𝟙/ t) ↔ 𝟙
+\end{code}}
+\newcommand{\EtaEpsilon}{%
+\begin{code}
+    η : {t : 𝕌} {t≠0 : ¬ card t ≡ 0} → 𝟙 ↔ t ×ᵤ (𝟙/ t)
+    ε : {t : 𝕌} {t≠0 : ¬ card t ≡ 0} → t ×ᵤ (𝟙/ t) ↔ 𝟙
+\end{code}}
+\newcommand{\CodeB}{%
+\begin{code}
+-- Number of points in type
+  card : (t : 𝕌) → ℕ
+  card 𝟘 = 0
+  card 𝟙 = 1
+  card (t₁ +ᵤ t₂) = card t₁ + card t₂
+  card (t₁ ×ᵤ t₂) = card t₁ * card t₂
+  card 𝟙/● = 1
+
+-- If number of points is zero then it is impossible to find a value
+-- of the type
+0empty : {t : 𝕌} → card t ≡ 0 → (v : ⟦ t ⟧) → ⊥
+0empty {𝟘} _ ()
+0empty {𝟙} () tt
+0empty {t₁ +ᵤ t₂} s (inj₁ v₁)
+  with card t₁ | card t₂ | inspect card t₁
+0empty {t₁ +ᵤ t₂} refl (inj₁ v₁) | 0 | 0 | R[ s₁ ] =
+  0empty {t₁} s₁ v₁
+0empty {t₁ +ᵤ t₂} s (inj₂ v₂)
+  with card t₁ | card t₂ | inspect card t₂
+0empty {t₁ +ᵤ t₂} refl (inj₂ v₂) | ℕ.zero | ℕ.zero | R[ s₂ ] =
+  0empty {t₂} s₂ v₂
+0empty {t₁ ×ᵤ t₂} s (v₁ , v₂)
+  with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
+0empty {t₁ ×ᵤ t₂} refl (v₁ , v₂) | ℕ.zero | _ | R[ s₁ ] | _ =
+  0empty {t₁} s₁ v₁
+0empty {t₁ ×ᵤ t₂} s (v₁ , v₂) | ℕ.suc n₁ | ℕ.zero | R[ s₁ ] | R[ s₂ ] =
+  0empty {t₂} s₂ v₂
+0empty {𝟙/ t} () f
+
+default : (t : 𝕌) → {t≠0 : ¬ card t ≡ 0} → ⟦ t ⟧
+default 𝟘 {t≠0} = ⊥-elim (t≠0 refl) 
+default 𝟙 = tt
+default (t₁ +ᵤ t₂) {p≠0} with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
+... | 0 | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (p≠0 refl)
+... | 0 | suc n | R[ s₁ ] | R[ s₂ ] =
+  inj₂ (default t₂ {λ t2≡0 → ⊥-elim (p≠0 (trans (sym s₂) t2≡0))})
+... | suc m | 0 | R[ s₁ ] | R[ s₂ ] =
+  inj₁ (default t₁ {λ t1≡0 →
+    ⊥-elim (p≠0 ((trans (sym (trans s₁ (sym (+-identityʳ (suc m))))) t1≡0)))})
+... | suc m | suc n | R[ s₁ ] | R[ s₂ ] =
+  inj₁ (default t₁ {λ t1≡0 → ⊥-elim (1+n≢0 (trans (sym s₁) t1≡0))})
+default (t₁ ×ᵤ t₂) {p≠0} with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
+... | 0 | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (p≠0 refl)
+... | 0 | suc n | R[ s₁ ] | R[ s₂ ] = ⊥-elim (p≠0 refl)
+... | suc m | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (p≠0 (*-zeroʳ (suc m)))
+... | suc m | suc n | R[ s₁ ] | R[ s₂ ] =
+  default t₁ {λ t1≡0 → ⊥-elim (1+n≢0 (trans (sym s₁) t1≡0))},
+  default t₂ {λ t2≡0 → ⊥-elim (1+n≢0 (trans (sym s₂) t2≡0))}
+default (𝟙/ t) = ○ 
 
 𝕌dec : (t : 𝕌) → Decidable (_≡_ {A = ⟦ t ⟧})
 𝕌dec 𝟘 ()
@@ -132,11 +189,16 @@ interp (c₁ ⊚ c₂) v = interp c₁ v >>= interp c₂
 interp (c₁ ⊕ c₂) (inj₁ v) = interp c₁ v >>= just ∘ inj₁
 interp (c₁ ⊕ c₂) (inj₂ v) = interp c₂ v >>= just ∘ inj₂
 interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ >>= (λ v₁' → interp c₂ v₂ >>= λ v₂' → just (v₁' , v₂'))
-interp (η {t} {v}) tt = just (v , ○)
-interp (ε {t} {v}) (v' , ○) with 𝕌dec t v v'
-interp (ε {t} {v}) (v' , ○) | yes _ = just tt
-interp (ε {t} {v}) (v' , ○) | no  _ = nothing -- if v ≡ v' then tt else throw Error
-  
+\end{code}}
+\newcommand{\EtaEpsilonEval}{%
+\begin{code}
+interp (η {t} {t≠0}) tt = just (default t {t≠0} , ○)
+interp (ε {t} {t≠0}) (v' , ○) with 𝕌dec t (default t {t≠0}) v'
+interp (ε {t}) (v' , ○) | yes _ = just tt
+interp (ε {t}) (v' , ○) | no  _ = nothing
+\end{code}}  
+\newcommand{\CodeC}{%
+\begin{code}
 --- Examples
 
 𝟚 : 𝕌
@@ -151,20 +213,25 @@ xorr = dist ⊚ (id↔ ⊕ (id↔ ⊗ swap₊)) ⊚ factor
 xorl = distl ⊚ (id↔ ⊕ (swap₊ ⊗ id↔)) ⊚ factorl
 
 
+𝟚≠0 : ¬ (card 𝟚 ≡ 0)
+𝟚≠0 ()
+
+η𝟚 : 𝟙 ↔ 𝟚 ×ᵤ (𝟙/ 𝟚)
+η𝟚 = η {t≠0 = 𝟚≠0}
+
+ε𝟚 : 𝟚 ×ᵤ (𝟙/ 𝟚) ↔ 𝟙
+ε𝟚 = ε {t≠0 = 𝟚≠0}
+\end{code}}
+\newcommand{\EtaEpsilonExamples}{%
+\begin{code}
 --   ─────┬────⊕───  ───────
 --        |    |   ⨉
 --     ┌──⊕────┴───  ───┐
 --     └────────────────┘
 id' : 𝟚 ↔ 𝟚
-id' = uniti⋆r ⊚ (id↔ ⊗ η {v = 𝔽}) ⊚ assocl⋆ ⊚
+id' = uniti⋆r ⊚ (id↔ ⊗ η𝟚) ⊚ assocl⋆ ⊚
       ((xorr ⊚ xorl ⊚ swap⋆) ⊗ id↔) ⊚
-      assocr⋆ ⊚ (id↔ ⊗ ε {v = 𝔽}) ⊚ unite⋆r
-
-ex1 : interp id' 𝕋 ≡ just 𝕋
-ex1 = refl
-
-ex2 : interp id' 𝔽 ≡ just 𝔽
-ex2 = refl
+      assocr⋆ ⊚ (id↔ ⊗ ε𝟚) ⊚ unite⋆r
 
 --     ┌──────  ───────┐
 --     └──────╲╱───────┘
@@ -172,15 +239,24 @@ ex2 = refl
 --     ┌─────    ──────┐
 --     └───────────────┘
 switch : 𝟙 ↔ 𝟙
-switch = uniti⋆r ⊚ (η {v = 𝔽} ⊗ η {v = 𝔽}) ⊚ assocl⋆ ⊚
+switch = uniti⋆r ⊚ (η𝟚 ⊗ η𝟚) ⊚ assocl⋆ ⊚
          (((swap⋆ ⊗ id↔) ⊚ assocr⋆ ⊚
-         (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚ assocr⋆ ⊚ 
-         (ε {v = 𝔽} ⊗ ε {v = 𝔽}) ⊚ unite⋆r
+         (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚ 
+         assocr⋆ ⊚ (ε𝟚 ⊗ ε𝟚) ⊚ unite⋆r
+\end{code}}
+\newcommand{\CodeD}{%
+\begin{code}
+
+ex1 : interp id' 𝕋 ≡ just 𝕋
+ex1 = refl
+
+ex2 : interp id' 𝔽 ≡ just 𝔽
+ex2 = refl
 
 bad : 𝟚 ↔ 𝟚
-bad = uniti⋆r ⊚ (id↔ ⊗ η {v = 𝔽}) ⊚ assocl⋆ ⊚
+bad = uniti⋆r ⊚ (id↔ ⊗ η𝟚) ⊚ assocl⋆ ⊚
       ((xorr ⊚ swap⋆) ⊗ id↔) ⊚
-      assocr⋆ ⊚ (id↔ ⊗ ε {v = 𝔽}) ⊚ unite⋆r
+      assocr⋆ ⊚ (id↔ ⊗ ε𝟚) ⊚ unite⋆r
 
 ex3 : interp bad 𝔽 ≡ just 𝔽
 ex3 = refl
@@ -188,5 +264,17 @@ ex3 = refl
 ex4 : interp bad 𝕋 ≡ nothing
 ex4 = refl
 
-\end{code}}
+{--
+shouldn't_type_check : 𝟙 ↔ 𝟙
+shouldn't_type_check = η {v = 𝔽} ⊚ ε {v = 𝕋}
 
+ex5 : interp shouldn't_type_check tt ≡ nothing
+ex5 = refl
+
+more : 𝟙 ↔ 𝟙
+more = η {v = 𝔽} ⊚ (swap₊ ⊗ id↔) ⊚ ε {v = 𝕋}
+
+ex6 : interp more tt ≡ just tt
+ex6 = refl
+--}
+\end{code}}

@@ -11,6 +11,7 @@
 \usepackage{booktabs}  
 \usepackage{subcaption} 
 \usepackage{amssymb}
+\usepackage{stmaryrd}
 \usepackage{bbm}
 \usepackage[greek,english]{babel}
 \usepackage{ucs}
@@ -24,12 +25,19 @@
 \usetikzlibrary{quotes}
 
 \newunicodechar{𝕌}{$\mathbb{U}$}
+\newunicodechar{𝔽}{$\mathbb{F}$}
+\newunicodechar{𝕋}{$\mathbb{T}$}
+\newunicodechar{𝟘}{$0$}
 \newunicodechar{𝟙}{$1$}
+\newunicodechar{𝟚}{$2$}
+\newunicodechar{⋆}{${}_*$}
 \newunicodechar{ᵤ}{${}_u$}
+\newunicodechar{⊚}{$\fatsemi$}
 
 \newcommand{\alt}{~|~}
 \newcommand{\inlv}[1]{\ensuremath{\mathit{inl}(v)}}
 \newcommand{\inrv}[1]{\ensuremath{\mathit{inr}(v)}}
+\newcommand{\ket}[1]{|#1\rangle}
 \newcommand{\pointed}[2]{[#1 \bullet #2]}
 \newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
 \newcommand{\mm}{\texttt{\textminus}}
@@ -227,20 +235,20 @@ Uses of ancillas:
   create a redundant entangled qubit state of many qubits. The key is
   that the qubits to be entangled must start out in a known
   state. Qubits with a known state (for purposes of this discussion,
-  it will be the state \verb.|0>.), called ``ancilla qubits,'' may be
+  it will be the state $\ket{0}$), called ``ancilla qubits,'' may be
   added to a computation for this purpose. Since the state of ancilla
   qubits are known, it is possible to create a simple circuit that
   makes the output state of all these ancilla qubits match the
   protected qubit: run each ancilla through a controlled-NOT gate,
   where the control is driven by the qubit that needs to be
-  replicated. Assume that there is a qubit with state \verb.PSI. that
-  we want to protect, where \verb.|PSI>. represents an arbitrary
-  superposition state \verb.|PSI> = a0 |0> + a0 |1>. In the CNOT gate,
-  the ancilla \verb.|0>. state will remain a \verb.|0>. state by the
-  \verb.|0>. component of \verb.|PSI>., but it will be converted to
-  \verb.|1>. by the \verb.|1>. component of \verb.|PSI>. The result of
-  this operation is the newly entangled two-qubit state
-  \verb.a0 |00> + a1 |11>., creating a system in which the ancilla
+  replicated. Assume that there is a qubit with state $\Psi$ that we
+  want to protect, where $\ket{\Psi}$ represents an arbitrary
+  superposition state $\ket{\Psi} = a_0 \ket{0} + a_1 \ket{1}$. In the
+  CNOT gate, the ancilla $\ket{0}$ state will remain a $\ket{0}$ state
+  by the $\ket{0}$ component of $\ket{\Psi}$, but it will be converted
+  to $\ket{1}$ by the $\ket{1}$ component of $\ket{\Psi}$. The result
+  of this operation is the newly entangled two-qubit state
+  $a_0 \ket{0} + a_1 \ket{1}$, creating a system in which the ancilla
   qubit is now perfectly entangled with the first qubit. Adding more
   ancillas increases the distance of the repetition code.  \end{quote}
 
@@ -271,8 +279,8 @@ Uses of ancillas:
   Using an ancilla qubit, it is possible to avoid doing any
   intermediate measurements in a quantum circuit. Show how this can be
   done.  Hint: instead of measuring the qubit, apply a CNOT that
-  “copies” it to a new \verb.|0>.-qubit, which is then left alone
-  until the end of the computation. Analyze what happens.
+  “copies” it to a new $\ket{0}$-qubit, which is then left alone until
+  the end of the computation. Analyze what happens.
 \end{quote}
 
 %%%
@@ -322,9 +330,9 @@ transposed to
 \end{verbatim}
 In Pi, the input and output matrices are:
 \begin{verbatim}
-M   = (11 , 21) , (12 , 22) , (13, 23) , (14 , 24) 
+M = (11,21) , (12,22) , (13,23) , (14,24) 
 
-trM = (11 , 12 , 13 , 14) , (21 , 22 , 23 , 23) 
+trM = (11,12,13,14) , (21,22,23,23) 
 \end{verbatim}
 Say we are given a language like Pi that is sound and complete with
 respect to permutations on finite types, we would write the
@@ -344,18 +352,18 @@ generally several quantum algorithms need ancilla bits (see below); in
 quipper de-allocation left to programmer.
 
 Is the below a possible example?
-\begin{verbatim}
-Say we already have a permutation A <-> B
-we can implement a permutation X <-> Z 
-when there exists Y such that A = X * Y = Z * Y = B
 
-X -> X * Y * 1/Y 
-  -> A * 1/Y
-  -> B * 1/Y
-  -> Y * Z * 1/Y
-  -> Z * Y * 1/Y
-  -> Z
-\end{verbatim}
+Say we already have a permutation $A \leftrightarrow B$
+we can implement a permutation $X \leftrightarrow Z$ 
+when there exists $Y$ such that $A = X * Y = Z * Y = B$:
+\[\begin{array}{rcl}
+X &\rightarrow& X * Y * 1/Y \\
+  &\rightarrow& A * 1/Y \\
+  &\rightarrow&  B * 1/Y \\
+  &\rightarrow&  Y * Z * 1/Y \\
+  &\rightarrow&  Z * Y * 1/Y \\
+  &\rightarrow&  Z
+\end{array}\]
 This basically says, in the language of Lens, that
 when $A$ is isomorphic to $X \times Y$ and
 $B$ is isomorphic to $Z \times Y$, then
@@ -414,7 +422,7 @@ tradeoffs~\cite{superstructural}. We formalize this intuition by
 saying that types form a \emph{commutative semiring} (up to type
 isomorphism).
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \[\begin{array}{rrcll}
 \idc :& \tau & \iso & \tau &: \idc \\
 \\
@@ -447,7 +455,7 @@ isomorphism).
 \end{center}
 \caption{$\Pi$-terms and combinators.}
 \label{pi-terms}
-\end{figure}
+\end{figure*}
 
 Another model of types is to view each type $A$ as a collection of
 physical wires that can transmit $\|A\|$ distinct values where $\|A\|$
@@ -566,7 +574,7 @@ that these categorical structures provide a common framework for
 reasoning about various classes of reversible circuits.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{PiFrac: Generalizing Scoped Ancilla, Runtime Check}
+\section{PiFrac: Generalizing Scoped Ancilla with Dynamic Checks}
 
 Formalize ancilla problem in the context of Pi using eta and epsilon
 as done in PiFracDyn; more general than scoped; still runtime
@@ -578,7 +586,7 @@ type represents the ``garbage collector.''  The garbage collector is
 specialized to collect a single value, which is the value used to
 create the ancilla value. At this point, if the garbage collector
 encounters a different value, it doesn't know what to do, and would
-need to throw an exception. This situation in \verb|PiFracDyn.agda| is
+need to throw an exception. This situation in \verb|PiFracDyn| is
 similar to current solutions (e.g. Quipper) but actually more general
 as it allows non-scoped ancilla allocation and de-allocation. Show
 examples.
@@ -590,8 +598,18 @@ Def. of universe is:
 
 \Udef{}
 
+New combinators:
+
+\EtaEpsilon{}
+
+and their evaluation:
+
+\EtaEpsilonEval{}
+
 %%%%%
-\subsection{Ancilla}
+\subsection{Examples}
+
+\EtaEpsilonExamples{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Dependently-Typed Garbage Collectors}
@@ -615,7 +633,7 @@ RECIP
 
 Exploit dependent types to reify proofs in the type system. Type
 checking requires (partial) eval. Once we have a proof can we somehow
-go back to \verb|PiFracDyn.agda| and remove the runtime check?
+go back to \verb|PiFracDyn| and remove the runtime check?
 
 Polymorphic type for ancilla?
 
