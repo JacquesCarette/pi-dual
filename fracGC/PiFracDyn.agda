@@ -4,11 +4,14 @@ module PiFracDyn where
 open import Data.Bool
 open import Data.Empty
 open import Data.Unit
+open import Data.Nat
+open import Data.Nat.Properties
 open import Data.Sum
 open import Data.Product
 open import Data.Maybe
 open import Function
-open import Relation.Binary.PropositionalEquality hiding ([_])
+open import Relation.Binary.PropositionalEquality
+  renaming ([_] to R[_])
 open import Relation.Binary.Core
 open import Relation.Nullary
 
@@ -64,14 +67,57 @@ mutual
     _⊚_     : {t₁ t₂ t₃ : 𝕌} → (t₁ ↔ t₂) → (t₂ ↔ t₃) → (t₁ ↔ t₃)
     _⊕_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ +ᵤ t₂ ↔ t₃ +ᵤ t₄)
     _⊗_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ ×ᵤ t₂ ↔ t₃ ×ᵤ t₄)
-    η : {t : 𝕌} → 𝟙 ↔ t ×ᵤ (𝟙/ t)
-    ε : {t : 𝕌} → t ×ᵤ (𝟙/ t) ↔ 𝟙
+    η : {t : 𝕌} {t≠0 : ¬ card t ≡ 0} → 𝟙 ↔ t ×ᵤ (𝟙/ t)
+    ε : {t : 𝕌} {t≠0 : ¬ card t ≡ 0} → t ×ᵤ (𝟙/ t) ↔ 𝟙
 
-default : (t : 𝕌) → ⟦ t ⟧
-default 𝟘 = {!!} 
+-- Number of points in type
+  card : (t : 𝕌) → ℕ
+  card 𝟘 = 0
+  card 𝟙 = 1
+  card (t₁ +ᵤ t₂) = card t₁ + card t₂
+  card (t₁ ×ᵤ t₂) = card t₁ * card t₂
+  card 𝟙/● = 1
+
+-- If number of points is zero then it is impossible to find a value
+-- of the type
+0empty : {t : 𝕌} → card t ≡ 0 → (v : ⟦ t ⟧) → ⊥
+0empty {𝟘} _ ()
+0empty {𝟙} () tt
+0empty {t₁ +ᵤ t₂} s (inj₁ v₁)
+  with card t₁ | card t₂ | inspect card t₁
+0empty {t₁ +ᵤ t₂} refl (inj₁ v₁) | 0 | 0 | R[ s₁ ] =
+  0empty {t₁} s₁ v₁
+0empty {t₁ +ᵤ t₂} s (inj₂ v₂)
+  with card t₁ | card t₂ | inspect card t₂
+0empty {t₁ +ᵤ t₂} refl (inj₂ v₂) | ℕ.zero | ℕ.zero | R[ s₂ ] =
+  0empty {t₂} s₂ v₂
+0empty {t₁ ×ᵤ t₂} s (v₁ , v₂)
+  with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
+0empty {t₁ ×ᵤ t₂} refl (v₁ , v₂) | ℕ.zero | _ | R[ s₁ ] | _ =
+  0empty {t₁} s₁ v₁
+0empty {t₁ ×ᵤ t₂} s (v₁ , v₂) | ℕ.suc n₁ | ℕ.zero | R[ s₁ ] | R[ s₂ ] =
+  0empty {t₂} s₂ v₂
+0empty {𝟙/ t} () f
+
+default : (t : 𝕌) → {t≠0 : ¬ card t ≡ 0} → ⟦ t ⟧
+default 𝟘 {t≠0} = ⊥-elim (t≠0 refl) 
 default 𝟙 = tt
-default (t₁ +ᵤ t₂) = inj₁ (default t₁)
-default (t₁ ×ᵤ t₂) = default t₁ , default t₂
+default (t₁ +ᵤ t₂) {p≠0} with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
+... | 0 | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (p≠0 refl)
+... | 0 | suc n | R[ s₁ ] | R[ s₂ ] =
+  inj₂ (default t₂ {λ t2≡0 → ⊥-elim (p≠0 (trans (sym s₂) t2≡0))})
+... | suc m | 0 | R[ s₁ ] | R[ s₂ ] =
+  inj₁ (default t₁ {λ t1≡0 →
+    ⊥-elim (p≠0 ((trans (sym (trans s₁ (sym (+-identityʳ (suc m))))) t1≡0)))})
+... | suc m | suc n | R[ s₁ ] | R[ s₂ ] =
+  inj₁ (default t₁ {λ t1≡0 → ⊥-elim (1+n≢0 (trans (sym s₁) t1≡0))})
+default (t₁ ×ᵤ t₂) {p≠0} with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
+... | 0 | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (p≠0 refl)
+... | 0 | suc n | R[ s₁ ] | R[ s₂ ] = ⊥-elim (p≠0 refl)
+... | suc m | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (p≠0 (*-zeroʳ (suc m)))
+... | suc m | suc n | R[ s₁ ] | R[ s₂ ] =
+  default t₁ {λ t1≡0 → ⊥-elim (1+n≢0 (trans (sym s₁) t1≡0))},
+  default t₂ {λ t2≡0 → ⊥-elim (1+n≢0 (trans (sym s₂) t2≡0))}
 default (𝟙/ t) = ○ 
 
 𝕌dec : (t : 𝕌) → Decidable (_≡_ {A = ⟦ t ⟧})
@@ -131,8 +177,8 @@ interp (c₁ ⊚ c₂) v = interp c₁ v >>= interp c₂
 interp (c₁ ⊕ c₂) (inj₁ v) = interp c₁ v >>= just ∘ inj₁
 interp (c₁ ⊕ c₂) (inj₂ v) = interp c₂ v >>= just ∘ inj₂
 interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ >>= (λ v₁' → interp c₂ v₂ >>= λ v₂' → just (v₁' , v₂'))
-interp (η {t}) tt = just (default t , ○)
-interp (ε {t}) (v' , ○) with 𝕌dec t (default t) v'
+interp (η {t} {t≠0}) tt = just (default t {t≠0} , ○)
+interp (ε {t} {t≠0}) (v' , ○) with 𝕌dec t (default t {t≠0}) v'
 interp (ε {t}) (v' , ○) | yes _ = just tt
 interp (ε {t}) (v' , ○) | no  _ = nothing -- if v ≡ v' then tt else throw Error
   
@@ -150,14 +196,23 @@ xorr = dist ⊚ (id↔ ⊕ (id↔ ⊗ swap₊)) ⊚ factor
 xorl = distl ⊚ (id↔ ⊕ (swap₊ ⊗ id↔)) ⊚ factorl
 
 
+𝟚≠0 : ¬ (card 𝟚 ≡ 0)
+𝟚≠0 ()
+
+η𝟚 : 𝟙 ↔ 𝟚 ×ᵤ (𝟙/ 𝟚)
+η𝟚 = η {t≠0 = 𝟚≠0}
+
+ε𝟚 : 𝟚 ×ᵤ (𝟙/ 𝟚) ↔ 𝟙
+ε𝟚 = ε {t≠0 = 𝟚≠0}
+
 --   ─────┬────⊕───  ───────
 --        |    |   ⨉
 --     ┌──⊕────┴───  ───┐
 --     └────────────────┘
 id' : 𝟚 ↔ 𝟚
-id' = uniti⋆r ⊚ (id↔ ⊗ η) ⊚ assocl⋆ ⊚
+id' = uniti⋆r ⊚ (id↔ ⊗ η𝟚) ⊚ assocl⋆ ⊚
       ((xorr ⊚ xorl ⊚ swap⋆) ⊗ id↔) ⊚
-      assocr⋆ ⊚ (id↔ ⊗ ε) ⊚ unite⋆r
+      assocr⋆ ⊚ (id↔ ⊗ ε𝟚) ⊚ unite⋆r
 
 ex1 : interp id' 𝕋 ≡ just 𝕋
 ex1 = refl
@@ -171,15 +226,15 @@ ex2 = refl
 --     ┌─────    ──────┐
 --     └───────────────┘
 switch : 𝟙 ↔ 𝟙
-switch = uniti⋆r ⊚ (η {t = 𝟚} ⊗ η) ⊚ assocl⋆ ⊚
+switch = uniti⋆r ⊚ (η𝟚 ⊗ η𝟚) ⊚ assocl⋆ ⊚
          (((swap⋆ ⊗ id↔) ⊚ assocr⋆ ⊚
          (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚ assocr⋆ ⊚ 
-         (ε ⊗ ε) ⊚ unite⋆r
+         (ε𝟚 ⊗ ε𝟚) ⊚ unite⋆r
 
 bad : 𝟚 ↔ 𝟚
-bad = uniti⋆r ⊚ (id↔ ⊗ η) ⊚ assocl⋆ ⊚
+bad = uniti⋆r ⊚ (id↔ ⊗ η𝟚) ⊚ assocl⋆ ⊚
       ((xorr ⊚ swap⋆) ⊗ id↔) ⊚
-      assocr⋆ ⊚ (id↔ ⊗ ε) ⊚ unite⋆r
+      assocr⋆ ⊚ (id↔ ⊗ ε𝟚) ⊚ unite⋆r
 
 ex3 : interp bad 𝔽 ≡ just 𝔽
 ex3 = refl
