@@ -64,8 +64,15 @@ mutual
     _⊚_     : {t₁ t₂ t₃ : 𝕌} → (t₁ ↔ t₂) → (t₂ ↔ t₃) → (t₁ ↔ t₃)
     _⊕_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ +ᵤ t₂ ↔ t₃ +ᵤ t₄)
     _⊗_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ ×ᵤ t₂ ↔ t₃ ×ᵤ t₄)
-    η : {t : 𝕌} {v : ⟦ t ⟧} → 𝟙 ↔ t ×ᵤ (𝟙/ t)
-    ε : {t : 𝕌} {v : ⟦ t ⟧} → t ×ᵤ (𝟙/ t) ↔ 𝟙
+    η : {t : 𝕌} → 𝟙 ↔ t ×ᵤ (𝟙/ t)
+    ε : {t : 𝕌} → t ×ᵤ (𝟙/ t) ↔ 𝟙
+
+default : (t : 𝕌) → ⟦ t ⟧
+default 𝟘 = {!!} 
+default 𝟙 = tt
+default (t₁ +ᵤ t₂) = inj₁ (default t₁)
+default (t₁ ×ᵤ t₂) = default t₁ , default t₂
+default (𝟙/ t) = ○ 
 
 𝕌dec : (t : 𝕌) → Decidable (_≡_ {A = ⟦ t ⟧})
 𝕌dec 𝟘 ()
@@ -124,10 +131,10 @@ interp (c₁ ⊚ c₂) v = interp c₁ v >>= interp c₂
 interp (c₁ ⊕ c₂) (inj₁ v) = interp c₁ v >>= just ∘ inj₁
 interp (c₁ ⊕ c₂) (inj₂ v) = interp c₂ v >>= just ∘ inj₂
 interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ >>= (λ v₁' → interp c₂ v₂ >>= λ v₂' → just (v₁' , v₂'))
-interp (η {t} {v}) tt = just (v , ○)
-interp (ε {t} {v}) (v' , ○) with 𝕌dec t v v'
-interp (ε {t} {v}) (v' , ○) | yes _ = just tt
-interp (ε {t} {v}) (v' , ○) | no  _ = nothing -- if v ≡ v' then tt else throw Error
+interp (η {t}) tt = just (default t , ○)
+interp (ε {t}) (v' , ○) with 𝕌dec t (default t) v'
+interp (ε {t}) (v' , ○) | yes _ = just tt
+interp (ε {t}) (v' , ○) | no  _ = nothing -- if v ≡ v' then tt else throw Error
   
 --- Examples
 
@@ -148,9 +155,9 @@ xorl = distl ⊚ (id↔ ⊕ (swap₊ ⊗ id↔)) ⊚ factorl
 --     ┌──⊕────┴───  ───┐
 --     └────────────────┘
 id' : 𝟚 ↔ 𝟚
-id' = uniti⋆r ⊚ (id↔ ⊗ η {v = 𝔽}) ⊚ assocl⋆ ⊚
+id' = uniti⋆r ⊚ (id↔ ⊗ η) ⊚ assocl⋆ ⊚
       ((xorr ⊚ xorl ⊚ swap⋆) ⊗ id↔) ⊚
-      assocr⋆ ⊚ (id↔ ⊗ ε {v = 𝔽}) ⊚ unite⋆r
+      assocr⋆ ⊚ (id↔ ⊗ ε) ⊚ unite⋆r
 
 ex1 : interp id' 𝕋 ≡ just 𝕋
 ex1 = refl
@@ -164,15 +171,15 @@ ex2 = refl
 --     ┌─────    ──────┐
 --     └───────────────┘
 switch : 𝟙 ↔ 𝟙
-switch = uniti⋆r ⊚ (η {v = 𝔽} ⊗ η {v = 𝔽}) ⊚ assocl⋆ ⊚
+switch = uniti⋆r ⊚ (η {t = 𝟚} ⊗ η) ⊚ assocl⋆ ⊚
          (((swap⋆ ⊗ id↔) ⊚ assocr⋆ ⊚
          (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚ assocr⋆ ⊚ 
-         (ε {v = 𝔽} ⊗ ε {v = 𝔽}) ⊚ unite⋆r
+         (ε ⊗ ε) ⊚ unite⋆r
 
 bad : 𝟚 ↔ 𝟚
-bad = uniti⋆r ⊚ (id↔ ⊗ η {v = 𝔽}) ⊚ assocl⋆ ⊚
+bad = uniti⋆r ⊚ (id↔ ⊗ η) ⊚ assocl⋆ ⊚
       ((xorr ⊚ swap⋆) ⊗ id↔) ⊚
-      assocr⋆ ⊚ (id↔ ⊗ ε {v = 𝔽}) ⊚ unite⋆r
+      assocr⋆ ⊚ (id↔ ⊗ ε) ⊚ unite⋆r
 
 ex3 : interp bad 𝔽 ≡ just 𝔽
 ex3 = refl
@@ -180,6 +187,7 @@ ex3 = refl
 ex4 : interp bad 𝕋 ≡ nothing
 ex4 = refl
 
+{--
 shouldn't_type_check : 𝟙 ↔ 𝟙
 shouldn't_type_check = η {v = 𝔽} ⊚ ε {v = 𝕋}
 
@@ -191,4 +199,4 @@ more = η {v = 𝔽} ⊚ (swap₊ ⊗ id↔) ⊚ ε {v = 𝕋}
 
 ex6 : interp more tt ≡ just tt
 ex6 = refl
-
+--}
