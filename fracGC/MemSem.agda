@@ -201,19 +201,19 @@ step (factorl {t₁} {t₂} {t₃}) ⟪ v [ i ]⟫ rewrite card= (factorl {t₁}
 ... | inj₁ (x , y) = _ , id⟷ , ⟪ (Enum (t₁ ×ᵤ (t₂ +ᵤ t₃))) [ Find' {t₁ ×ᵤ (t₂ +ᵤ t₃)} (x , inj₁ y) ]⟫
 ... | inj₂ (x , z) = _ , id⟷ , ⟪ (Enum (t₁ ×ᵤ (t₂ +ᵤ t₃))) [ Find' {t₁ ×ᵤ (t₂ +ᵤ t₃)} (x , inj₂ z) ]⟫
 step id⟷ st = _ , id⟷ , st
-step (_⊚_ {t₁} {t₂} {t₃} c₁ c₂) st with step c₁ st
-... | _ , id⟷ , st' = _ , c₂ , st'
+step (id⟷ ⊚ c₂) st = _ , c₂ , st
+step (c₁ ⊚ c₂) st with step c₁ st
 ... | _ , c₁' , st' = _ , c₁' ⊚ c₂ , st'
 step (_⊕_ {t₁} {t₂} {t₃} {t₄} c₁ c₂) ⟪ v [ i ]⟫ with lookup v i
-... | inj₁ x with step c₁ ⟪ Enum t₁ [ Find' x ]⟫
-... | _ , id⟷ , st' rewrite card= c₁ with st'
-... | ⟪ v' [ i' ]⟫ rewrite card= c₂ = _ , id⟷ , ⟪ Enum (t₃ +ᵤ t₄) [ Find' {t₃ +ᵤ t₄} (inj₁ (lookup v' i')) ]⟫
-step (_⊕_ {t₁} {t₂} {t₃} {t₄} c₁ c₂) ⟪ v [ i ]⟫ | inj₁ x | t₁' , c₁' , st' rewrite trans (card= c₁) (sym (card= c₁')) with st'
+step (_⊕_ {t₁} {t₂} {t₃} {t₄} c₁ c₂) ⟪ v [ i ]⟫ | inj₁ x with c₁
+... | id⟷ rewrite card= c₂ = _ , id⟷ , ⟪ Enum (t₃ +ᵤ t₄) [ Find' {t₃ +ᵤ t₄} (inj₁ x) ]⟫
+... | _   with step c₁ ⟪ Enum t₁ [ Find' x ]⟫
+... | t₁' , c₁' , st' rewrite trans (card= c₁) (sym (card= c₁')) with st'
 ... | ⟪ v' [ i' ]⟫ = _ , (c₁' ⊕ c₂) , ⟪ Enum (t₁' +ᵤ t₂) [ Find' {t₁' +ᵤ t₂} (inj₁ (lookup v' i')) ]⟫
-step (_⊕_ {t₁} {t₂} {t₃} {t₄} c₁ c₂) ⟪ v [ i ]⟫ | inj₂ y with step c₂ ⟪ Enum t₂ [ proj₁ (Find y) ]⟫
-... | _ , id⟷ , st' rewrite card= c₂ with st'
-... | ⟪ v' [ i' ]⟫ rewrite card= c₁ = _ , id⟷ , ⟪ Enum (t₃ +ᵤ t₄) [ Find' {t₃ +ᵤ t₄} (inj₂ (lookup v' i')) ]⟫
-step (_⊕_ {t₁} {t₂} {t₃} {t₄} c₁ c₂) ⟪ v [ i ]⟫ | inj₂ y | t₂' , c₂' , st' rewrite trans (card= c₂) (sym (card= c₂')) with st'
+step (_⊕_ {t₁} {t₂} {t₃} {t₄} c₁ c₂) ⟪ v [ i ]⟫ | inj₂ y with c₂
+... | id⟷ rewrite card= c₁ = _ , id⟷ , ⟪ Enum (t₃ +ᵤ t₄) [ Find' {t₃ +ᵤ t₄} (inj₂ y) ]⟫
+... | _   with step c₂ ⟪ Enum t₂ [ Find' y ]⟫
+... | t₂' , c₂' , st' rewrite trans (card= c₂) (sym (card= c₂')) with st'
 ... | ⟪ v' [ i' ]⟫ = _ , (c₁ ⊕ c₂') , ⟪ Enum (t₁ +ᵤ t₂') [ Find' {t₁ +ᵤ t₂'} (inj₂ (lookup v' i')) ]⟫
 step (id⟷ ⊗ id⟷) st = _ , id⟷ , st
 step (_⊗_ {t₁} {t₂} {t₃} {t₄} id⟷ c₂) ⟪ v [ i ]⟫ with lookup v i
@@ -243,11 +243,11 @@ step' {A} ⟪ c ∥ p , v [ i ]⟫ with step c ⟪ v [ i ]⟫
 run : (sz n : ℕ) → State' sz → Vec (State' sz) (suc n)
 run sz 0 st = [ st ]
 run sz (suc n) st with run sz n st
-... | sts@(x ∷ xs) with x
-... | ⟪_∥_,_[_]⟫ {A} {B} cx refl vx ix = step' {A} ⟪ cx ∥ refl , vx [ ix ]⟫ ∷ sts
+... | sts with last sts 
+... | ⟪_∥_,_[_]⟫ {A} {B} cx refl vx ix rewrite +-comm 1 (suc n) = sts ++ [ step' {A} ⟪ cx ∥ refl , vx [ ix ]⟫ ]
 
 CNOT : 𝔹 ×ᵤ 𝔹 ⟷ 𝔹 ×ᵤ 𝔹
 CNOT = dist ⊚ (id⟷ ⊕ (id⟷ ⊗ swap₊)) ⊚ factor
 
-ex₁ : Vec (State' ∣ 𝔹 ×ᵤ 𝔹 ∣) 5
-ex₁ = reverse (run ∣ 𝔹 ×ᵤ 𝔹 ∣ 4 ⟪ CNOT ∥ refl , Enum (𝔹 ×ᵤ 𝔹) [ Fin.fromℕ 3 ]⟫)
+ex₁ : Vec (State' ∣ 𝔹 ×ᵤ 𝔹 ∣) 8
+ex₁ = run ∣ 𝔹 ×ᵤ 𝔹 ∣ 7 ⟪ CNOT ∥ refl , Enum (𝔹 ×ᵤ 𝔹) [ Fin.fromℕ 3 ]⟫
