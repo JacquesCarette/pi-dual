@@ -122,3 +122,30 @@ Recip' A v = (w : A) → v ≡ w
 
 -- recip'-prop : {A : Set} {v : A} → is-set A → is-prop (Recip' A v)
 -- recip'-prop ϕ r s = funext (λ x → ϕ _ x (r x) (s x))
+
+------------------------------------------------------------------------------
+-- Singleton is an idempotent bimonad on pointed sets
+-- (need to check some coherences)
+
+∙Set = Σ Set (λ X → X)
+
+∙Set[_,_] : ∙Set → ∙Set → Set
+∙Set[ (A , a) , (B , b) ] = Σ (A → B) λ f → f a ≡ b
+
+Sing : ∙Set → ∙Set
+Sing (A , a) = Singleton A a , a , refl
+
+Sing[_,_] : ∀ ∙A ∙B → ∙Set[ ∙A , ∙B ] → ∙Set[ Sing ∙A , Sing ∙B  ]
+Sing[ (A , a) , (B , .(f a)) ] (f , refl) = (λ { (x , refl) → f x , refl }) , refl
+
+η[_] : ∀ ∙A → ∙Set[ ∙A , Sing ∙A ]
+η[ (A , a) ] = (λ x → a , refl) , refl
+
+ε[_] : ∀ ∙A → ∙Set[ Sing ∙A , ∙A ]
+ε[ (A , a) ] = (λ { (x , refl) → x }) , refl
+
+μ[_] : ∀ ∙A → ∙Set[ Sing (Sing ∙A) , Sing ∙A ]
+μ[ (A , a) ] = (λ x → a , refl) , refl
+
+δ[_] : ∀ ∙A → ∙Set[ Sing ∙A , Sing (Sing ∙A) ]
+δ[ (A , a) ]  = (λ x → (a , refl) , refl) , refl
