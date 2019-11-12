@@ -7,7 +7,7 @@ module Singleton where
 open import Data.Unit using (⊤; tt)
 open import Data.Product 
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; trans; subst)
+  using (_≡_; refl; sym; trans; subst; cong₂)
 -- open import Level
 --   using (zero)
 -- open import Axiom.Extensionality.Propositional
@@ -66,6 +66,17 @@ pointed-contr {A} {v} = (v , refl) , λ { ( ● , refl) → refl }
 -- and thus have all paths between them:
 pointed-all-paths : {A : Set} {v : A} {p q : Singleton A v} → p ≡ q
 pointed-all-paths = contr-prop pointed-contr _ _
+
+-- What does Singleton of Singleton do?
+-- Values of type Singleton A v are of the form (w , p) where p : v ≡ w
+-- Values of type Singleton (Singleton A v) x
+
+ssv : (A : Set) (v : A) (x : Singleton A v) → Singleton (Singleton A v) x
+ssv A v (.v , refl) = (v , refl) , refl
+
+ss=s : (A : Set) (v : A) (x : Singleton A v) → Singleton (Singleton A v) x ≡ Singleton A v
+ss=s A v (.v , refl) with pointed-contr {A} {v}
+... | (.v , refl) , f = let p = f (v , refl) in {!!} -- ??
 
 ------------------------------------------------------------------------------
 -- The 'reciprocal' of a Singleton type is a function that accepts exactly
