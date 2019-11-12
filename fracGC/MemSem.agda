@@ -178,18 +178,20 @@ st (x , inj₁ y) (distl {t₁} {t₂} {t₃})      = _ , id⟷ , ⟪ Enum _ [ F
 st (x , inj₂ y) (distl {t₁} {t₂} {t₃})      = _ , id⟷ , ⟪ Enum _ [ Find' {(t₁ ×ᵤ t₂) +ᵤ (t₁ ×ᵤ t₃)} (inj₂ (x , y)) ]⟫
 st (inj₁ (x , y)) (factorl {t₁} {t₂} {t₃})  = _ , id⟷ , ⟪ Enum _ [ Find' {t₁ ×ᵤ (t₂ +ᵤ t₃)} (x , inj₁ y) ]⟫
 st (inj₂ (x , z)) (factorl {t₁} {t₂} {t₃})  = _ , id⟷ , ⟪ Enum _ [ Find' {t₁ ×ᵤ (t₂ +ᵤ t₃)} (x , inj₂ z) ]⟫
-st a id⟷                                   = _ , id⟷ , ⟪ Enum _ [ Find' a ]⟫
-st a (id⟷ ⊚ c)                            = _ , c , ⟪ Enum _ [ Find' a ]⟫
-st a (c₁ ⊚ c₂)                             = let _ , c , st' = st a c₁ in
+st a id⟷                                    = _ , id⟷ , ⟪ Enum _ [ Find' a ]⟫
+st a (id⟷ ⊚ c)                              = _ , c , ⟪ Enum _ [ Find' a ]⟫
+st a (c₁ ⊚ c₂)                              = let _ , c , st' = st a c₁ in
                                               _ , c ⊚ c₂ , st'
-st (inj₁ x) (_⊕_ {t₁} {t₂} c₁ c₂)          = let _ , c , st' = st x c₁ in
+st (inj₁ x) (_⊕_ {t₁} {t₂} {_} {t₄} id⟷ c₂) = _ , id⟷ , ⟪ Enum _ [ Find' {_ +ᵤ t₄} (inj₁ x) ]⟫
+st (inj₁ x) (_⊕_ {t₁} {t₂} c₁ c₂)           = let _ , c , st' = st x c₁ in
                                               _ , c ⊕ c₂ , ⟪ Enum _ [ Find' {_ +ᵤ t₂} (inj₁ $ resolve st') ]⟫
-st (inj₂ y) (_⊕_ {t₁} c₁ c₂)               = let _ , c , st' = st y c₂ in
-                                             _ , c₁ ⊕ c , ⟪ Enum _ [ Find' {t₁ +ᵤ _} (inj₂ $ resolve st') ]⟫
-st (x , y) (id⟷ ⊗ id⟷)                   = _ , id⟷ , ⟪ Enum _ [ Find' (x , y) ]⟫
-st (x , y) (id⟷ ⊗ c₂)                     = let _ , c , st' = st y c₂ in
-                                              _ , id⟷ ⊗ c , ⟪ Enum _ [ Find' (x , resolve st') ]⟫
-st (x , y) (c₁ ⊗ c₂)                       = let _ , c , st' = st x c₁ in
+st (inj₂ y) (_⊕_ {t₁} {t₂} {t₃} {_} c₁ id⟷) = _ , id⟷ , ⟪ Enum _ [ Find' {t₃ +ᵤ _} (inj₂ y) ]⟫
+st (inj₂ y) (_⊕_ {t₁} c₁ c₂)                = let _ , c , st' = st y c₂ in
+                                              _ , c₁ ⊕ c , ⟪ Enum _ [ Find' {t₁ +ᵤ _} (inj₂ $ resolve st') ]⟫
+st (x , y) (id⟷ ⊗ id⟷)                      = _ , id⟷ , ⟪ Enum _ [ Find' (x , y) ]⟫
+st (x , y) (id⟷ ⊗ c₂)                       = let _ , c , st' = st y c₂ in
+                                               _ , id⟷ ⊗ c , ⟪ Enum _ [ Find' (x , resolve st') ]⟫
+st (x , y) (c₁ ⊗ c₂)                        = let _ , c , st' = st x c₁ in
                                               _ , c ⊗ c₂ , ⟪ Enum _ [ Find' (resolve st' , y) ]⟫
 
 step : {A B : 𝕌} (c : A ⟷ B) → State A → Σ[ C ∈ 𝕌 ] (C ⟷ B × State C)
