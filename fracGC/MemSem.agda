@@ -68,25 +68,25 @@ data _⟷_ : 𝕌 → 𝕌 → Set where
 Vec× : ∀ {n m} {A B : Set} → Vec A n → Vec B m → Vec (A × B) (n * m)
 Vec× va vb = concat (map (λ a₁ → map (a₁ ,_) vb) va)
 
-∈map : ∀ {ℓ₁ ℓ₂} {n} {A : Set ℓ₁} {B : Set ℓ₂} (v : Vec A n) → (f : A → B) → (a : A)
+∈map : ∀ {ℓ₁ ℓ₂} {n} {A : Set ℓ₁} {B : Set ℓ₂} {v : Vec A n} → (f : A → B) → (a : A)
      → Any (a ≡_) v → Any (f a ≡_) (map f v)
-∈map .(a ∷ _) f a (here refl) = here refl
-∈map .(_ ∷ _) f a (there a∈v) = there (∈map _ f a a∈v)
+∈map f a (here refl) = here refl
+∈map f a (there a∈v) = there (∈map f a a∈v)
 
 inVec× : ∀ {n m} {A B : Set} → (va : Vec A n) → (vb : Vec B m)
        → (a : A) (b : B)
        → Any (a ≡_) va → Any (b ≡_) vb
        → Any ((a , b) ≡_) (Vec× va vb)
-inVec× (a ∷ va) vb .a b (here refl) b∈vb = ++⁺ˡ {xs = map (a ,_) vb} (∈map _ _ _ b∈vb)
+inVec× (a ∷ va) vb .a b (here refl) b∈vb = ++⁺ˡ {xs = map (a ,_) vb} (∈map _ _ b∈vb)
 inVec× (x ∷ va) vb a b (there a∈va) b∈vb = ++⁺ʳ (map (x ,_) vb) (inVec× va vb a b a∈va b∈vb)
 
 any≡← : ∀ {ℓ} {A : Set ℓ} {n} {a} → (v : Vec A n) → (i : Fin n) → a ≡ lookup v i → Any (a ≡_) v
-any≡← (x ∷ v) Fin.0F refl = here refl
-any≡← (x ∷ v) (suc i) refl = there (any≡← v i refl)
+any≡← (_ ∷ _)  Fin.0F refl = here refl
+any≡← (_ ∷ v) (suc i) refl = there (any≡← v i refl)
 
 Enum : (A : 𝕌) → Vec ⟦ A ⟧ ∣ A ∣
-Enum 𝟘 = []
-Enum 𝟙 = tt ∷ []
+Enum 𝟘         = []
+Enum 𝟙          = tt ∷ []
 Enum (A₁ +ᵤ A₂) = map inj₁ (Enum A₁) ++ map inj₂ (Enum A₂)
 Enum (A₁ ×ᵤ A₂) = Vec× (Enum A₁) (Enum A₂)
 
@@ -96,21 +96,22 @@ Find {𝟙} tt = index tt∈𝟙 , lookup-index tt∈𝟙
   where
     tt∈𝟙 : Any (tt ≡_) (Enum 𝟙)
     tt∈𝟙 = here refl
-Find {A₁ +ᵤ A₂} (inj₁ x) with Find x
-Find {A₁ +ᵤ A₂} (inj₁ x) | i , p₁ = index x∈A₁ , lookup-index x∈A₁
-  where
-    x∈A₁ : Any ((inj₁ x) ≡_) (Enum (A₁ +ᵤ A₂))
-    x∈A₁ = ++⁺ˡ {xs = map inj₁ (Enum A₁)} (∈map _ inj₁ x (any≡← _ i p₁))
-Find {A₁ +ᵤ A₂} (inj₂ y) with Find y
-Find {A₁ +ᵤ A₂} (inj₂ y) | j , p₂ = index y∈A₂ , lookup-index y∈A₂
-  where
-    y∈A₂ : Any ((inj₂ y) ≡_) (Enum (A₁ +ᵤ A₂))
-    y∈A₂ = ++⁺ʳ (map inj₁ (Enum A₁)) (∈map _ inj₂ y (any≡← _ j p₂))
-Find {A₁ ×ᵤ A₂} (x , y) with Find x | Find y
-... | i , p₁ | j , p₂ = index xy∈A₁×A₂ , lookup-index xy∈A₁×A₂
-  where      
-    xy∈A₁×A₂ : Any ((x , y) ≡_) (Enum (A₁ ×ᵤ A₂))
-    xy∈A₁×A₂ = inVec× (Enum A₁) (Enum A₂) x y (any≡← (Enum A₁) i p₁) (any≡← (Enum A₂) j p₂)
+Find {A₁ +ᵤ A₂} (inj₁ x) =
+  let i , p₁ = Find x in
+  let x∈A₁ : Any ((inj₁ x) ≡_) (Enum (A₁ +ᵤ A₂))
+      x∈A₁ = ++⁺ˡ {xs = map inj₁ (Enum A₁)} (∈map inj₁ x (any≡← _ i p₁)) in
+  index x∈A₁ , lookup-index x∈A₁
+Find {A₁ +ᵤ A₂} (inj₂ y) =
+  let j , p₂ = Find y in
+  let y∈A₂ : Any ((inj₂ y) ≡_) (Enum (A₁ +ᵤ A₂))
+      y∈A₂ = ++⁺ʳ (map inj₁ (Enum A₁)) (∈map inj₂ y (any≡← _ j p₂)) in
+  index y∈A₂ , lookup-index y∈A₂
+Find {A₁ ×ᵤ A₂} (x , y) =
+  let i , p₁ = Find x
+      j , p₂ = Find y in
+  let xy∈A₁×A₂ : Any ((x , y) ≡_) (Enum (A₁ ×ᵤ A₂))
+      xy∈A₁×A₂ = inVec× (Enum A₁) (Enum A₂) x y (any≡← (Enum A₁) i p₁) (any≡← (Enum A₂) j p₂) in
+  index xy∈A₁×A₂ , lookup-index xy∈A₁×A₂
 
 Find' : {A : 𝕌} (x : ⟦ A ⟧) → Fin ∣ A ∣
 Find' = proj₁ ∘ Find
@@ -231,7 +232,7 @@ data State' (n : ℕ) : Set where
 step' : {A : 𝕌} → State' ∣ A ∣ → State' ∣ A ∣
 step' {A} ⟪ c ∥ p , v [ i ]⟫ with step c ⟪ v [ i ]⟫
 ... | A' , c' , st rewrite trans (card= c) (sym (card= c')) with st
-... | ⟪ v' [ i' ]⟫ = ⟪ c' ∥ p , v' [ i' ]⟫ 
+... | ⟪ v' [ i' ]⟫ = ⟪ c' ∥ p , v' [ i' ]⟫
 
 𝔹 : 𝕌
 𝔹 = 𝟙 +ᵤ 𝟙
@@ -243,7 +244,7 @@ step' {A} ⟪ c ∥ p , v [ i ]⟫ with step c ⟪ v [ i ]⟫
 run : (sz n : ℕ) → State' sz → Vec (State' sz) (suc n)
 run sz 0 st = [ st ]
 run sz (suc n) st with run sz n st
-... | sts with last sts 
+... | sts with last sts
 ... | ⟪_∥_,_[_]⟫ {A} {B} cx refl vx ix rewrite +-comm 1 (suc n) = sts ++ [ step' {A} ⟪ cx ∥ refl , vx [ ix ]⟫ ]
 
 CNOT : 𝔹 ×ᵤ 𝔹 ⟷ 𝔹 ×ᵤ 𝔹
