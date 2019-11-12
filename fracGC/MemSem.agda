@@ -117,13 +117,13 @@ Find' : {A : 𝕌} (x : ⟦ A ⟧) → Fin ∣ A ∣
 Find' = proj₁ ∘ Find
 
 card= : {t₁ t₂ : 𝕌} (C : t₁ ⟷ t₂) → (∣ t₁ ∣ ≡ ∣ t₂ ∣)
-card= unite₊l = refl
-card= uniti₊l = refl
-card= {_} {t₂} unite₊r rewrite +-identityʳ ∣ t₂ ∣ = refl
-card= {t₁} {_} uniti₊r rewrite +-identityʳ ∣ t₁ ∣ = refl
-card= {t₁ +ᵤ t₂} {_} swap₊ rewrite +-comm ∣ t₁ ∣ ∣ t₂ ∣ = refl
-card= {t₁ +ᵤ t₂ +ᵤ t₃} {_} assocl₊ rewrite +-assoc ∣ t₁ ∣ ∣ t₂ ∣ (∣ t₃ ∣) = refl
-card= {(t₁ +ᵤ t₂) +ᵤ t₃} {_} assocr₊  rewrite +-assoc ∣ t₁ ∣ ∣ t₂ ∣ (∣ t₃ ∣) = refl
+card=                   unite₊l   = refl
+card=                   uniti₊l   = refl
+card=                   unite₊r   = +-identityʳ _
+card=                   uniti₊r   = sym $ +-identityʳ _
+card= {t₁ +ᵤ t₂}        swap₊     = +-comm ∣ t₁ ∣ ∣ t₂ ∣
+card= {t₁ +ᵤ t₂ +ᵤ t₃}  assocl₊   = sym $ +-assoc ∣ t₁ ∣ _ _
+card= {(t₁ +ᵤ t₂) +ᵤ t₃} assocr₊  = +-assoc ∣ t₁ ∣ ∣ t₂ ∣ _
 card= {_} {t₂} unite⋆l  rewrite +-identityʳ ∣ t₂ ∣ = refl
 card= {t₁} {_} uniti⋆l  rewrite +-identityʳ ∣ t₁ ∣ = refl
 card= {_} {t₂} unite⋆r  rewrite *-identityʳ ∣ t₂ ∣ = refl
@@ -139,100 +139,69 @@ card= {(t₁ +ᵤ t₂) ×ᵤ t₃} {_} dist  rewrite *-distribʳ-+ ∣ t₃ ∣
 card= {_} {(t₁ +ᵤ t₂) ×ᵤ t₃} factor  rewrite *-distribʳ-+ ∣ t₃ ∣ ∣ t₁ ∣ (∣ t₂ ∣) = refl
 card= {t₃ ×ᵤ (t₁ +ᵤ t₂)} {_} distl  rewrite *-distribˡ-+ ∣ t₃ ∣ ∣ t₁ ∣ (∣ t₂ ∣) = refl
 card= {_} {t₃ ×ᵤ (t₁ +ᵤ t₂)} factorl  rewrite *-distribˡ-+ ∣ t₃ ∣ ∣ t₁ ∣ (∣ t₂ ∣) = refl
-card= id⟷  = refl
-card= {t₁} {t₂} (c₁ ⊚ c₂)  rewrite card= c₁ | card= c₂ = refl
-card= {t₁ +ᵤ t₂} {t₃ +ᵤ t₄} (c₁ ⊕ c₂) rewrite card= c₁ | card= c₂ = refl
-card= {t₁ ×ᵤ t₂} {t₃ ×ᵤ t₄} (c₁ ⊗ c₂) rewrite card= c₁ | card= c₂ = refl
+card=              id⟷       = refl
+card=              (c₁ ⊚ c₂) = trans (card= c₁) (card= c₂)
+card=              (c₁ ⊕ c₂) = cong₂ _+_ (card= c₁) (card= c₂)
+card=              (c₁ ⊗ c₂) = cong₂ _*_ (card= c₁) (card= c₂)
 
-data State (A : 𝕌) : ℕ → Set where
-  ⟪_[_]⟫ : Vec ⟦ A ⟧ ∣ A ∣ → Fin ∣ A ∣ → State A ∣ A ∣
+data State (A : 𝕌) : Set where
+  ⟪_[_]⟫ : Vec ⟦ A ⟧ ∣ A ∣ → Fin ∣ A ∣ → State A
 
-step : {A B : 𝕌} (c : A ⟷ B) → State A ∣ A ∣ → Σ[ C ∈ 𝕌 ] (C ⟷ B × State C ∣ A ∣)
-step (unite₊l {t}) ⟪ v [ i ]⟫ with lookup v i
-... | inj₂ x = _ , id⟷ , ⟪ Enum t [ Find' x ]⟫
-step (uniti₊l {t}) ⟪ v [ i ]⟫ with lookup v i
-... | x = _ , id⟷ , ⟪ (Enum (𝟘 +ᵤ t)) [ Find' x ]⟫
-step (unite₊r {t}) ⟪ v [ i ]⟫ with lookup v i
-... | inj₁ x rewrite card= (unite₊r {t}) = _ , id⟷ , ⟪ Enum t [ Find' x ]⟫
-step (uniti₊r {t}) ⟪ v [ i ]⟫ with lookup v i
-... | x rewrite card= (uniti₊r {t}) = _ , id⟷ , ⟪ (Enum (t +ᵤ 𝟘)) [ Find' {t +ᵤ 𝟘} (inj₁ x) ]⟫
-step (swap₊ {t₁} {t₂}) ⟪ v [ i ]⟫ rewrite card= (swap₊ {t₁} {t₂}) with lookup v i
-... | inj₁ x = _ , id⟷ , ⟪ Enum (t₂ +ᵤ t₁) [ Find' {t₂ +ᵤ t₁} (inj₂ x) ]⟫
-... | inj₂ y = _ , id⟷ , ⟪ Enum (t₂ +ᵤ t₁) [ Find' {t₂ +ᵤ t₁} (inj₁ y) ]⟫
-step (assocl₊ {t₁} {t₂} {t₃}) ⟪ v [ i ]⟫ rewrite card= (assocl₊ {t₁} {t₂} {t₃}) with lookup v i
-... | inj₁ x = _ , id⟷ , ⟪ Enum ((t₁ +ᵤ t₂) +ᵤ t₃) [ Find' {(t₁ +ᵤ t₂) +ᵤ t₃} (inj₁ (inj₁ x)) ]⟫
-... | inj₂ (inj₁ y) = _ , id⟷ , ⟪ Enum ((t₁ +ᵤ t₂) +ᵤ t₃) [ Find' {(t₁ +ᵤ t₂) +ᵤ t₃} (inj₁ (inj₂ y)) ]⟫
-... | inj₂ (inj₂ z) = _ , id⟷ , ⟪ Enum ((t₁ +ᵤ t₂) +ᵤ t₃) [ Find' {(t₁ +ᵤ t₂) +ᵤ t₃} (inj₂ z) ]⟫
-step (assocr₊ {t₁} {t₂} {t₃}) ⟪ v [ i ]⟫ rewrite card= (assocr₊ {t₁} {t₂} {t₃}) with lookup v i
-... | inj₁ (inj₁ x) = _ , id⟷ , ⟪ Enum (t₁ +ᵤ t₂ +ᵤ t₃) [ Find' {t₁ +ᵤ t₂ +ᵤ t₃} (inj₁ x) ]⟫
-... | inj₁ (inj₂ y) = _ , id⟷ , ⟪ Enum (t₁ +ᵤ t₂ +ᵤ t₃) [ Find' {t₁ +ᵤ t₂ +ᵤ t₃} (inj₂ (inj₁ y)) ]⟫
-... | inj₂ z = _ , id⟷ , ⟪ Enum (t₁ +ᵤ t₂ +ᵤ t₃) [ Find' {t₁ +ᵤ t₂ +ᵤ t₃} (inj₂ (inj₂ z)) ]⟫
-step (unite⋆l {t}) ⟪ v [ i ]⟫ rewrite card= (unite⋆l {t}) with lookup v i
-... | (tt , x) = _ , id⟷ , ⟪ Enum t [ Find' x ]⟫
-step (uniti⋆l {t}) ⟪ v [ i ]⟫ rewrite card= (uniti⋆l {t}) with lookup v i
-... | x = _ , id⟷ , ⟪ Enum (𝟙 ×ᵤ t) [ Find' (tt , x) ]⟫
-step (unite⋆r {t}) ⟪ v [ i ]⟫ rewrite card= (unite⋆r {t}) with lookup v i
-... | (x , tt) = _ , id⟷ , ⟪ Enum t [ Find' x ]⟫
-step (uniti⋆r {t}) ⟪ v [ i ]⟫ rewrite card= (uniti⋆r {t}) with lookup v i
-... | x = _ , id⟷ , ⟪ Enum (t ×ᵤ 𝟙) [ Find' (x , tt) ]⟫
-step (swap⋆ {t₁} {t₂}) ⟪ v [ i ]⟫ rewrite card= (swap⋆ {t₁} {t₂}) with lookup v i
-... | (x , y) = _ , id⟷ , ⟪ Enum (t₂ ×ᵤ t₁) [ Find' (y , x) ]⟫
-step (assocl⋆ {t₁} {t₂} {t₃}) ⟪ v [ i ]⟫ rewrite card= (assocl⋆ {t₁} {t₂} {t₃}) with lookup v i
-... | x , y , z = _ , id⟷ , ⟪ Enum ((t₁ ×ᵤ t₂) ×ᵤ t₃) [ Find' ((x , y) , z) ]⟫
-step (assocr⋆ {t₁} {t₂} {t₃}) ⟪ v [ i ]⟫ rewrite card= (assocr⋆ {t₁} {t₂} {t₃}) with lookup v i
-... | (x , y) , z = _ , id⟷ , ⟪ Enum (t₁ ×ᵤ t₂ ×ᵤ t₃) [ Find' (x , y , z) ]⟫
-step absorbr ⟪ v [ i ]⟫ with lookup v i
-... | ()
-step absorbl ⟪ v [ i ]⟫ with lookup v i
-... | ()
-step factorzr ⟪ v [ i ]⟫ with lookup v i
-... | ()
-step factorzl ⟪ v [ i ]⟫ with lookup v i
-... | ()
-step (dist {t₁} {t₂} {t₃}) ⟪ v [ i ]⟫ rewrite card= (dist {t₁} {t₂} {t₃}) with lookup v i
-... | (inj₁ x , z) = _ , id⟷ , ⟪ Enum ((t₁ ×ᵤ t₃) +ᵤ (t₂ ×ᵤ t₃)) [ Find' {(t₁ ×ᵤ t₃) +ᵤ (t₂ ×ᵤ t₃)} (inj₁ (x , z)) ]⟫
-... | (inj₂ y , z) = _ , id⟷ , ⟪ Enum ((t₁ ×ᵤ t₃) +ᵤ (t₂ ×ᵤ t₃)) [ Find' {(t₁ ×ᵤ t₃) +ᵤ (t₂ ×ᵤ t₃)} (inj₂ (y , z)) ]⟫
-step (factor {t₁} {t₂} {t₃}) ⟪ v [ i ]⟫ rewrite card= (factor {t₁} {t₂} {t₃}) with lookup v i
-... | (inj₁ (x , z)) = _ , id⟷ , ⟪ Enum ((t₁ +ᵤ t₂) ×ᵤ t₃) [ Find' {(t₁ +ᵤ t₂) ×ᵤ t₃} (inj₁ x , z) ]⟫
-... | (inj₂ (y , z)) = _ , id⟷ , ⟪ Enum ((t₁ +ᵤ t₂) ×ᵤ t₃) [ Find' {(t₁ +ᵤ t₂) ×ᵤ t₃} (inj₂ y , z) ]⟫
-step (distl {t₁} {t₂} {t₃}) ⟪ v [ i ]⟫ rewrite card= (distl {t₁} {t₂} {t₃}) with lookup v i
-... | (x , inj₁ y) = _ , id⟷ , ⟪ (Enum ((t₁ ×ᵤ t₂) +ᵤ (t₁ ×ᵤ t₃))) [ Find' {(t₁ ×ᵤ t₂) +ᵤ (t₁ ×ᵤ t₃)} (inj₁ (x , y)) ]⟫
-... | (x , inj₂ z) = _ , id⟷ , ⟪ (Enum ((t₁ ×ᵤ t₂) +ᵤ (t₁ ×ᵤ t₃))) [ Find' {(t₁ ×ᵤ t₂) +ᵤ (t₁ ×ᵤ t₃)} (inj₂ (x , z)) ]⟫
-step (factorl {t₁} {t₂} {t₃}) ⟪ v [ i ]⟫ rewrite card= (factorl {t₁} {t₂} {t₃}) with lookup v i
-... | inj₁ (x , y) = _ , id⟷ , ⟪ (Enum (t₁ ×ᵤ (t₂ +ᵤ t₃))) [ Find' {t₁ ×ᵤ (t₂ +ᵤ t₃)} (x , inj₁ y) ]⟫
-... | inj₂ (x , z) = _ , id⟷ , ⟪ (Enum (t₁ ×ᵤ (t₂ +ᵤ t₃))) [ Find' {t₁ ×ᵤ (t₂ +ᵤ t₃)} (x , inj₂ z) ]⟫
-step id⟷ st = _ , id⟷ , st
-step (id⟷ ⊚ c₂) st = _ , c₂ , st
-step (c₁ ⊚ c₂) st with step c₁ st
-... | _ , c₁' , st' = _ , c₁' ⊚ c₂ , st'
-step (_⊕_ {t₁} {t₂} {t₃} {t₄} c₁ c₂) ⟪ v [ i ]⟫ with lookup v i
-step (_⊕_ {t₁} {t₂} {t₃} {t₄} c₁ c₂) ⟪ v [ i ]⟫ | inj₁ x with c₁
-... | id⟷ rewrite card= c₂ = _ , id⟷ , ⟪ Enum (t₃ +ᵤ t₄) [ Find' {t₃ +ᵤ t₄} (inj₁ x) ]⟫
-... | _   with step c₁ ⟪ Enum t₁ [ Find' x ]⟫
-... | t₁' , c₁' , st' rewrite trans (card= c₁) (sym (card= c₁')) with st'
-... | ⟪ v' [ i' ]⟫ = _ , (c₁' ⊕ c₂) , ⟪ Enum (t₁' +ᵤ t₂) [ Find' {t₁' +ᵤ t₂} (inj₁ (lookup v' i')) ]⟫
-step (_⊕_ {t₁} {t₂} {t₃} {t₄} c₁ c₂) ⟪ v [ i ]⟫ | inj₂ y with c₂
-... | id⟷ rewrite card= c₁ = _ , id⟷ , ⟪ Enum (t₃ +ᵤ t₄) [ Find' {t₃ +ᵤ t₄} (inj₂ y) ]⟫
-... | _   with step c₂ ⟪ Enum t₂ [ Find' y ]⟫
-... | t₂' , c₂' , st' rewrite trans (card= c₂) (sym (card= c₂')) with st'
-... | ⟪ v' [ i' ]⟫ = _ , (c₁ ⊕ c₂') , ⟪ Enum (t₁ +ᵤ t₂') [ Find' {t₁ +ᵤ t₂'} (inj₂ (lookup v' i')) ]⟫
-step (id⟷ ⊗ id⟷) st = _ , id⟷ , st
-step (_⊗_ {t₁} {t₂} {t₃} {t₄} id⟷ c₂) ⟪ v [ i ]⟫ with lookup v i
-... | (x , y) with step c₂ ⟪ Enum t₂ [ Find' y ]⟫
-... | t₂' , c₂' , st' rewrite trans (card= c₂) (sym (card= c₂')) with st'
-... | ⟪ v' [ i' ]⟫ = _ , (id⟷ ⊗ c₂') , ⟪ Enum (t₁ ×ᵤ t₂') [ Find' (x , (lookup v' i')) ]⟫
-step (_⊗_ {t₁} {t₂} {t₃} {t₄} c₁ c₂) ⟪ v [ i ]⟫ with lookup v i
-... | (x , y) with step c₁ ⟪ Enum t₁ [ Find' x ]⟫
-... | t₁' , c₁' , st' rewrite trans (card= c₁) (sym (card= c₁')) with st'
-... | ⟪ v' [ i' ]⟫ = _ , (c₁' ⊗ c₂) , ⟪ Enum (t₁' ×ᵤ t₂) [ Find' ((lookup v' i') , y) ]⟫
+resolve : {A : 𝕌} → State A → ⟦ A ⟧
+resolve ⟪ v [ i ]⟫ = lookup v i
+
+st : {A B : 𝕌} → ⟦ A ⟧ → (c : A ⟷ B) → Σ[ C ∈ 𝕌 ] (C ⟷ B × State C)
+st (inj₂ y) (unite₊l {t})                   = _ , id⟷ , ⟪ Enum t [ Find' y ]⟫
+st a (uniti₊l {t})                          = _ , id⟷ , ⟪ (Enum (𝟘 +ᵤ t)) [ Find' a ]⟫
+st (inj₁ x) (unite₊r {t})                   = _ , id⟷ , ⟪ Enum t [ Find' x ]⟫
+st a (uniti₊r {t})                          = _ , id⟷ , ⟪ (Enum (t +ᵤ 𝟘)) [ Find' {t +ᵤ 𝟘} (inj₁ a) ]⟫
+st (inj₁ x) (swap₊ {t₁} {t₂})               = _ , id⟷ , ⟪ Enum _ [ Find' {t₂ +ᵤ t₁} (inj₂ x) ]⟫
+st (inj₂ y) (swap₊ {t₁} {t₂})               = _ , id⟷ , ⟪ Enum _ [ Find' {t₂ +ᵤ t₁} (inj₁ y) ]⟫
+st (inj₁ x) (assocl₊ {t₁} {t₂} {t₃})        = _ , id⟷ , ⟪ Enum _ [ Find' {(t₁ +ᵤ t₂) +ᵤ t₃} (inj₁ (inj₁ x)) ]⟫
+st (inj₂ (inj₁ x)) (assocl₊ {t₁} {t₂} {t₃}) = _ , id⟷ , ⟪ Enum _ [ Find' {(t₁ +ᵤ t₂) +ᵤ t₃} (inj₁ (inj₂ x)) ]⟫
+st (inj₂ (inj₂ y)) (assocl₊ {t₁} {t₂} {t₃}) = _ , id⟷ , ⟪ Enum _ [ Find' {(t₁ +ᵤ t₂) +ᵤ t₃} (inj₂ y) ]⟫
+st (inj₁ (inj₁ x)) (assocr₊ {t₁} {t₂} {t₃}) = _ , id⟷ , ⟪ Enum _ [ Find' {t₁ +ᵤ t₂ +ᵤ t₃} (inj₁ x) ]⟫
+st (inj₁ (inj₂ y)) (assocr₊ {t₁} {t₂} {t₃}) = _ , id⟷ , ⟪ Enum _ [ Find' {t₁ +ᵤ t₂ +ᵤ t₃} (inj₂ (inj₁ y)) ]⟫
+st (inj₂ y) (assocr₊ {t₁} {t₂} {t₃})        = _ , id⟷ , ⟪ Enum _ [ Find' {t₁ +ᵤ t₂ +ᵤ t₃} (inj₂ (inj₂ y)) ]⟫
+st (tt , y) unite⋆l                         = _ , id⟷ , ⟪ Enum _ [ Find' y ]⟫
+st a uniti⋆l                                = _ , id⟷ , ⟪ Enum _ [ Find' (tt , a) ]⟫
+st (x , tt) unite⋆r                         = _ , id⟷ , ⟪ Enum _ [ Find' x ]⟫
+st a uniti⋆r                                = _ , id⟷ , ⟪ Enum _ [ Find' (a , tt) ]⟫
+st (x , y) swap⋆                            = _ , id⟷ , ⟪ Enum _ [ Find' (y , x) ]⟫
+st (x , y , z) assocl⋆                      = _ , id⟷ , ⟪ Enum _ [ Find' ((x , y) , z) ]⟫
+st ((x , y) , z) assocr⋆                    = _ , id⟷ , ⟪ Enum _ [ Find' (x , y , z) ]⟫
+st (inj₁ x , y) (dist {t₁} {t₂} {t₃})       = _ , id⟷ , ⟪ Enum _ [ Find' {t₁ ×ᵤ t₃ +ᵤ t₂ ×ᵤ t₃} (inj₁ (x , y)) ]⟫
+st (inj₂ x , y) (dist {t₁} {t₂} {t₃})       = _ , id⟷ , ⟪ Enum _ [ Find' {t₁ ×ᵤ t₃ +ᵤ t₂ ×ᵤ t₃} (inj₂ (x , y)) ]⟫
+st (inj₁ (x , y)) (factor {t₁} {t₂} {t₃})   = _ , id⟷ , ⟪ Enum _ [ Find' {(t₁ +ᵤ t₂) ×ᵤ t₃} (inj₁ x , y) ]⟫
+st (inj₂ (y , z)) (factor {t₁} {t₂} {t₃})   = _ , id⟷ , ⟪ Enum _ [ Find' {(t₁ +ᵤ t₂) ×ᵤ t₃} (inj₂ y , z) ]⟫
+st (x , inj₁ y) (distl {t₁} {t₂} {t₃})      = _ , id⟷ , ⟪ Enum _ [ Find' {(t₁ ×ᵤ t₂) +ᵤ (t₁ ×ᵤ t₃)} (inj₁ (x , y)) ]⟫
+st (x , inj₂ y) (distl {t₁} {t₂} {t₃})      = _ , id⟷ , ⟪ Enum _ [ Find' {(t₁ ×ᵤ t₂) +ᵤ (t₁ ×ᵤ t₃)} (inj₂ (x , y)) ]⟫
+st (inj₁ (x , y)) (factorl {t₁} {t₂} {t₃})  = _ , id⟷ , ⟪ Enum _ [ Find' {t₁ ×ᵤ (t₂ +ᵤ t₃)} (x , inj₁ y) ]⟫
+st (inj₂ (x , z)) (factorl {t₁} {t₂} {t₃})  = _ , id⟷ , ⟪ Enum _ [ Find' {t₁ ×ᵤ (t₂ +ᵤ t₃)} (x , inj₂ z) ]⟫
+st a id⟷                                   = _ , id⟷ , ⟪ Enum _ [ Find' a ]⟫
+st a (id⟷ ⊚ c)                            = _ , c , ⟪ Enum _ [ Find' a ]⟫
+st a (c₁ ⊚ c₂)                             = let _ , c , st' = st a c₁ in
+                                              _ , c ⊚ c₂ , st'
+st (inj₁ x) (_⊕_ {t₁} {t₂} c₁ c₂)          = let _ , c , st' = st x c₁ in
+                                              _ , c ⊕ c₂ , ⟪ Enum _ [ Find' {_ +ᵤ t₂} (inj₁ $ resolve st') ]⟫
+st (inj₂ y) (_⊕_ {t₁} c₁ c₂)               = let _ , c , st' = st y c₂ in
+                                             _ , c₁ ⊕ c , ⟪ Enum _ [ Find' {t₁ +ᵤ _} (inj₂ $ resolve st') ]⟫
+st (x , y) (id⟷ ⊗ id⟷)                   = _ , id⟷ , ⟪ Enum _ [ Find' (x , y) ]⟫
+st (x , y) (id⟷ ⊗ c₂)                     = let _ , c , st' = st y c₂ in
+                                              _ , id⟷ ⊗ c , ⟪ Enum _ [ Find' (x , resolve st') ]⟫
+st (x , y) (c₁ ⊗ c₂)                       = let _ , c , st' = st x c₁ in
+                                              _ , c ⊗ c₂ , ⟪ Enum _ [ Find' (resolve st' , y) ]⟫
+
+step : {A B : 𝕌} (c : A ⟷ B) → State A → Σ[ C ∈ 𝕌 ] (C ⟷ B × State C)
+step c ⟪ v [ i ]⟫ = st (lookup v i) c
 
 data State' (n : ℕ) : Set where
   ⟪_∥_,_[_]⟫ : {A B : 𝕌} → A ⟷ B → (∣ A ∣ ≡ n) → Vec ⟦ A ⟧ ∣ A ∣ → Fin ∣ A ∣ → State' n
 
 step' : {A : 𝕌} → State' ∣ A ∣ → State' ∣ A ∣
-step' {A} ⟪ c ∥ p , v [ i ]⟫ with step c ⟪ v [ i ]⟫
-... | A' , c' , st rewrite trans (card= c) (sym (card= c')) with st
-... | ⟪ v' [ i' ]⟫ = ⟪ c' ∥ p , v' [ i' ]⟫
+step' {A} ⟪ c ∥ p , v [ i ]⟫ =
+  case step c ⟪ v [ i ]⟫ of λ { (_ , c' , ⟪ v' [ i' ]⟫ ) →
+    ⟪ c' ∥ trans (trans (card= c') (sym $ card= c) ) p , v' [ i' ]⟫ }
 
 𝔹 : 𝕌
 𝔹 = 𝟙 +ᵤ 𝟙
