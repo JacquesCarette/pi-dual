@@ -94,7 +94,9 @@ data _⟷_ where
   -- fractionals
   η : {t : 𝕌} → (v : ⟦ t ⟧) → 𝟙 ⟷ ● t [ v ] ×ᵤ 𝟙/● t [ v ]
   ε : {t : 𝕌} → (v : ⟦ t ⟧) → ● t [ v ] ×ᵤ 𝟙/● t [ v ] ⟷ 𝟙
-  -- prop eq
+  -- double lift prop eq
+  ll : ∀ {t : 𝕌} {v : ⟦ t ⟧} {w : ⟦ ● t [ v ] ⟧} → 
+        ● (● t [ v ]) [ w ]  ⟷ ● t [ v ]
   == : ∀ {t₁ t₂ : 𝕌} {v : ⟦ t₁ ⟧} {w w' : ⟦ t₂ ⟧} →
        (● t₁ [ v ] ⟷ ● t₂ [ w ]) → (w ≡ w') → (● t₁ [ v ] ⟷ ● t₂ [ w' ])
 
@@ -148,8 +150,8 @@ eval (plusrl {v = .w₂}) (inj₂ w₂ , refl) = w₂ , refl
 eval plusrr (v₂ , refl) = inj₂ v₂ , refl
 eval (fracl {v₁ = v₁} {v₂ = v₂}) f = (λ _ → f ((v₁ , v₂) , refl)) , (λ _ → f ((v₁ , v₂) , refl))
 eval fracr (f₁ , f₂) ((w₁ , w₂) , refl) = let _ = f₁ (w₁ , refl) ; _ = f₂ (w₂ , refl) in tt
+eval (ll {t} {v} {.w}) (w , refl) = v , refl 
 eval (== c eq) s₁ = let (w₂ , p) = eval c s₁ in w₂ , trans (sym eq) p 
-
 
 focus : {t : 𝕌} → (v : ⟦ t ⟧) → Singleton ⟦ t ⟧ v
 focus v = (v , refl)

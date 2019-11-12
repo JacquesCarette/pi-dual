@@ -158,9 +158,6 @@ revrev {A} {a} {a⋆} =
   ● A [ a ] ×ᵤ 𝟙 ⟷⟨ {!id⟷ ⊗ η a⋆!} ⟩
   ● A [ a ] ×ᵤ (𝟙/● A [ a ] ×ᵤ 𝟙/● (𝟙/● A [ a ]) [ a⋆ ]) ⟷⟨ {!!} ⟩ 
   𝟙/● (𝟙/● A [ a ]) [ a⋆ ] □
-  -- Need a version of eta that takes a singleton type as a package
-  -- because once we have a singleton type, we can't separate it into
-  -- a plain type and a value.
 
 -- this is strange
 -- A/C + B/C <-> (A + B) / C

@@ -59,6 +59,7 @@ bwd fracl (f₁ , f₂) ((w₁ , w₂) , refl) = let _ = f₁ (w₁ , refl) ; _ 
 bwd (fracr {v₁ = v₁} {v₂ = v₂}) f = (λ _ → f ((v₁ , v₂) , refl)) , (λ _ → f ((v₁ , v₂) , refl))
 bwd (η v) p = tt
 bwd (ε v) tt = (v , refl) , λ _ → tt
+bwd (ll {t} {v} {w}) (v , refl) = w , refl 
 bwd (== c eq) v = bwd c (subst (Singleton ⟦ _ ⟧) (sym eq) v)
 
 bwd-eval unite₊l (inj₂ v) = refl
@@ -104,6 +105,7 @@ bwd-eval fracl f = {!!}  -- needs recip-all-paths
 bwd-eval fracr (f₁ , f₂) = {!!}
 bwd-eval (η v) tt = refl
 bwd-eval (ε v) (p , r) = cong₂ _,_ pointed-all-paths refl
+bwd-eval (ll {t} {v} {.w}) (w , refl) = refl 
 bwd-eval (== c eq) p = pointed-all-paths
 
 eval-bwd : {A B : 𝕌} → (c : A ⟷ B) → (v : ⟦ B ⟧) → eval c (bwd c v) ≡ v
@@ -150,4 +152,5 @@ eval-bwd fracl (f₁ , f₂) = {!!} -- needs recip-all-paths
 eval-bwd fracr f = {!!}
 eval-bwd (η v) (p , r) = cong₂ _,_ pointed-all-paths refl
 eval-bwd (ε v) tt = refl
+eval-bwd (ll {t} {.v} {w}) (v , refl) = refl 
 eval-bwd (== c eq) p = pointed-all-paths

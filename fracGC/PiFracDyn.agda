@@ -76,7 +76,7 @@ mutual
   card 𝟙 = 1
   card (t₁ +ᵤ t₂) = card t₁ + card t₂
   card (t₁ ×ᵤ t₂) = card t₁ * card t₂
-  card 𝟙/● = 1
+  card (𝟙/ t) = 1
 
 -- If number of points is zero then it is impossible to find a value
 -- of the type
