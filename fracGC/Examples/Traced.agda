@@ -83,32 +83,17 @@ p2' : (v : ⟦ 𝔹 ⟧) →
 p2' v = trace v p2 ((v , (v , v)) , refl)
 
 ---------------------------------------------------------------------------------
--- Examples to build
-
--- A <-> 1 / (1/A)
--- 1 / (A x B) <-> 1/A x 1/B
--- (A <-> B) -> (1/A <-> 1/B)
+-- Examples inspired by compact closed categories and fractional numbers.
 
 -- Intuition:
 -- 1/A x B is a space transformer; takes A space and returns B space
 -- denote space transformers as A ⊸ B
---
+
 -- Best we can do:
 -- we need Singletons, so |a ⊸ b| is 1 component of a function.
+
 _⊸_ : {A : 𝕌} → (a : ⟦ A ⟧) → {B : 𝕌} → (b : ⟦ B ⟧) → 𝕌
 _⊸_ {A} a {B} b = 𝟙/● A [ a ] ×ᵤ ● B [ b ]
-
--- revrev : {A : 𝕌} {a : ⟦ A ⟧} {a⋆ : ⟦ 𝟙/● A [ a ] ⟧} →
---          ● A [ a ] ⟷ 𝟙/● A [ {!!} ]
--- revrev = {!!}
-
--- It can be applied in a very special case:  (a ⊸ b) x ● A [ a ] <-> ● B [ b ]
-app : {A B : 𝕌} {a : ⟦ A ⟧} {b : ⟦ B ⟧} → (a ⊸ b) ×ᵤ ● A [ a ] ⟷ ● B [ b ]
-app {A} {B} {a} {b} =
-  (𝟙/● A [ a ] ×ᵤ ● B [ b ]) ×ᵤ ● A [ a ] ⟷⟨ swap⋆ ⊗ id⟷ ⟩
-  (● B [ b ] ×ᵤ 𝟙/● A [ a ]) ×ᵤ ● A [ a ] ⟷⟨ assocr⋆ ⊚ (id⟷ ⊗ (swap⋆ ⊚ ε a)) ⟩
-  ● B [ b ] ×ᵤ 𝟙                          ⟷⟨ unite⋆r ⟩
-  ● B [ b ] □
 
 id⊸ : {A : 𝕌} {a : ⟦ A ⟧} → (a ⊸ a) ⟷ 𝟙
 id⊸ {A} {a} =
@@ -116,7 +101,8 @@ id⊸ {A} {a} =
   (● A [ a ] ×ᵤ 𝟙/● A [ a ]) ⟷⟨ ε a ⟩
   𝟙 □
 
-comp⊸ : {A B C : 𝕌} {a : ⟦ A ⟧} {b : ⟦ B ⟧} {c : ⟦ C ⟧} → (a ⊸ b) ×ᵤ (b ⊸ c) ⟷ (a ⊸ c)
+comp⊸ : {A B C : 𝕌} {a : ⟦ A ⟧} {b : ⟦ B ⟧} {c : ⟦ C ⟧} →
+        (a ⊸ b) ×ᵤ (b ⊸ c) ⟷ (a ⊸ c)
 comp⊸ {A} {B} {C} {a} {b} {c} =
   (𝟙/● A [ a ] ×ᵤ ● B [ b ]) ×ᵤ (𝟙/● B [ b ] ×ᵤ ● C [ c ]) ⟷⟨ assocr⋆ ⟩
   𝟙/● A [ a ] ×ᵤ (● B [ b ] ×ᵤ (𝟙/● B [ b ] ×ᵤ ● C [ c ])) ⟷⟨ id⟷ ⊗ assocl⋆ ⟩
@@ -124,10 +110,12 @@ comp⊸ {A} {B} {C} {a} {b} {c} =
   𝟙/● A [ a ] ×ᵤ (𝟙 ×ᵤ ● C [ c ])                          ⟷⟨ id⟷ ⊗ unite⋆l ⟩
   𝟙/● A [ a ] ×ᵤ ● C [ c ] □
 
--- can we do this?
--- curry⊸ : {A B C : 𝕌} {a : ⟦ A ⟧} {b : ⟦ B ⟧} {c : ⟦ C ⟧}
---        → (● A [ a ] ×ᵤ (b ⊸ c)) ⟷ (a ⊸ {!!}) -- what do we put here?
--- curry⊸ {A} {B} {C} {a} {b} {c} = {!!}
+app : {A B : 𝕌} {a : ⟦ A ⟧} {b : ⟦ B ⟧} → (a ⊸ b) ×ᵤ ● A [ a ] ⟷ ● B [ b ]
+app {A} {B} {a} {b} =
+  (𝟙/● A [ a ] ×ᵤ ● B [ b ]) ×ᵤ ● A [ a ] ⟷⟨ swap⋆ ⊗ id⟷ ⟩
+  (● B [ b ] ×ᵤ 𝟙/● A [ a ]) ×ᵤ ● A [ a ] ⟷⟨ assocr⋆ ⊚ (id⟷ ⊗ (swap⋆ ⊚ ε a)) ⟩
+  ● B [ b ] ×ᵤ 𝟙                          ⟷⟨ unite⋆r ⟩
+  ● B [ b ] □
 
 -- B/A × D/C ⟷ B × D / A × C
 dist×/ : {A B C D : 𝕌} {a : ⟦ A ⟧} {b : ⟦ B ⟧} {c : ⟦ C ⟧} {d : ⟦ D ⟧}
@@ -147,15 +135,32 @@ rev× {A} {B} {a} {b} =
   (𝟙/● A ×ᵤ B [ a , b ] ×ᵤ ● 𝟙 ×ᵤ 𝟙 [ tt , tt ]) ⟷⟨ id⟷ ⊗ lift unite⋆l ⟩
   (𝟙/● A ×ᵤ B [ a , b ] ×ᵤ ● 𝟙 [ tt ]) □
 
--- trivial : ● 𝟙 [ tt ] ⟷ 𝟙
--- trivial = {!!}
+{--
+trivial : ● 𝟙 [ tt ] ⟷ 𝟙
+trivial = {!!}
+--}
 
 -- (A <-> B) -> (1/A <-> 1/B)
--- rev : {A B : 𝕌} {a : ⟦ A ⟧} {b : ⟦ B ⟧}
---     → ● A [ a ] ⟷ ● B [ b ] → (a ⊸ tt) ⟷ (b ⊸ tt)
--- rev {A} {B} {a} {b} p =
---   (𝟙/● A [ a ] ×ᵤ ● 𝟙 [ tt ]) ⟷⟨ {!!} ⟩
---   (𝟙/● B [ b ] ×ᵤ ● 𝟙 [ tt ]) □
+--rev : {A B : 𝕌} {a : ⟦ A ⟧} {b : ⟦ B ⟧}
+--     → ● A [ a ] ⟷ ● B [ b ] → (b ⊸ tt) ⟷ (a ⊸ tt)
+--  (𝟙/● A [ a ] ×ᵤ ● 𝟙 [ tt ]) ⟷⟨ {!!} ⟩
+--  (𝟙/● B [ b ] ×ᵤ ● 𝟙 [ tt ]) □
+
+rev : {A B : 𝕌} {a : ⟦ A ⟧} 
+     → (f : A ⟷ B) → (𝟙/● B [ eval f a ] ⟷ 𝟙/● A [ a ])
+rev {A} {B} {a} f = dual f a
+
+-- A <-> 1 / (1/A)
+revrev : {A : 𝕌} {a : ⟦ A ⟧} {a⋆ : ⟦ 𝟙/● A [ a ] ⟧} →
+         ● A [ a ] ⟷ 𝟙/● (𝟙/● A [ a ]) [ a⋆ ]
+revrev {A} {a} {a⋆} =
+  ● A [ a ] ⟷⟨ uniti⋆r ⟩
+  ● A [ a ] ×ᵤ 𝟙 ⟷⟨ {!id⟷ ⊗ η a⋆!} ⟩
+  ● A [ a ] ×ᵤ (𝟙/● A [ a ] ×ᵤ 𝟙/● (𝟙/● A [ a ]) [ a⋆ ]) ⟷⟨ {!!} ⟩ 
+  𝟙/● (𝟙/● A [ a ]) [ a⋆ ] □
+  -- Need a version of eta that takes a singleton type as a package
+  -- because once we have a singleton type, we can't separate it into
+  -- a plain type and a value.
 
 -- this is strange
 -- A/C + B/C <-> (A + B) / C
@@ -170,3 +175,8 @@ rev× {A} {B} {a} {b} =
 -- A/B + C/D <-> (A x D + B x C) / (B x D)
 
 -- SAT solver Sec. 5 from https://www.cs.indiana.edu/~sabry/papers/rational.pdf
+
+-- can we do this?
+-- curry⊸ : {A B C : 𝕌} {a : ⟦ A ⟧} {b : ⟦ B ⟧} {c : ⟦ C ⟧}
+--        → (● A [ a ] ×ᵤ (b ⊸ c)) ⟷ (a ⊸ {!!}) -- what do we put here?
+-- curry⊸ {A} {B} {C} {a} {b} {c} = {!!}
