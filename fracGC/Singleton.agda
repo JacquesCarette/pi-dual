@@ -5,9 +5,9 @@
 module Singleton where
 
 open import Data.Unit using (⊤; tt)
-open import Data.Product 
+open import Data.Product
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; trans; subst; cong₂)
+  using (_≡_; refl; sym; trans; subst; cong ; cong₂)
 -- open import Level
 --   using (zero)
 -- open import Axiom.Extensionality.Propositional
@@ -61,7 +61,7 @@ Singleton A v = ∃ (λ ● → v ≡ ●)
 -- Singleton types are contractible:
 pointed-contr : {A : Set} {v : A} → is-contr (Singleton A v)
 --pointed-contr {A} {v} = ⇑ v refl , λ { (⇑ ● refl) → refl }
-pointed-contr {A} {v} = (v , refl) , λ { ( ● , refl) → refl } 
+pointed-contr {A} {v} = (v , refl) , λ { ( ● , refl) → refl }
 
 -- and thus have all paths between them:
 pointed-all-paths : {A : Set} {v : A} {p q : Singleton A v} → p ≡ q
@@ -89,7 +89,7 @@ Recip A v = (w : A) → (v ≡ w) → ⊤
 --}
 
 Recip : (A : Set) → (v : A) → Set
-Recip A v = Singleton A v → ⊤ 
+Recip A v = Singleton A v → ⊤
 
 -- Recip A v = Singleton A v → ⊤
 
@@ -133,20 +133,59 @@ Recip' A v = (w : A) → v ≡ w
 ∙Set[_,_] : ∙Set → ∙Set → Set
 ∙Set[ (A , a) , (B , b) ] = Σ (A → B) λ f → f a ≡ b
 
+∙id : ∀{∙A} → ∙Set[ ∙A , ∙A ]
+∙id = (λ a → a) , refl
+
+_∘_ : ∀ {∙A ∙B ∙C} → ∙Set[ ∙A , ∙B ] → ∙Set[ ∙B , ∙C ] → ∙Set[ ∙A , ∙C ]
+(f , p) ∘ (g , q) = (λ x → g (f x)) , trans (cong g p) q
+
+record ∙Iso[_,_] (∙A ∙B : ∙Set) : Set where
+  constructor iso
+  field
+    ∙f : ∙Set[ ∙A , ∙B ]
+    ∙g : ∙Set[ ∙B , ∙A ]
+  f = ∙f .proj₁
+  g = ∙g .proj₁
+  field
+    f-g : ∀ b → f (g b) ≡ b
+    g-f : ∀ a → g (f a) ≡ a
+
+open ∙Iso[_,_]
+
+∙Iso⁻¹ : ∀ {∙A ∙B} → ∙Iso[ ∙A , ∙B ] → ∙Iso[ ∙B , ∙A ]
+∙Iso⁻¹ (iso ∙f ∙g f-g g-f) = iso ∙g ∙f g-f f-g
+
 Sing : ∙Set → ∙Set
 Sing (A , a) = Singleton A a , a , refl
 
 Sing[_,_] : ∀ ∙A ∙B → ∙Set[ ∙A , ∙B ] → ∙Set[ Sing ∙A , Sing ∙B  ]
 Sing[ (A , a) , (B , .(f a)) ] (f , refl) = (λ { (x , refl) → f x , refl }) , refl
 
+-- monad
 η[_] : ∀ ∙A → ∙Set[ ∙A , Sing ∙A ]
 η[ (A , a) ] = (λ x → a , refl) , refl
 
+μ[_] : ∀ ∙A → ∙Iso[ Sing (Sing ∙A) , Sing ∙A ]
+μ[ (A , a) ] = iso ((λ { (.(a , refl) , refl) → a , refl }) , refl)
+                   ((λ { (a , refl) → (a , refl) , refl }) , refl)
+                   (λ { (a , refl) → refl})
+                   (λ { ((a , refl) , refl) → refl })
+
+Sη-μ : ∀ {∙A} → ((Sing[ ∙A , Sing ∙A ] η[ ∙A ] ∘ (μ[ ∙A ] .∙f)) .proj₁) (∙A .proj₂ , refl) ≡ (∙A .proj₂ , refl)
+Sη-μ = refl
+
+ηS-μ : ∀ {∙A} → ((Sing[ Sing ∙A , Sing (Sing ∙A) ] η[ Sing ∙A ] ∘ (μ[ Sing ∙A ] .∙f)) .proj₁) ((∙A .proj₂ , refl) , refl) ≡ ((∙A .proj₂ , refl) , refl)
+ηS-μ = refl
+
+-- comonad
 ε[_] : ∀ ∙A → ∙Set[ Sing ∙A , ∙A ]
 ε[ (A , a) ] = (λ { (x , refl) → x }) , refl
 
-μ[_] : ∀ ∙A → ∙Set[ Sing (Sing ∙A) , Sing ∙A ]
-μ[ (A , a) ] = (λ x → a , refl) , refl
+δ[_] : ∀ ∙A → ∙Iso[ Sing ∙A , Sing (Sing ∙A) ]
+δ[ ∙A ] = ∙Iso⁻¹ μ[ ∙A ]
 
-δ[_] : ∀ ∙A → ∙Set[ Sing ∙A , Sing (Sing ∙A) ]
-δ[ (A , a) ]  = (λ x → (a , refl) , refl) , refl
+δ-Sε : ∀ {∙A} → ((δ[ ∙A ] .∙f ∘ Sing[ Sing ∙A , ∙A ] ε[ ∙A ]) .proj₁) (∙A .proj₂ , refl) ≡ (∙A .proj₂ , refl)
+δ-Sε = refl
+
+δ-εS : ∀ {∙A} → ((δ[ Sing ∙A ] .∙f ∘ Sing[ Sing (Sing ∙A) , Sing ∙A ] ε[ Sing ∙A ]) .proj₁) ((∙A .proj₂ , refl) , refl) ≡ ((∙A .proj₂ , refl) , refl)
+δ-εS = refl
