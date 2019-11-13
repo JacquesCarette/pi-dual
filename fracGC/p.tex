@@ -158,28 +158,30 @@ computations as \emph{isomorphisms over finite
   types}~\cite{Fiore:2004,James:2012:IE:2103656.2103667} or
 \emph{equivalences over
   groupoids}~\cite{DBLP:conf/esop/CaretteS16}. This perspective
-exposes interesting mathematical structure in reversible computations
+exposes a rich mathematical structure in reversible computations
 that we will exploit to solve the ``ancilla problem'' explained next. 
 
 \paragraph*{Temporary Storage using Ancilla Bits.} The universality of
 the Toffoli gate for classical reversible computing and of the
-combination of the Toffoli and Hadamard gates for quantum computing
-should not distract from efficiency and safety concerns. The theorems
-proving universality (i) assume that temporary storage (often called
-\emph{ancilla bits}) may be used~\cite{Toffoli:1980}, and (ii) that
-this temporary storage is returned to its initial state before
-de-allocation. Indeed if no temporary storage is allowed, the Toffoli
-gate is not universal~\cite{DBLP:conf/innovations/AaronsonGS17} and as
-we demonstrate using space-time tradeoffs in Sec.~\ref{sec:examples},
-the more temporary storage is allowed, the more efficient certain
-computations could become. The condition requiring that the temporary
-storage is only de-allocated when returned to its initial condition is
-a safety condition. Violating this condition destroys the symmetry
-between input and output making the circuits not reversible and, in
-the quantum model, causes irreversible decoherence problems. As
-reviewed in Sec.~\ref{sec:examples}, ancilla bits have a number of critical
-applications and yet are poorly supported in current reversible and
-quantum programming languages making them a common source of bugs.
+universality of the combination of the Toffoli and Hadamard gates for
+quantum computing should not distract from efficiency and safety
+concerns. The theorems proving universality (i) assume that temporary
+storage (often called \emph{ancilla bits}) may be
+used~\cite{Toffoli:1980}, and (ii) that this temporary storage is
+returned to its initial state before de-allocation. Indeed if no
+temporary storage is allowed, the Toffoli gate is not
+universal~\cite{DBLP:conf/innovations/AaronsonGS17} and as we
+demonstrate in Sec.~\ref{sec:examples}, the more temporary storage is
+allowed, the more efficient certain computations could become. The
+condition requiring that the temporary storage is only de-allocated
+when returned to its initial condition is a safety
+condition. Violating this condition destroys the symmetry between
+input and output making the circuits not reversible and, in the
+quantum model, causes decoherence that may destroy the quantum
+state. As reviewed in Sec.~\ref{sec:examples}, ancilla bits have a
+number of critical applications and yet are poorly supported in
+current reversible and quantum programming languages making them a
+common source of bugs.
 
 \paragraph*{Negative Entropy.}  
 According to the conventional theory of
@@ -196,16 +198,22 @@ $A \times B$ where $A$ has two elements and $B$ has three elements can
 be thought of a composite system consisting of two independent
 unrelated subsystems.  Each state of the composite system therefore
 contains $\log{(2*3)} = \log{2} + \log{3}$ bits which is the sum of
-the information contained in each subsystem. A \emph{fractional type}
-$\frac{1}{A}$ introduces negative entropy. For example, a type with
-cardinality $\frac{1}{8}$ has entropy $\log{\frac{1}{8}} = -3$. It is
-natural to interpret this negative entropy just like we interpret
-``negative money,'' as a resource (space or bandwidth) to be repaid
-(reclaimed) by some other part of the system. Indeed, we will
-introduce such fractional types and use them to represent ``garbage
-collection processes'' that reclaim temporary storage.
+the information contained in each subsystem. If we could imagine a
+\emph{fractional type} $\frac{1}{A}$, this type would introduce
+negative entropy. For example, a type with ``cardinality''
+$\frac{1}{8}$ has entropy $\log{\frac{1}{8}} = -3$. It is natural to
+interpret this negative entropy just like we interpret ``negative
+money,'' as a resource (space or bandwidth) to be repaid (reclaimed)
+by some other part of the system. Indeed, we will introduce such
+fractional types and use them to represent ``garbage collection
+processes'' that reclaim temporary storage. Just like in the case of
+``negative money'' It is critical that these fractional types be
+linearly used, i.e., they cannot be duplicated or erased: this
+property is however automatically enforced in a reversible
+computational model!
 
-\paragraph*{Contributions.} 
+\paragraph*{Contributions.} The paper presents a novel concept, that
+is \emph{fractional types} etc.
 
 \paragraph*{Outline.}
 

@@ -74,10 +74,11 @@ pointed-all-paths = contr-prop pointed-contr _ _
 ssv : (A : Set) (v : A) (x : Singleton A v) → Singleton (Singleton A v) x
 ssv A v (.v , refl) = (v , refl) , refl
 
+{--
 ss=s : (A : Set) (v : A) (x : Singleton A v) → Singleton (Singleton A v) x ≡ Singleton A v
 ss=s A v (.v , refl) with pointed-contr {A} {v}
 ... | (.v , refl) , f = let p = f (v , refl) in {!!} -- ??
-
+--}
 ------------------------------------------------------------------------------
 -- The 'reciprocal' of a Singleton type is a function that accepts exactly
 -- that point, and returns no information. It acts as a 'witness' that
