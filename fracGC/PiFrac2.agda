@@ -73,6 +73,7 @@ data _⟷_ where
   _⊕_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (t₁ +ᵤ t₂ ⟷ t₃ +ᵤ t₄)
   _⊗_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (t₁ ×ᵤ t₂ ⟷ t₃ ×ᵤ t₄)
   -- new operations on Singleton
+{--
   lift : {t₁ t₂ : 𝕌} → {v₁ : ⟦ t₁ ⟧} →
            (c : t₁ ⟷ t₂) →
            ((● v₁) ⟷ (● (eval c v₁)))
@@ -92,14 +93,17 @@ data _⟷_ where
             𝟙/●_ {A = t₁ ×ᵤ t₂} (v₁ , v₂) ⟷ 𝟙/● v₁ ×ᵤ 𝟙/● v₂
   fracr : {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} →
             𝟙/● v₁ ×ᵤ 𝟙/● v₂ ⟷ 𝟙/●_ {A = t₁ ×ᵤ t₂} (v₁ , v₂)
+--}
   -- fractionals
   η : {t : 𝕌} → (v : ⟦ t ⟧) → 𝟙 ⟷ ● v ×ᵤ 𝟙/● v
   ε : {t : 𝕌} → (v : ⟦ t ⟧) → ● v ×ᵤ 𝟙/● v ⟷ 𝟙
   -- double lift prop eq
+{--
   ll : ∀ {t : 𝕌} {v : ⟦ t ⟧} {w : ⟦ ● v ⟧} → 
         ●_ {A = ● v} w  ⟷ ● v
   == : ∀ {t₁ t₂ : 𝕌} {v : ⟦ t₁ ⟧} {w w' : ⟦ t₂ ⟧} →
        (● v ⟷ ● w) → (w ≡ w') → (● v ⟷ ● w')
+--}
 
 eval unite₊l (inj₂ v) = v
 eval uniti₊l v  = inj₂ v
@@ -137,13 +141,16 @@ eval (c₁ ⊚ c₂) v = eval c₂ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
 eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
+{--
 eval (lift c) (w , v≡w) = eval c w , cong (eval c) v≡w 
 eval tensorl ((w₁ , w₂) , vp≡wp) =
   (w₁ , cong proj₁ vp≡wp) , (w₂ , cong proj₂ vp≡wp)
 eval tensorr ((w₁ , p₁) , (w₂ , p₂)) =
   (w₁ , w₂) , cong₂ _,_ p₁ p₂ 
+--}
 eval (η v) tt = (v , refl) , λ _ → tt 
 eval (ε v) (p , f) = f p
+{--
 eval (plusll {v = .w₁}) (inj₁ w₁ , refl) = w₁ , refl 
 eval pluslr (v₁ , refl) = inj₁ v₁ , refl
 eval (plusrl {v = .w₂}) (inj₂ w₂ , refl) = w₂ , refl
@@ -152,6 +159,14 @@ eval (fracl {v₁ = v₁} {v₂ = v₂}) f = (λ _ → f ((v₁ , v₂) , refl))
 eval fracr (f₁ , f₂) ((w₁ , w₂) , refl) = let _ = f₁ (w₁ , refl) ; _ = f₂ (w₂ , refl) in tt
 eval (ll {t} {v} {.w}) (w , refl) = v , refl 
 eval (== c eq) s₁ = let (w₂ , p) = eval c s₁ in w₂ , trans (sym eq) p 
+--}
+
+-- monad/comonad pair
+
+
+
+
+{--
 
 focus : {t : 𝕌} → (v : ⟦ t ⟧) → Singleton ⟦ t ⟧ v
 focus v = (v , refl)
@@ -633,3 +648,4 @@ revrev {A} {a} {a⋆} =
 
 ------------------------------------------------------------------------------
 
+--}
