@@ -5,6 +5,7 @@
 module Singleton where
 
 open import Data.Unit using (⊤; tt)
+open import Data.Sum
 open import Data.Product
 open import Relation.Binary.PropositionalEquality
   using (_≡_; refl; sym; trans; subst; cong ; cong₂)
@@ -133,6 +134,15 @@ Recip' A v = (w : A) → v ≡ w
 ∙Set[_,_] : ∙Set → ∙Set → Set
 ∙Set[ (A , a) , (B , b) ] = Σ (A → B) λ f → f a ≡ b
 
+_∙×_ : ∙Set → ∙Set → ∙Set
+(A , a) ∙× (B , b) = (A × B) , (a , b)
+
+-- left version, there's also a right version
+-- note that this isn't a coproduct
+-- wedge sum is the coproduct
+_∙+_ : ∙Set → ∙Set → ∙Set
+(A , a) ∙+ (B , b) = (A ⊎ B) , inj₁ a
+
 ∙id : ∀{∙A} → ∙Set[ ∙A , ∙A ]
 ∙id = (λ a → a) , refl
 
@@ -171,11 +181,25 @@ Sing[ (A , a) , (B , .(f a)) ] (f , refl) = (λ { (x , refl) → f x , refl }) ,
                    (λ { (a , refl) → refl})
                    (λ { ((a , refl) , refl) → refl })
 
+-- check
 Sη-μ : ∀ {∙A} → ((Sing[ ∙A , Sing ∙A ] η[ ∙A ] ∘ (μ[ ∙A ] .∙f)) .proj₁) (∙A .proj₂ , refl) ≡ (∙A .proj₂ , refl)
 Sη-μ = refl
 
 ηS-μ : ∀ {∙A} → ((Sing[ Sing ∙A , Sing (Sing ∙A) ] η[ Sing ∙A ] ∘ (μ[ Sing ∙A ] .∙f)) .proj₁) ((∙A .proj₂ , refl) , refl) ≡ ((∙A .proj₂ , refl) , refl)
 ηS-μ = refl
+
+-- strength
+σ×[_,_] : ∀ ∙A ∙B → ∙Set[ Sing ∙A ∙× ∙B , Sing (∙A ∙× ∙B) ]
+σ×[ (A , a) , (B , b) ] = (λ { ((a , refl) , _) → (a , b) , refl }) , refl
+
+τ×[_,_] : ∀ ∙A ∙B → ∙Set[ ∙A ∙× Sing ∙B , Sing (∙A ∙× ∙B) ]
+τ×[ (A , a) , (B , b) ] = (λ { (_ , (b , refl)) → (a , b) , refl }) , refl
+
+σ+[_,_] : ∀ ∙A ∙B → ∙Set[ Sing ∙A ∙+ ∙B , Sing (∙A ∙+ ∙B) ]
+σ+[ (A , a) , (B , b) ] = (λ _ → inj₁ a , refl) , refl
+
+τ+[_,_] : ∀ ∙A ∙B → ∙Set[ ∙A ∙+ Sing ∙B , Sing (∙A ∙+ ∙B) ]
+τ+[ (A , a) , (B , b) ] = (λ _ → inj₁ a , refl) , refl
 
 -- comonad
 ε[_] : ∀ ∙A → ∙Set[ Sing ∙A , ∙A ]
@@ -184,8 +208,33 @@ Sη-μ = refl
 δ[_] : ∀ ∙A → ∙Iso[ Sing ∙A , Sing (Sing ∙A) ]
 δ[ ∙A ] = ∙Iso⁻¹ μ[ ∙A ]
 
+-- check
 δ-Sε : ∀ {∙A} → ((δ[ ∙A ] .∙f ∘ Sing[ Sing ∙A , ∙A ] ε[ ∙A ]) .proj₁) (∙A .proj₂ , refl) ≡ (∙A .proj₂ , refl)
 δ-Sε = refl
 
 δ-εS : ∀ {∙A} → ((δ[ Sing ∙A ] .∙f ∘ Sing[ Sing (Sing ∙A) , Sing ∙A ] ε[ Sing ∙A ]) .proj₁) ((∙A .proj₂ , refl) , refl) ≡ ((∙A .proj₂ , refl) , refl)
 δ-εS = refl
+
+-- costrength
+σ'×[_,_] : ∀ ∙A ∙B → ∙Set[ Sing (∙A ∙× ∙B) , Sing ∙A ∙× ∙B ]
+σ'×[ (A , a) , (B , b) ] = (λ { (.(a , b) , refl) → (a , refl) , b }) , refl
+
+τ'×[_,_] : ∀ ∙A ∙B → ∙Set[ Sing (∙A ∙× ∙B) , ∙A ∙× Sing ∙B ]
+τ'×[ (A , a) , (B , b) ] = (λ { (.(a , b) , refl) → a , (b , refl) }) , refl
+
+σ'+[_,_] : ∀ ∙A ∙B → ∙Set[ Sing (∙A ∙+ ∙B) , Sing ∙A ∙+ ∙B ]
+σ'+[ (A , a) , (B , b) ] = (λ _ → inj₁ (a , refl)) , refl
+
+τ'+[_,_] : ∀ ∙A ∙B → ∙Set[ Sing (∙A ∙+ ∙B) , ∙A ∙+ Sing ∙B ]
+τ'+[ (A , a) , (B , b) ] = (λ _ → inj₁ a) , refl
+
+-- even better, strong monoidal functor
+ν×[_,_] : ∀ ∙A ∙B → ∙Iso[ Sing ∙A ∙× Sing ∙B , Sing (∙A ∙× ∙B) ]
+ν×[ (A , a) , (B , b) ] = iso ((λ _ → (a , b) , refl) , refl)
+                              ((λ _ → (a , refl) , b , refl) , refl)
+                              (λ { (.(a , b) , refl) → refl })
+                              (λ { ((a , refl) , (b , refl)) → refl })
+
+-- this one is only lax
+ν+[_,_] : ∀ ∙A ∙B → ∙Set[ Sing ∙A ∙+ Sing ∙B , Sing (∙A ∙+ ∙B) ]
+ν+[ (A , a) , (B , b) ] = (λ _ → inj₁ a , refl) , refl
