@@ -1,4 +1,4 @@
-module MemSem where
+module PiMemSem where
 
 open import Function
 open import Data.Nat
