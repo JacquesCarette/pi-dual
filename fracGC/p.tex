@@ -599,43 +599,56 @@ second in later sections.
 %%%%%
 \subsection{Scoped Ancilla}
 
-A conventional way to ensure that every allocation is paired with a
-matching de-allocation is to impose a stack discipline. An
-illustrative demonstration of this idea is the \verb|with_ancilla|
-operator from Quipper~\cite{Green:2013:QSQ:2491956.2462177}:
+A conventional and efficient way to ensure that every allocation is
+paired with a matching de-allocation is to impose a stack
+discipline. An illustrative demonstration of this idea is the
+\verb|with_ancilla| operator from
+Quipper~\cite{Green:2013:QSQ:2491956.2462177}:
 \begin{verbatim}
 with_ancilla :: (Qubit -> Circ a) -> Circ a
 \end{verbatim}
 The operator takes a block of gates parameterized by an ancilla,
 allocates a new ancilla initialized to $\ket{0}$, and runs the given
 block of gates. At the end of its execution, the block is expected to
-return the ancilla to the state $\ket{0}$ at which point it is
-de-allocated. In this case, allocation and de-allocation of ancillae
-requires nothing beyond conventional parameter-passing techniques in
-which the parameter is allocated before entry to the function and
-de-allocated at exit.
+return the ancilla to the state $\ket{0}$ (this is the second
+subproblem addressed later) at which point it is de-allocated. In this
+scoped-by-construction approach, allocation and de-allocation of
+ancillae requires nothing beyond conventional parameter-passing
+techniques in which the parameter is allocated before entry to a
+function and de-allocated at exit.
 
 This scoped model is therefore quite a pragmatic choice. It is however
 limited and to understand its limitations more vividly, we propose the
-following analogy with money. 
+following analogy: allocating an ancilla by creating a new wire in the
+circuit is like borrowing some money; the computation has access to a
+new resource temporarily. De-allocating the ancilla is like returning
+the borrowed money; the computation no longer has access to the
+additional resource. It would be unreasonably restrictive to insist
+that if the person (function) borrowing the money must be the same
+person (function) who returns it, i.e., preventing the following
+computation:
+\begin{verbatim}
+  |-----\  /-----|
+         \/
+        / \
+  |----/   \-----|
+\end{verbatim}
+Indeed, as far as reversible or quantum computation is concerned, the
+circuit above is perfectly sensible since it conserves information
+(all money borrowed is repaid and the net balance is 0). In fact one
+can go further, if one person borrows \$10, why couldn't three
+different persons collectively collaborate to pay back the debt with
+one person paying \$5, another \$2, and a third \$3. This extra
+generality is not a gratuitous concern: since scope is fundamentally a
+static property of programs, it does not allow the flexibility of heap
+allocation in which the lifetime of resources is dynamically
+determined. To summarize, since the reversible-quantum computational
+framework guarantees that information is preserved, it also permits
+fascinating mechanisms in which computations can be sliced and
+diced, decomposed and recomposed, run forwards and backwards, in
+arbitrary ways as long as the net balance is 0. 
 
 
-
-
-Formalize ancilla problem in the context of Pi using eta and epsilon
-as done in PiFracDyn; more general than scoped; still runtime
-check.
-
-When ancilla bits are created they are created with a specific
-value. This value is encoded in the circuit. The value of fractional
-type represents the ``garbage collector.''  The garbage collector is
-specialized to collect a single value, which is the value used to
-create the ancilla value. At this point, if the garbage collector
-encounters a different value, it doesn't know what to do, and would
-need to throw an exception. This situation in \verb|PiFracDyn| is
-similar to current solutions (e.g. Quipper) but actually more general
-as it allows non-scoped ancilla allocation and de-allocation. Show
-examples.
 
 %%%%%
 \subsection{Adding Fractions}
@@ -660,12 +673,40 @@ and their evaluation:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Dependently-Typed Garbage Collectors}
 
+
+ 
+
 We use a Singleton type
 to remember this information. 
 
+
+
+
+
+
+Formalize ancilla problem in the context of Pi using eta and epsilon
+as done in PiFracDyn; more general than scoped; still runtime
+check.
+
+When ancilla bits are created they are created with a specific
+value. This value is encoded in the circuit. The value of fractional
+type represents the ``garbage collector.''  The garbage collector is
+specialized to collect a single value, which is the value used to
+create the ancilla value. At this point, if the garbage collector
+encounters a different value, it doesn't know what to do, and would
+need to throw an exception. This situation in \verb|PiFracDyn| is
+similar to current solutions (e.g. Quipper) but actually more general
+as it allows non-scoped ancilla allocation and de-allocation. Show
+examples.
+
+
+
+%%%%% 
+\subsection{Pointed Types}
+ 
 %%%%% 
 \subsection{Singleton Types}
-
+ 
 Consider the type $\Sigma \mathbb{N} (\lambda n. n \equiv 5)$. Values
 of that type are a number $m$ and a proof that this is number is equal
 to 5. So we can have $(4 + 1, \textit{refl})$, $(2 + 3 ,
