@@ -8,8 +8,6 @@ open import Data.Sum
 open import Data.Product
 open import Relation.Binary.PropositionalEquality
 
-open import Singleton
-
 infixr 70 _×ᵤ_
 infixr 60 _+ᵤ_
 infixr 50 _⊚_

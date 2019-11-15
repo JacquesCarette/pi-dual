@@ -227,9 +227,9 @@ zigzag b =
   (𝟙 # tt) ∙×ᵤ (Singᵤ (𝔹 # b))
         →⟨ η (𝔹 # b) ∙⊗ ∙id⟷ ⟩
   ((Singᵤ (𝔹 # b)) ∙×ᵤ (Recipᵤ (𝔹 # b))) ∙×ᵤ (Singᵤ (𝔹 # b))
-        →⟨ {!∙c assocr⋆!} ⟩  -- assocr⋆ will need a ∙ version
+        →⟨ ∙assocr⋆ ⟩ 
   Singᵤ (𝔹 # b) ∙×ᵤ (Recipᵤ (𝔹 # b) ∙×ᵤ (Singᵤ (𝔹 # b)))
-        →⟨ ∙id⟷ ∙⊗ {!!} ⟩  -- swap⋆ will need a ∙ version
+        →⟨ ∙id⟷ ∙⊗ ∙swap⋆ ⟩
   Singᵤ (𝔹 # b) ∙×ᵤ ((Singᵤ (𝔹 # b)) ∙×ᵤ (Recipᵤ (𝔹 # b)))
         →⟨ ∙id⟷ ∙⊗ ε (𝔹 # b) ⟩
   Singᵤ (𝔹 # b) ∙×ᵤ (𝟙 # tt)
@@ -240,33 +240,11 @@ zigzag b =
         →⟨ ∙c unite⋆r  ⟩
   (𝔹 # b) □
 
-{--
-  (∙c uniti⋆l) ∙⊚
-  () ∙⊚ {!!})
+test1 : proj₁ (∙eval (zigzag 𝔽)) 𝔽 ≡ 𝔽
+test1 = proj₂ (∙eval (zigzag 𝔽))
 
-  (return ((𝟙 ×ᵤ 𝔹) # (tt , b)) ∙⊚
-  ({!(untensor _) ∙⊚ ?!} ∙⊚
-  extract (𝔹 # b)))
+test2 : proj₁ (∙eval (zigzag 𝕋)) 𝕋 ≡ 𝕋
+test2 = proj₂ (∙eval (zigzag 𝕋))
 
-
-  (η b ⊗ id⟷) ∙⊚
-  ∙c assocr⋆ ∙⊚
-  (id⟷ ⊗ swap⋆) ∙⊚
-  (id⟷ ⊗ ε b) ∙⊚
-  ∙c unite⋆r
-
-B#true
-Sing B#true
-
-
-
-test1 = eval (zigzag 𝔽) (𝔽 , refl)      -- (⇑ #f refl)
--- test2 = eval (zigzag 𝔽) (𝕋 , refl)   -- typechecks if given proof #f=#t
--- test3 = eval (zigzag 𝕋) (𝔽 , refl)   -- typechecks if given proof #f=#t
-test4 = eval (zigzag 𝕋) (𝕋 , refl)      -- (⇑ #t refl)
-
-zigzagU : ⟦ 𝔹 ⟧ → ⟦ 𝔹 ⟧
-zigzagU b = unfocus (eval (zigzag b) (focus b))
---}
 
 ------------------------------------------------------------------------------
