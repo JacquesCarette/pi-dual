@@ -584,7 +584,43 @@ that these categorical structures provide a common framework for
 reasoning about various classes of reversible circuits.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{PiFrac: Generalizing Scoped Ancilla with Dynamic Checks}
+\section{The Value of Ancillae}
+
+The management of ancilla bits can be teased into two relatively
+distinct subproblems:
+\begin{itemize}
+\item Every allocated ancilla bit must be de-allocated, and 
+\item De-allocation of an ancilla bit is only safe if the bit is
+  restored to its allocation-time initial value.
+\end{itemize}
+In this section, we focus on the first subproblem and address the
+second in later sections.
+
+%%%%%
+\subsection{Scoped Ancilla}
+
+A conventional way to ensure that every allocation is paired with a
+matching de-allocation is to impose a stack discipline. An
+illustrative demonstration of this idea is the \verb|with_ancilla|
+operator from Quipper~\cite{Green:2013:QSQ:2491956.2462177}:
+\begin{verbatim}
+with_ancilla :: (Qubit -> Circ a) -> Circ a
+\end{verbatim}
+The operator takes a block of gates parameterized by an ancilla,
+allocates a new ancilla initialized to $\ket{0}$, and runs the given
+block of gates. At the end of its execution, the block is expected to
+return the ancilla to the state $\ket{0}$ at which point it is
+de-allocated. In this case, allocation and de-allocation of ancillae
+requires nothing beyond conventional parameter-passing techniques in
+which the parameter is allocated before entry to the function and
+de-allocated at exit.
+
+This scoped model is therefore quite a pragmatic choice. It is however
+limited and to understand its limitations more vividly, we propose the
+following analogy with money. 
+
+
+
 
 Formalize ancilla problem in the context of Pi using eta and epsilon
 as done in PiFracDyn; more general than scoped; still runtime
@@ -603,7 +639,7 @@ examples.
 
 %%%%%
 \subsection{Adding Fractions}
-
+ 
 Def. of universe is:
 
 \Udef{}
