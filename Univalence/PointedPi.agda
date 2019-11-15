@@ -1,6 +1,6 @@
 {-# OPTIONS --without-K #-}
 
-module PiPointed where
+module PointedPi where
 
 open import Level using (_⊔_) renaming (zero to l0; suc to lsuc)
 open import Universe using (Universe)
