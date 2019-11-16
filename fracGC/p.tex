@@ -39,6 +39,7 @@
 \newcommand{\inlv}[1]{\ensuremath{\mathit{inl}(v)}}
 \newcommand{\inrv}[1]{\ensuremath{\mathit{inr}(v)}}
 \newcommand{\ket}[1]{|#1\rangle}
+\newcommand{\oneover}[1]{1/#1}
 \newcommand{\pointed}[2]{[#1 \bullet #2]}
 \newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
 \newcommand{\mm}{\texttt{\textminus}}
@@ -584,7 +585,7 @@ that these categorical structures provide a common framework for
 reasoning about various classes of reversible circuits.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Value of Ancillae}
+\section{Interchangeable Ancillae}
 
 The management of ancilla bits can be teased into two relatively
 distinct subproblems:
@@ -660,15 +661,26 @@ is 0.
 %%%%%
 \subsection{Adding Fractions}
  
-Def. of universe is:
+\newcommand{\net}{t_\bullet}
 
-\Udef{}
+We add a new type $\oneover{t}$ with a trivial runtime representation
+$\ocircle$. We add two new level-1 programs to introduce and eliminate
+the new type, and one new level-2 program that states that
+introduction and elimination are inverses:
+\[\begin{array}{lrcl}
+\textit{Value types} & t &::=& \cdots \alt \oneover{t} \\
+\textit{Non-empty types} & \net \\
+\textit{Values}      & v &::=& \cdots \alt \ocircle \\
+\textit{Level-1 types} &&& t \leftrightarrow t \\
+\textit{Level-1 programs} & c &::=& \cdots \alt
+   \eta : 1 \leftrightarrow (\net * \oneover{\net}) \\
+   &&& ~~~~~\alt \epsilon : (\net * \oneover{\net}) \leftrightarrow 1 \\
+\textit{Level-2 types} &&& c \Leftrightarrow c \\
+\textit{Level-2 programs} & \alpha &::=& \cdots 
+  \alt unity : \epsilon \circ \eta \Leftrightarrow \idc 
+\end{array}\]
 
-New combinators:
 
-\EtaEpsilon{}
-
-and their evaluation:
 
 \EtaEpsilonEval{}
 
