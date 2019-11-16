@@ -608,47 +608,54 @@ Quipper~\cite{Green:2013:QSQ:2491956.2462177}:
 with_ancilla :: (Qubit -> Circ a) -> Circ a
 \end{verbatim}
 The operator takes a block of gates parameterized by an ancilla,
-allocates a new ancilla initialized to $\ket{0}$, and runs the given
-block of gates. At the end of its execution, the block is expected to
-return the ancilla to the state $\ket{0}$ (this is the second
-subproblem addressed later) at which point it is de-allocated. In this
-scoped-by-construction approach, allocation and de-allocation of
-ancillae requires nothing beyond conventional parameter-passing
-techniques in which the parameter is allocated before entry to a
-function and de-allocated at exit.
+allocates a new ancilla of type \verb|Qubit| initialized to $\ket{0}$,
+and runs the given block of gates. At the end of its execution, the
+block is expected to return the ancilla to the state $\ket{0}$ (this
+is the second subproblem addressed later) at which point it is
+de-allocated. In this scoped-by-construction approach, allocation and
+de-allocation of ancillae requires nothing beyond conventional
+parameter-passing techniques in which the parameter is allocated
+before entry to a function and de-allocated at exit.
 
 This scoped model is therefore quite a pragmatic choice. It is however
-limited and to understand its limitations more vividly, we propose the
-following analogy: allocating an ancilla by creating a new wire in the
-circuit is like borrowing some money; the computation has access to a
-new resource temporarily. De-allocating the ancilla is like returning
-the borrowed money; the computation no longer has access to the
-additional resource. It would be unreasonably restrictive to insist
-that if the person (function) borrowing the money must be the same
-person (function) who returns it, i.e., preventing the following
-computation:
-\begin{verbatim}
-  |-----\  /-----|
-         \/
-        / \
-  |----/   \-----|
-\end{verbatim}
+limited, and to understand its limitations more vividly, we propose
+the following analogy: allocating an ancilla by creating a new wire in
+the circuit is like borrowing some money from a global external
+entity; the computation has access to a new resource
+temporarily. De-allocating the ancilla is like returning the borrowed
+money to the global entity; the computation no longer has access to
+the additional resource. It would however be unreasonably restrictive
+to insist that if the person (function) borrowing the money must be
+the same person (function) returning it.
+%% , i.e., preventing the following computation:
+%% \begin{verbatim}
+%%   |-----\  /-----|
+%%          \/
+%%         / \
+%%   |----/   \-----|
+%% \end{verbatim}
 Indeed, as far as reversible or quantum computation is concerned, the
-circuit above is perfectly sensible since it conserves information
-(all money borrowed is repaid and the net balance is 0). In fact one
-can go further, if one person borrows \$10, why couldn't three
-different persons collectively collaborate to pay back the debt with
-one person paying \$5, another \$2, and a third \$3. This extra
-generality is not a gratuitous concern: since scope is fundamentally a
-static property of programs, it does not allow the flexibility of heap
-allocation in which the lifetime of resources is dynamically
-determined. To summarize, since the reversible-quantum computational
-framework guarantees that information is preserved, it also permits
-fascinating mechanisms in which computations can be sliced and
-diced, decomposed and recomposed, run forwards and backwards, in
-arbitrary ways as long as the net balance is 0. 
+only important invariant is that information is conserved, i.e., that
+money is conserved. The identities of bits or qubits are not
+observable as they are all interchangeable in the same way that
+particular bills with different serial numbers are interchangeable in
+financial transactions. Thus the only invariant is that the net flow
+of money between the computation and the global entity is zero. This
+observation allows us to go even further than just switching the
+identities of borrowers. It is even possible for one person to borrow
+\$10, and have three different persons collectively collaborate to
+pay back the debt with one person paying \$5, another \$2, and a third
+\$3.
 
-
+Computationally, this extra generality is not a gratuitous concern:
+since scope is fundamentally a static property of programs, it does
+not allow the flexibility of heap allocation in which the lifetime of
+resources is dynamically determined. To summarize, since the
+reversible-quantum computational framework guarantees that information
+is preserved, it also permits fascinating mechanisms in which
+computations can be sliced and diced, decomposed and recomposed, run
+forwards and backwards, in arbitrary ways as long as the net balance
+is 0.
 
 %%%%%
 \subsection{Adding Fractions}
