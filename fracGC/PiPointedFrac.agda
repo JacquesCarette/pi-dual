@@ -17,6 +17,7 @@ infixr 90 _#_
 infixr 70 _×ᵤ_
 infixr 60 _+ᵤ_
 infixr 50 _⊚_
+infix 100 !_
 
 infixr 70 _∙×ᵤ_
 -- infixr 60 _+ᵤ_
@@ -69,6 +70,34 @@ data _⟷_ where
   _⊕_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (t₁ +ᵤ t₂ ⟷ t₃ +ᵤ t₄)
   _⊗_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (t₁ ×ᵤ t₂ ⟷ t₃ ×ᵤ t₄)
 
+!_ : {A B : 𝕌} → A ⟷ B → B ⟷ A
+! unite₊l = uniti₊l
+! uniti₊l = unite₊l
+! unite₊r = uniti₊r
+! uniti₊r = unite₊r
+! swap₊ = swap₊
+! assocl₊ = assocr₊
+! assocr₊ = assocl₊
+! unite⋆l = uniti⋆l
+! uniti⋆l = unite⋆l
+! unite⋆r = uniti⋆r
+! uniti⋆r = unite⋆r
+! swap⋆ = swap⋆
+! assocl⋆ = assocr⋆
+! assocr⋆ = assocl⋆
+! absorbr = factorzl
+! absorbl = factorzr
+! factorzr = absorbl
+! factorzl = absorbr
+! dist = factor
+! factor = dist
+! distl = factorl
+! factorl = distl
+! id⟷ = id⟷
+! (c₁ ⊚ c₂) = (! c₂) ⊚ (! c₁)
+! (c₁ ⊕ c₂) = (! c₁) ⊕ (! c₂)
+! (c₁ ⊗ c₂) = (! c₁) ⊗ (! c₂)
+
 eval unite₊l (inj₂ v) = v
 eval uniti₊l v  = inj₂ v
 eval unite₊r (inj₁ v) = v
@@ -105,6 +134,40 @@ eval (c₁ ⊚ c₂) v = eval c₂ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₁ v) = inj₁ (eval c₁ v)
 eval (c₁ ⊕ c₂) (inj₂ v) = inj₂ (eval c₂ v)
 eval (c₁ ⊗ c₂) (v₁ , v₂) = (eval c₁ v₁ , eval c₂ v₂)
+
+ΠisRev : ∀ {A B} → (c : A ⟷ B) (a : ⟦ A ⟧) → eval (c ⊚ ! c) a ≡ a
+ΠisRev unite₊l (inj₂ y) = refl
+ΠisRev uniti₊l a = refl
+ΠisRev unite₊r (inj₁ x) = refl
+ΠisRev uniti₊r a = refl
+ΠisRev swap₊ (inj₁ x) = refl
+ΠisRev swap₊ (inj₂ y) = refl
+ΠisRev assocl₊ (inj₁ x) = refl
+ΠisRev assocl₊ (inj₂ (inj₁ x)) = refl
+ΠisRev assocl₊ (inj₂ (inj₂ y)) = refl
+ΠisRev assocr₊ (inj₁ (inj₁ x)) = refl
+ΠisRev assocr₊ (inj₁ (inj₂ y)) = refl
+ΠisRev assocr₊ (inj₂ y) = refl
+ΠisRev unite⋆l (tt , y) = refl
+ΠisRev uniti⋆l a = refl
+ΠisRev unite⋆r (x , tt) = refl
+ΠisRev uniti⋆r a = refl
+ΠisRev swap⋆ (x , y) = refl
+ΠisRev assocl⋆ (x , (y , z)) = refl
+ΠisRev assocr⋆ ((x , y) , z) = refl
+ΠisRev dist (inj₁ x , z) = refl
+ΠisRev dist (inj₂ y , z) = refl
+ΠisRev factor (inj₁ (x , z)) = refl
+ΠisRev factor (inj₂ (y , z)) = refl
+ΠisRev distl (x , inj₁ y) = refl
+ΠisRev distl (x , inj₂ z) = refl
+ΠisRev factorl (inj₁ (x , y)) = refl
+ΠisRev factorl (inj₂ (x , z)) = refl
+ΠisRev id⟷ a = refl
+ΠisRev (c₁ ⊚ c₂) a rewrite ΠisRev c₂ (eval c₁ a) = ΠisRev c₁ a
+ΠisRev (c₁ ⊕ c₂) (inj₁ x) rewrite ΠisRev c₁ x = refl
+ΠisRev (c₁ ⊕ c₂) (inj₂ y) rewrite ΠisRev c₂ y = refl
+ΠisRev (c₁ ⊗ c₂) (x , y) rewrite ΠisRev c₁ x | ΠisRev c₂ y = refl
 
 ------------------------------------------------------------------------------
 -- Pointed types and singleton types
@@ -166,6 +229,36 @@ data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
   -- eta/epsilon
   η : (T : ∙𝕌) → ∙𝟙 ∙⟶ (Singᵤ T ∙×ᵤ Recipᵤ T)
   ε : (T : ∙𝕌) → (Singᵤ T ∙×ᵤ Recipᵤ T) ∙⟶ ∙𝟙
+
+!∙_ : {A B : ∙𝕌} → A ∙⟶ B → B ∙⟶ A
+!∙ (∙c {t₁} {t₂} {v} c) = subst (λ x → t₂ # eval c v ∙⟶ t₁ # x) (ΠisRev c v) (∙c {v = eval c v} (! c))
+!∙ ∙times# = ∙#times
+!∙ ∙#times = ∙times#
+!∙ ∙id⟷ = ∙id⟷
+!∙ (c₁ ∙⊚ c₂) = (!∙ c₂) ∙⊚ (!∙ c₁)
+!∙ ∙swap⋆ = ∙swap⋆
+!∙ ∙assocl⋆ = ∙assocr⋆
+!∙ ∙assocr⋆ = ∙assocl⋆
+!∙ (c₁ ∙⊗ c₂) = (!∙ c₁) ∙⊗ (!∙ c₂)
+!∙ return T = extract T
+!∙ join T = return (Singᵤ T)
+!∙ unjoin T = join T
+!∙ tensorl T₁ T₂ = cotensorl T₁ T₂
+!∙ tensorr T₁ T₂ = cotensorr T₁ T₂
+!∙ tensor T₁ T₂ = untensor T₁ T₂
+!∙ untensor T₁ T₂ = tensor T₁ T₂
+!∙ plusl T₁ T₂ = coplusl T₁ T₂
+!∙ plusr T₁ T₂ = coplusr T₁ T₂
+!∙ extract T = return T
+!∙ cojoin T = join T
+!∙ counjoin T = return (Singᵤ T)
+!∙ cotensorl T₁ T₂ = tensorl T₁ T₂
+!∙ cotensorr T₁ T₂ = tensorr T₁ T₂
+!∙ coplusl T₁ T₂ = plusl T₁ T₂
+!∙ coplusr T₁ T₂ = plusr T₁ T₂
+!∙ ∙Singᵤ T₁ T₂ c = ∙Singᵤ T₂ T₁ (!∙ c)
+!∙ η T = ε T
+!∙ ε T = η T
 
 ∙eval : {T₁ T₂ : ∙𝕌} → (C : T₁ ∙⟶ T₂) →
   let (t₁ , v₁) = ∙⟦ T₁ ⟧
