@@ -36,6 +36,7 @@
 \newunicodechar{⊚}{$\fatsemi$}
 
 \newcommand{\alt}{~|~}
+\newcommand{\net}{t_\bullet}
 \newcommand{\inlv}[1]{\ensuremath{\mathit{inl}(v)}}
 \newcommand{\inrv}[1]{\ensuremath{\mathit{inr}(v)}}
 \newcommand{\ket}[1]{|#1\rangle}
@@ -118,7 +119,31 @@ $\displaystyle
 }
 
 \begin{abstract}
-Text of abstract \ldots.
+  In reversible and quantum computing, the management of space is
+  subject to two broad classes of constraints. First, as is the case
+  for general-purpose computation, every allocation must be paired
+  with a matching de-allocation. Second, space can only be safely
+  de-allocated if its contents are restored to their initial value
+  from allocation time. Generally speaking, the state of the art
+  provides limited partial solutions that address the first
+  constraint by imposing a stack discipline and by leaving the second
+  constraint to programmer's assertions.
+
+  We propose a novel approach based on the idea of \emph{fractional
+    types}. As a simple intuitive example, allocation of a new boolean
+  value initialized to \textsf{false} also creates a value
+  $\oneover{\textsf{false}}$ that can be thought of as a garbage
+  collection (gc) process specialized to reclaim, and only reclaim,
+  storage containing the value $\textsf{false}$. This gc process is a
+  first-class entity that can sliced and diced by combining it with
+  other gc processes and decomposing it in smaller
+  processes.
+
+  Technically, we formalize this idea in the context of a reversible
+  language founded on type isomorphisms, prove its fundamental
+  correctness properties, and illustrate its expressiveness using a
+  wide variety of examples. The development is backed by a
+  fully-formalized Agda implementation.
 \end{abstract}
 
 \maketitle
@@ -315,6 +340,13 @@ Leads to bugs as analyzed by
   A common pattern in quantum programs involves performing operations (e.g., add), contingent on a set of qubits known as control qubits. Without language support, this pattern needs many lines of code and manual allocation of ancillary qubits. In the Scaffold code example in Table 7, rows 3 and 5 are just computing the intersection of qubits q, with the help of ancillary qubits initialized in row 1, in order to realize the controlled rotation operation in row 4. Furthermore, quantum algorithms often need varying numbers of control qubits in different parts of the algorithm, leading to replicated code from multiple versions of the same subroutine differing only by the number of control qubits.
 
 \end{quote}
+
+General allocation and de-allocation. No need to keep track of
+lifetime. Just make sure location is back to initial value. Safe to
+de-allocate because indistinguishable from freshly created. No pointer
+equality and aliases though. Concurrent: one thread allocates; gc
+thread meets someone else
+
 
 %%%
 \subsection{Examples}
@@ -661,8 +693,6 @@ is 0.
 %%%%%
 \subsection{Adding Fractions}
  
-\newcommand{\net}{t_\bullet}
-
 We add a new type $\oneover{t}$ with a trivial runtime representation
 $\ocircle$. We add two new level-1 programs to introduce and eliminate
 the new type, and one new level-2 program that states that
