@@ -38,7 +38,8 @@ data 𝕌 where
 ⟦ Recipᵤ T ⟧ = < uncurry Recip , (λ _ _ → tt) > ⟦ T ⟧
 
 data _⟷_ where
-  swap₊   : {t₁ t₂ : 𝕌} → t₁ +ᵤₗ t₂ ⟷ t₂ +ᵤᵣ t₁
+  swap₊₁   : {t₁ t₂ : 𝕌} → t₁ +ᵤₗ t₂ ⟷ t₂ +ᵤᵣ t₁
+  swap₊₂   : {t₁ t₂ : 𝕌} → t₁ +ᵤᵣ t₂ ⟷ t₂ +ᵤₗ t₁
   assocl₊₁ : {t₁ t₂ t₃ : 𝕌} → t₁ +ᵤₗ (t₂ +ᵤₗ t₃) ⟷ (t₁ +ᵤₗ t₂) +ᵤₗ t₃
   assocl₊₂ : {t₁ t₂ t₃ : 𝕌} → t₁ +ᵤₗ (t₂ +ᵤᵣ t₃) ⟷ (t₁ +ᵤₗ t₂) +ᵤₗ t₃
   assocl₊₃ : {t₁ t₂ t₃ : 𝕌} → t₁ +ᵤᵣ (t₂ +ᵤₗ t₃) ⟷ (t₁ +ᵤᵣ t₂) +ᵤₗ t₃
@@ -84,6 +85,7 @@ data _⟷_ where
   cojoin : (T : 𝕌) → Singᵤ T ⟷ Singᵤ (Singᵤ T)
   counjoin : (T : 𝕌) → Singᵤ (Singᵤ T) ⟷ Singᵤ T
   cotensorl : (T₁ T₂ : 𝕌) → Singᵤ (T₁ ×ᵤ T₂) ⟷ (Singᵤ T₁ ×ᵤ T₂)
+  cotensorr : (T₁ T₂ : 𝕌) → Singᵤ (T₁ ×ᵤ T₂) ⟷ (T₁ ×ᵤ Singᵤ T₂)
   coplusl : (T₁ T₂ : 𝕌) → Singᵤ (T₁ +ᵤₗ T₂) ⟷ (Singᵤ T₁ +ᵤₗ T₂)
   coplusr : (T₁ T₂ : 𝕌) → Singᵤ (T₁ +ᵤᵣ T₂) ⟷ (T₁ +ᵤᵣ Singᵤ T₂)
   -- both?
@@ -92,3 +94,55 @@ data _⟷_ where
   η : (T : 𝕌) → 𝟙 ⟷ (Singᵤ T ×ᵤ Recipᵤ T)
   ε : (T : 𝕌) → (Singᵤ T ×ᵤ Recipᵤ T) ⟷ 𝟙
 
+!_ : {t₁ t₂ : 𝕌} → t₁ ⟷ t₂ → t₂ ⟷ t₁
+! swap₊₁ = swap₊₂
+! swap₊₂ = swap₊₁
+! assocl₊₁ = assocr₊₂
+! assocl₊₂ = assocr₊₁
+! assocl₊₃ = assocr₊₃
+! assocl₊₄ = assocr₊₄
+! assocl₊₅ = assocr₊₅
+! assocr₊₁ = assocl₊₂
+! assocr₊₂ = assocl₊₁
+! assocr₊₃ = assocl₊₃
+! assocr₊₄ = assocl₊₄
+! assocr₊₅ = assocl₊₅
+! unite⋆l = uniti⋆l
+! uniti⋆l = unite⋆l
+! unite⋆r = uniti⋆r
+! uniti⋆r = unite⋆r
+! swap⋆ = swap⋆
+! assocl⋆ = assocr⋆
+! assocr⋆ = assocl⋆
+! dist₁ = factor₁
+! dist₂ = factor₂
+! factor₁ = dist₁
+! factor₂ = dist₂
+! distl₁ = factorl₁
+! distl₂ = factorl₂
+! factorl₁ = distl₁
+! factorl₂ = distl₂
+! id⟷ = id⟷
+! (c ⊚ c₁) = (! c₁) ⊚ (! c)
+! (c ⊕₁ c₁) = (! c) ⊕₁ (! c₁)
+! (c ⊕₂ c₁) = (! c) ⊕₂ (! c₁)
+! (c ⊗ c₁) = (! c) ⊗ (! c₁)
+! return T = extract T
+! join T = return (Singᵤ T)
+! unjoin T = join T
+! tensorl T₁ T₂ = cotensorl T₁ T₂
+! tensorr T₁ T₂ = cotensorr T₁ T₂
+! tensor T₁ T₂ = untensor T₁ T₂
+! untensor T₁ T₂ = tensor T₁ T₂
+! plusl T₁ T₂ = coplusl T₁ T₂
+! plusr T₁ T₂ = coplusr T₁ T₂
+! extract T = return T
+! cojoin T = join T
+! counjoin T = return (Singᵤ T)
+! cotensorl T₁ T₂ = tensorl T₁ T₂
+! cotensorr T₁ T₂ = tensorr T₁ T₂
+! coplusl T₁ T₂ = plusl T₁ T₂
+! coplusr T₁ T₂ = plusr T₁ T₂
+! Singᵤ T₁ T₂ c = Singᵤ T₂ T₁ (! c)
+! η T = ε T
+! ε T = η T
