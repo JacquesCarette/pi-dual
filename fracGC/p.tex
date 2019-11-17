@@ -153,9 +153,8 @@ $\displaystyle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-\paragraph*{Conservation of Information.} If quantum field theory is
-correct (as it so far seems to be) then information, during any
-physical process, is neither created nor
+If quantum field theory is correct (as it so far seems to be) then
+information, during any physical process, is neither created nor
 destroyed. Landauer~\cite{Landauer:1961,Landauer,bennett1985fundamental},
 Bennett~\cite{bennett2010notes,bennett2003notes,Bennett:1973:LRC},
 Fredkin~\cite{fredkin1982conservative} and others made compelling
@@ -177,12 +176,11 @@ valid for both families by focusing on the simpler classical model. In
 fact, classical reversible computations are often used as
 ``subroutines'' of quantum computations.
 
-Instead of using the Toffoli gate as a universal primitive for
-reversible classical circuits, one can leverage the full force of type
-theory and category theory by expressing reversible classical
-computations as \emph{isomorphisms over finite
-  types}~\cite{Fiore:2004,James:2012:IE:2103656.2103667} or
-\emph{equivalences over
+Instead of using the rather low-level circuit model of computation,
+one can leverage the full force of type theory and category theory by
+expressing reversible classical computations as \emph{isomorphisms
+  over finite types}~\cite{Fiore:2004,James:2012:IE:2103656.2103667}
+or \emph{equivalences over
   groupoids}~\cite{DBLP:conf/esop/CaretteS16}. This perspective is
 similarly universal for reversible computation (and can be extended to
 quantum computation~\cite{10.1007/978-3-319-89366-2_19}) but with the
@@ -192,26 +190,27 @@ explained next.
 
 \paragraph*{Temporary Storage using Ancilla Bits.} The universality of
 the Toffoli gate for classical reversible computing and of the
-universality of the combination of the Toffoli and Hadamard gates for
-quantum computing should not distract from efficiency and safety
-concerns. The theorems proving universality (i) assume that temporary
-storage (often called \emph{ancilla bits}) may be
-used~\cite{Toffoli:1980}, and (ii) that this temporary storage is
-returned to its initial state before de-allocation. Indeed if no
-temporary storage is allowed, the Toffoli gate is not
-universal~\cite{DBLP:conf/innovations/AaronsonGS17} and as would be
-expected the more temporary storage is allowed, the more efficient
-certain computations could become. The condition requiring that the
-temporary storage is only de-allocated when returned to its initial
-condition is a safety condition. Violating this condition destroys the
-symmetry between input and output making the circuits not reversible
-and, in the quantum model, causes decoherence that may destroy the
-quantum state. As reviewed in Sec.~\ref{sec:examples}, ancilla bits
-have a number of critical applications and yet are poorly supported in
+universality of the Toffol-Hadamard gates for quantum computing should
+not distract from efficiency and safety concerns. The theorems proving
+universality (i) assume that temporary storage (often called
+\emph{ancilla bits}) may be used~\cite{Toffoli:1980}, and (ii) that
+this temporary storage is returned to its initial state before
+de-allocation. Indeed if no temporary storage is allowed, the Toffoli
+gate is not universal~\cite{DBLP:conf/innovations/AaronsonGS17} and as
+would be expected the more temporary storage is allowed, the more
+efficient certain computations could become.
+
+More fundamentally, the condition requiring that the temporary storage
+is only de-allocated when returned to its initial condition is a
+safety condition. Violating this condition destroys the symmetry
+between input and output making the circuits not reversible and, in
+the quantum model, causes decoherence that may destroy the quantum
+state. As reviewed in Sec.~\ref{sec:examples}, ancilla bits have a
+number of critical applications and yet are poorly supported in
 current reversible and quantum programming languages making them a
 common source of bugs.
 
-\paragraph*{Negative Entropy.}  
+\paragraph*{Conservation of Information and Negative Entropy.}  
 According to the conventional theory of
 communication~\cite{Shannon1948}, a type with $N$ values is viewed as
 an abstract system that has $N$ distinguishable states where the
@@ -235,15 +234,39 @@ money,'' as a resource (space or bandwidth) to be repaid (reclaimed)
 by some other part of the system. Indeed, we will introduce such
 fractional types and use them to represent ``garbage collection
 processes'' that reclaim temporary storage. Just like in the case of
-``negative money'' It is critical that these fractional types be
+``negative money'' it is critical that these fractional types be
 linearly used, i.e., they cannot be duplicated or erased: this
 property is however automatically enforced in a reversible
 computational model!
 
-\paragraph*{Contributions.} The paper presents a novel concept, that
-is \emph{fractional types} etc.
-
-\paragraph*{Outline.}
+\paragraph*{Outline.} The paper solves the ancilla problem in
+reversible and quantum computation using a novel concept:
+\emph{fractional types}. In the next section, we introduce the problem
+of ancilla, motivate its importance, and explain the limitations of
+current solutions. In Sec.~\ref{sec:pi}, we review previous work by
+James et al.~\cite{rc2011,rc2012,James:2012:IE:2103656.2103667} that
+introduces a reversible programming language built using isomorphism
+of types. Although it is conceivable that the concept of fractional
+types would apply to general-purpose languages (after some
+adaptation), its natural technical definition is using symmetries
+present in categorical model of type isomorphisms. We present such a
+definition in Sec.~\ref{sec:dyn}: that definition captures the main
+ideas of fractional types and partially solves a more general and more
+expressive instance of the ancilla problem. The approach however
+shares the limitation of current solutions in that it relies on
+runtime checks for programmer's assertions that values have been
+restored to their initial value before de-allocation. To remedy this
+limitation, we refine the type system in Sec.~\ref{sec:dep} to keep
+track of values in focus. Technically this requires the introduction
+of pointed types on top of which are defined both a monad and co-monad
+of singleton types. To justify the claim that fractional types solve
+the management of ancilla-based scratch space, we present in
+Sec.~\ref{sec:space} an operational semantics that exposes memory
+management details using a realization of fractional types as
+first-class dependently-typed garbage collectors. In Sec.~\ref{cat} we
+present a rich collection of examples illustrating the expressive
+power of fractional types. We conclude with a discussion of related
+work and a summary of our results. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Ancilla Bits}
@@ -421,6 +444,7 @@ common complement ($Y$), then the ``other pieces''
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Preliminaries: Pi}
+\label{sec:pi}
 
 Our approach to reversible quantum programming based on type
 isomorphisms. Examples.
@@ -620,6 +644,7 @@ reasoning about various classes of reversible circuits.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Interchangeable Ancillae}
+\label{sec:dyn}
 
 The management of ancilla bits can be teased into two relatively
 distinct subproblems:
@@ -723,7 +748,7 @@ introduction and elimination are inverses:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Dependently-Typed Garbage Collectors}
-
+\label{sec:dep}
 
  
 
@@ -777,7 +802,8 @@ Polymorphic type for ancilla?
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Space Operational Semantics}
-  
+\label{sec:space}  
+
 Positive rational numbers are a model. Apparently there is a
 categorification
 \url{https://alistairsavage.ca/pubs/Copelli-Categorification_of_the_Nonnegative_Rational_Numbers.pdf}
@@ -786,8 +812,13 @@ Use all the constructions name, coname, etc. and see what they do in this contex
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Trace}
-  
+\label{sec:cat}  
+
 Add multiplicative trace, do SAT solver
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Related Work and Conclusion}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliography{../cites.bib}
