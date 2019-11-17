@@ -164,18 +164,18 @@ computational principle of ``conservation of information.'' This
 principle is indeed one of the defining characteristics of quantum
 computing and its classical restriction known as reversible computing.
 
-\paragraph*{Quantum and Reversible Computing.} The Toffoli gate is
-known to be universal for classical reversible
-circuits~\cite{Toffoli:1980}. Adding just one gate (the Hadamard gate)
-produces a universal set of primitives for quantum
-circuits~\cite{hadtoffuniv}. The ``only'' difference between the two
-circuit models is that quantum circuits can process superpositions of
-values (waves) in one step whereas classical circuits lack this form
-of parallelism. Most importantly, structurally the two circuits models
-are identical and one can derive properties valid for both families by
-focusing on the simpler classical model. In fact, classical reversible
-computations are often used as ``subroutines'' of quantum
-computations.
+\paragraph*{Quantum and Reversible Computing Based on Type
+  Isomorphisms.} The Toffoli gate is known to be universal for
+classical reversible circuits~\cite{Toffoli:1980}. Adding just one
+gate (the Hadamard gate) produces a universal set of primitives for
+quantum circuits~\cite{hadtoffuniv}. The ``only'' difference between
+the two circuit models is that quantum circuits can process
+superpositions of values (waves) in one step whereas classical
+circuits lack this form of parallelism. Most importantly, structurally
+the two circuits models are identical and one can derive properties
+valid for both families by focusing on the simpler classical model. In
+fact, classical reversible computations are often used as
+``subroutines'' of quantum computations.
 
 Instead of using the Toffoli gate as a universal primitive for
 reversible classical circuits, one can leverage the full force of type
@@ -183,9 +183,12 @@ theory and category theory by expressing reversible classical
 computations as \emph{isomorphisms over finite
   types}~\cite{Fiore:2004,James:2012:IE:2103656.2103667} or
 \emph{equivalences over
-  groupoids}~\cite{DBLP:conf/esop/CaretteS16}. This perspective
-exposes a rich mathematical structure in reversible computations
-that we will exploit to solve the ``ancilla problem'' explained next. 
+  groupoids}~\cite{DBLP:conf/esop/CaretteS16}. This perspective is
+similarly universal for reversible computation (and can be extended to
+quantum computation~\cite{10.1007/978-3-319-89366-2_19}) but with the
+advantage of exposing a rich mathematical structure in reversible
+computations that we will exploit to solve the ``ancilla problem''
+explained next.
 
 \paragraph*{Temporary Storage using Ancilla Bits.} The universality of
 the Toffoli gate for classical reversible computing and of the
@@ -196,16 +199,15 @@ storage (often called \emph{ancilla bits}) may be
 used~\cite{Toffoli:1980}, and (ii) that this temporary storage is
 returned to its initial state before de-allocation. Indeed if no
 temporary storage is allowed, the Toffoli gate is not
-universal~\cite{DBLP:conf/innovations/AaronsonGS17} and as we
-demonstrate in Sec.~\ref{sec:examples}, the more temporary storage is
-allowed, the more efficient certain computations could become. The
-condition requiring that the temporary storage is only de-allocated
-when returned to its initial condition is a safety
-condition. Violating this condition destroys the symmetry between
-input and output making the circuits not reversible and, in the
-quantum model, causes decoherence that may destroy the quantum
-state. As reviewed in Sec.~\ref{sec:examples}, ancilla bits have a
-number of critical applications and yet are poorly supported in
+universal~\cite{DBLP:conf/innovations/AaronsonGS17} and as would be
+expected the more temporary storage is allowed, the more efficient
+certain computations could become. The condition requiring that the
+temporary storage is only de-allocated when returned to its initial
+condition is a safety condition. Violating this condition destroys the
+symmetry between input and output making the circuits not reversible
+and, in the quantum model, causes decoherence that may destroy the
+quantum state. As reviewed in Sec.~\ref{sec:examples}, ancilla bits
+have a number of critical applications and yet are poorly supported in
 current reversible and quantum programming languages making them a
 common source of bugs.
 
@@ -250,7 +252,7 @@ is \emph{fractional types} etc.
 %%%
 \subsection{Applications}
  
-Uses of ancillas:
+Uses of ancillae:
 \url{https://quantum.country/search}:
 
 \begin{quote}
@@ -286,7 +288,7 @@ Uses of ancillas:
   of this operation is the newly entangled two-qubit state
   $a_0 \ket{0} + a_1 \ket{1}$, creating a system in which the ancilla
   qubit is now perfectly entangled with the first qubit. Adding more
-  ancillas increases the distance of the repetition code.  \end{quote}
+  ancillae increases the distance of the repetition code.  \end{quote}
 
 \url{https://www.sigarch.org/the-case-for-quantum-computing/}
 \begin{quote}
@@ -353,7 +355,7 @@ thread meets someone else
  
 Toffoli4 using 2 Toffoli3: core of proof of universality; simple
 enough. Reversible/Quantum Circuits and Ancilla Wires: Early use of
-ancillas in Toffoli's paper to implement arbitrary reversible
+ancillae in Toffoli's paper to implement arbitrary reversible
 functions using a fixed number of 3 input gates
 \url{https://link.springer.com/content/pdf/10.1007%2F3-540-10003-2_104.pdf}
 
