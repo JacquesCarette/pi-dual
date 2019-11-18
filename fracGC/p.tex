@@ -37,6 +37,7 @@
 
 \newcommand{\alt}{~|~}
 \newcommand{\net}{t_\bullet}
+\newcommand{\opr}[1]{|#1\rangle\langle#1|}
 \newcommand{\inlv}[1]{\ensuremath{\mathit{inl}(v)}}
 \newcommand{\inrv}[1]{\ensuremath{\mathit{inr}(v)}}
 \newcommand{\ket}[1]{|#1\rangle}
@@ -289,102 +290,106 @@ reused or de-allocated.
 Beyond computability and efficiency reasons, ancillae have found a
 wide range of interesting applications. 
 
- Uses of ancillae:
-\url{https://quantum.country/search}:
+\paragraph*{Quantum blackboxes and Phase Kickback Trick.} Consider a
+small database with four elements $a$, $b$, $c$, and $d$. We are given
+a function $f$ that maps every element to $0$ except for one element
+of interest, e.g., $f(a)=1$ and $f(b)=f(c)=f(d)=0$. In the worst case,
+finding the element of interest might require applying $f$ to every
+element of the database. In the quantum world we can find the element
+much more efficiently using Grover's
+algorithm~\cite{Grover:1996:FQM:237814.237866}. We start by building
+an equally weighted superposition of the elements:
+$\frac{1}{2}\ket{a}+\frac{1}{2}\ket{b}+\frac{1}{2}\ket{c}+\frac{1}{2}\ket{d}$
+and operate concurrently of the superposition as follows:
 
+\[\begin{array}{l}
+                    \frac{1}{2}\ket{a}+\frac{1}{2}\ket{b}+\frac{1}{2}\ket{c}+\frac{1}{2}\ket{d}\\
+\\
+\Rightarrow  \textrm{phase kickback} \\
+\\
+-\frac{1}{2}\ket{a}+\frac{1}{2}\ket{b}+\frac{1}{2}\ket{c}+\frac{1}{2}\ket{d}\\
+\\
+\Rightarrow  \textrm{diffusion} \\
+\\
+ (\frac{1}{2}-(-\frac{1}{2}))\ket{a}+(\frac{1}{2}-\frac{1}{2})\ket{b}+(\frac{1}{2}-\frac{1}{2})\ket{c}+(\frac{1}{2}-\frac{1}{2})\ket{d})\\
+\\
+\Rightarrow  \textrm{simplification} \\
+\\
+\ket{a}
+\end{array}\]
 
-\paragraph*{Reversible Branching Operations.} 
+The question, which arises repeatedly in quantum computation, is how
+to implement operations such as phase kickback. Essentially we want to
+concurrently perform the following action on every element of the
+superposition:
+\[\begin{array}{l}
+  \textbf{if}~\textit{current-element}=\ket{a} \\
+  \textbf{then}~\textit{negate} \\
+  \textbf{else}~\textit{identity}
+\end{array}\]
+In the quantum world, na\"\i vely attempting to test whether the
+current element is equal to $\ket{a}$ by performing a measurement would
+destroy the quantum superposition defeating the entire algorithm.
 
+Here is where ancilla qubits come to the rescue. In the words of
+Matuschak and Nielsen~\cite{howgrover}, the idea is the following:
 \begin{quote}
-  There’s a rough heuristic worth noting here, which is that you can
-  often convert if-then style thinking into quantum circuits. You
-  introduce an ancilla qubit to store the outcome of evaluating the if
-  condition. And then depending on the state of the ancilla, you
-  perform the appropriate state manipulation. Finally, when possible
-  you reverse the initial computation, resetting the ancilla to its
-  original state so you can subsequently ignore it.
+  There's a rough heuristic worth noting here, which is that you can
+  often convert \verb|if-then| style of thinking into quantum
+  circuits. You introduce an ancilla qubit to store the outcome of
+  evaluating the \verb|if| condition. And then depending on the state
+  of the ancilla, you perform the appropriate state
+  manipulation. Finally, when possible you reverse the initial
+  computation, resetting the ancilla to its original state so you can
+  subsequently ignore it.
 \end{quote}
 
-\paragraph*{Error Correction.} 
-
-\url{https://www.nap.edu/read/25196/chapter/5#73}
+\paragraph*{Quantum Error Correction.} The main requirement for
+quantum error correction is the ability to replicate the state of a
+qubit onto a number of qubits~\cite[Ch.~3]{NAP25196}. This is however
+impossible to do directly by the no-cloning theorem. Again ancilla
+qubits come to the rescue: because ancilla qubits start in a known
+initial state, it is possible to create a simple circuit that makes
+their output state match a protected qubit without knowing or
+disturbing the protected qubit. Chong et al.~\cite{sigarchblog}
+illustrate the idea with a simple example:
 \begin{quote}
-  For error correction, one needs to replicate the state of a qubit
-  onto a number of qubits. While the no cloning theorem prevents one
-  from copying the state of a qubit directly onto another, one can
-  create a redundant entangled qubit state of many qubits. The key is
-  that the qubits to be entangled must start out in a known
-  state. Qubits with a known state (for purposes of this discussion,
-  it will be the state $\ket{0}$), called ``ancilla qubits,'' may be
-  added to a computation for this purpose. Since the state of ancilla
-  qubits are known, it is possible to create a simple circuit that
-  makes the output state of all these ancilla qubits match the
-  protected qubit: run each ancilla through a controlled-NOT gate,
-  where the control is driven by the qubit that needs to be
-  replicated. Assume that there is a qubit with state $\Psi$ that we
-  want to protect, where $\ket{\Psi}$ represents an arbitrary
-  superposition state $\ket{\Psi} = a_0 \ket{0} + a_1 \ket{1}$. In the
-  CNOT gate, the ancilla $\ket{0}$ state will remain a $\ket{0}$ state
-  by the $\ket{0}$ component of $\ket{\Psi}$, but it will be converted
-  to $\ket{1}$ by the $\ket{1}$ component of $\ket{\Psi}$. The result
-  of this operation is the newly entangled two-qubit state
-  $a_0 \ket{0} + a_1 \ket{1}$, creating a system in which the ancilla
-  qubit is now perfectly entangled with the first qubit. Adding more
-  ancillae increases the distance of the repetition code.  \end{quote}
-
-\url{https://www.sigarch.org/the-case-for-quantum-computing/}
-\begin{quote}
-  Imagine a 3-qubit quantum majority code in which a logical “0” is
-  encoded as “000” and a logical “1” is encoded as “111.”  Just as
-  with a classical majority code, a single bit-flip error can be
-  corrected by restoring to the majority value.  Unlike a classical
-  code, however, we can not directly measure the qubits else their
-  quantum state will be destroyed.  Instead, we measure syndromes from
-  each possible pair of qubits by interacting them with an ancilla,
-  then measure each ancilla.  Although the errors to the qubits are
-  actually continuous, the effect of measuring the ancilla is to
-  discretize the errors, as well as inform us whether an error
-  occurred so that it can be corrected.  With this methodology,
-  quantum states are restored in a modular way for even a large
-  quantum computer.  Furthermore, operations on error-corrected qubits
-  can be viewed as digital rather than analog, and only a small number
-  of universal operations (H, T, CNOT) are needed for universal
-  quantum computation.  Through careful design and engineering, error
-  correction codes and this small set of precise operations will lead
-  to machines that could support practical quantum computation.
+consider a 3-qubit quantum majority code in which a logical ``0'' is
+encoded as ``000'' and a logical ``1'' is encoded as ``111.''  Just as with
+a classical majority code, a single bit-flip error can be corrected by
+restoring to the majority value.  Unlike a classical code, however, we
+can not directly measure the qubits else their quantum state will be
+destroyed.  Instead, we measure syndromes from each possible pair of
+qubits by interacting them with an ancilla, then measure each ancilla.
+Although the errors to the qubits are actually continuous, the effect
+of measuring the ancilla is to discretize the errors, as well as
+inform us whether an error occurred so that it can be corrected.  
 \end{quote}
 
-\paragraph*{Deferring Quantum Measurements.} 
-
-\url{https://homepages.cwi.nl/~rdewolf/qcnotesv2.pdf}
-\begin{quote}
-  Using an ancilla qubit, it is possible to avoid doing any
-  intermediate measurements in a quantum circuit. Show how this can be
-  done.  Hint: instead of measuring the qubit, apply a CNOT that
-  “copies” it to a new $\ket{0}$-qubit, which is then left alone until
-  the end of the computation. Analyze what happens.
-\end{quote}
+\paragraph*{Deferring Quantum Measurements.} The evolution of a
+quantum system is deterministic. Measurement add significant
+complications, collapsing the quantum state, and producing
+probabilistic results. However, using ancilla qubits it is possible to
+avoid doing any intermediate measurements in a quantum
+circuit~\cite{dewolf}. 
 
 %%%
-\subsection{Language Support}
- 
-current proposals for reversible
-and quantum programming languages
-(e.g. Ricercar~\cite{10.1007/978-3-319-20860-2_13},
-Quipper~\cite{Green:2013:QSQ:2491956.2462177}), restrict ancilla bits
-to be used in nested scopes, have sound but incomplete laws for
-reasoning about the safety condition, and only guarantee safety via
-runtime checks.
-
-Leads to bugs as analyzed by
-\url{http://drops.dagstuhl.de/opus/volltexte/2019/10196/pdf/OASIcs-PLATEAU-2018-4.pdf}:
-
+\subsection{Ancillae Bugs in Benchmarks.}
+Despite its fundamental importance, the management of ancillae is
+poorly supported in current languages, simulators, and toolkits as
+demonstrated in a recent analysis of bugs in quantum
+benchmarks~\cite{DBLP:conf/oopsla/HuangM18}. The analysis reveals that
+lack of language support in the management of ancillae leads to
+several problems. For example: 
 \begin{quote}
-
-  Bug type 6: Incorrect composition of operations using mirroring Section 4.5 discussed how bugs in deallocating ancillary qubits can happen due to bad parameters. Here we see how bugs in deallocating ancillary qubits can happen due to incorrect composition of operations following a mirroring pattern. For example, in Table 7, the operations in rows 2 and 3 are respectively mirrored and undone in rows 6 and 5. These lines of code need careful reversal of every loop and every operation.
-
-  A common pattern in quantum programs involves performing operations (e.g., add), contingent on a set of qubits known as control qubits. Without language support, this pattern needs many lines of code and manual allocation of ancillary qubits. In the Scaffold code example in Table 7, rows 3 and 5 are just computing the intersection of qubits q, with the help of ancillary qubits initialized in row 1, in order to realize the controlled rotation operation in row 4. Furthermore, quantum algorithms often need varying numbers of control qubits in different parts of the algorithm, leading to replicated code from multiple versions of the same subroutine differing only by the number of control qubits.
-
+  \textbf{Bug type 6: Incorrect composition of operations using mirroring}
+  Section~4.5 discussed how bugs in deallocating ancillary qubits can
+  happen due to bad parameters. Here we see how bugs in deallocating
+  ancillary qubits can happen due to incorrect composition of
+  operations following a mirroring pattern. For example, in Table~7,
+  the operations in rows 2 and 3 are respectively mirrored and undone
+  in rows~6 and~5. These lines of code need careful reversal of every
+  loop and every operation.
 \end{quote}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -720,6 +725,14 @@ introduction and elimination are inverses:
 % de-allocate because indistinguishable from freshly created. No pointer
 % equality and aliases though. Concurrent: one thread allocates; gc
 % thread meets someone else
+
+current proposals for reversible
+and quantum programming languages
+(e.g. Ricercar~\cite{10.1007/978-3-319-20860-2_13},
+Quipper~\cite{Green:2013:QSQ:2491956.2462177}), restrict ancilla bits
+to be used in nested scopes, have sound but incomplete laws for
+reasoning about the safety condition, and only guarantee safety via
+runtime checks.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Dependently-Typed Garbage Collectors}
