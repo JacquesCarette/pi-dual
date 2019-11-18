@@ -231,7 +231,7 @@ data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
   ε : (T : ∙𝕌) → (Singᵤ T ∙×ᵤ Recipᵤ T) ∙⟶ ∙𝟙
 
 !∙_ : {A B : ∙𝕌} → A ∙⟶ B → B ∙⟶ A
-!∙ (∙c {t₁} {t₂} {v} c) = subst (λ x → t₂ # eval c v ∙⟶ t₁ # x) (ΠisRev c v) (∙c {v = eval c v} (! c))
+!∙ (∙c {t₁} {t₂} {v} c) = subst (λ x → t₂ # eval c v ∙⟶ t₁ # x) (ΠisRev c v) (∙c (! c))
 !∙ ∙times# = ∙#times
 !∙ ∙#times = ∙times#
 !∙ ∙id⟷ = ∙id⟷

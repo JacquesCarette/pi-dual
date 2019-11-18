@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module PiFracMemSem where
 
 open import Relation.Binary.Core

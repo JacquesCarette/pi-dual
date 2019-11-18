@@ -1,5 +1,4 @@
-{-# OPTIONS --without-K #-}
-
+{-# OPTIONS --without-K --safe #-}
 module PiFracDynDef where
 open import Data.Bool
 open import Data.Empty

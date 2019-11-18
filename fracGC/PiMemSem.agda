@@ -1,3 +1,4 @@
+{-# OPTIONS --without-K --safe #-}
 module PiMemSem where
 
 open import Function
