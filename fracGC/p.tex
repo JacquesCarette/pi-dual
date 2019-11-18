@@ -393,67 +393,6 @@ several problems. For example:
 \end{quote}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Preliminaries: $\Pi$}
-\label{sec:pi}
-
-The step from reversible classical circuits to quantum circuits
-requires the addition of just one gate that creates
-superpositions. Similarly the step from a reversible classical
-programming language to a quantum one requires just the management of
-superpositions~\cite{10.1007/978-3-319-89366-2_19}. In the cited
-paper, the core reversible classical language was Theseus~\cite{XXX},
-a language that adds convenient syntactic extensions over an more
-basic language $\Pi$ of combinators witnessing isomorphisms over
-finite types~\cite{XXX}. The combinator-based language has the
-advantage of being convenient for formal analysis for at least two
-reasons: (i) it is conceptually simple and small, and (ii) it has
-direct and evident connections to type theory and category
-theory. Indeed our solution for managing ancillae is inspired by the
-construction of \emph{compact closed categories}~\cite{XXX}. These
-categories extend the monoidal categories~\cite{XXX} which are to
-model most models of resource-aware programming languages~\cite{XXX}
-with a new type constructor that creates duals or inverses to existing
-types. This will be our fractional type.
-
-%%%%%
-\subsection{Core $\Pi$}
-
-Plain Pi over finite types:
-\[\begin{array}{lrcl}
-\textit{Value types} & t &::=& 0 \alt 1 \alt t+t \alt t*t \\
-\textit{Values}      & v &::=& \star \alt \inlv{v} \alt \inrv{v} \alt (v,v) \\
-\textit{Level-1 types} &&& t \leftrightarrow t \\
-\textit{Level-1 programs} & c &::=& \cdots \\
-\textit{Level-2 types} &&& c \Leftrightarrow c \\
-\textit{Level-2 programs} & \alpha &::=& \cdots 
-\end{array}\]
-
-Focusing on finite types, the building blocks of type theory are: the
-empty type ($0$), the unit type ($1$), the sum type ($+$), and the
-product ($\times$) type. Before getting into the formal theory, let's
-consider the intuition that types are modeled by (topological) spaces
-and that type equivalence is modeled by possible \emph{deformations}
-of such spaces. Consider the space $(1 + 0) \times (1 + 1)$. This
-space is the product of two subspaces: the subspace $(1 + 0)$ which
-itself is the sum of the space~$1$ containing one point $\texttt{tt}$
-and the empty space~$0$ and the subspace $(1 + 1)$ which is the sum of
-two spaces each containing the one point $\texttt{tt}$. Any
-deformation of this space must at least preserve the number of points:
-we can neither create nor destroy points during any continuous
-deformation. Seeing that the number of points in our example space is
-2, a reasonable hypothesis is that we can deform the space above to
-any other space with 2 points such as $1 + 1$ or $1 + (1 + 0)$. What
-this really means is that we are treating the sum and product
-structure as malleable. Imagining a product structure as arranged in a
-grid, by stretching we can turn this structure to a sum structure
-arranged in a line, change the orientation of the grid by exchanging
-the axes, as well as other transformations that preserve the number of
-points using various ``symmetries.'' These symmetries capture, in a
-stylized manner, a rich collection of space-time
-tradeoffs~\cite{superstructural}. We formalize this intuition by
-saying that types form a \emph{commutative semiring} (up to type
-isomorphism).
-
 \begin{figure*}[t]
 \[\begin{array}{rrcll}
 \idc :& \tau & \iso & \tau &: \idc \\
@@ -489,34 +428,77 @@ isomorphism).
 \label{pi-terms}
 \end{figure*}
 
-Another model of types is to view each type $A$ as a collection of
+\section{Preliminaries: $\Pi$}
+\label{sec:pi}
+
+The step from reversible classical circuits to quantum circuits
+requires the addition of just one gate that creates
+superpositions. Similarly the step from a reversible classical
+programming language to a quantum one requires just the management of
+superpositions~\cite{10.1007/978-3-319-89366-2_19}. In the cited
+paper, the core reversible classical language was Theseus~\cite{XXX},
+a language that adds convenient syntactic extensions over an more
+basic language $\Pi$ of combinators witnessing isomorphisms over
+finite types~\cite{XXX}. The combinator-based language has the
+advantage of being convenient for formal analysis for at least two
+reasons: (i) it is conceptually simple and small, and (ii) it has
+direct and evident connections to type theory and category
+theory. Indeed our solution for managing ancillae is inspired by the
+construction of \emph{compact closed categories}~\cite{XXX}. These
+categories extend the monoidal categories~\cite{XXX} which are to
+model most models of resource-aware programming languages~\cite{XXX}
+with a new type constructor that creates duals or inverses to existing
+types. This will be our fractional type.
+
+%%%%%
+\subsection{Core $\Pi$}
+
+The syntax of the language consists of several categories:
+\[\begin{array}{lrcl}
+\textit{Value types} & t &::=& 0 \alt 1 \alt t+t \alt t*t \\
+\textit{Values}      & v &::=& \star \alt \inlv{v} \alt \inrv{v} \alt (v,v) \\
+\textit{Level-1 types} &&& t \leftrightarrow t \\
+\textit{Level-1 programs} & c &::=& (\textrm{See Fig.~\ref{pi-terms}})\\
+\textit{Level-2 types} &&& c \Leftrightarrow c \\
+\textit{Level-2 programs} & \alpha &::=& (\textrm{Omitted})
+\end{array}\]
+
+Focusing on finite types, the building blocks of type theory are: the
+empty type ($0$), the unit type ($1$), the sum type ($+$), and the
+product ($\times$) type. One may view each type $A$ as a collection of
 physical wires that can transmit $\|A\|$ distinct values where $\|A\|$
-is the size of a type, computed as: $\| 0 \| = 0$; $\| 1 \| = 1$; $\|
-A + B \| = \| A \| + \| B \|$; and $\| A \times B \| = \| A \| * \| B
-\|$. Thus the type $\mathbb{B} = 1 + 1$ corresponds to a wire that can
-transmit two values, i.e., bits, and the type $\mathbb{B} \times
-\mathbb{B} \times \mathbb{B}$ corresponds to a collection of wires
-that can transmit three bits. From that perspective, a type
-isomorphism between types $A$ and $B$ (such that $\|A\|=\|B\|=n$)
-models a \emph{reversible} combinational circuit that \emph{permutes}
-the $n$ different values. These type isomorphisms are collected in
-Fig.~\ref{pi-terms}. We call the resulting language $\Pi$.  It is
-known that these type isomorphisms are sound and complete for all
-permutations on finite types~\cite{Fiore:2004,fiore-remarks} and hence
-that they are \emph{complete} for expressing combinational
-circuits~\cite{fredkin1982conservative,James:2012:IE:2103656.2103667,Toffoli:1980}.
+is the size of a type, computed as: $\| 0 \| = 0$; $\| 1 \| = 1$;
+$\| A + B \| = \| A \| + \| B \|$; and
+$\| A \times B \| = \| A \| * \| B \|$. Thus the type
+$\mathbb{B} = 1 + 1$ corresponds to a wire that can transmit two
+values, i.e., bits, and the type
+$\mathbb{B} \times \mathbb{B} \times \mathbb{B}$ corresponds to a
+collection of wires that can transmit three bits. From that
+perspective, a type isomorphism between types $A$ and $B$ (such that
+$\|A\|=\|B\|=n$) models a \emph{reversible} combinational circuit that
+\emph{permutes} the $n$ different values. These type isomorphisms are
+collected in Fig.~\ref{pi-terms}. It is known that these type
+isomorphisms are sound and complete for all permutations on finite
+types~\cite{Fiore:2004,fiore-remarks} and hence that they are
+\emph{complete} for expressing combinational
+circuits~\cite{fredkin1982conservative,James:2012:IE:2103656.2103667,Toffoli:1980}. Algebraically,
+these types and combinators form a \emph{commutative semiring} (up to
+type isomorphism). Logically they form a superstructural logic
+capturing space-time tradeoffs~\cite{superstructural}. Categorically,
+they form a \emph{bimonoidal category}~\cite{laplaza72}. 
 
 So far, the types encode conventional data structures, i.e, sets of
 values and structured trees of values and the isomorphisms act on such
 conventional data structures. Universal computation models however
 fundamentally rely on the fact that \emph{programs are (or can be
-encoded as) data}, e.g., a Turing machine can be encoded as a string
+  encoded as) data}, e.g., a Turing machine can be encoded as a string
 that another Turing machine (or even the same machine) can
 manipulate. In our setting, we ask whether the type isomorphisms in
 Fig.~\ref{pi-terms} can themselves be subject to (higher-level)
-reversible deformations? Before developing the theory, let's consider
-a small example consisting of two deformations between the types $A +
-B$ and $C+D$:
+reversible deformations? The answer is
+yes~\cite{Miller:2003:TBA:775832.775915,DBLP:conf/esop/CaretteS16,DBLP:journals/corr/CockettCS17}. We
+only give one example below. (We will require a new level-2 program to
+witness coherence of fractional types in Sec.~\ref{sec:dep}.)
 
 \begin{center}
 \begin{tikzpicture}[scale=0.4,every node/.style={scale=0.5}]
@@ -571,17 +553,17 @@ B$ and $C+D$:
 \end{center}
 
 \noindent The top path is the $\Pi$ program
-$(c_1~\oplus~c_2)~\odot~\swapp$ which deforms the type $A$ by $c_1$,
-deforms the type $B$ by $c_2$, and deforms the resulting space by a
+$(c_1~\oplus~c_2)~\odot~\swapp$ which acts on the type $A$ by $c_1$,
+acts on the type $B$ by $c_2$, and deforms the resulting space by a
 twist that exchanges the two injections into the sum type. The bottom
-path performs the twist first and then deforms the type $A$ by $c_1$
-and the type $B$ by $c_2$ as before. If one could imagine the paths
-  as physical wires and the deformations $c_1$ and $c_2$ as arbitrary
-deformations on these wires then, holding the points $A$, $B$, $C$,
-and $D$ fixed, it is possible to rotate the top part of the diagram to
-become identical to the bottom one. That rotation can be undone
-(reversed), which takes the bottom part of the diagram into the top
-part.  In other words, there exists a deformation of the program
+path performs the twist first and then acts on the type $A$ by $c_1$
+and on the type $B$ by $c_2$ as before. If one could imagine the paths
+as physical wires and the actions $c_1$ and $c_2$ as permutations on
+these wires then, holding the points $A$, $B$, $C$, and $D$ fixed, it
+is possible to rotate the top part of the diagram to become identical
+to the bottom one. That rotation can be undone (reversed), which takes
+the bottom part of the diagram into the top part.  In other words,
+there exists a continuous deformation of the program
 $(c_1~\oplus~c_2)~\odot~\swapp$ to the program
 $\swapp \odot (c_2~\oplus~c_1)$. We can also show that this means
 that, as permutations, $(c_1~\oplus~c_2)~\odot~\swapp$ and
@@ -590,20 +572,6 @@ non-trivial, as not all programs between the same types can be
 deformed into one another. The simplest example of inequivalent
 deformations are the two automorphisms of $1+1$, namely $\idc$ and
 $\swapp$.
-
-Developing a collection of ``templates'' for such higher-level
-equivalences is reasonably straightforward (see for example the work
-of Miller et al~\cite{Miller:2003:TBA:775832.775915}). To find a
-\emph{complete} set of equivalences is much more difficult. The idea
-developed in our previous work~\cite{DBLP:conf/esop/CaretteS16} relies
-on ``categorification'' and a classical result by
-Laplaza~\cite{laplaza}. We refer the interested reader to our previous
-work for the full set of \emph{complete} ``templates.'' A related
-idea~\cite{DBLP:journals/corr/CockettCS17} for a sound and complete
-set of equivalences on control-not gates is also developed in the
-context of the same monoidal categories as the ones we use suggesting
-that these categorical structures provide a common framework for
-reasoning about various classes of reversible circuits.
 
 %%%
 \subsection{A Small Example}
