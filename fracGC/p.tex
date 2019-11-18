@@ -393,17 +393,30 @@ several problems. For example:
 \end{quote}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Preliminaries: Pi}
+\section{Preliminaries: $\Pi$}
 \label{sec:pi}
 
-Our approach to reversible quantum programming based on type
-isomorphisms. Examples.
-
-Ancilla problem in the context of Pi using eta and epsilon 
-informally. 
+The step from reversible classical circuits to quantum circuits
+requires the addition of just one gate that creates
+superpositions. Similarly the step from a reversible classical
+programming language to a quantum one requires just the management of
+superpositions~\cite{10.1007/978-3-319-89366-2_19}. In the cited
+paper, the core reversible classical language was Theseus~\cite{XXX},
+a language that adds convenient syntactic extensions over an more
+basic language $\Pi$ of combinators witnessing isomorphisms over
+finite types~\cite{XXX}. The combinator-based language has the
+advantage of being convenient for formal analysis for at least two
+reasons: (i) it is conceptually simple and small, and (ii) it has
+direct and evident connections to type theory and category
+theory. Indeed our solution for managing ancillae is inspired by the
+construction of \emph{compact closed categories}~\cite{XXX}. These
+categories extend the monoidal categories~\cite{XXX} which are to
+model most models of resource-aware programming languages~\cite{XXX}
+with a new type constructor that creates duals or inverses to existing
+types. This will be our fractional type.
 
 %%%%%
-\subsection{Pi}
+\subsection{Core $\Pi$}
 
 Plain Pi over finite types:
 \[\begin{array}{lrcl}
