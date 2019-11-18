@@ -347,7 +347,7 @@ Matuschak and Nielsen~\cite{howgrover}, the idea is the following:
 \paragraph*{Quantum Error Correction.} The main requirement for
 quantum error correction is the ability to replicate the state of a
 qubit onto a number of qubits~\cite[Ch.~3]{NAP25196}. This is however
-impossible to do directly by the no-cloning theorem. Again ancilla
+impossible to do directly by the no-cloning theorem~\cite{XXX}. Again ancilla
 qubits come to the rescue: because ancilla qubits start in a known
 initial state, it is possible to create a simple circuit that makes
 their output state match a protected qubit without knowing or
@@ -435,20 +435,22 @@ The step from reversible classical circuits to quantum circuits
 requires the addition of just one gate that creates
 superpositions. Similarly the step from a reversible classical
 programming language to a quantum one requires just the management of
-superpositions~\cite{10.1007/978-3-319-89366-2_19}. In the cited
-paper, the core reversible classical language was Theseus~\cite{XXX},
-a language that adds convenient syntactic extensions over an more
-basic language $\Pi$ of combinators witnessing isomorphisms over
-finite types~\cite{XXX}. The combinator-based language has the
-advantage of being convenient for formal analysis for at least two
-reasons: (i) it is conceptually simple and small, and (ii) it has
-direct and evident connections to type theory and category
-theory. Indeed our solution for managing ancillae is inspired by the
-construction of \emph{compact closed categories}~\cite{XXX}. These
-categories extend the monoidal categories~\cite{XXX} which are to
-model most models of resource-aware programming languages~\cite{XXX}
-with a new type constructor that creates duals or inverses to existing
-types. This will be our fractional type.
+superpositions, for example starting from the classical reversible
+language Theseus~\cite{XXX}, a small extension produces a quantum
+language with quantum control~\cite{10.1007/978-3-319-89366-2_19}. The
+language Theseus~\cite{XXX} mentioned above is a language that uses
+convenient syntactic extensions over an more basic language $\Pi$ of
+combinators witnessing isomorphisms over finite types~\cite{XXX}. The
+combinator-based language has the advantage of being more amenable to
+formal analysis for at least two reasons: (i) it is conceptually
+simple and small, and (ii) it has direct and evident connections to
+type theory and category theory. Indeed our solution for managing
+ancillae is inspired by the construction of \emph{compact closed
+  categories}~\cite{XXX}. These categories extend the monoidal
+categories~\cite{XXX} which are used to model many resource-aware
+programming languages~\cite{XXX} (including $\Pi$) with a new type
+constructor that creates duals or inverses to existing types. This
+dual will be our fractional type.
 
 %%%%%
 \subsection{Core $\Pi$}
@@ -715,11 +717,34 @@ to be used in nested scopes, have sound but incomplete laws for
 reasoning about the safety condition, and only guarantee safety via
 runtime checks.
 
+move from 1/t to 1/v (how the quantum search runs; need ancilla 
+initialized to a specific value) 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Dependently-Typed Garbage Collectors}
 \label{sec:dep}
 
- 
+PiPointedFrac:
+lift pi
+lift multiplicative structure
+monad/comonad for singletons
+eta/epsilon
+
+rationale: we want singleton types to track, in the type system
+the values of ancillae, i.e.. we construct a proof using the type
+system. Technically the singleton types allow you to focus on one
+value by reflecting it in the type system. Now this type can only be
+equal to another type if and only if the other type is the same
+singleton value.
+
+Once singleton types are built, we need to make sure circuit
+evaluation is also reflected in the type system. So in fact
+computation itself is reflected in the type system. In order to mix
+singleton types with other types, we use pointed types as a unifying
+substrate. Now all types have values; we can focus (using monad) and
+unfocus using (comonad). (This by the way ensures we don't write 1/0
+which woudl be bad). 
+
 
 We use a Singleton type
 to remember this information. 
@@ -782,6 +807,12 @@ Use all the constructions name, coname, etc. and see what they do in this contex
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Trace}
 \label{sec:cat}  
+
+allocate A
+allocate B
+combinate the gc's for A and B to get 1/(AxB)
+allocate AxB: split the gc in two 1/A and 1/B
+use the different gcs to satisfy each other
 
 Add multiplicative trace, do SAT solver
 
