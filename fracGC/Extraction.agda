@@ -1,9 +1,12 @@
 {-# OPTIONS --without-K --safe #-}
-
 module Extraction where
+open import Data.Empty
 open import Data.Product
 open import Data.Sum
-open import PiPointedFrac as Pi/ hiding (𝕌; ⟦_⟧)
+open import Data.Maybe
+open import Relation.Binary.PropositionalEquality
+open import Relation.Nullary
+open import PiPointedFrac as Pi/ hiding (𝕌; ⟦_⟧; eval)
 open import PiFracDyn
 
 Inj𝕌 : Pi/.𝕌 → 𝕌
@@ -11,6 +14,12 @@ Inj𝕌 𝟘 = 𝟘
 Inj𝕌 𝟙 = 𝟙
 Inj𝕌 (t₁ +ᵤ t₂) = Inj𝕌 t₁ +ᵤ Inj𝕌 t₂
 Inj𝕌 (t₁ ×ᵤ t₂) = Inj𝕌 t₁ ×ᵤ Inj𝕌 t₂
+
+Inj𝕌≡ : (t : Pi/.𝕌) → Pi/.⟦ t ⟧ ≡ ⟦ Inj𝕌 t ⟧
+Inj𝕌≡ 𝟘 = refl
+Inj𝕌≡ 𝟙 = refl
+Inj𝕌≡ (t₁ +ᵤ t₂) rewrite (Inj𝕌≡ t₁) | (Inj𝕌≡ t₂) = refl
+Inj𝕌≡ (t₁ ×ᵤ t₂) rewrite (Inj𝕌≡ t₁) | (Inj𝕌≡ t₂) = refl
 
 Inj⟦𝕌⟧ : {t : Pi/.𝕌} → Pi/.⟦ t ⟧ → ⟦ Inj𝕌 t ⟧
 Inj⟦𝕌⟧ {𝟙} tt = tt
@@ -42,9 +51,9 @@ Inj⟷ factor = factor
 Inj⟷ distl = distl
 Inj⟷ factorl = factorl
 Inj⟷ id⟷ = id↔
-Inj⟷ (c ⊚ c₁) = Inj⟷ c ⊚ Inj⟷ c₁
-Inj⟷ (c ⊕ c₁) = Inj⟷ c ⊕ Inj⟷ c₁
-Inj⟷ (c ⊗ c₁) = Inj⟷ c ⊗ Inj⟷ c₁
+Inj⟷ (c₁ ⊚ c₂) = Inj⟷ c₁ ⊚ Inj⟷ c₂
+Inj⟷ (c₁ ⊕ c₂) = Inj⟷ c₁ ⊕ Inj⟷ c₂
+Inj⟷ (c₁ ⊗ c₂) = Inj⟷ c₁ ⊗ Inj⟷ c₂
 
 Ext𝕌 : ∙𝕌 → Σ[ t ∈ 𝕌 ] ⟦ t ⟧
 Ext𝕌 (t # v) = (Inj𝕌 t , Inj⟦𝕌⟧ v)
@@ -88,3 +97,73 @@ Ext∙⟶ (coplusr T₁ T₂) = id↔
 Ext∙⟶ (∙Singᵤ T₁ T₂ c) = Ext∙⟶ c
 Ext∙⟶ (η T) = η (proj₂ (Ext𝕌 T))
 Ext∙⟶ (ε T) = ε (proj₂ (Ext𝕌 T))
+
+Eval≡ : ∀ {t₁ t₂} {v} (c : t₁ ⟷ t₂) → interp (Inj⟷ c) (Inj⟦𝕌⟧ v) ≡ just (Inj⟦𝕌⟧ (Pi/.eval c v))
+Eval≡ {_} {_} {inj₂ y} unite₊l = refl
+Eval≡ {_} {_} {x} uniti₊l = refl
+Eval≡ {_} {_} {inj₁ x} unite₊r = refl
+Eval≡ {_} {_} {x} uniti₊r = refl
+Eval≡ {_} {_} {inj₁ x} swap₊ = refl
+Eval≡ {_} {_} {inj₂ y} swap₊ = refl
+Eval≡ {_} {_} {inj₁ x} assocl₊ = refl
+Eval≡ {_} {_} {inj₂ (inj₁ y)} assocl₊ = refl
+Eval≡ {_} {_} {inj₂ (inj₂ z)} assocl₊ = refl
+Eval≡ {_} {_} {inj₁ (inj₁ x)} assocr₊ = refl
+Eval≡ {_} {_} {inj₁ (inj₂ y)} assocr₊ = refl
+Eval≡ {_} {_} {inj₂ z} assocr₊ = refl
+Eval≡ {_} {_} {x} unite⋆l = refl
+Eval≡ {_} {_} {x} uniti⋆l = refl
+Eval≡ {_} {_} {x} unite⋆r = refl
+Eval≡ {_} {_} {x} uniti⋆r = refl
+Eval≡ {_} {_} {x , y} swap⋆ = refl
+Eval≡ {_} {_} {x , y , z} assocl⋆ = refl
+Eval≡ {_} {_} {(x , y) , z} assocr⋆ = refl
+Eval≡ {_} {_} {inj₁ x , z} dist = refl
+Eval≡ {_} {_} {inj₂ y , z} dist = refl
+Eval≡ {_} {_} {inj₁ (x , z)} factor = refl
+Eval≡ {_} {_} {inj₂ (y , z)} factor = refl
+Eval≡ {_} {_} {x , inj₁ y} distl = refl
+Eval≡ {_} {_} {x , inj₂ z} distl = refl
+Eval≡ {_} {_} {inj₁ (x , y)} factorl = refl
+Eval≡ {_} {_} {inj₂ (x , z)} factorl = refl
+Eval≡ {_} {_} {x} id⟷ = refl
+Eval≡ {_} {_} {x} (c₁ ⊚ c₂) rewrite Eval≡ {v = x} c₁ = Eval≡ c₂
+Eval≡ {_} {_} {inj₁ x} (c₁ ⊕ c₂) rewrite Eval≡ {v = x} c₁ = refl
+Eval≡ {_} {_} {inj₂ y} (c₁ ⊕ c₂) rewrite Eval≡ {v = y} c₂ = refl
+Eval≡ {_} {_} {x , y} (c₁ ⊗ c₂) rewrite Eval≡ {v = x} c₁ | Eval≡ {v = y} c₂ = refl
+
+Ext≡ : ∀ {t₁ t₂} → (c : t₁ ∙⟶ t₂)
+     → let c'          = Ext∙⟶ c
+           (t₁' , v₁') = Ext𝕌 t₁
+           (t₂' , v₂') = Ext𝕌 t₂
+       in  interp c' v₁' ≡ just v₂'
+Ext≡ (∙c c) = Eval≡ c
+Ext≡ (∙times# {t₁} {t₂}) = refl
+Ext≡ (∙#times {t₁} {t₂}) = refl
+Ext≡ ∙id⟷ = refl
+Ext≡ (c₁ ∙⊚ c₂) rewrite Ext≡ c₁ | Ext≡ c₂ = refl
+Ext≡ ∙swap⋆ = refl
+Ext≡ ∙assocl⋆ = refl
+Ext≡ ∙assocr⋆ = refl
+Ext≡ (c₁ ∙⊗ c₂) rewrite Ext≡ c₁ | Ext≡ c₂ = refl
+Ext≡ (return T) = refl
+Ext≡ (join T) = refl
+Ext≡ (unjoin T) = refl
+Ext≡ (tensorl T₁ T₂) = refl
+Ext≡ (tensorr T₁ T₂) = refl
+Ext≡ (tensor T₁ T₂) = refl
+Ext≡ (untensor T₁ T₂) = refl
+Ext≡ (plusl T₁ T₂) = refl
+Ext≡ (plusr T₁ T₂) = refl
+Ext≡ (extract T) = refl
+Ext≡ (cojoin T) = refl
+Ext≡ (counjoin T) = refl
+Ext≡ (cotensorl T₁ T₂) = refl
+Ext≡ (cotensorr T₁ T₂) = refl
+Ext≡ (coplusl T₁ T₂) = refl
+Ext≡ (coplusr T₁ T₂) = refl
+Ext≡ (∙Singᵤ T₁ T₂ c) rewrite Ext≡ c = refl
+Ext≡ (η T) = refl
+Ext≡ (ε T) with 𝕌dec _ (proj₂ (Ext𝕌 T)) (proj₂ (Ext𝕌 T))
+Ext≡ (ε T) | yes p = refl
+Ext≡ (ε T) | no ¬p = ⊥-elim (¬p refl)
