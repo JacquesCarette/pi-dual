@@ -1,6 +1,8 @@
+\newcommand{\BCC1}{%
+\begin{code}
 {-# OPTIONS --without-K #-}
 
-module Examples.BooleanCircuits where
+module BooleanCircuitsCode where
 
 open import Data.Empty using (⊥)
 open import Data.Unit using (⊤; tt)
@@ -14,34 +16,39 @@ open import PiFrac
 open import Reasoning
 
 ------------------------------------------------------------------------------
+\end{code}}
+\newcommand{\Bexamples}{%
+\begin{code}
 𝔹 𝔹² 𝔹³ 𝔹⁴ : 𝕌
 𝔹   = 𝟙 +ᵤ 𝟙
 𝔹²  = 𝔹 ×ᵤ 𝔹
 𝔹³  = 𝔹 ×ᵤ 𝔹²
 𝔹⁴  = 𝔹 ×ᵤ 𝔹³
 
-CONTROLLED : {A : 𝕌} → (A ⟷ A) → 𝔹 ×ᵤ A ⟷ 𝔹 ×ᵤ A
-CONTROLLED c = dist ⊚ (id⟷ ⊕ (id⟷ ⊗ c)) ⊚ factor
+ctrl : {A : 𝕌} → (A ⟷ A) → 𝔹 ×ᵤ A ⟷ 𝔹 ×ᵤ A
+ctrl c = dist ⊚ (id⟷ ⊕ (id⟷ ⊗ c)) ⊚ factor
 
 NOT : 𝔹 ⟷ 𝔹
 NOT = swap₊
 
 CNOT : 𝔹² ⟷ 𝔹²
-CNOT = CONTROLLED NOT
+CNOT = ctrl NOT
 
 TOFFOLI : 𝔹³ ⟷ 𝔹³
-TOFFOLI = CONTROLLED (CONTROLLED NOT)
+TOFFOLI = ctrl (ctrl NOT)
 
 CTOFFOLI : 𝔹⁴ ⟷ 𝔹⁴
-CTOFFOLI = CONTROLLED (CONTROLLED (CONTROLLED NOT))
-
+CTOFFOLI = ctrl (ctrl (ctrl NOT))
+\end{code}}  
+\newcommand{\BCC2}{%
+\begin{code}
 -- Ancilla examples from literature
 
 -- Fig. 2 in Ricercar
 
 fig2a : 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ⟷
         𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹 ×ᵤ 𝔹
-fig2a = CONTROLLED (CONTROLLED (CONTROLLED NOT))
+fig2a = ctrl (ctrl (ctrl NOT))
 
 -- first write the circuit with the additional ancilla
 
@@ -51,7 +58,7 @@ fig2b' =
   assocr⋆ ⊚
   (swap⋆ ⊗ id⟷) ⊚
   assocr⋆ ⊚
-  (id⟷ ⊗ CONTROLLED (CONTROLLED NOT))  -- first ccnot
+  (id⟷ ⊗ ctrl (ctrl NOT))  -- first ccnot
   ⊚
   assocl⋆ ⊚
   (swap⋆ ⊗ id⟷) ⊚
@@ -61,7 +68,7 @@ fig2b' =
   (assocl⋆ ⊗ id⟷) ⊚
   assocr⋆ ⊚
   (id⟷ ⊗ swap⋆) ⊚
-  (id⟷ ⊗ CONTROLLED (CONTROLLED NOT))  -- second ccnot
+  (id⟷ ⊗ ctrl (ctrl NOT))  -- second ccnot
   ⊚
   (id⟷ ⊗ swap⋆) ⊚
   assocl⋆ ⊚
@@ -71,7 +78,7 @@ fig2b' =
   assocr⋆ ⊚
   (swap⋆ ⊗ id⟷) ⊚
   assocr⋆ ⊚
-  (id⟷ ⊗ CONTROLLED (CONTROLLED NOT))  -- third ccnot
+  (id⟷ ⊗ ctrl (ctrl NOT))  -- third ccnot
   ⊚
   assocl⋆ ⊚
   (swap⋆ ⊗ id⟷) ⊚
@@ -122,19 +129,6 @@ t3 : ∀ {b₁ b₂} →
      ● (𝔹 ×ᵤ 𝔹²) [ 𝔽 , (b₁ , b₂) ] ⟷
      ● (𝔹 ×ᵤ 𝔹²) [ 𝔽 , (b₁ , b₂) ]
 t3 = lift TOFFOLI
-
-{--
-The following do not typecheck. Good
-
-t4 : ● (𝔹 ×ᵤ 𝔹²) [ 𝕋 , (𝔽 , 𝔽) ] ⟷
-     ● (𝔹 ×ᵤ 𝔹²) [ 𝕋 , (𝔽 , 𝕋) ]
-t4 = lift TOFFOLI
-
-t5 : ∀ {b₁ b₂} →
-     ● (𝔹 ×ᵤ 𝔹²) [ b₁ , (𝔽 , b₂) ] ⟷
-     ● (𝔹 ×ᵤ 𝔹²) [ b₁ , (𝔽 , b₂) ]
-t5 = lift TOFFOLI
---}
 
 t6 : ∀ {b} →
      ● (𝔹 ×ᵤ 𝔹²) [ 𝕋 , (𝕋 , b) ] ⟷
@@ -250,3 +244,4 @@ fig2b₂ {a} {b} {c} {d} {e} =
         unite⋆r
 
 ------------------------------------------------------------------------------
+\end{code}}

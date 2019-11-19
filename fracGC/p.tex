@@ -26,6 +26,7 @@
 \usetikzlibrary{quotes}
 
 \newunicodechar{𝕌}{$\mathbb{U}$}
+\newunicodechar{𝔹}{$\mathbb{B}$}
 \newunicodechar{𝔽}{$\mathbb{F}$}
 \newunicodechar{𝕋}{$\mathbb{T}$}
 \newunicodechar{𝟘}{$\mathbb{0}$}
@@ -34,6 +35,7 @@
 \newunicodechar{⋆}{${}_*$}
 \newunicodechar{ᵤ}{${}_u$}
 \newunicodechar{⊚}{$\fatsemi$}
+\newunicodechar{⟷}{$\leftrightarrow$}
 
 \newcommand{\alt}{~|~}
 \newcommand{\net}{t_\bullet}
@@ -150,6 +152,7 @@ $\displaystyle
 \maketitle
 
 \input{latex/PiFracDynCode.tex}
+\input{latex/BooleanCircuitsCode.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
@@ -244,7 +247,7 @@ computational model.
 reversible and quantum computation using a novel concept:
 \emph{fractional types}. In the next section, we introduce the problem
 of ancilla, motivate its importance, and explain the limitations of
-current solutions. In Sec.~\ref{sec:pi}, we review previous work by
+current solutions. In Sec.~\ref{sec:pi}, we review existing work by
 James et al.~\cite{rc2011,rc2012,James:2012:IE:2103656.2103667} that
 introduces a reversible programming language built using isomorphism
 of types. Although it is conceivable that the concept of fractional
@@ -264,10 +267,10 @@ of singleton types. To justify the claim that fractional types solve
 the management of ancilla-based scratch space, we present in
 Sec.~\ref{sec:space} an operational semantics that exposes memory
 management details using a realization of fractional types as
-first-class dependently-typed garbage collectors. In Sec.~\ref{sec:cat} we
-present a rich collection of examples illustrating the expressive
-power of fractional types. We conclude with a discussion of related
-work and a summary of our results. 
+first-class dependently-typed garbage collectors. In
+Sec.~\ref{sec:cat} we present a rich collection of examples
+illustrating the expressive power of fractional types. We conclude
+with a discussion of related work and a summary of our results.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Ancilla Bits}
@@ -576,12 +579,26 @@ deformations are the two automorphisms of $1+1$, namely $\idc$ and
 $\swapp$.
 
 %%%
-\subsection{A Small Example}
+\subsection{Small Examples}
  
-some that ``wants'' ancilla; perhaps fig2b from Dyn. if we want to use
-gates with small number of inputs; need to break cccnot to smaller gates
+The code below defines the types corresponding to bits (booleans),
+two-bits, three-bits, and four-bits. It then defines an operator that
+builds a controlled version of a given combinator $c$. This controlled
+version takes an additional ``control'' bit and only applies $c$ if
+the control bit is true. The code then iterates the control operation
+several times starting starting from boolean negation.
 
+\Bexamples{}
 
+By construction, the \AgdaFunction{TOFFOLI} function takes three bits,
+and negates the third if the first two are both true. As
+Toffoli~\cite{Toffoli:1980} demonstrated, this function is universal
+for classical reversible circuits assuming it is possible to allocate
+and de-allocate ancilla bits. Indeed without using ancilla bits, it is
+not possible to use compositions of \AgdaFunction{TOFFOLI} functions
+to implement more general versions that are controlled by more than
+two bits (for example, \AgdaFunction{CTOFFOLI}). This will however be
+possible in the next section once we introduce ancilla bits.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Interchangeable Ancillae}
@@ -622,11 +639,11 @@ This scoped model is therefore quite a pragmatic choice. It is however
 limited, and to understand its limitations more vividly, we propose
 the following analogy: allocating an ancilla by creating a new wire in
 the circuit is like borrowing some money from a global external
-entity; the computation has access to a new resource
+entity (the memory manager); the computation has access to a new resource
 temporarily. De-allocating the ancilla is like returning the borrowed
 money to the global entity; the computation no longer has access to
 the additional resource. It would however be unreasonably restrictive
-to insist that if the person (function) borrowing the money must be
+to insist that the person (function) borrowing the money must be
 the same person (function) returning it.
 %% , i.e., preventing the following computation:
 %% \begin{verbatim}
@@ -654,9 +671,9 @@ not allow the flexibility of heap allocation in which the lifetime of
 resources is dynamically determined. To summarize, since the
 reversible-quantum computational framework guarantees that information
 is preserved, it also permits fascinating mechanisms in which
-computations can be sliced and diced, decomposed and recomposed, run
-forwards and backwards, in arbitrary ways as long as the net balance
-is 0.
+allocations and de-allocations can be sliced and diced, decomposed and
+recomposed, run forwards and backwards, in arbitrary ways as long as
+the net balance is 0.
 
 %%%%%
 \subsection{Adding Fractions}
