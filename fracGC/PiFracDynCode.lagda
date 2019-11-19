@@ -154,7 +154,7 @@ default (𝟙/ t) = ○
 \begin{code}
 interp : {t₁ t₂ : 𝕌} → (t₁ ↔ t₂) → ⟦ t₁ ⟧ → Maybe ⟦ t₂ ⟧
 \end{code}}
-\newcommand{\PFDC1}{%
+\newcommand{\PFDCONE}{%
 \begin{code}
 interp unite₊l (inj₁ ())
 interp unite₊l (inj₂ v) = just v

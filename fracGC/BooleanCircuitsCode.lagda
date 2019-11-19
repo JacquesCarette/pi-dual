@@ -1,4 +1,4 @@
-\newcommand{\BCC1}{%
+\newcommand{\BCCONE}{%
 \begin{code}
 {-# OPTIONS --without-K #-}
 
@@ -40,7 +40,7 @@ TOFFOLI = ctrl (ctrl NOT)
 CTOFFOLI : 𝔹⁴ ⟷ 𝔹⁴
 CTOFFOLI = ctrl (ctrl (ctrl NOT))
 \end{code}}  
-\newcommand{\BCC2}{%
+\newcommand{\BCCTWO}{%
 \begin{code}
 -- Ancilla examples from literature
 
