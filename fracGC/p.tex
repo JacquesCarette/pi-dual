@@ -33,12 +33,14 @@
 \newunicodechar{𝟙}{$\mathbb{1}$}
 \newunicodechar{𝟚}{$\mathbb{2}$}
 \newunicodechar{⋆}{${}_*$}
+\newunicodechar{○}{$\gcv$}
 \newunicodechar{ᵤ}{${}_u$}
 \newunicodechar{⊚}{$\fatsemi$}
 \newunicodechar{⟷}{$\leftrightarrow$}
 
 \newcommand{\alt}{~|~}
 \newcommand{\net}{t_\bullet}
+\newcommand{\gcv}{\circlearrowright}
 \newcommand{\opr}[1]{|#1\rangle\langle#1|}
 \newcommand{\inlv}[1]{\ensuremath{\mathit{inl}(v)}}
 \newcommand{\inrv}[1]{\ensuremath{\mathit{inr}(v)}}
@@ -458,6 +460,7 @@ dual will be our fractional type.
 
 %%%%%
 \subsection{Core $\Pi$}
+\label{sub:core}
 
 The syntax of the language consists of several categories:
 \[\begin{array}{lrcl}
@@ -683,25 +686,62 @@ recomposed, run forwards and backwards, in arbitrary ways as long as
 the net balance is 0.
 
 %%%%%
-\subsection{Adding Fractions}
+\subsection{GC Value of Fractional Type}
  
-We add a new type $\oneover{t}$ with a trivial runtime representation
-$\ocircle$. We add two new level-1 programs to introduce and eliminate
-the new type, and one new level-2 program that states that
-introduction and elimination are inverses:
+Instead of restricting ancillae to be scoped, we separate allocation
+and de-allocation into two dual actions $\eta$ and $\epsilon$ whose
+types are:
+\[
+\eta_A : 1 \leftrightarrow A * \oneover{A} : \epsilon_A
+\]
+The names and types of these operations are inspired by compact closed
+categories which are extensions of the monoidal categories that model
+$\Pi$. Intuitively, $\eta$ allows one from ``no information'' to
+create a pair of a value of type $A$ and a value of type
+$\oneover{A}$. We interpret the latter value as a gc process
+specialized to collect the created value. Dually, $\epsilon$ applies
+the gc process to the appropriate value annihilating
+both.\footnote{Another interesting interpretation is that these
+  operations correspond to creation and annihilation of entangled
+  particle/antiparticle pairs in quantum
+  physics~\cite{Panangaden2011}.}
+
+To make this idea work, several technical details are needed. Most
+notably, we must exclude the empty types from this creation and
+annihilation process. Otherwise, we would be able to prove that:
+\[\begin{array}{rcll}
+1 &=& 0 * 1/0 & \textrm{by~} \eta_0 \\
+&=& 0 & \textrm{by~} \absorbr
+\end{array}\]
+We therefore extend the syntax of core $\Pi$ in Sec.~\ref{sub:core} as follows:
 \[\begin{array}{lrcl}
 \textit{Value types} & t &::=& \cdots \alt \oneover{t} \\
 \textit{Non-empty types} & \net \\
-\textit{Values}      & v &::=& \cdots \alt \ocircle \\
+\textit{Values}      & v &::=& \cdots \alt \gcv \\
 \textit{Level-1 types} &&& t \leftrightarrow t \\
 \textit{Level-1 programs} & c &::=& \cdots \alt
    \eta : 1 \leftrightarrow (\net * \oneover{\net}) \\
    &&& ~~~~~\alt \epsilon : (\net * \oneover{\net}) \leftrightarrow 1 \\
 \textit{Level-2 types} &&& c \Leftrightarrow c \\
 \textit{Level-2 programs} & \alpha &::=& \cdots 
-  \alt unity : \epsilon \circ \eta \Leftrightarrow \idc 
+  \alt \mathit{inv} : \epsilon \circ \eta \Leftrightarrow \idc 
 \end{array}\]
 
+The metavariable $\net$ excludes all types that are equivalent to the
+empty type, e.g., $(1 + 1) * 0$. For now, all gc values are represented
+at runtime using a trivial value denoted by $\gcv$. We also explicitly
+add the coherence condition on the creation and annihilation process
+as a level-2 program, thus enforcing the duality $\eta$ and
+$\epsilon$. 
+
+In the Agda formalization, the types of $\eta$ and $\epsilon$ are as follows:
+
+\EtaEpsilon{}
+
+\dyninterp{}
+
+\vspace*{-0.5cm}
+$\vdots$
 
 
 \EtaEpsilonEval{}

@@ -149,8 +149,13 @@ default (𝟙/ t) = ○
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , .y₁) | no ¬p | yes refl = no (λ p → ¬p (cong proj₁ p))
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , y₂) | no ¬p | no ¬p₁ = no (λ p → ¬p (cong proj₁ p))
 𝕌dec (𝟙/ t) ○ ○ = yes refl
-
+\end{code}}
+\newcommand{\dyninterp}{%
+\begin{code}
 interp : {t₁ t₂ : 𝕌} → (t₁ ↔ t₂) → ⟦ t₁ ⟧ → Maybe ⟦ t₂ ⟧
+\end{code}}
+\newcommand{\PFDC1}{%
+\begin{code}
 interp unite₊l (inj₁ ())
 interp unite₊l (inj₂ v) = just v
 interp uniti₊l v = just (inj₂ v)
@@ -194,8 +199,8 @@ interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ >>= (λ v₁' → interp
 \begin{code}
 interp (η {t} {t≠0}) tt = just (default t {t≠0} , ○)
 interp (ε {t} {t≠0}) (v' , ○) with 𝕌dec t (default t {t≠0}) v'
-interp (ε {t}) (v' , ○) | yes _ = just tt
-interp (ε {t}) (v' , ○) | no  _ = nothing
+... | yes _ = just tt
+... | no _ = nothing
 \end{code}}  
 \newcommand{\CodeC}{%
 \begin{code}
