@@ -1,7 +1,6 @@
-
-\newcommand{\Preamble}{%
+\newcommand{\PIFD}{%
 \begin{code}
-{-# OPTIONS --without-K #-}
+{-# OPTIONS --without-K --safe #-}
 module _ where
 open import Data.Bool
 open import Data.Empty
@@ -26,27 +25,29 @@ data ◯ : Set where
   ○ : ◯
 
 -- Pi
-
+\end{code}}
+\newcommand{\PIFDUdef}{%
+\begin{code}[hide]
 mutual
-\end{code}}
-\newcommand{\Udef}{%
-\begin{code}
   data 𝕌 : Set where
-    𝟘     : 𝕌
-    𝟙     : 𝕌
-    _+ᵤ_  : 𝕌 → 𝕌 → 𝕌
-    _×ᵤ_  : 𝕌 → 𝕌 → 𝕌
-    𝟙/_   : 𝕌 → 𝕌
-\end{code}}
-\newcommand{\CodeA}{%
+    𝟘 : 𝕌
+    𝟙 : 𝕌
+    _+ᵤ_ : 𝕌 → 𝕌 → 𝕌
+    _×ᵤ_ : 𝕌 → 𝕌 → 𝕌
+\end{code}
 \begin{code}
+    𝟙/_ : {t : 𝕌} → ⟦ t ⟧ → 𝕌
+\end{code}
+\begin{code}[hide]
   ⟦_⟧ : 𝕌 → Set
   ⟦ 𝟘 ⟧ = ⊥
   ⟦ 𝟙 ⟧ = ⊤
   ⟦ t₁ +ᵤ t₂ ⟧ = ⟦ t₁ ⟧ ⊎ ⟦ t₂ ⟧
   ⟦ t₁ ×ᵤ t₂ ⟧ = ⟦ t₁ ⟧ × ⟦ t₂ ⟧
   ⟦ 𝟙/ t ⟧ = ◯
-
+\end{code}}
+\newcommand{\PIFDCombdef}{%
+\begin{code}[hide]
   data _↔_ : 𝕌 → 𝕌 → Set where
     unite₊l : {t : 𝕌} → 𝟘 +ᵤ t ↔ t
     uniti₊l : {t : 𝕌} → t ↔ 𝟘 +ᵤ t
@@ -74,64 +75,13 @@ mutual
     _⊚_     : {t₁ t₂ t₃ : 𝕌} → (t₁ ↔ t₂) → (t₂ ↔ t₃) → (t₁ ↔ t₃)
     _⊕_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ +ᵤ t₂ ↔ t₃ +ᵤ t₄)
     _⊗_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ↔ t₃) → (t₂ ↔ t₄) → (t₁ ×ᵤ t₂ ↔ t₃ ×ᵤ t₄)
-\end{code}}
-\newcommand{\EtaEpsilon}{%
+\end{code}
 \begin{code}
-    η : {t : 𝕌} {t≠0 : ¬ card t ≡ 0} → 𝟙 ↔ t ×ᵤ (𝟙/ t)
-    ε : {t : 𝕌} {t≠0 : ¬ card t ≡ 0} → t ×ᵤ (𝟙/ t) ↔ 𝟙
+    η : {t : 𝕌} (v : ⟦ t ⟧) → 𝟙 ↔ t ×ᵤ (𝟙/ v)
+    ε : {t : 𝕌} (v : ⟦ t ⟧) → t ×ᵤ (𝟙/ v) ↔ 𝟙
 \end{code}}
-\newcommand{\CodeB}{%
+\newcommand{\PIFDdec}{%
 \begin{code}
--- Number of points in type
-  card : (t : 𝕌) → ℕ
-  card 𝟘 = 0
-  card 𝟙 = 1
-  card (t₁ +ᵤ t₂) = card t₁ + card t₂
-  card (t₁ ×ᵤ t₂) = card t₁ * card t₂
-  card 𝟙/● = 1
-
--- If number of points is zero then it is impossible to find a value
--- of the type
-0empty : {t : 𝕌} → card t ≡ 0 → (v : ⟦ t ⟧) → ⊥
-0empty {𝟘} _ ()
-0empty {𝟙} () tt
-0empty {t₁ +ᵤ t₂} s (inj₁ v₁)
-  with card t₁ | card t₂ | inspect card t₁
-0empty {t₁ +ᵤ t₂} refl (inj₁ v₁) | 0 | 0 | R[ s₁ ] =
-  0empty {t₁} s₁ v₁
-0empty {t₁ +ᵤ t₂} s (inj₂ v₂)
-  with card t₁ | card t₂ | inspect card t₂
-0empty {t₁ +ᵤ t₂} refl (inj₂ v₂) | ℕ.zero | ℕ.zero | R[ s₂ ] =
-  0empty {t₂} s₂ v₂
-0empty {t₁ ×ᵤ t₂} s (v₁ , v₂)
-  with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
-0empty {t₁ ×ᵤ t₂} refl (v₁ , v₂) | ℕ.zero | _ | R[ s₁ ] | _ =
-  0empty {t₁} s₁ v₁
-0empty {t₁ ×ᵤ t₂} s (v₁ , v₂) | ℕ.suc n₁ | ℕ.zero | R[ s₁ ] | R[ s₂ ] =
-  0empty {t₂} s₂ v₂
-0empty {𝟙/ t} () f
-
-default : (t : 𝕌) → {t≠0 : ¬ card t ≡ 0} → ⟦ t ⟧
-default 𝟘 {t≠0} = ⊥-elim (t≠0 refl) 
-default 𝟙 = tt
-default (t₁ +ᵤ t₂) {p≠0} with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
-... | 0 | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (p≠0 refl)
-... | 0 | suc n | R[ s₁ ] | R[ s₂ ] =
-  inj₂ (default t₂ {λ t2≡0 → ⊥-elim (p≠0 (trans (sym s₂) t2≡0))})
-... | suc m | 0 | R[ s₁ ] | R[ s₂ ] =
-  inj₁ (default t₁ {λ t1≡0 →
-    ⊥-elim (p≠0 ((trans (sym (trans s₁ (sym (+-identityʳ (suc m))))) t1≡0)))})
-... | suc m | suc n | R[ s₁ ] | R[ s₂ ] =
-  inj₁ (default t₁ {λ t1≡0 → ⊥-elim (1+n≢0 (trans (sym s₁) t1≡0))})
-default (t₁ ×ᵤ t₂) {p≠0} with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
-... | 0 | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (p≠0 refl)
-... | 0 | suc n | R[ s₁ ] | R[ s₂ ] = ⊥-elim (p≠0 refl)
-... | suc m | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (p≠0 (*-zeroʳ (suc m)))
-... | suc m | suc n | R[ s₁ ] | R[ s₂ ] =
-  default t₁ {λ t1≡0 → ⊥-elim (1+n≢0 (trans (sym s₁) t1≡0))},
-  default t₂ {λ t2≡0 → ⊥-elim (1+n≢0 (trans (sym s₂) t2≡0))}
-default (𝟙/ t) = ○ 
-
 𝕌dec : (t : 𝕌) → Decidable (_≡_ {A = ⟦ t ⟧})
 𝕌dec 𝟘 ()
 𝕌dec 𝟙 tt tt = yes refl
@@ -148,14 +98,12 @@ default (𝟙/ t) = ○
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (.x₁ , y₂) | yes refl | no ¬p = no (λ p → ¬p (cong proj₂ p))
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , .y₁) | no ¬p | yes refl = no (λ p → ¬p (cong proj₁ p))
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , y₂) | no ¬p | no ¬p₁ = no (λ p → ¬p (cong proj₁ p))
-𝕌dec (𝟙/ t) ○ ○ = yes refl
+𝕌dec (𝟙/ v) ○ ○ = yes refl
 \end{code}}
-\newcommand{\dyninterp}{%
-\begin{code}
+
+\newcommand{\PIFDinterp}{%
+\begin{code}[hide]
 interp : {t₁ t₂ : 𝕌} → (t₁ ↔ t₂) → ⟦ t₁ ⟧ → Maybe ⟦ t₂ ⟧
-\end{code}}
-\newcommand{\PFDCONE}{%
-\begin{code}
 interp unite₊l (inj₁ ())
 interp unite₊l (inj₂ v) = just v
 interp uniti₊l v = just (inj₂ v)
@@ -194,15 +142,15 @@ interp (c₁ ⊚ c₂) v = interp c₁ v >>= interp c₂
 interp (c₁ ⊕ c₂) (inj₁ v) = interp c₁ v >>= just ∘ inj₁
 interp (c₁ ⊕ c₂) (inj₂ v) = interp c₂ v >>= just ∘ inj₂
 interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ >>= (λ v₁' → interp c₂ v₂ >>= λ v₂' → just (v₁' , v₂'))
-\end{code}}
-\newcommand{\EtaEpsilonEval}{%
+\end{code}
 \begin{code}
-interp (η {t} {t≠0}) tt = just (default t {t≠0} , ○)
-interp (ε {t} {t≠0}) (v' , ○) with 𝕌dec t (default t {t≠0}) v'
-... | yes _ = just tt
-... | no _ = nothing
-\end{code}}  
-\newcommand{\CodeC}{%
+interp (η {t} v) tt = just (v , ○)
+interp (ε {t} v) (v' , ○) with 𝕌dec t v v'
+interp (ε {t} v) (v' , ○) | yes _ = just tt
+interp (ε {t} v) (v' , ○) | no  _ = nothing
+\end{code}}
+
+\newcommand{\PIFDex}{%
 \begin{code}
 --- Examples
 
@@ -217,114 +165,14 @@ xorr xorl : 𝟚 ×ᵤ 𝟚 ↔ 𝟚 ×ᵤ 𝟚
 xorr = dist ⊚ (id↔ ⊕ (id↔ ⊗ swap₊)) ⊚ factor
 xorl = distl ⊚ (id↔ ⊕ (swap₊ ⊗ id↔)) ⊚ factorl
 
-
-𝟚≠0 : ¬ (card 𝟚 ≡ 0)
-𝟚≠0 ()
-
-η𝟚 : 𝟙 ↔ 𝟚 ×ᵤ (𝟙/ 𝟚)
-η𝟚 = η {t≠0 = 𝟚≠0}
-
-ε𝟚 : 𝟚 ×ᵤ (𝟙/ 𝟚) ↔ 𝟙
-ε𝟚 = ε {t≠0 = 𝟚≠0}
-\end{code}}
-\newcommand{\EtaEpsilonExamples}{%
-
-\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-\begin{tikzpicture}[x=0.75pt,y=0.75pt,scale=0.8, yscale=-1]
-%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-
-%Straight Lines [id:da05403550183378514] 
-\draw    (10,20) -- (190,20) ;
-
-
-%Shape: Circle [id:dp8701819096818126] 
-\draw   (138.75,21.25) .. controls (138.75,15.04) and (143.79,10) .. (150,10) .. controls (156.21,10) and (161.25,15.04) .. (161.25,21.25) .. controls (161.25,27.46) and (156.21,32.5) .. (150,32.5) .. controls (143.79,32.5) and (138.75,27.46) .. (138.75,21.25) -- cycle ;
-%Straight Lines [id:da3470499764023487] 
-\draw    (150,80) -- (150,10) ;
-
-
-%Straight Lines [id:da9303973632982276] 
-\draw    (40,80) -- (190,80) ;
-
-
-%Shape: Circle [id:dp03942567054970991] 
-\draw   (48.75,81.33) .. controls (48.75,75.12) and (53.79,70.08) .. (60,70.08) .. controls (66.21,70.08) and (71.25,75.12) .. (71.25,81.33) .. controls (71.25,87.55) and (66.21,92.58) .. (60,92.58) .. controls (53.79,92.58) and (48.75,87.55) .. (48.75,81.33) -- cycle ;
-%Straight Lines [id:da08295302434157614] 
-\draw    (60,92.58) -- (60,20) ;
-
-
-%Shape: Arc [id:dp2904677718814479] 
-\draw  [draw opacity=0] (38.49,110.13) .. controls (28.3,109.22) and (20.27,102.7) .. (20.15,94.89) .. controls (20.02,86.57) and (28.89,79.93) .. (40,80) -- (40.38,95.12) -- cycle ; \draw   (38.49,110.13) .. controls (28.3,109.22) and (20.27,102.7) .. (20.15,94.89) .. controls (20.02,86.57) and (28.89,79.93) .. (40,80) ;
-%Straight Lines [id:da32172184710713914] 
-\draw    (38.49,110.13) -- (250,110) ;
-
-
-%Shape: Arc [id:dp8398868072937593] 
-\draw  [draw opacity=0] (248.77,109.75) .. controls (262.77,109.82) and (274.32,103.33) .. (274.64,95.17) .. controls (274.95,87.02) and (263.95,80.28) .. (250,80) -- (249.05,94.87) -- cycle ; \draw   (248.77,109.75) .. controls (262.77,109.82) and (274.32,103.33) .. (274.64,95.17) .. controls (274.95,87.02) and (263.95,80.28) .. (250,80) ;
-%Straight Lines [id:da5220296307776525] 
-\draw    (190,20) -- (250,80) ;
-
-
-%Straight Lines [id:da320377013704656] 
-\draw    (190,80) -- (250,20) ;
-
-
-%Straight Lines [id:da8933694171914682] 
-\draw    (250,20) -- (308,20) ;
-
-\end{tikzpicture}
-
-\begin{code}
+--   ─────┬────⊕───  ───────
+--        |    |   ⨉
+--     ┌──⊕────┴───  ───┐
+--     └────────────────┘
 id' : 𝟚 ↔ 𝟚
-id' = uniti⋆r ⊚ (id↔ ⊗ η𝟚) ⊚ assocl⋆ ⊚
+id' = uniti⋆r ⊚ (id↔ ⊗ η 𝔽) ⊚ assocl⋆ ⊚
       ((xorr ⊚ xorl ⊚ swap⋆) ⊗ id↔) ⊚
-      assocr⋆ ⊚ (id↔ ⊗ ε𝟚) ⊚ unite⋆r
-\end{code}
-\begin{tikzpicture}[x=0.75pt,y=0.75pt,scale=0.8, yscale=-1]
-%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-
-%Straight Lines [id:da9303973632982276] 
-\draw    (40,80) -- (190,80) ;
-
-
-%Shape: Arc [id:dp2904677718814479] 
-\draw  [draw opacity=0] (38.49,110.13) .. controls (28.3,109.22) and (20.27,102.7) .. (20.15,94.89) .. controls (20.02,86.57) and (28.89,79.93) .. (40,80) -- (40.38,95.12) -- cycle ; \draw   (38.49,110.13) .. controls (28.3,109.22) and (20.27,102.7) .. (20.15,94.89) .. controls (20.02,86.57) and (28.89,79.93) .. (40,80) ;
-%Straight Lines [id:da32172184710713914] 
-\draw    (38.49,110.13) -- (250,110) ;
-
-
-%Shape: Arc [id:dp8398868072937593] 
-\draw  [draw opacity=0] (248.77,109.75) .. controls (262.77,109.82) and (274.32,103.33) .. (274.64,95.17) .. controls (274.95,87.02) and (263.95,80.28) .. (250,80) -- (249.05,94.87) -- cycle ; \draw   (248.77,109.75) .. controls (262.77,109.82) and (274.32,103.33) .. (274.64,95.17) .. controls (274.95,87.02) and (263.95,80.28) .. (250,80) ;
-%Straight Lines [id:da7474565765110813] 
-\draw    (40.09,30.3) -- (190.09,30.3) ;
-
-
-%Shape: Arc [id:dp593084478238281] 
-\draw  [draw opacity=0] (38.58,60.43) .. controls (28.39,59.52) and (20.36,53) .. (20.23,45.19) .. controls (20.11,36.87) and (28.98,30.23) .. (40.09,30.3) -- (40.47,45.42) -- cycle ; \draw   (38.58,60.43) .. controls (28.39,59.52) and (20.36,53) .. (20.23,45.19) .. controls (20.11,36.87) and (28.98,30.23) .. (40.09,30.3) ;
-%Straight Lines [id:da5682447818267274] 
-\draw    (38.58,60.43) -- (250.09,60.3) ;
-
-
-%Shape: Arc [id:dp8936250935910023] 
-\draw  [draw opacity=0] (248.86,60.05) .. controls (262.86,60.12) and (274.41,53.63) .. (274.72,45.47) .. controls (275.03,37.32) and (264.04,30.58) .. (250.09,30.3) -- (249.13,45.17) -- cycle ; \draw   (248.86,60.05) .. controls (262.86,60.12) and (274.41,53.63) .. (274.72,45.47) .. controls (275.03,37.32) and (264.04,30.58) .. (250.09,30.3) ;
-%Straight Lines [id:da9423433355546923] 
-\draw    (190,30) -- (250,80) ;
-
-
-%Straight Lines [id:da8064437888434692] 
-\draw    (190,80) -- (250.09,30.3) ;
-
-\end{tikzpicture}
-\begin{code}
-switch : 𝟙 ↔ 𝟙
-switch = uniti⋆r ⊚ (η𝟚 ⊗ η𝟚) ⊚ assocl⋆ ⊚
-         (((swap⋆ ⊗ id↔) ⊚ assocr⋆ ⊚
-         (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚ 
-         assocr⋆ ⊚ (ε𝟚 ⊗ ε𝟚) ⊚ unite⋆r
-\end{code}}
-\newcommand{\CodeD}{%
-\begin{code}
+      assocr⋆ ⊚ (id↔ ⊗ ε 𝔽) ⊚ unite⋆r
 
 ex1 : interp id' 𝕋 ≡ just 𝕋
 ex1 = refl
@@ -332,10 +180,21 @@ ex1 = refl
 ex2 : interp id' 𝔽 ≡ just 𝔽
 ex2 = refl
 
+--     ┌──────  ───────┐
+--     └──────╲╱───────┘
+--            ╱╲
+--     ┌─────    ──────┐
+--     └───────────────┘
+switch : 𝟙 ↔ 𝟙
+switch = uniti⋆r ⊚ (η 𝔽 ⊗ η 𝔽) ⊚ assocl⋆ ⊚
+         (((swap⋆ ⊗ id↔) ⊚ assocr⋆ ⊚
+         (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚ 
+         assocr⋆ ⊚ (ε 𝔽 ⊗ ε 𝔽) ⊚ unite⋆r
+
 bad : 𝟚 ↔ 𝟚
-bad = uniti⋆r ⊚ (id↔ ⊗ η𝟚) ⊚ assocl⋆ ⊚
+bad = uniti⋆r ⊚ (id↔ ⊗ η 𝔽) ⊚ assocl⋆ ⊚
       ((xorr ⊚ swap⋆) ⊗ id↔) ⊚
-      assocr⋆ ⊚ (id↔ ⊗ ε𝟚) ⊚ unite⋆r
+      assocr⋆ ⊚ (id↔ ⊗ ε 𝔽) ⊚ unite⋆r
 
 ex3 : interp bad 𝔽 ≡ just 𝔽
 ex3 = refl
