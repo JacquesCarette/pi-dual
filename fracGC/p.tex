@@ -200,9 +200,10 @@ universality (i) assume that temporary storage (often called
 \emph{ancilla bits}) may be used~\cite{Toffoli:1980}, and (ii) that
 this temporary storage is returned to its initial state before
 de-allocation. Indeed if no temporary storage is allowed, the Toffoli
-gate is not universal~\cite{DBLP:conf/innovations/AaronsonGS17} and as
-would be expected the more temporary storage is allowed, the more
-efficient certain computations could become.
+gate is not
+universal~\cite{DBLP:conf/innovations/AaronsonGS17,DBLP:journals/corr/Xu15e}
+and as would be expected the more temporary storage is allowed, the
+more efficient certain computations could become.
 
 More fundamentally, the condition requiring that the temporary storage
 is only de-allocated when returned to its initial condition is a
@@ -597,8 +598,14 @@ for classical reversible circuits assuming it is possible to allocate
 and de-allocate ancilla bits. Indeed without using ancilla bits, it is
 not possible to use compositions of \AgdaFunction{TOFFOLI} functions
 to implement more general versions that are controlled by more than
-two bits (for example, \AgdaFunction{CTOFFOLI}). This will however be
-possible in the next section once we introduce ancilla bits.
+two bits (for example, \AgdaFunction{CTOFFOLI}). The proof is simple:
+the \AgdaFunction{TOFFOLI} function depends on two control bits and
+possibly negates a third; when used in a circuit with four bits, the
+unused bit can be either state, which means that
+\AgdaFunction{TOFFOLI} generates an even permutation. The function
+\AgdaFunction{CTOFFOLI} is however an odd permutation which is
+unreachable from even permutations. This function will however be
+definable in the next section once we introduce ancilla bits.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Interchangeable Ancillae}
