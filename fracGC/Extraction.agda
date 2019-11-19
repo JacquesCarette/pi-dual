@@ -1,6 +1,7 @@
 {-# OPTIONS --without-K --safe #-}
 module Extraction where
 open import Data.Empty
+open import Data.Unit
 open import Data.Product
 open import Data.Sum
 open import Data.Maybe
@@ -167,3 +168,29 @@ Ext≡ (η T) = refl
 Ext≡ (ε T) with 𝕌dec _ (proj₂ (Ext𝕌 T)) (proj₂ (Ext𝕌 T))
 Ext≡ (ε T) | yes p = refl
 Ext≡ (ε T) | no ¬p = ⊥-elim (¬p refl)
+
+𝔹 : Pi/.𝕌
+𝔹 = 𝟙 +ᵤ 𝟙
+
+infixr 2  _→⟨_⟩_
+infix  3  _□
+
+_→⟨_⟩_ : (T₁ : ∙𝕌) → {T₂ T₃ : ∙𝕌} →
+          (T₁ ∙⟶ T₂) → (T₂ ∙⟶ T₃) → (T₁ ∙⟶ T₃)
+_ →⟨ α ⟩ β = α ∙⊚ β
+
+_□ : (T : ∙𝕌) → {T : ∙𝕌} → (T ∙⟶ T)
+_□ T = ∙id⟷
+
+zigzag : ∀ b → 𝔹 # b ∙⟶ 𝔹 # b
+zigzag b = ∙c uniti⋆l ∙⊚
+           ∙times# ∙⊚
+           (∙id⟷ ∙⊗ return ((𝟙 +ᵤ 𝟙) # b)) ∙⊚
+           (η ((𝟙 +ᵤ 𝟙) # b) ∙⊗ ∙id⟷) ∙⊚
+           ∙assocr⋆ ∙⊚
+           (∙id⟷ ∙⊗ ∙swap⋆) ∙⊚
+           (∙id⟷ ∙⊗ ε ((𝟙 +ᵤ 𝟙) # b)) ∙⊚
+           (extract ((𝟙 +ᵤ 𝟙) # b) ∙⊗ ∙id⟷) ∙⊚ ∙#times ∙⊚ ∙c unite⋆r ∙⊚ ∙id⟷
+
+zigzag-ext : ∀ b → Σ[ c ∈ 𝟙 +ᵤ 𝟙 ↔ 𝟙 +ᵤ 𝟙 ] interp c (Inj⟦𝕌⟧ b) ≡ just (Inj⟦𝕌⟧ b)
+zigzag-ext b = Ext∙⟶ (zigzag b) , Ext≡ (zigzag b)
