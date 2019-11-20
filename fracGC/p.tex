@@ -962,15 +962,27 @@ and the combinators for Pi can also be inject into PiFracDyn in a straightforwar
 \INJcomb{}
 The given injection is correct because it does not change the denotation of type
 \INJUeq{}
-and the value
+,the value
 \INJVeq{}
-Also the interpretation is also consistent:
+and the interpretation of PiFracDyn is consistent with Pi:
 \INJEvaleq{}
-Extract type from PiPointedFrac:
+To extract a combinator from PiPointedFrac, first we need to extract the corresponding type for PiFracDyn.
+Since every type (except Recip) in PiPointedFrac is pointed type so we can always extract a type for plain
+Pi and a value from it.
+There is no corresponding type of Recip in plain Pi, but we can map it to the
+\AgdaOperator{\AgdaInductiveConstructor{𝟙/}}\AgdaSpace{}\AgdaBound{v} type in PiFracDyn.
+Note that for all other type the extracted value is erased from type except for
+\AgdaOperator{\AgdaInductiveConstructor{𝟙/}}\AgdaSpace{}\AgdaBound{v}
+which we still keep it in type.
 \EXTU{}
-Extract combinator:
+Once we extract the corresponding type we can extract the combinator, the combinators about monad/comonad
+just becomes \AgdaInductiveConstructor{id↔} since the information in type is erased:
 \EXTUComb{}
-The extraction is correct:
+And we prove the correctness of the extraction, since the combinators about monad/comonad does not really
+computes so for those case the proof is just \AgdaInductiveConstructor{refl},
+and for \AgdaInductiveConstructor{∙c} we rely on \AgdaFunction{Eval≡}.
+The interesting case is \AgdaInductiveConstructor{ε} where the singleton type guarantee that
+the dynamic check is passed.
 \EXTeq{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -161,6 +161,8 @@ Ext∙⟶ ∙assocl⋆ = assocl⋆
 Ext∙⟶ ∙assocr⋆ = assocr⋆
 Ext∙⟶ (c₁ ∙⊗ c₂) = Ext∙⟶ c₁ ⊗ Ext∙⟶ c₂
 Ext∙⟶ (return T) = id↔
+\end{code}
+\begin{code}[hide]
 Ext∙⟶ (join T) = id↔
 Ext∙⟶ (unjoin T) = id↔
 Ext∙⟶ (tensorl T₁ T₂) = id↔
@@ -176,6 +178,9 @@ Ext∙⟶ (cotensorl T₁ T₂) = id↔
 Ext∙⟶ (cotensorr T₁ T₂) = id↔
 Ext∙⟶ (coplusl T₁ T₂) = id↔
 Ext∙⟶ (coplusr T₁ T₂) = id↔
+\end{code}
+$\;\;\;\;\vdots$
+\begin{code}
 Ext∙⟶ (∙Singᵤ T₁ T₂ c) = Ext∙⟶ c
 Ext∙⟶ (η T) = η (proj₂ (Ext𝕌 T))
 Ext∙⟶ (ε T) = ε (proj₂ (Ext𝕌 T))
@@ -183,19 +188,20 @@ Ext∙⟶ (ε T) = ε (proj₂ (Ext𝕌 T))
 \newcommand{\EXTeq}{%
 \begin{code}
 Ext≡ : ∀ {t₁ t₂} → (c : t₁ ∙⟶ t₂)
-     → let c'          = Ext∙⟶ c
-           (t₁' , v₁') = Ext𝕌 t₁
+     → let (t₁' , v₁') = Ext𝕌 t₁
            (t₂' , v₂') = Ext𝕌 t₂
-       in  interp c' v₁' ≡ just v₂'
+       in  interp (Ext∙⟶ c) v₁' ≡ just v₂'
 Ext≡ (∙c c) = Eval≡ c
-Ext≡ (∙times# {t₁} {t₂}) = refl
-Ext≡ (∙#times {t₁} {t₂}) = refl
+Ext≡ ∙times# = refl
+Ext≡ ∙#times = refl
 Ext≡ ∙id⟷ = refl
 Ext≡ (c₁ ∙⊚ c₂) rewrite Ext≡ c₁ | Ext≡ c₂ = refl
 Ext≡ ∙swap⋆ = refl
 Ext≡ ∙assocl⋆ = refl
 Ext≡ ∙assocr⋆ = refl
 Ext≡ (c₁ ∙⊗ c₂) rewrite Ext≡ c₁ | Ext≡ c₂ = refl
+\end{code}
+\begin{code}[hide]
 Ext≡ (return T) = refl
 Ext≡ (join T) = refl
 Ext≡ (unjoin T) = refl
@@ -212,6 +218,9 @@ Ext≡ (cotensorl T₁ T₂) = refl
 Ext≡ (cotensorr T₁ T₂) = refl
 Ext≡ (coplusl T₁ T₂) = refl
 Ext≡ (coplusr T₁ T₂) = refl
+\end{code}
+$\;\;\;\;\vdots$
+\begin{code}
 Ext≡ (∙Singᵤ T₁ T₂ c) rewrite Ext≡ c = refl
 Ext≡ (η T) = refl
 Ext≡ (ε T) with 𝕌dec _ (proj₂ (Ext𝕌 T)) (proj₂ (Ext𝕌 T))
