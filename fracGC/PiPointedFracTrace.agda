@@ -31,3 +31,27 @@ trace {A} {B} {C} f =
   ∙assocr⋆ ∙⊚                -- B ×ᵤ (C ×ᵤ 1/C)
   (extract _ ∙⊗ ε C) ∙⊚
   ∙unite⋆r
+
+open import Data.Unit
+open import Data.Sum
+open import Data.Product
+open import Relation.Binary.PropositionalEquality
+
+
+𝔹 : 𝕌
+𝔹 = 𝟙 +ᵤ 𝟙
+
+𝔽 : ⟦ 𝔹 ⟧
+𝔽 = inj₁ tt
+
+∙𝔹 : ∙𝕌
+∙𝔹 = (𝟙 +ᵤ 𝟙) # 𝔽
+
+yy : ∙𝔹 ∙×ᵤ ∙𝔹 ∙⟶ ∙𝔹 ∙×ᵤ ∙𝔹
+yy = ∙swap⋆ 
+
+xx : ∙𝔹 ∙⟶ ∙𝔹
+xx = trace yy 
+
+zz : Σ (⟦ 𝔹 ⟧ → ⟦ 𝔹 ⟧) (λ f → f 𝔽 ≡ 𝔽)
+zz = ∙eval xx
