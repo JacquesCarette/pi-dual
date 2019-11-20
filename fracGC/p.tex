@@ -156,6 +156,7 @@ $\displaystyle
 \input{latex/PiFracDynDefCode.tex}
 \input{latex/PiFracDynCode.tex}
 \input{latex/BooleanCircuitsCode.tex}
+\input{latex/PiPointedFracCode.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
@@ -857,15 +858,33 @@ to 5. So we can have $(4 + 1, \textit{refl})$, $(2 + 3 ,
 are identical to 5 and hence we can \emph{contract} the type to a
 single point at 5. 
 
+
+
 The denotation of the fractional type is now:
 
+\PIPFUdef{}
+
 RECIP 
+
+Combinators:
+\PIPFCombDef{}
+
+Evaluation:
+\PIPFeval{}
+
+Combine with eval, the whole thing is reversible:
+\PIPFrev{}
+
+\subsection{Extraction}
+
 
 Exploit dependent types to reify proofs in the type system. Type
 checking requires (partial) eval. Once we have a proof can we somehow
 go back to \verb|PiFracDyn| and remove the runtime check?
 
 Polymorphic type for ancilla?
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Space Operational Semantics}
