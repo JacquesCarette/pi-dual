@@ -256,8 +256,8 @@ switchx =
   (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚ 
   assocr⋆ ⊚ (ε' ⊗ ε') ⊚ unite⋆r
 
-postulate
-  shuffle : {A B C D : 𝕌} → (A ×ᵤ B) ×ᵤ (C ×ᵤ D) ↔ (B ×ᵤ D) ×ᵤ (A ×ᵤ C)
+shuffle : {A B C D : 𝕌} → (A ×ᵤ B) ×ᵤ (C ×ᵤ D) ↔ (B ×ᵤ D) ×ᵤ (A ×ᵤ C)
+shuffle = (swap⋆ ⊗ swap⋆) ⊚ assocr⋆ ⊚ (id↔ ⊗ (assocl⋆ ⊚ (swap⋆ ⊗ id↔) ⊚ assocr⋆)) ⊚ assocl⋆
 
 postulate
   pr≠0 : (A B : 𝕌) → (A≠0 : ¬ card A ≡ 0) → (B≠0 : ¬ card B ≡ 0) →
