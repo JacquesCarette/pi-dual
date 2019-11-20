@@ -210,7 +210,7 @@ explained next.
 
 \paragraph*{Temporary Storage using Ancilla Bits.} The universality of
 the Toffoli gate for classical reversible computing and of the
-universality of the Toffol-Hadamard gates for quantum computing should
+universality of the Toffoli-Hadamard gates for quantum computing should
 not distract from efficiency and safety concerns. The theorems proving
 universality (i) assume that temporary storage (often called
 \emph{ancilla bits}) may be used~\cite{Toffoli:1980}, and (ii) that
@@ -781,20 +781,22 @@ examples.
 \subsection{Examples}
 
 The first example below illustrates the basic functionality of
-ancillae. The circuit has one input and one output. Immediately after
-receiving the input, the circuit generates an ancilla wire and its
-corresponding gc process (first line in the Agda definition). The
-original input and the ancilla wire interact using two
-\AgdaFunction{CNOT} gates, after which the ancilla wire is redirected
-to the output (second line in the Agda code). Finally the original
-input is gc'ed (third line in the Agda code). The entire circuit is
-extensionally equivalent to the identity function.
+ancillae. The Agda code is written in a style that reveals the
+intermediate steps for convenience. The circuit has one input and one
+output. Immediately after receiving the input, the circuit generates
+an ancilla wire and its corresponding gc process (first two steps in
+the Agda definition). The original input and the ancilla wire interact
+using two \AgdaFunction{CNOT} gates, after which the ancilla wire is
+redirected to the output (next three steps in the Agda code). Finally
+the original input is gc'ed (last two steps in the Agda code). The
+entire circuit is extensionally equivalent to the identity function.
 
+\medskip
 \begin{center}
 \input{idpic.tikz}
 \end{center}
 
-\EtaEpsilonExamples{}
+\EtaEpsilonExampleone{}
 
 
 \begin{tikzpicture}[x=0.75pt,y=0.75pt,scale=0.8, yscale=-1]
@@ -820,6 +822,8 @@ extensionally equivalent to the identity function.
 %Straight Lines [id:da8064437888434692] 
 \draw    (190,80) -- (250.09,30.3) ;
 \end{tikzpicture}
+
+\EtaEpsilonExampletwo{}
 
 % of course need de-allocation; keep track of lifetime
 % easy: stack but not general

@@ -17,6 +17,7 @@ open import Relation.Binary.PropositionalEquality
 open import Relation.Binary.Core
 open import Relation.Nullary
 
+infix 99 𝟙/_
 infix  70 _×ᵤ_
 infix  60 _+ᵤ_
 infix  40 _↔_
@@ -77,8 +78,8 @@ mutual
 \end{code}}
 \newcommand{\EtaEpsilon}{%
 \begin{code}
-    η : {t : 𝕌} {t≠0 : ¬ card t ≡ 0} → 𝟙 ↔ t ×ᵤ (𝟙/ t)
-    ε : {t : 𝕌} {t≠0 : ¬ card t ≡ 0} → t ×ᵤ (𝟙/ t) ↔ 𝟙
+    η : {t : 𝕌} {t≠0 : ¬ card t ≡ 0} → 𝟙 ↔ t ×ᵤ 𝟙/ t
+    ε : {t : 𝕌} {t≠0 : ¬ card t ≡ 0} → t ×ᵤ 𝟙/ t ↔ 𝟙
 \end{code}}
 \newcommand{\CodeB}{%
 \begin{code}
@@ -230,15 +231,39 @@ CNOT' = distl ⊚ (id↔ ⊕ (swap₊ ⊗ id↔)) ⊚ factorl
 
 ε𝟚 : 𝟚 ×ᵤ (𝟙/ 𝟚) ↔ 𝟙
 ε𝟚 = ε {t≠0 = 𝟚≠0}
-\end{code}}
-\newcommand{\EtaEpsilonExamples}{%
-\begin{code}
-id' : 𝟚 ↔ 𝟚
-id' =
+
+infixr 2  _↔⟨_⟩_
+infix  3  _□
+
+_↔⟨_⟩_ : (t₁ : 𝕌) {t₂ : 𝕌} {t₃ : 𝕌} →
+          (t₁ ↔ t₂) → (t₂ ↔ t₃) → (t₁ ↔ t₃)
+_ ↔⟨ α ⟩ β = α ⊚ β
+
+_□ : (t : 𝕌) → {t : 𝕌} → (t ↔ t)
+_□ t = id↔
+idx : 𝟚 ↔ 𝟚
+idx =
   uniti⋆r ⊚ (id↔ ⊗ η𝟚) ⊚ assocl⋆ ⊚
   ((CNOT ⊚ CNOT' ⊚ swap⋆) ⊗ id↔) ⊚
   assocr⋆ ⊚ (id↔ ⊗ ε𝟚) ⊚ unite⋆r
-
+\end{code}}
+\newcommand{\EtaEpsilonExampleone}{%
+\begin{code}
+id' : 𝟚 ↔ 𝟚
+id' =
+  let η𝟚 = η {t = 𝟚} {t≠0 = 𝟚≠0}
+      ε𝟚 = ε {t = 𝟚} {t≠0 = 𝟚≠0}
+  in 𝟚
+  ↔⟨ uniti⋆r ⟩                       𝟚 ×ᵤ 𝟙
+  ↔⟨ id↔ ⊗ η𝟚 ⟩                      𝟚 ×ᵤ (𝟚 ×ᵤ 𝟙/ 𝟚)
+  ↔⟨ assocl⋆ ⟩                       (𝟚 ×ᵤ 𝟚) ×ᵤ 𝟙/ 𝟚
+  ↔⟨ (CNOT ⊚ CNOT' ⊚ swap⋆) ⊗ id↔ ⟩  (𝟚 ×ᵤ 𝟚) ×ᵤ 𝟙/ 𝟚
+  ↔⟨ assocr⋆ ⟩                       𝟚 ×ᵤ (𝟚 ×ᵤ 𝟙/ 𝟚)
+  ↔⟨ id↔ ⊗ ε𝟚 ⟩                      𝟚 ×ᵤ 𝟙
+  ↔⟨ unite⋆r ⟩                       𝟚 □
+\end{code}}
+\newcommand{\EtaEpsilonExampletwo}{%
+\begin{code}
 switch : 𝟙 ↔ 𝟙
 switch =
   uniti⋆r ⊚ (η𝟚 ⊗ η𝟚) ⊚ assocl⋆ ⊚
