@@ -37,6 +37,7 @@
 \newunicodechar{ᵤ}{${}_u$}
 \newunicodechar{⊚}{$\fatsemi$}
 \newunicodechar{⟷}{$\leftrightarrow$}
+\newunicodechar{⟶}{$\longrightarrow$}
 
 \newcommand{\alt}{~|~}
 \newcommand{\net}{t_\bullet}
@@ -157,6 +158,7 @@ $\displaystyle
 \input{latex/PiFracDynCode.tex}
 \input{latex/BooleanCircuitsCode.tex}
 \input{latex/PiPointedFracCode.tex}
+\input{latex/ExtractionCode.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
@@ -884,7 +886,16 @@ go back to \verb|PiFracDyn| and remove the runtime check?
 
 Polymorphic type for ancilla?
 
-
+Inject plain Pi into PiFracDyn:
+\INJU{}
+The injection is correct:
+\INJeq{}
+Extract type from PiPointedFrac:
+\EXTU{}
+Extract combinator:
+\EXTUComb{}
+The extraction is correct:
+\EXTeq{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Space Operational Semantics}

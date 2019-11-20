@@ -1,5 +1,7 @@
+\newcommand{\EXTRACT}{%
+\begin{code}
 {-# OPTIONS --without-K --safe #-}
-module Extraction where
+module _ where
 open import Data.Empty
 open import Data.Unit
 open import Data.Product
@@ -9,7 +11,9 @@ open import Relation.Binary.PropositionalEquality
 open import Relation.Nullary
 open import PiPointedFrac as Pi/ hiding (𝕌; ⟦_⟧; eval)
 open import PiFracDyn
-
+\end{code}}
+\newcommand{\INJU}{%
+\begin{code}
 Inj𝕌 : Pi/.𝕌 → 𝕌
 Inj𝕌 𝟘 = 𝟘
 Inj𝕌 𝟙 = 𝟙
@@ -55,7 +59,9 @@ Inj⟷ id⟷ = id↔
 Inj⟷ (c₁ ⊚ c₂) = Inj⟷ c₁ ⊚ Inj⟷ c₂
 Inj⟷ (c₁ ⊕ c₂) = Inj⟷ c₁ ⊕ Inj⟷ c₂
 Inj⟷ (c₁ ⊗ c₂) = Inj⟷ c₁ ⊗ Inj⟷ c₂
-
+\end{code}}
+\newcommand{\EXTU}{%
+\begin{code}
 Ext𝕌 : ∙𝕌 → Σ[ t ∈ 𝕌 ] ⟦ t ⟧
 Ext𝕌 (t # v) = (Inj𝕌 t , Inj⟦𝕌⟧ v)
 Ext𝕌 (t₁ ∙×ᵤ t₂) with Ext𝕌 t₁ | Ext𝕌 t₂
@@ -68,7 +74,9 @@ Ext𝕌 (Singᵤ T) with Ext𝕌 T
 ... | (t , v) = t , v
 Ext𝕌 (Recipᵤ T) with Ext𝕌 T
 ... | (t , v) = 𝟙/ v , ○
-
+\end{code}}
+\newcommand{\EXTUComb}{%
+\begin{code}
 Ext∙⟶ : ∀ {t₁ t₂} → t₁ ∙⟶ t₂ → proj₁ (Ext𝕌 t₁) ↔ proj₁ (Ext𝕌 t₂)
 Ext∙⟶ (∙c c) = Inj⟷ c
 Ext∙⟶ ∙times# = id↔
@@ -98,7 +106,9 @@ Ext∙⟶ (coplusr T₁ T₂) = id↔
 Ext∙⟶ (∙Singᵤ T₁ T₂ c) = Ext∙⟶ c
 Ext∙⟶ (η T) = η (proj₂ (Ext𝕌 T))
 Ext∙⟶ (ε T) = ε (proj₂ (Ext𝕌 T))
-
+\end{code}}
+\newcommand{\INJeq}{%
+\begin{code}
 Eval≡ : ∀ {t₁ t₂} {v} (c : t₁ ⟷ t₂) → interp (Inj⟷ c) (Inj⟦𝕌⟧ v) ≡ just (Inj⟦𝕌⟧ (Pi/.eval c v))
 Eval≡ {_} {_} {inj₂ y} unite₊l = refl
 Eval≡ {_} {_} {x} uniti₊l = refl
@@ -132,7 +142,9 @@ Eval≡ {_} {_} {x} (c₁ ⊚ c₂) rewrite Eval≡ {v = x} c₁ = Eval≡ c₂
 Eval≡ {_} {_} {inj₁ x} (c₁ ⊕ c₂) rewrite Eval≡ {v = x} c₁ = refl
 Eval≡ {_} {_} {inj₂ y} (c₁ ⊕ c₂) rewrite Eval≡ {v = y} c₂ = refl
 Eval≡ {_} {_} {x , y} (c₁ ⊗ c₂) rewrite Eval≡ {v = x} c₁ | Eval≡ {v = y} c₂ = refl
-
+\end{code}}
+\newcommand{\EXTeq}{%
+\begin{code}
 Ext≡ : ∀ {t₁ t₂} → (c : t₁ ∙⟶ t₂)
      → let c'          = Ext∙⟶ c
            (t₁' , v₁') = Ext𝕌 t₁
@@ -168,29 +180,5 @@ Ext≡ (η T) = refl
 Ext≡ (ε T) with 𝕌dec _ (proj₂ (Ext𝕌 T)) (proj₂ (Ext𝕌 T))
 Ext≡ (ε T) | yes p = refl
 Ext≡ (ε T) | no ¬p = ⊥-elim (¬p refl)
+\end{code}}
 
-𝔹 : Pi/.𝕌
-𝔹 = 𝟙 +ᵤ 𝟙
-
-infixr 2  _→⟨_⟩_
-infix  3  _□
-
-_→⟨_⟩_ : (T₁ : ∙𝕌) → {T₂ T₃ : ∙𝕌} →
-          (T₁ ∙⟶ T₂) → (T₂ ∙⟶ T₃) → (T₁ ∙⟶ T₃)
-_ →⟨ α ⟩ β = α ∙⊚ β
-
-_□ : (T : ∙𝕌) → {T : ∙𝕌} → (T ∙⟶ T)
-_□ T = ∙id⟷
-
-zigzag : ∀ b → 𝔹 # b ∙⟶ 𝔹 # b
-zigzag b = ∙c uniti⋆l ∙⊚
-           ∙times# ∙⊚
-           (∙id⟷ ∙⊗ return ((𝟙 +ᵤ 𝟙) # b)) ∙⊚
-           (η ((𝟙 +ᵤ 𝟙) # b) ∙⊗ ∙id⟷) ∙⊚
-           ∙assocr⋆ ∙⊚
-           (∙id⟷ ∙⊗ ∙swap⋆) ∙⊚
-           (∙id⟷ ∙⊗ ε ((𝟙 +ᵤ 𝟙) # b)) ∙⊚
-           (extract ((𝟙 +ᵤ 𝟙) # b) ∙⊗ ∙id⟷) ∙⊚ ∙#times ∙⊚ ∙c unite⋆r ∙⊚ ∙id⟷
-
-zigzag-ext : ∀ b → Σ[ c ∈ 𝟙 +ᵤ 𝟙 ↔ 𝟙 +ᵤ 𝟙 ] interp c (Inj⟦𝕌⟧ b) ≡ just (Inj⟦𝕌⟧ b)
-zigzag-ext b = Ext∙⟶ (zigzag b) , Ext≡ (zigzag b)
