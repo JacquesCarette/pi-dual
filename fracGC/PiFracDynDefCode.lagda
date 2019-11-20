@@ -269,8 +269,8 @@ switch {A} {A≠0} =
   ↔⟨ ε' ⊗ ε' ⟩ 𝟙 ×ᵤ 𝟙
   ↔⟨ unite⋆r ⟩ 𝟙 □
   
-postulate
-  shuffle : {A B C D : 𝕌} → (A ×ᵤ B) ×ᵤ (C ×ᵤ D) ↔ (B ×ᵤ D) ×ᵤ (A ×ᵤ C)
+shuffle : {A B C D : 𝕌} → (A ×ᵤ B) ×ᵤ (C ×ᵤ D) ↔ (B ×ᵤ D) ×ᵤ (A ×ᵤ C)
+shuffle = (swap⋆ ⊗ swap⋆) ⊚ assocr⋆ ⊚ (id↔ ⊗ (assocl⋆ ⊚ (swap⋆ ⊗ id↔) ⊚ assocr⋆)) ⊚ assocl⋆
 
 postulate
   pr≠0 : (A B : 𝕌) → (A≠0 : ¬ card A ≡ 0) → (B≠0 : ¬ card B ≡ 0) →
