@@ -8,7 +8,7 @@ open import Data.Unit using (⊤; tt)
 open import Data.Sum
 open import Data.Product
 open import Relation.Binary.PropositionalEquality
-  using (_≡_; refl; sym; trans; subst; cong ; cong₂)
+  using (_≡_; refl; sym; trans; subst; cong ; cong₂ ; inspect ; [_])
 -- open import Level
 --   using (zero)
 -- open import Axiom.Extensionality.Propositional
@@ -149,7 +149,7 @@ _∙+_ : ∙Set → ∙Set → ∙Set
 _∘_ : ∀ {∙A ∙B ∙C} → ∙Set[ ∙A , ∙B ] → ∙Set[ ∙B , ∙C ] → ∙Set[ ∙A , ∙C ]
 (f , p) ∘ (g , q) = (λ x → g (f x)) , trans (cong g p) q
 
--- terminal
+-- terminal and initial
 ∙1 : ∙Set
 ∙1 = ⊤ , tt
 
@@ -158,6 +158,12 @@ _∘_ : ∀ {∙A ∙B ∙C} → ∙Set[ ∙A , ∙B ] → ∙Set[ ∙B , ∙C ]
 
 ∙!-uniq : ∀ {∙A} {x : ∙A .proj₁} → (∙f : ∙Set[ ∙A , ∙1 ]) → (∙f .proj₁) x ≡ (∙![ ∙A ] .proj₁) x
 ∙!-uniq {A , a} {x} (f , p) = refl
+
+∙¡[_] : ∀ ∙A → ∙Set[ ∙1 , ∙A ]
+∙¡[ A , a ] = (λ _ → a) , refl
+
+∙¡-uniq : ∀ {∙A} → (∙f : ∙Set[ ∙1 , ∙A ]) → (∙f .proj₁) tt ≡ (∙¡[ ∙A ] .proj₁) tt
+∙¡-uniq (f , p) = p
 
 record ∙Iso[_,_] (∙A ∙B : ∙Set) : Set where
   constructor iso
@@ -260,8 +266,14 @@ Sη-μ = refl
 U : ∙Set → Set
 U = proj₁
 
+U[_,_] : ∀ ∙A ∙B → ∙Set[ ∙A , ∙B ] → (U ∙A → U ∙B)
+U[ _ , _ ] = proj₁
+
 F : Set → ∙Set
 F A = (A ⊎ ⊤) , inj₂ tt
+
+F[_,_] : ∀ A B → (A → B) → ∙Set[ F A , F B ]
+F[ A , B ] f = (λ { (inj₁ a) → inj₁ (f a) ; (inj₂ tt) → inj₂ tt }) , refl
 
 ->adj : ∀ {A ∙B} → (A → U ∙B) → ∙Set[ F A , ∙B ]
 ->adj f = (λ { (inj₁ a) → f a ; (inj₂ tt) → _ }) , refl
@@ -275,13 +287,32 @@ F A = (A ⊎ ⊤) , inj₂ tt
 ε-adj : ∀ {∙A} → ∙Set[ F (U ∙A), ∙A ]
 ε-adj = ->adj λ x → x
 
--- this looks like recip
-T : ∙Set → ∙Set
-T ∙A = F (U ∙A)
+-- maybe monad
+T : Set → Set
+T A = U (F A)
 
-T-η[_] : ∀ ∙A → ∙Set[ ∙A , T ∙A ]
-T-η[ A , a ] = (λ _ → inj₂ tt) , refl
+T-η[_] : ∀ A → (A → T A)
+T-η[ A ] = η-adj
 
--- distributive law?
-Λ : ∀ {∙A} → ∙Set[ Sing (T ∙A) , T (Sing ∙A) ]
+T-μ[_] : ∀ A → (T (T A) → T A)
+T-μ[ A ] = U[ F (T A) , F A ] ε-adj
+
+-- comaybe comonad
+D : ∙Set → ∙Set
+D ∙A = F (U ∙A)
+
+D-ε[_] : ∀ ∙A → ∙Set[ D ∙A , ∙A ]
+D-ε[ ∙A ] = ε-adj
+
+D-δ[_] : ∀ ∙A → ∙Set[ D ∙A , D (D ∙A) ]
+D-δ[ ∙A ] = F[ U ∙A , U (D ∙A) ] η-adj
+
+-- but also
+D-η[_] : ∀ ∙A → ∙Set[ ∙A , D ∙A ]
+D-η[ ∙A ] = (λ _ → inj₂ tt) , refl
+-- D ∙A is not contractible
+
+-- distributive laws?
+-- same as ∙Set[ ∙1 , D ∙1 ] so follows D-η
+Λ : ∀ {∙A} → ∙Set[ Sing (D ∙A) , D (Sing ∙A) ]
 Λ = (λ { (.(inj₂ tt) , refl) → inj₂ tt }) , refl
