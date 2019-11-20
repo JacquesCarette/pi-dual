@@ -734,7 +734,13 @@ annihilation process. Otherwise, we would be able to prove that:
 1 &=& 0 * 1/0 & \textrm{by~} \eta_0 \\
 &=& 0 & \textrm{by~} \absorbr
 \end{array}\]
-We therefore extend the syntax of core $\Pi$ in Sec.~\ref{sub:core} as follows:
+The second important detail is to ensure that the gc process is
+specialized to collect a particular value. We however defer this point to
+the next section and for now create gc processes that might be applied
+to incorrect values throwing exceptions instead of collecting them. We
+therefore extend the syntax of core $\Pi$ in Sec.~\ref{sub:core} as
+follows:
+
 \[\begin{array}{lrcl}
 \textit{Value types} & t &::=& \cdots \alt \oneover{t} \\
 \textit{Non-empty types} & \net \\
@@ -749,47 +755,51 @@ We therefore extend the syntax of core $\Pi$ in Sec.~\ref{sub:core} as follows:
 \end{array}\]
 
 The metavariable $\net$ excludes all types that are equivalent to the
-empty type, e.g., $(1 + 1) * 0$. For now, all gc values are represented
-at runtime using a trivial value denoted by $\gcv$. We also explicitly
-add the coherence condition on the creation and annihilation process
-as a level-2 program, thus enforcing the duality $\eta$ and
-$\epsilon$. 
+empty type, e.g., $(1 + 1) * 0$. For now, all gc values are
+represented at runtime using a trivial value denoted by $\gcv$. We
+also explicitly add the desired coherence condition on the creation
+and annihilation process as a level-2 program that would enforce the
+duality of $\eta$ and $\epsilon$. At this point, an application of
+$\eta$ following by $\epsilon$ might however throw an exception.
 
 In the Agda formalization, the types of $\eta$ and $\epsilon$ are as follows:
 
 \EtaEpsilon{}
 
+\noindent where the operations take an implicit argument asserting the
+given type is non-empty. The operational semantics of the language
+interprets each combinator (except $\eta$ and $\epsilon$) of type
+$t_1 \leftrightarrow t_2$ as a (reversible) function mapping values of
+type $t_1$ to values of type $t_2$ (and vice-versa). Extending this
+interpreter to handle $\eta$ and $\epsilon$ requires at this point
+that the interpreter returns either a value of the appropriate or an
+exception:
+
 \dyninterp{}
 
-\vspace*{-0.5cm}
-$\vdots$
-
-\EtaEpsilonEval{}
-
-When ancilla are created they are created with a specific
-value. This value is encoded in the circuit. The value of fractional
-type represents the ``garbage collector.''  The garbage collector is
-specialized to collect a single value, which is the value used to
-create the ancilla value. At this point, if the garbage collector
-encounters a different value, it doesn't know what to do, and would
-need to throw an exception. This situation in \verb|PiFracDyn| is
-similar to current solutions (e.g. Quipper) but actually more general
-as it allows non-scoped ancilla allocation and de-allocation. Show
-examples.
+When ancillae are created they are created with a specific default
+value depending on the type. When the gc process encounters a value to
+be collected, it checks whether this value is the default value for
+the type and if so collects it. Otherwise it returns
+\AgdaInductiveConstructor{nothing} indicating an exception.
 
 %%%%%
 \subsection{Examples}
 
 The first example below illustrates the basic functionality of
 ancillae. The Agda code is written in a style that reveals the
-intermediate steps for convenience. The circuit has one input and one
-output. Immediately after receiving the input, the circuit generates
-an ancilla wire and its corresponding gc process (first two steps in
-the Agda definition). The original input and the ancilla wire interact
-using two \AgdaFunction{CNOT} gates, after which the ancilla wire is
-redirected to the output (next three steps in the Agda code). Finally
-the original input is gc'ed (last two steps in the Agda code). The
-entire circuit is extensionally equivalent to the identity function.
+intermediate steps for easier correspondence with the figure. The
+circuit has one input and one output. Immediately after receiving the
+input, the circuit generates an ancilla wire and its corresponding gc
+process (first two steps in the Agda definition). The original input
+and the ancilla wire interact using two \AgdaFunction{CNOT} gates,
+after which the ancilla wire is redirected to the output (next three
+steps in the Agda code). Finally the original input is gc'ed (last two
+steps in the Agda code). The entire circuit is extensionally
+equivalent to the identity function but it does highlight an important
+functionality beyond scoped ancillae management: the allocated ancilla
+bit is redirected to the output and a completely different bit (with
+the proper default value) is collected instead.
 
 \medskip
 \begin{center}
@@ -803,25 +813,6 @@ process for collecting a pair of values can be decomposed into two
 processes each collecting one of the values (and vice-versa):
 
 \EtaEpsilonExampletwo{}
-
-% of course need de-allocation; keep track of lifetime
-% easy: stack but not general
-% for general; programmer control or gc
-
-% context of reversible; similar; need allocation; same tradeoffs for
-% de-allocation; stack or programmer or gc BUT with caveat. value must
-% be restored to its initial value; no information leakage which would
-% destroy quantum state
-
-% but reversible also gives you more guarantees; no creation or deletion
-% of information means no need to keep track of lifetime of individual
-% locations; just need to keep track of ``information''
-
-% General allocation and de-allocation. No need to keep track of
-% lifetime. Just make sure location is back to initial value. Safe to
-% de-allocate because indistinguishable from freshly created. No pointer
-% equality and aliases though. Concurrent: one thread allocates; gc
-% thread meets someone else
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Dependently-Typed Garbage Collectors}
@@ -1067,6 +1058,12 @@ common complement ($Y$), then the ``other pieces''
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Conclusion}
+
+% General allocation and de-allocation. No need to keep track of
+% lifetime. Just make sure location is back to initial value. Safe to
+% de-allocate because indistinguishable from freshly created. No pointer
+% equality and aliases though. Concurrent: one thread allocates; gc
+% thread meets someone else
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliography{../cites.bib}

@@ -160,6 +160,11 @@ _≟ᵤ_ {t} v w = 𝕌dec t v w
 interp : {t₁ t₂ : 𝕌} → (t₁ ↔ t₂) → ⟦ t₁ ⟧ → Maybe ⟦ t₂ ⟧
 interp swap⋆ (v₁ , v₂) = just (v₂ , v₁)
 interp (c₁ ⊚ c₂) v = interp c₁ v >>= interp c₂
+-- (skip)
+interp (η {t} {t≠0}) tt = just (default t {t≠0} , ○)
+interp (ε {t} {t≠0}) (v' , ○) with v' ≟ᵤ (default t {t≠0})
+... | yes _ = just tt
+... | no _ = nothing
 \end{code}}
 \newcommand{\PFDCONE}{%
 \begin{code}
@@ -200,13 +205,6 @@ interp (c₁ ⊕ c₂) (inj₁ v) = interp c₁ v >>= just ∘ inj₁
 interp (c₁ ⊕ c₂) (inj₂ v) = interp c₂ v >>= just ∘ inj₂
 interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ >>= (λ v₁' → interp c₂ v₂ >>= λ v₂' → just (v₁' , v₂'))
 \end{code}}
-\newcommand{\EtaEpsilonEval}{%
-\begin{code}
-interp (η {t} {t≠0}) tt = just (default t {t≠0} , ○)
-interp (ε {t} {t≠0}) (v' , ○) with v' ≟ᵤ (default t {t≠0})
-... | yes _ = just tt
-... | no _ = nothing
-\end{code}}  
 \newcommand{\CodeC}{%
 \begin{code}
 --- Examples
