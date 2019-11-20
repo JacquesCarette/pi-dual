@@ -14,8 +14,8 @@ open import Relation.Binary.PropositionalEquality
 open import Relation.Binary.Core
 open import Relation.Nullary
 
-infix  70 _×ᵤ_
-infix  60 _+ᵤ_
+infixr  70 _×ᵤ_
+infixr  60 _+ᵤ_
 infix  40 _↔_
 infixr 50 _⊚_
 

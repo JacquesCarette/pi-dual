@@ -1,2 +1,5 @@
 latex/*
 p.pdf
+*.fdb_latexmk
+*.fls
+*.xdv

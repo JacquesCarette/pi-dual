@@ -1,5 +1,7 @@
+\newcommand{\PIFMEM}{%
+\begin{code}
 {-# OPTIONS --without-K --safe #-}
-module PiFracMemSem where
+module _ where
 
 open import Relation.Binary.Core
 open import Data.Empty
@@ -83,7 +85,9 @@ Find {𝟙/ A} ○ = index ○∈𝟙/A , lookup-index ○∈𝟙/A
 
 Find' : {A : 𝕌} (x : ⟦ A ⟧) → Fin ∣ A ∣
 Find' = proj₁ ∘ Find
-
+\end{code}}
+\newcommand{\PIFMEMstate}{%
+\begin{code}
 data State (A : 𝕌) : Set where
   ⟪_[_]⟫ : Vec ⟦ A ⟧ ∣ A ∣ → Fin ∣ A ∣ → State A
 
@@ -140,7 +144,9 @@ st (x , y) (c₁ ⊗ c₂)                        = let _ , c , st' = st x c₁ 
 
 step : {A B : 𝕌} (c : A ↔ B) → State A → Σ[ C ∈ 𝕌 ] (C ↔ B × State C)
 step c ⟪ v [ i ]⟫ = st (lookup v i) c
-
+\end{code}}
+\newcommand{\PIFMEMstep}{%
+\begin{code}
 data State' : Set where
   ⟪_∥_[_]⟫ : {A B : 𝕌} → A ↔ B → Vec ⟦ A ⟧ ∣ A ∣ → Fin ∣ A ∣ → State'
 
@@ -153,7 +159,10 @@ run 0 st = [ st ]
 run (suc n) st with run n st
 ... | sts with last sts
 ... | ⟪ cx ∥ vx [ ix ]⟫ rewrite +-comm 1 (suc n) = sts ++ [ step' ⟪ cx ∥ vx [ ix ]⟫ ]
+\end{code}}
 
+\newcommand{\PIFMEMex}{%
+\begin{code}
 ex₁ : Vec State' 33
 ex₁ = run 32 ⟪ id' ∥ Enum 𝟚 [ Fin.fromℕ 1 ]⟫
-
+\end{code}}
