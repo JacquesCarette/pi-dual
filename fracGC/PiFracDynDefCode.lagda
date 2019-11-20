@@ -274,6 +274,9 @@ postulate
   pr≠0 : (A B : 𝕌) → (A≠0 : ¬ card A ≡ 0) → (B≠0 : ¬ card B ≡ 0) →
          ¬ (card (A ×ᵤ B) ≡ 0)
 
+
+pattern ?𝔽 = inj₁ tt
+pattern ?𝕋 = inj₂ tt
 \end{code}}
 \newcommand{\EtaEpsilonExampleone}{%
 \begin{code}
@@ -288,6 +291,10 @@ id' =
   ↔⟨ assocr⋆ ⟩                        𝔹 ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝔹)
   ↔⟨ id↔ ⊗ ε' ⟩                       𝔹 ×ᵤ 𝟙
   ↔⟨ unite⋆r ⟩                        𝔹 □
+
+idcheck : (b : ⟦ 𝔹 ⟧) → interp id' b ≡ just b
+idcheck ?𝔽 = refl
+idcheck ?𝕋 = refl 
 \end{code}}
 \newcommand{\EtaEpsilonExampletwo}{%
 \begin{code}

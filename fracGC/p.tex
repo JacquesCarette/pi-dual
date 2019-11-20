@@ -755,7 +755,7 @@ follows:
 \end{array}\]
 
 The metavariable $\net$ excludes all types that are equivalent to the
-empty type, e.g., $(1 + 1) * 0$. For now, all gc values are
+empty type, e.g., $(1 + 1) * 0$. For now, all gc processes are
 represented at runtime using a trivial value denoted by $\gcv$. We
 also explicitly add the desired coherence condition on the creation
 and annihilation process as a level-2 program that would enforce the
@@ -818,12 +818,21 @@ processes each collecting one of the values (and vice-versa):
 \section{Dependently-Typed Garbage Collectors}
 \label{sec:dep}
 
+By lifting the scoping restriction, the development in the previous
+section is already more general than the state of the art in ancilla
+management.  It however shares the same limitation of requiring a
+runtime check to ensure ancillae values are properly restored to their
+allocation~\cite{10.1007/978-3-319-20860-2_13,Green:2013:QSQ:2491956.2462177}.
+In this section, we address this limitation using a combination of
+pointed types, singleton types, monads, and comonads.
 
-PiPointedFrac:
-lift pi
-lift multiplicative structure
-monad/comonad for singletons
-eta/epsilon
+%%%%% 
+\subsection{Lifting Evaluation to Type System}
+
+Before giving all the (rather involved) technical details, we
+highlight the main idea using the toy language below:
+
+\Jexample{}
 
 rationale: we want singleton types to track, in the type system
 the values of ancillae, i.e.. we construct a proof using the type
@@ -841,35 +850,6 @@ unfocus using (comonad). (This by the way ensures we don't write 1/0
 which woudl be bad). 
 
 %%%%% 
-\subsection{State of the Art}
- 
-
-
-
-current proposals for reversible
-and quantum programming languages
-(e.g. Ricercar~\cite{10.1007/978-3-319-20860-2_13},
-Quipper~\cite{Green:2013:QSQ:2491956.2462177}), restrict ancilla bits
-to be used in nested scopes, have sound but incomplete laws for
-reasoning about the safety condition, and only guarantee safety via
-runtime checks.
-
-Ricercar quote:
-\begin{quote}
-  Checking that some defined ancillae are indeed unchanged for all
-  possible input vectors of an arbitrary description is hard; in
-  general, one has to test all possible input vectors, which is
-  undesirable. For a reversible programming language such as Janus
-  [22], this is therefore imple- mented as a runtime check that checks
-  the reversibility of a program only in rela- tion to the executing
-  input vector. This is also the case for the syntax described in
-  Fig. 1.
-
-  To be able to introduce and remove ancilla wires from a circuit, we
-  have identified the need for five basic rules.
-\end{quote}
-
-%%%%% 
 \subsection{Choosing Ancillae Values}
  
 move from 1/t to 1/v (how the quantum search runs; need ancilla 
@@ -883,13 +863,9 @@ change of combinators:
 change of interpreter:
 \PIFDinterp{}
 
-
-
 %%%%% 
 \subsection{Pointed Types}
  
-\Jexample{}
-
 %%%%% 
 \subsection{Singleton Types}
  
@@ -954,6 +930,14 @@ and for \AgdaInductiveConstructor{∙c} we rely on \AgdaFunction{Eval≡}.
 The interesting case is \AgdaInductiveConstructor{ε} where the singleton type guarantee that
 the dynamic check is passed.
 \EXTeq{}
+
+
+PiPointedFrac:
+lift pi
+lift multiplicative structure
+monad/comonad for singletons
+eta/epsilon
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Space Operational Semantics}
