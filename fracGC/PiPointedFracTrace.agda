@@ -3,11 +3,6 @@
 -- Pi combinators inspired by duals and traced monoidal categories
 
 module PiPointedFracTrace where
-
-open import Data.Product using (Σ; _,_; proj₁; proj₂)
-open import Relation.Binary.PropositionalEquality
-  using (_≡_; subst)
-
 open import PiPointedFrac
 
 ------------------------------------------------------------------
