@@ -149,6 +149,16 @@ _∙+_ : ∙Set → ∙Set → ∙Set
 _∘_ : ∀ {∙A ∙B ∙C} → ∙Set[ ∙A , ∙B ] → ∙Set[ ∙B , ∙C ] → ∙Set[ ∙A , ∙C ]
 (f , p) ∘ (g , q) = (λ x → g (f x)) , trans (cong g p) q
 
+-- terminal
+∙1 : ∙Set
+∙1 = ⊤ , tt
+
+∙![_] : ∀ ∙A → ∙Set[ ∙A , ∙1 ]
+∙![ (A , a) ] = (λ _ → tt) , refl
+
+∙!-uniq : ∀ {∙A} {x : ∙A .proj₁} → (∙f : ∙Set[ ∙A , ∙1 ]) → (∙f .proj₁) x ≡ (∙![ ∙A ] .proj₁) x
+∙!-uniq {A , a} {x} (f , p) = refl
+
 record ∙Iso[_,_] (∙A ∙B : ∙Set) : Set where
   constructor iso
   field
@@ -174,6 +184,13 @@ Sing[ (A , a) , (B , .(f a)) ] (f , refl) = (λ { (x , refl) → f x , refl }) ,
 -- monad
 η[_] : ∀ ∙A → ∙Set[ ∙A , Sing ∙A ]
 η[ (A , a) ] = (λ x → a , refl) , refl
+
+-- Sing(A) is terminal
+η-uniq : ∀ {∙A} {x : ∙A .proj₁} → (∙f : ∙Set[ ∙A , Sing ∙A ]) → (∙f .proj₁) x ≡ (η[ ∙A ] .proj₁) x
+η-uniq {A , a} (f , p) = pointed-all-paths
+
+Sing≃1 : ∀ {∙A} → ∙Iso[ Sing ∙A , ∙1 ]
+Sing≃1 {∙A@(A , a)} = iso ∙![ Sing ∙A ] ( ((λ _ → a) , refl) ∘ η[ ∙A ]) (λ _ → refl) (λ _ → pointed-all-paths)
 
 μ[_] : ∀ ∙A → ∙Iso[ Sing (Sing ∙A) , Sing ∙A ]
 μ[ (A , a) ] = iso ((λ { (.(a , refl) , refl) → a , refl }) , refl)
@@ -238,3 +255,33 @@ Sη-μ = refl
 -- this one is only lax
 ν+[_,_] : ∀ ∙A ∙B → ∙Set[ Sing ∙A ∙+ Sing ∙B , Sing (∙A ∙+ ∙B) ]
 ν+[ (A , a) , (B , b) ] = (λ _ → inj₁ a , refl) , refl
+
+-- free pointed set
+U : ∙Set → Set
+U = proj₁
+
+F : Set → ∙Set
+F A = (A ⊎ ⊤) , inj₂ tt
+
+->adj : ∀ {A ∙B} → (A → U ∙B) → ∙Set[ F A , ∙B ]
+->adj f = (λ { (inj₁ a) → f a ; (inj₂ tt) → _ }) , refl
+
+<-adj : ∀ {A ∙B} → ∙Set[ F A , ∙B ] → (A → U ∙B)
+<-adj (f , refl) a = f (inj₁ a)
+
+η-adj : ∀ {A} → (A → U (F A))
+η-adj = <-adj ∙id
+
+ε-adj : ∀ {∙A} → ∙Set[ F (U ∙A), ∙A ]
+ε-adj = ->adj λ x → x
+
+-- this looks like recip
+T : ∙Set → ∙Set
+T ∙A = F (U ∙A)
+
+T-η[_] : ∀ ∙A → ∙Set[ ∙A , T ∙A ]
+T-η[ A , a ] = (λ _ → inj₂ tt) , refl
+
+-- distributive law?
+Λ : ∀ {∙A} → ∙Set[ Sing (T ∙A) , T (Sing ∙A) ]
+Λ = (λ { (.(inj₂ tt) , refl) → inj₂ tt }) , refl
