@@ -273,21 +273,15 @@ adaptation), its natural technical definition is using symmetries
 present in categorical model of type isomorphisms. We present such a
 definition in Sec.~\ref{sec:dyn}: that definition captures the main
 ideas of fractional types and partially solves a more general and more
-expressive instance of the ancilla problem. The approach however
-shares the limitation of current solutions in that it relies on
-runtime checks for programmer's assertions that values have been
-restored to their initial value before de-allocation. To remedy this
-limitation, we refine the type system in Sec.~\ref{sec:dep} to keep
-track of values in focus. Technically this requires the introduction
-of pointed types on top of which are defined both a monad and co-monad
-of singleton types. To justify the claim that fractional types solve
-the management of ancilla-based scratch space, we present in
-Sec.~\ref{sec:space} an operational semantics that exposes memory
-management details using a realization of fractional types as
-first-class dependently-typed garbage collectors. In
-Sec.~\ref{sec:cat} we present a rich collection of examples
-illustrating the expressive power of fractional types. We conclude
-with a discussion of related work and a summary of our results.
+expressive instance of the ancilla problem. To make the memory
+management explicit, Sec.~\ref{sec:space} provides an operational
+semantics that exposes memory management details using a realization
+of fractional types as first-class garbage collectors. In
+Sec.~\ref{sec:dep} we refine the type system to keep track of ancillae
+values. Technically this requires the introduction of pointed types on
+top of which are defined both a monad and co-monad of singleton
+types. We conclude with a discussion of related work and a summary of
+our results.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Ancilla Bits}
@@ -814,6 +808,49 @@ processes each collecting one of the values (and vice-versa):
 
 \EtaEpsilonExampletwo{}
 
+%%%%% 
+\subsection{Choosing Ancillae Values}
+ 
+move from 1/t to 1/v (how the quantum search runs; need ancilla 
+initialized to a specific value) 
+
+\PIFDUdef{}
+
+change of combinators:
+\PIFDCombdef{}
+
+change of interpreter:
+\PIFDinterp{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Space Operational Semantics}
+\label{sec:space}  
+
+Positive rational numbers are a model. Apparently there is a
+categorification
+\url{https://alistairsavage.ca/pubs/Copelli-Categorification_of_the_Nonnegative_Rational_Numbers.pdf}
+
+Use all the constructions name, coname, etc. and see what they do in this context!
+
+cardinality of pi type:
+\PIMEMcard{}
+enumeration:
+\PIMEMenum{}
+combinator preserve size:
+\PIMEMcardeq{}
+semantics for Pi:
+\PIMEMstate{}
+\PIMEMstep{}
+semantics for PiFracDyn:
+\PIFMEMstate{}
+\PIFMEMstep{}
+
+Evaluation:
+\PIPFeval{}
+
+Combine with eval, the whole thing is reversible:
+\PIPFrev{}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Dependently-Typed Garbage Collectors}
 \label{sec:dep}
@@ -850,20 +887,6 @@ unfocus using (comonad). (This by the way ensures we don't write 1/0
 which woudl be bad). 
 
 %%%%% 
-\subsection{Choosing Ancillae Values}
- 
-move from 1/t to 1/v (how the quantum search runs; need ancilla 
-initialized to a specific value) 
-
-\PIFDUdef{}
-
-change of combinators:
-\PIFDCombdef{}
-
-change of interpreter:
-\PIFDinterp{}
-
-%%%%% 
 \subsection{Pointed Types}
  
 %%%%% 
@@ -887,12 +910,7 @@ RECIP
 Combinators:
 \PIPFCombDef{}
 
-Evaluation:
-\PIPFeval{}
-
-Combine with eval, the whole thing is reversible:
-\PIPFrev{}
-
+%%%%%%%%%
 \subsection{Extraction}
 
 
@@ -938,32 +956,8 @@ lift multiplicative structure
 monad/comonad for singletons
 eta/epsilon
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Space Operational Semantics}
-\label{sec:space}  
-
-Positive rational numbers are a model. Apparently there is a
-categorification
-\url{https://alistairsavage.ca/pubs/Copelli-Categorification_of_the_Nonnegative_Rational_Numbers.pdf}
-
-Use all the constructions name, coname, etc. and see what they do in this context!
-
-cardinality of pi type:
-\PIMEMcard{}
-enumeration:
-\PIMEMenum{}
-combinator preserve size:
-\PIMEMcardeq{}
-semantics for Pi:
-\PIMEMstate{}
-\PIMEMstep{}
-semantics for PiFracDyn:
-\PIFMEMstate{}
-\PIFMEMstep{}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Trace}
+%%%%%%%%%%%
+\subsection{Examples}
 \label{sec:cat}  
 
 allocate A
