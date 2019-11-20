@@ -149,10 +149,16 @@ default (𝟙/ t) = ○
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , .y₁) | no ¬p | yes refl = no (λ p → ¬p (cong proj₁ p))
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , y₂) | no ¬p | no ¬p₁ = no (λ p → ¬p (cong proj₁ p))
 𝕌dec (𝟙/ t) ○ ○ = yes refl
+
+_≟ᵤ_ : {t : 𝕌} → Decidable (_≡_ {A = ⟦ t ⟧})
+_≟ᵤ_ {t} v w = 𝕌dec t v w
+
 \end{code}}
 \newcommand{\dyninterp}{%
 \begin{code}
 interp : {t₁ t₂ : 𝕌} → (t₁ ↔ t₂) → ⟦ t₁ ⟧ → Maybe ⟦ t₂ ⟧
+interp swap⋆ (v₁ , v₂) = just (v₂ , v₁)
+interp (c₁ ⊚ c₂) v = interp c₁ v >>= interp c₂
 \end{code}}
 \newcommand{\PFDCONE}{%
 \begin{code}
@@ -174,7 +180,6 @@ interp unite⋆l v = just (proj₂ v)
 interp uniti⋆l v = just (tt , v)
 interp unite⋆r v = just (proj₁ v)
 interp uniti⋆r v = just (v , tt)
-interp swap⋆ (v₁ , v₂) = just (v₂ , v₁)
 interp assocl⋆ (v₁ , v₂ , v₃) = just ((v₁ , v₂) , v₃)
 interp assocr⋆ ((v₁ , v₂) , v₃) = just (v₁ , v₂ , v₃)
 interp absorbr (() , v)
@@ -190,7 +195,6 @@ interp distl (v₁ , inj₂ v₃) = just (inj₂ (v₁ , v₃))
 interp factorl (inj₁ (v₁ , v₂)) = just (v₁ , inj₁ v₂)
 interp factorl (inj₂ (v₁ , v₃)) = just (v₁ , inj₂ v₃)
 interp id↔ v = just v
-interp (c₁ ⊚ c₂) v = interp c₁ v >>= interp c₂
 interp (c₁ ⊕ c₂) (inj₁ v) = interp c₁ v >>= just ∘ inj₁
 interp (c₁ ⊕ c₂) (inj₂ v) = interp c₂ v >>= just ∘ inj₂
 interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ >>= (λ v₁' → interp c₂ v₂ >>= λ v₂' → just (v₁' , v₂'))
@@ -198,7 +202,7 @@ interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ >>= (λ v₁' → interp
 \newcommand{\EtaEpsilonEval}{%
 \begin{code}
 interp (η {t} {t≠0}) tt = just (default t {t≠0} , ○)
-interp (ε {t} {t≠0}) (v' , ○) with 𝕌dec t (default t {t≠0}) v'
+interp (ε {t} {t≠0}) (v' , ○) with v' ≟ᵤ (default t {t≠0})
 ... | yes _ = just tt
 ... | no _ = nothing
 \end{code}}  
@@ -213,9 +217,9 @@ interp (ε {t} {t≠0}) (v' , ○) with 𝕌dec t (default t {t≠0}) v'
 𝔽 = inj₁ tt
 𝕋 = inj₂ tt
 
-xorr xorl : 𝟚 ×ᵤ 𝟚 ↔ 𝟚 ×ᵤ 𝟚
-xorr = dist ⊚ (id↔ ⊕ (id↔ ⊗ swap₊)) ⊚ factor
-xorl = distl ⊚ (id↔ ⊕ (swap₊ ⊗ id↔)) ⊚ factorl
+CNOT CNOT' : 𝟚 ×ᵤ 𝟚 ↔ 𝟚 ×ᵤ 𝟚
+CNOT = dist ⊚ (id↔ ⊕ (id↔ ⊗ swap₊)) ⊚ factor
+CNOT' = distl ⊚ (id↔ ⊕ (swap₊ ⊗ id↔)) ⊚ factorl
 
 
 𝟚≠0 : ¬ (card 𝟚 ≡ 0)
@@ -278,7 +282,7 @@ xorl = distl ⊚ (id↔ ⊕ (swap₊ ⊗ id↔)) ⊚ factorl
 \begin{code}
 id' : 𝟚 ↔ 𝟚
 id' = uniti⋆r ⊚ (id↔ ⊗ η𝟚) ⊚ assocl⋆ ⊚
-      ((xorr ⊚ xorl ⊚ swap⋆) ⊗ id↔) ⊚
+      ((CNOT ⊚ CNOT' ⊚ swap⋆) ⊗ id↔) ⊚
       assocr⋆ ⊚ (id↔ ⊗ ε𝟚) ⊚ unite⋆r
 \end{code}
 \begin{tikzpicture}[x=0.75pt,y=0.75pt,scale=0.8, yscale=-1]
@@ -334,7 +338,7 @@ ex2 = refl
 
 bad : 𝟚 ↔ 𝟚
 bad = uniti⋆r ⊚ (id↔ ⊗ η𝟚) ⊚ assocl⋆ ⊚
-      ((xorr ⊚ swap⋆) ⊗ id↔) ⊚
+      ((CNOT ⊚ swap⋆) ⊗ id↔) ⊚
       assocr⋆ ⊚ (id↔ ⊗ ε𝟚) ⊚ unite⋆r
 
 ex3 : interp bad 𝔽 ≡ just 𝔽

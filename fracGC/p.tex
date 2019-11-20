@@ -20,11 +20,13 @@
 \usepackage[references]{agda} 
 \usepackage{newunicodechar}
 \usepackage[nocenter]{qtree}
+\usepackage{multicol}  
 \usepackage{tikz}
 \usepackage{bbold}
 \usetikzlibrary{cd}
 \usetikzlibrary{quotes}
 
+\newunicodechar{≟}{$\mathbin{\stackrel{?}{=}}$}
 \newunicodechar{𝕌}{$\mathbb{U}$}
 \newunicodechar{𝔹}{$\mathbb{B}$}
 \newunicodechar{𝔽}{$\mathbb{F}$}
@@ -163,6 +165,8 @@ $\displaystyle
 \input{latex/ExtractionCode.tex}
 \input{latex/PiMemSemCode.tex}
 \input{latex/PiFracMemSemCode.tex}
+\input{latex/J.tex}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
@@ -407,6 +411,7 @@ several problems. For example:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure*}[t]
+\begin{multicols}{2}
 \[\begin{array}{rrcll}
 \idc :& \tau & \iso & \tau &: \idc \\
 \\
@@ -421,22 +426,28 @@ several problems. For example:
 \distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl \\
 \dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor
 \end{array}\]
+\vspace{2cm}
 \begin{center}
 \Rule{}
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
 {\jdg{}{}{c_1 \odot c_2 : \tau_1 \iso \tau_3}}
 {}
-\\
+
+\vspace{1cm}
+
 \Rule{}
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
 {\jdg{}{}{c_1 \oplus c_2 : \tau_1 + \tau_3 \iso \tau_2 + \tau_4}}
 {}
-\qquad
+
+\vspace{1cm}
+
 \Rule{}
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
 {\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
 {}
 \end{center}
+\end{multicols}
 \caption{$\Pi$-terms and combinators.}
 \label{pi-terms}
 \end{figure*}
@@ -853,6 +864,8 @@ examples.
 %%%%% 
 \subsection{Pointed Types}
  
+\Jexample{}
+
 %%%%% 
 \subsection{Singleton Types}
  

@@ -99,6 +99,9 @@ mutual
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , .y₁) | no ¬p | yes refl = no (λ p → ¬p (cong proj₁ p))
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , y₂) | no ¬p | no ¬p₁ = no (λ p → ¬p (cong proj₁ p))
 𝕌dec (𝟙/ v) ○ ○ = yes refl
+
+_≟ᵤ_ : {t : 𝕌} → Decidable (_≡_ {A = ⟦ t ⟧})
+_≟ᵤ_ {t} v w = 𝕌dec t v w
 \end{code}}
 
 \newcommand{\PIFDinterp}{%
@@ -144,10 +147,10 @@ interp (c₁ ⊕ c₂) (inj₂ v) = interp c₂ v >>= just ∘ inj₂
 interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ >>= (λ v₁' → interp c₂ v₂ >>= λ v₂' → just (v₁' , v₂'))
 \end{code}
 \begin{code}
-interp (η {t} v) tt = just (v , ○)
-interp (ε {t} v) (v' , ○) with 𝕌dec t v v'
-interp (ε {t} v) (v' , ○) | yes _ = just tt
-interp (ε {t} v) (v' , ○) | no  _ = nothing
+interp (η v) tt = just (v , ○)
+interp (ε v) (v' , ○) with v ≟ᵤ v'
+... | yes _ = just tt
+... | no _ = nothing
 \end{code}}
 
 \newcommand{\PIFDex}{%

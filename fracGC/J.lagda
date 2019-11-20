@@ -1,10 +1,14 @@
+\newcommand{\Jone}{%
+\begin{code}
 module J where
 
-open import Data.Bool
+open import Data.Bool hiding (T)
 open import Data.Nat
 open import Data.Sum
 open import Data.Product
-
+\end{code}}
+\newcommand{\Jexample}{%
+\begin{code}
 data T : Set where
   N : T
   B : T
@@ -43,3 +47,4 @@ test2 = lift (compose isZero square)
 
 test3 : ∀ {n} → Fun● (N # (suc n)) (B # false)
 test3 = lift (compose isZero square)
+\end{code}}
