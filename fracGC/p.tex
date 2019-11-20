@@ -101,7 +101,7 @@ $\displaystyle
 {\begin{array}{l}#3      \\\end{array}}$
  #4}}
 \newcommand{\jdg}[3]{#2 \proves_{#1} #3}
-
+\renewcommand{\AgdaCodeStyle}{\small}
 % 12 pages
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -962,11 +962,17 @@ checking requires (partial) eval. Once we have a proof can we somehow
 go back to \verb|PiFracDyn| and remove the runtime check?
 
 Polymorphic type for ancilla?
-
-Inject plain Pi into PiFracDyn:
+\\
+First we can inject plain Pi type and value into PiFracDyn:
 \INJU{}
-The injection is correct:
-\INJeq{}
+and the combinators for Pi can also be inject into PiFracDyn in a straightforward way:
+\INJcomb{}
+The given injection is correct because it does not change the denotation of type
+\INJUeq{}
+and the value
+\INJVeq{}
+Also the interpretation is also consistent:
+\INJEvaleq{}
 Extract type from PiPointedFrac:
 \EXTU{}
 Extract combinator:
