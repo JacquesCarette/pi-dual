@@ -3,7 +3,8 @@ all : p.pdf
 
 p.pdf : p.tex latex/PiFracDynCode.tex latex/PiFracDynDefCode.tex latex/BooleanCircuitsCode.tex \
 	latex/PiPointedFracCode.tex latex/ExtractionCode.tex latex/PiMemSemCode.tex \
-	latex/PiFracMemSemCode.tex latex/J.tex
+	latex/PiFracMemSemCode.tex latex/J.tex \
+	idpic.tikz
 #	xelatex p.tex; bibtex p; xelatex p.tex; xelatex p.tex; xelatex p.tex
 #	xelatex p.tex; bibtex p
 	latexmk -pdfxe p.tex

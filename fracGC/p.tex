@@ -21,10 +21,13 @@
 \usepackage{newunicodechar}
 \usepackage[nocenter]{qtree}
 \usepackage{multicol}  
-\usepackage{tikz}
 \usepackage{bbold}
+\usepackage{tikz}
 \usetikzlibrary{cd}
 \usetikzlibrary{quotes}
+
+\usepackage{tikzit}
+\input{frac.tikzstyles}
 
 \newunicodechar{≟}{$\mathbin{\stackrel{?}{=}}$}
 \newunicodechar{𝕌}{$\mathbb{U}$}
@@ -777,34 +780,22 @@ examples.
 %%%%%
 \subsection{Examples}
 
-\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-\begin{tikzpicture}[x=0.75pt,y=0.75pt,scale=0.8, yscale=-1]
-%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-%Straight Lines [id:da05403550183378514] 
-\draw    (10,20) -- (190,20) ;
-%Shape: Circle [id:dp8701819096818126] 
-\draw   (138.75,21.25) .. controls (138.75,15.04) and (143.79,10) .. (150,10) .. controls (156.21,10) and (161.25,15.04) .. (161.25,21.25) .. controls (161.25,27.46) and (156.21,32.5) .. (150,32.5) .. controls (143.79,32.5) and (138.75,27.46) .. (138.75,21.25) -- cycle ;
-%Straight Lines [id:da3470499764023487] 
-\draw    (150,80) -- (150,10) ;
-%Straight Lines [id:da9303973632982276] 
-\draw    (40,80) -- (190,80) ;
-%Shape: Circle [id:dp03942567054970991] 
-\draw   (48.75,81.33) .. controls (48.75,75.12) and (53.79,70.08) .. (60,70.08) .. controls (66.21,70.08) and (71.25,75.12) .. (71.25,81.33) .. controls (71.25,87.55) and (66.21,92.58) .. (60,92.58) .. controls (53.79,92.58) and (48.75,87.55) .. (48.75,81.33) -- cycle ;
-%Straight Lines [id:da08295302434157614] 
-\draw    (60,92.58) -- (60,20) ;
-%Shape: Arc [id:dp2904677718814479] 
-\draw  [draw opacity=0] (38.49,110.13) .. controls (28.3,109.22) and (20.27,102.7) .. (20.15,94.89) .. controls (20.02,86.57) and (28.89,79.93) .. (40,80) -- (40.38,95.12) -- cycle ; \draw   (38.49,110.13) .. controls (28.3,109.22) and (20.27,102.7) .. (20.15,94.89) .. controls (20.02,86.57) and (28.89,79.93) .. (40,80) ;
-%Straight Lines [id:da32172184710713914] 
-\draw    (38.49,110.13) -- (250,110) ;
-%Shape: Arc [id:dp8398868072937593] 
-\draw  [draw opacity=0] (248.77,109.75) .. controls (262.77,109.82) and (274.32,103.33) .. (274.64,95.17) .. controls (274.95,87.02) and (263.95,80.28) .. (250,80) -- (249.05,94.87) -- cycle ; \draw   (248.77,109.75) .. controls (262.77,109.82) and (274.32,103.33) .. (274.64,95.17) .. controls (274.95,87.02) and (263.95,80.28) .. (250,80) ;
-%Straight Lines [id:da5220296307776525] 
-\draw    (190,20) -- (250,80) ;
-%Straight Lines [id:da320377013704656] 
-\draw    (190,80) -- (250,20) ;
-%Straight Lines [id:da8933694171914682] 
-\draw    (250,20) -- (308,20) ;
-\end{tikzpicture}
+The first example below illustrates the basic functionality of
+ancillae. The circuit has one input and one output. Immediately after
+receiving the input, the circuit generates an ancilla wire and its
+corresponding gc process (first line in the Agda definition). The
+original input and the ancilla wire interact using two
+\AgdaFunction{CNOT} gates, after which the ancilla wire is redirected
+to the output (second line in the Agda code). Finally the original
+input is gc'ed (third line in the Agda code). The entire circuit is
+extensionally equivalent to the identity function.
+
+\begin{center}
+\input{idpic.tikz}
+\end{center}
+
+\EtaEpsilonExamples{}
+
 
 \begin{tikzpicture}[x=0.75pt,y=0.75pt,scale=0.8, yscale=-1]
 %uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
@@ -829,8 +820,6 @@ examples.
 %Straight Lines [id:da8064437888434692] 
 \draw    (190,80) -- (250.09,30.3) ;
 \end{tikzpicture}
-
-\EtaEpsilonExamples{}
 
 % of course need de-allocation; keep track of lifetime
 % easy: stack but not general
