@@ -1100,6 +1100,13 @@ the dynamic check won't fail.
 \subsection{Examples}
 \label{sec:cat}  
 
+About trace, it is remarkable: it says, given a function (possibly
+using eta/epsilon so input/output sizes not guaranteed to be the same)
+\verb|AxC <-> BxC| hence using \verb|AxC| space for the input and
+\verb|BxC| space for output, we can 'trace out' the space used for
+\verb|C| and derive a function \verb|A <-> B|. This is true \emph{even
+  if} \verb|C| is actually used. See the swap example.
+
 Use all the constructions name, coname, etc. and see what they do in this context!  
  
 allocate A
