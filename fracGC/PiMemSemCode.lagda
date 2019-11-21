@@ -160,6 +160,9 @@ Find' = proj₁ ∘ Find
 \newcommand{\PIMEMcardeq}{%
 \begin{code}
 card= : {t₁ t₂ : 𝕌} (C : t₁ ⟷ t₂) → (∣ t₁ ∣ ≡ ∣ t₂ ∣)
+\end{code}}
+\newcommand{\PIMEMcardeqrest}{%
+\begin{code}
 card=                   unite₊l   = refl
 card=                   uniti₊l   = refl
 card=                   unite₊r   = +-identityʳ _
@@ -245,12 +248,15 @@ step c ⟪ v [ i ]⟫ = st (lookup v i) c
 \newcommand{\PIMEMstep}{%
 \begin{code}
 data State' : ℕ → Set where
-  ⟪_∥_[_]⟫ : {A B : 𝕌} → A ⟷ B → Vec ⟦ A ⟧ ∣ A ∣ → Fin ∣ A ∣ → State' ∣ A ∣
+  ⟪_∥_[_]⟫ : {A B : 𝕌} →
+    A ⟷ B → Vec ⟦ A ⟧ ∣ A ∣ → Fin ∣ A ∣ → State' ∣ A ∣
 
 step' : ∀ {n} → State' n → State' n
 step' (⟪_∥_[_]⟫ {A} {B} c v i) with step c ⟪ v [ i ]⟫
 ... | A' , c' , ⟪ v' [ i' ]⟫ rewrite card= (c ⊚ ! c') = ⟪ c' ∥ v' [ i' ]⟫
-
+\end{code}}
+\newcommand{\PIMEMrun}{%
+\begin{code}
 run : (sz n : ℕ) → (st : State' sz) → Vec (State' sz) (suc n)
 run sz 0 st = [ st ]
 run sz (suc n) st with run sz n st

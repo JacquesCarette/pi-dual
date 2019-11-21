@@ -171,7 +171,7 @@ $\displaystyle
 \input{latex/PiFracDynCode.tex}
 
 %% for Sec. 5
-%% \input{latex/PiMemSemCode.tex}
+\input{latex/PiMemSemCode.tex}
 \input{latex/PiFracMemSemCode.tex}
 
 %% for Sec. 6
@@ -929,6 +929,33 @@ $\oneover{t}$:
   heap. 
 \end{itemize}
 
+%%
+\subsection{Abstract Machine without Fractionals}
+
+
+If a type has size $n$ we will use a number $0..(n-1)$ to represent
+the values of the types. In binary, this would use $\log{n}$ bits.
+
+The abstract machine has a register representing the code and a
+pointer. If the code is acting on a type with $n$ values, the pointer
+has $\log{n}$ bits (rounded).
+
+In plain pi, if the input is representable using $n$ bits then this is
+the only memory you get to use throughout the entire circuit. The
+circuit just transforms these $n$ bits; example.
+
+Use Fin size as proxy for memory size
+
+\PIFMEMsize{}
+
+\PIMEMcardeq{}
+
+\PIMEMstep{}
+
+CNOT trace in plain pi: 
+
+\includegraphics[scale=0.4]{trace1.png}
+
 %% cardinality of pi type:
 %% \PIMEMcard{}
 %%   
@@ -942,41 +969,21 @@ $\oneover{t}$:
 %% \PIMEMstate{}
 %% \PIMEMstep{}
 
-CNOT trace in plain pi: 
-
-\includegraphics[scale=0.4]{trace1.png}
-
-\PIFMEMsize{}
-
-If a type has size $n$ we will use a number $0..(n-1)$ to represent
-the values of the types. In binary, this would use $\log{n}$ bits.
-
-The abstract machine has a register representing the code and a
-pointer. If the code is acting on a type with $n$ values, the pointer
-has $\log{n}$ bits (rounded).
-
-In plain pi, if the input is representable using $n$ bits then this is
-the only memory you get to use throughout the entire circuit. The
-circuit just transforms these $n$ bits; example.
+%%
+\subsection{Abstract Machine with Fractionals}
 
 In frac pi, you are however allowed to use more than $n$ bits in the
 intermediate steps as eta is used to allocate more space.
 
-Use Fin size as proxy for memory size
+\PIFMEMstep{}
 
 zigzag trace
 
 \includegraphics[scale=0.5]{trace2.png}
 
-semantics for PiFracDyn:
-\PIFMEMstate{}
-\PIFMEMstep{}
-
-Evaluation:
-\PIPFeval{}
-
-Combine with eval, the whole thing is reversible:
-\PIPFrev{}
+%% semantics for PiFracDyn:
+%% \PIFMEMstate{}
+%% \PIFMEMstep{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Dependently-Typed Garbage Collectors}
@@ -1041,9 +1048,14 @@ RECIP
 Combinators:
 \PIPFCombDef{}
 
-%%%%%%%%%
-\subsection{Extraction}
+Evaluation:
+\PIPFeval{}
 
+Combine with eval, the whole thing is reversible:
+\PIPFrev{}
+
+%%%%%%%%% 
+\subsection{Extraction}
 
 Exploit dependent types to reify proofs in the type system. Type
 checking requires (partial) eval. Once we have a proof can we somehow

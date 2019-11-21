@@ -157,12 +157,16 @@ step c ⟪ v [ i ]⟫ = st (lookup v i) c
 \newcommand{\PIFMEMstep}{%
 \begin{code}
 data State' : Set where
-  ⟪_∥_[_]⟫ : {A B : 𝕌} → A ↔ B → Vec ⟦ A ⟧ ∣ A ∣ → Fin ∣ A ∣ → State'
+  ⟪_∥_[_]⟫ : {A B : 𝕌} →
+    A ↔ B → Vec ⟦ A ⟧ ∣ A ∣ → Fin ∣ A ∣ → State'
 
 step' : State' → State'
 step' ⟪ c ∥ v [ i ]⟫ with step c ⟪ v [ i ]⟫
 step' ⟪ c ∥ v [ i ]⟫ | _ , c' , ⟪ v' [ i' ]⟫ = ⟪ c' ∥ v' [ i' ]⟫
+\end{code}}
 
+\newcommand{\PIFMEMrun}{%
+\begin{code}
 run : (n : ℕ) → State' → Vec State' (suc n)
 run 0 st = [ st ]
 run (suc n) st with run n st
