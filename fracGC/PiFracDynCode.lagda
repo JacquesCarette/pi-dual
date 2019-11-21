@@ -16,6 +16,7 @@ open import Relation.Binary.PropositionalEquality
 open import Relation.Binary.Core
 open import Relation.Nullary
 
+infix 90 𝟙/_
 infix  70 _×ᵤ_
 infix  60 _+ᵤ_
 infix  40 _↔_
@@ -152,15 +153,15 @@ interp (ε v) (v' , ○) with v ≟ᵤ v'
 ... | yes _ = just tt
 ... | no _ = nothing
 \end{code}}
-
-\newcommand{\PIFDex}{%
+\newcommand{\PFDxx}{%
 \begin{code}
 --- Examples
 
-𝟚 : 𝕌
+𝟚 𝔹 : 𝕌
 𝟚 = 𝟙 +ᵤ 𝟙
+𝔹 = 𝟙 +ᵤ 𝟙
 
-𝔽 𝕋 : ⟦ 𝟚 ⟧
+𝔽 𝕋 : ⟦ 𝔹 ⟧
 𝔽 = inj₁ tt
 𝕋 = inj₂ tt
 
@@ -205,17 +206,66 @@ ex3 = refl
 ex4 : interp bad 𝕋 ≡ nothing
 ex4 = refl
 
-{--
-shouldn't_type_check : 𝟙 ↔ 𝟙
-shouldn't_type_check = η {v = 𝔽} ⊚ ε {v = 𝕋}
+--shouldn't_type_check : 𝟙 ↔ 𝟙
+--shouldn't_type_check = η {v = 𝔽} ⊚ ε {v = 𝕋}
 
-ex5 : interp shouldn't_type_check tt ≡ nothing
-ex5 = refl
+--ex5 : interp shouldn't_type_check tt ≡ nothing
+--ex5 = refl
 
-more : 𝟙 ↔ 𝟙
-more = η {v = 𝔽} ⊚ (swap₊ ⊗ id↔) ⊚ ε {v = 𝕋}
+--more : 𝟙 ↔ 𝟙
+--more = η {v = 𝔽} ⊚ (swap₊ ⊗ id↔) ⊚ ε {v = 𝕋}
 
-ex6 : interp more tt ≡ just tt
-ex6 = refl
---}
+--ex6 : interp more tt ≡ just tt
+--ex6 = refl
+
+-- Sec. 3.2 from https://people.engr.ncsu.edu/hzhou/quantum_assert.pdf
+
+infixr 2  _⟷⟨_⟩_
+infix  3  _□
+
+_⟷⟨_⟩_ : (t₁ : 𝕌) {t₂ : 𝕌} {t₃ : 𝕌} →
+          (t₁ ↔ t₂) → (t₂ ↔ t₃) → (t₁ ↔ t₃)
+_ ⟷⟨ α ⟩ β = α ⊚ β
+
+_□ : (t : 𝕌) → {t : 𝕌} → (t ↔ t)
+_□ t = id↔
+
+CONTROLLED : {A : 𝕌} → (A ↔ A) → 𝔹 ×ᵤ A ↔ 𝔹 ×ᵤ A
+CONTROLLED c = dist ⊚ (id↔ ⊕ (id↔ ⊗ c)) ⊚ factor
+
+NOT : 𝔹 ↔ 𝔹
+NOT = swap₊
+
+CNOT : 𝔹 ×ᵤ 𝔹 ↔ 𝔹 ×ᵤ 𝔹
+CNOT = CONTROLLED NOT
+
+CNOT13 : (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋) ↔  (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋)
+CNOT13 = assocl⋆ ⊚ ((assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (CNOT ⊗ id↔) ⊚ assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆) ⊗ id↔) ⊚ assocr⋆
+
+CNOT23 : (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋) ↔  (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋)
+CNOT23 = assocl⋆ ⊚ ((assocr⋆ ⊚ (id↔ ⊗ CNOT) ⊚ assocl⋆) ⊗ id↔) ⊚ assocr⋆ 
+\end{code}}
+\newcommand{\PIFDparity}{%
+\begin{code}
+parity : 𝔹 ×ᵤ 𝔹 ↔ 𝔹 ×ᵤ 𝔹
+parity =
+  𝔹 ×ᵤ 𝔹
+  ⟷⟨ uniti⋆r ⟩
+  (𝔹 ×ᵤ 𝔹) ×ᵤ 𝟙
+  ⟷⟨ id↔ ⊗ (η 𝕋) ⟩
+  (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋)
+  ⟷⟨ CNOT13 ⟩ 
+  (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋)
+  ⟷⟨ CNOT23 ⟩ 
+  (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋)
+  ⟷⟨ id↔ ⊗ (ε 𝕋) ⟩
+  (𝔹 ×ᵤ 𝔹) ×ᵤ 𝟙
+  ⟷⟨ unite⋆r ⟩
+  (𝔹 ×ᵤ 𝔹) □
+
+t1 t2 t3 t4 : Maybe ⟦ 𝔹 ×ᵤ 𝔹 ⟧
+t1 = interp parity (𝔽 , 𝔽) -- just (𝔽 , 𝔽)
+t2 = interp parity (𝔽 , 𝕋) -- nothing
+t3 = interp parity (𝕋 , 𝔽) -- nothing
+t4 = interp parity (𝕋 , 𝕋) -- just (𝕋 , 𝕋)
 \end{code}}

@@ -13,6 +13,7 @@
 \usepackage{amssymb}
 \usepackage{stmaryrd}
 \usepackage{bbm}
+\usepackage{wrapfig}
 \usepackage[greek,english]{babel}
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
@@ -197,7 +198,9 @@ circuits lack this form of parallelism. Most importantly, structurally
 the two circuits models are identical and one can derive properties
 valid for both families by focusing on the simpler classical model. In
 fact, classical reversible computations are often used as
-``subroutines'' of quantum computations.
+``subroutines'' of quantum computations. Indeed classical reversible
+circuits can be applied to either classical inputs or to quantum
+inputs. 
 
 Instead of using the rather low-level circuit model of computation,
 one can leverage the full force of type theory and category theory by
@@ -838,9 +841,9 @@ achieved in our language as follows:
 \end{array}\]
 
 In addition to being more expressive, this version has the advantage
-of replacing the cumbersome evidence that the type is not empty by the
-more intuitive evidence of choosing a value of the type. The
-simplications are evident in the Agda formalization:
+of replacing the cumbersome cardinality-based evidence that the type
+is not empty by the more intuitive evidence of choosing a value of the
+type. The simplications are evident in the Agda formalization:
 
 \PIFDUdef{}
 
@@ -852,11 +855,23 @@ simplications are evident in the Agda formalization:
 
 \PIFDinterp{}
 
-Example Sec. 3.2 of
-\url{https://people.engr.ncsu.edu/hzhou/quantum_assert.pdf} with ancilla
-initialized to 1 to detected entanglement
+We illustrate the new style of ancilla management with an interesting
+example used in quantum circuits as a dynamic assertion of
+entanglement~\cite{DBLP:journals/cal/ZhouB19}:
 
+\begin{wrapfigure}{r}{0.2\textwidth}
+  \input{parity.tikz}
+\end{wrapfigure}  
+\PIFDparity{}
 
+\noindent The circuit exploits the additional expressiveness of
+choosing the initial value of the ancilla (and sets it to true). When
+applied to quantum inputs, the circuit detects whether the two qubits
+are entangled in the state
+$\frac{1}{\sqrt{2}}(\ket{00}+\ket{11})$. This property can be
+confirmed from the classical behavior: if the inputs are anything
+else, the ancilla bit is not restored to its original value (true) and
+the dynamic check fails.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Space Operational Semantics}
