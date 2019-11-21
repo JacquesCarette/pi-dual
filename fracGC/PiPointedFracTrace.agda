@@ -56,3 +56,15 @@ zz1 A v = ∙eval (trace {A # v} ∙swap⋆)
 zz3 : (A : 𝕌) (v : ⟦ A ⟧) (T : ∙𝕌) → Σ (⟦ A ⟧ → ⟦ A ⟧) (λ f → f v ≡ v)
 zz3 A v T = ∙eval (trace {A # v} {_} {T} ∙id⟷)
 
+-- There are more thing you put in trace as long as c is the fixpoint
+NOT : 𝔹 ⟷ 𝔹
+NOT = swap₊
+
+CONTROLLED : {A : 𝕌} → (A ⟷ A) → 𝔹 ×ᵤ A ⟷ 𝔹 ×ᵤ A
+CONTROLLED c = dist ⊚ (id⟷ ⊕ (id⟷ ⊗ c)) ⊚ factor
+
+CNOT : 𝔹 ×ᵤ 𝔹 ⟷ 𝔹 ×ᵤ 𝔹
+CNOT = CONTROLLED NOT
+
+ex1 : ∀ {b} → 𝔹 # b ∙⟶ 𝔹 # b
+ex1 = trace {C = 𝔹 # 𝔽} (∙swap⋆ ∙⊚ ∙#times ∙⊚ ∙c CNOT ∙⊚ ∙times# ∙⊚ ∙swap⋆)

@@ -139,9 +139,8 @@ interp (ε {t} v) (v' , ○) | no  _ = nothing -- if v ≡ v' then tt else throw
 𝟚 : 𝕌
 𝟚 = 𝟙 +ᵤ 𝟙
 
-𝔽 𝕋 : ⟦ 𝟚 ⟧
-𝔽 = inj₁ tt
-𝕋 = inj₂ tt
+pattern 𝔽 = inj₁ tt
+pattern 𝕋 = inj₂ tt
 
 xorr xorl : 𝟚 ×ᵤ 𝟚 ↔ 𝟚 ×ᵤ 𝟚
 xorr = dist ⊚ (id↔ ⊕ (id↔ ⊗ swap₊)) ⊚ factor
@@ -168,7 +167,7 @@ ex2 = refl
 --     ┌─────    ──────┐
 --     └───────────────┘
 switch : 𝟙 ↔ 𝟙
-switch = uniti⋆r ⊚ (η 𝔽 ⊗ η 𝔽) ⊚ assocl⋆ ⊚
+switch = uniti⋆r ⊚ (η {𝟚} 𝔽 ⊗ η 𝔽) ⊚ assocl⋆ ⊚
          (((swap⋆ ⊗ id↔) ⊚ assocr⋆ ⊚
          (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚ 
          assocr⋆ ⊚ (ε 𝔽 ⊗ ε 𝔽) ⊚ unite⋆r

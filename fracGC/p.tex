@@ -902,7 +902,11 @@ to 5. So we can have $(4 + 1, \textit{refl})$, $(2 + 3 ,
 are identical to 5 and hence we can \emph{contract} the type to a
 single point at 5. 
 
-
+PiPointedFrac:
+lift pi
+lift multiplicative structure
+monad/comonad for singletons
+eta/epsilon
 
 The denotation of the fractional type is now:
 
@@ -943,21 +947,18 @@ Note that for all other type the extracted value is erased from type except for
 which we still keep it in type.
 \EXTU{}
 Once we extract the corresponding type we can extract the combinator, the combinators about monad/comonad
-just becomes \AgdaInductiveConstructor{id↔} since the information in type is erased:
+just becomes \AgdaInductiveConstructor{id↔} since the information in type is erased,
+for the rest combinators there exist direct corresponding combinators in PiFracDyn:
 \EXTUComb{}
-And we prove the correctness of the extraction, since the combinators about monad/comonad does not really
-computes so for those case the proof is just \AgdaInductiveConstructor{refl},
-and for \AgdaInductiveConstructor{∙c} we rely on \AgdaFunction{Eval≡}.
+Finally we can prove the correctness of the extraction,
+the lifted multiplicative combinators have the corresponding combinators in PiFracDyn which represent
+the same computation so the proof is just \AgdaInductiveConstructor{refl}.
+Because the combinators about monad/comonad does not really
+computes so for those case the proof is also \AgdaInductiveConstructor{refl}.
+And for \AgdaInductiveConstructor{∙c} we rely on \AgdaFunction{Eval≡}.
 The interesting case is \AgdaInductiveConstructor{ε} where the singleton type guarantee that
-the dynamic check is passed.
+the dynamic check won't fail.
 \EXTeq{}
-
-
-PiPointedFrac:
-lift pi
-lift multiplicative structure
-monad/comonad for singletons
-eta/epsilon
 
 %%%%%%%%%%%
 \subsection{Examples}
