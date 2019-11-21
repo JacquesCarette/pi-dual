@@ -167,8 +167,6 @@ Ext∙⟶ (c₁ ∙⊗ c₂) = Ext∙⟶ c₁ ⊗ Ext∙⟶ c₂
 Ext∙⟶ (return T) = id↔
 \end{code}
 \begin{code}[hide]
-Ext∙⟶ (join T) = id↔
-Ext∙⟶ (unjoin T) = id↔
 Ext∙⟶ (tensorl T₁ T₂) = id↔
 Ext∙⟶ (tensorr T₁ T₂) = id↔
 Ext∙⟶ (tensor T₁ T₂) = id↔
@@ -176,8 +174,6 @@ Ext∙⟶ (untensor T₁ T₂) = id↔
 Ext∙⟶ (plusl T₁ T₂) = id↔
 Ext∙⟶ (plusr T₁ T₂) = id↔
 Ext∙⟶ (extract T) = id↔
-Ext∙⟶ (cojoin T) = id↔
-Ext∙⟶ (counjoin T) = id↔
 Ext∙⟶ (cotensorl T₁ T₂) = id↔
 Ext∙⟶ (cotensorr T₁ T₂) = id↔
 Ext∙⟶ (coplusl T₁ T₂) = id↔
@@ -211,8 +207,6 @@ Ext≡ (c₁ ∙⊗ c₂) rewrite Ext≡ c₁ | Ext≡ c₂ = refl
 \end{code}
 \begin{code}[hide]
 Ext≡ (return T) = refl
-Ext≡ (join T) = refl
-Ext≡ (unjoin T) = refl
 Ext≡ (tensorl T₁ T₂) = refl
 Ext≡ (tensorr T₁ T₂) = refl
 Ext≡ (tensor T₁ T₂) = refl
@@ -220,8 +214,6 @@ Ext≡ (untensor T₁ T₂) = refl
 Ext≡ (plusl T₁ T₂) = refl
 Ext≡ (plusr T₁ T₂) = refl
 Ext≡ (extract T) = refl
-Ext≡ (cojoin T) = refl
-Ext≡ (counjoin T) = refl
 Ext≡ (cotensorl T₁ T₂) = refl
 Ext≡ (cotensorr T₁ T₂) = refl
 Ext≡ (coplusl T₁ T₂) = refl

@@ -219,7 +219,6 @@ data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
   _∙⊗_ : {T₁ T₂ T₃ T₄ : ∙𝕌} → (T₁ ∙⟶ T₃) → (T₂ ∙⟶ T₄) → (T₁ ∙×ᵤ T₂ ∙⟶ T₃ ∙×ᵤ T₄)
   -- monad
   return : (T : ∙𝕌) → T ∙⟶ Singᵤ T
-  join : (T : ∙𝕌) → Singᵤ (Singᵤ T) ∙⟶ Singᵤ T
   tensorl : (T₁ T₂ : ∙𝕌) → (Singᵤ T₁ ∙×ᵤ T₂) ∙⟶ Singᵤ (T₁ ∙×ᵤ T₂)
   tensorr : (T₁ T₂ : ∙𝕌) → (T₁ ∙×ᵤ Singᵤ T₂) ∙⟶ Singᵤ (T₁ ∙×ᵤ T₂)
   tensor : (T₁ T₂ : ∙𝕌) → (Singᵤ T₁ ∙×ᵤ Singᵤ T₂) ∙⟶ Singᵤ (T₁ ∙×ᵤ T₂)
@@ -228,7 +227,6 @@ data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
   plusr : (T₁ T₂ : ∙𝕌) → (T₁ ∙+ᵤr Singᵤ T₂) ∙⟶ Singᵤ (T₁ ∙+ᵤr T₂)
   -- comonad
   extract : (T : ∙𝕌) → Singᵤ T ∙⟶ T
-  duplicate : (T : ∙𝕌) → Singᵤ T ∙⟶ Singᵤ (Singᵤ T)
   cotensorl : (T₁ T₂ : ∙𝕌) → Singᵤ (T₁ ∙×ᵤ T₂) ∙⟶ (Singᵤ T₁ ∙×ᵤ T₂)
   cotensorr : (T₁ T₂ : ∙𝕌) → Singᵤ (T₁ ∙×ᵤ T₂) ∙⟶ (T₁ ∙×ᵤ Singᵤ T₂)
   coplusl : (T₁ T₂ : ∙𝕌) → Singᵤ (T₁ ∙+ᵤl T₂) ∙⟶ (Singᵤ T₁ ∙+ᵤl T₂)
@@ -257,7 +255,6 @@ data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
 !∙ ∙assocr⋆ = ∙assocl⋆
 !∙ (c₁ ∙⊗ c₂) = (!∙ c₁) ∙⊗ (!∙ c₂)
 !∙ return T = extract T
-!∙ join T = return (Singᵤ T)
 !∙ tensorl T₁ T₂ = cotensorl T₁ T₂
 !∙ tensorr T₁ T₂ = cotensorr T₁ T₂
 !∙ tensor T₁ T₂ = untensor T₁ T₂
@@ -265,7 +262,6 @@ data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
 !∙ plusl T₁ T₂ = coplusl T₁ T₂
 !∙ plusr T₁ T₂ = coplusr T₁ T₂
 !∙ extract T = return T
-!∙ duplicate T = join T
 !∙ cotensorl T₁ T₂ = tensorl T₁ T₂
 !∙ cotensorr T₁ T₂ = tensorr T₁ T₂
 !∙ coplusl T₁ T₂ = plusl T₁ T₂
@@ -299,7 +295,6 @@ data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
 ∙eval (∙Singᵤ T₁ T₂ C) with ∙⟦ T₁ ⟧ | ∙⟦ T₂ ⟧ | ∙eval C
 ... | t₁ , v₁ | t₂ , .(f v₁) | f , refl = (λ {(x , refl) → f x , refl}) , refl
 ∙eval (return T) = (λ _ → proj₂ ∙⟦ T ⟧ , refl) , refl
-∙eval (join T) = (λ { (._ , refl) → (proj₂ ∙⟦ T ⟧) , refl} ) , refl
 ∙eval (tensorl T₁ T₂) = (λ {_ → (proj₂ ∙⟦ T₁ ⟧ , proj₂ ∙⟦ T₂ ⟧) , refl}) , refl
 ∙eval (tensorr T₁ T₂) = (λ {_ → (proj₂ ∙⟦ T₁ ⟧ , proj₂ ∙⟦ T₂ ⟧) , refl}) , refl
 ∙eval (tensor T₁ T₂) = (λ {_ → (proj₂ ∙⟦ T₁ ⟧ , proj₂ ∙⟦ T₂ ⟧) , refl}) , refl
@@ -307,7 +302,6 @@ data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
 ∙eval (plusl T₁ T₂) = (λ _ → inj₁ (proj₂ ∙⟦ T₁ ⟧) , refl) , refl
 ∙eval (plusr T₁ T₂) = (λ _ → inj₂ (proj₂ ∙⟦ T₂ ⟧) , refl) , refl
 ∙eval (extract T) = (λ {(w , refl) → w}) , refl
-∙eval (duplicate T) = (λ {(w , refl) → (w , refl) , refl}) , refl
 ∙eval (cotensorl T₁ T₂) = (λ _ → ((proj₂ ∙⟦ T₁ ⟧ , refl) , proj₂ ∙⟦ T₂ ⟧)) , refl
 ∙eval (cotensorr T₁ T₂) = (λ _ → (proj₂ ∙⟦ T₁ ⟧ , (proj₂ ∙⟦ T₂ ⟧) , refl)) , refl
 ∙eval (coplusl T₁ T₂) = (λ _ → inj₁ (proj₂ ∙⟦ T₁ ⟧ , refl)) , refl
