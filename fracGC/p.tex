@@ -13,6 +13,7 @@
 \usepackage{amssymb}
 \usepackage{stmaryrd}
 \usepackage{bbm}
+\usepackage{wrapfig}
 \usepackage[greek,english]{babel}
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
@@ -114,6 +115,7 @@ $\displaystyle
 \begin{document}
 
 \title{Fractional Types}
+\subtitle{Expressive and Safe Space Management for Ancilla Bits}
 \author{Chao-Hong Chen}
 \affiliation{
   \institution{Indiana University}
@@ -197,7 +199,9 @@ circuits lack this form of parallelism. Most importantly, structurally
 the two circuits models are identical and one can derive properties
 valid for both families by focusing on the simpler classical model. In
 fact, classical reversible computations are often used as
-``subroutines'' of quantum computations.
+``subroutines'' of quantum computations. Indeed classical reversible
+circuits can be applied to either classical inputs or to quantum
+inputs. 
 
 Instead of using the rather low-level circuit model of computation,
 one can leverage the full force of type theory and category theory by
@@ -272,19 +276,29 @@ James et al.~\cite{rc2011,rc2012,James:2012:IE:2103656.2103667} that
 introduces a reversible programming language built using isomorphism
 of types. Although it is conceivable that the concept of fractional
 types would apply to general-purpose languages (after some
-adaptation), its natural technical definition is using symmetries
+adaptation), its natural technical definition exploits symmetries
 present in categorical model of type isomorphisms. We present such a
-definition in Sec.~\ref{sec:dyn}: that definition captures the main
-ideas of fractional types and partially solves a more general and more
-expressive instance of the ancilla problem. To make the memory
-management explicit, Sec.~\ref{sec:space} provides an operational
-semantics that exposes memory management details using a realization
-of fractional types as first-class garbage collectors. In
-Sec.~\ref{sec:dep} we refine the type system to keep track of ancillae
-values. Technically this requires the introduction of pointed types on
-top of which are defined both a monad and co-monad of singleton
-types. We conclude with a discussion of related work and a summary of
-our results.
+definition in Sec.~\ref{sec:dyn} which captures and illustrates the
+main novelties of fractional types and their runtime representations
+as first-class gc processes. This presentation partially solves a more
+general and more expressive instance of the ancilla problem as
+illustrated with examples. To make the arguments regarding memory
+management explicit, Sec.~\ref{sec:space} presents an abstract machine
+with a heap component that grows and shrinks as ancillae are allocated
+and de-allocated via fractional gc processes. In Sec.~\ref{sec:dep} we
+lift ``plain'' programs manipulating ancillae to the type system in
+order to exploit the power of dependent types to guarantee, for the
+first time, the condition necessary for safe de-allocation of
+ancillae. Technically this solution requires the introduction of
+pointed types on top of which are defined both a monad and co-monad of
+singleton types. The tracking of ancillae value is done within the
+type system via the singleton types. A number of examples exploiting
+the singleton-based type system are present to demonstrate the full
+expressiveness of fractional types. We furthermore demonstrate that,
+from the proofs of type safety, plain (but guaranteed to be safe)
+programs can be extracted and executing without errors or runtime
+checks in the conventional type system. The last section concludes
+with a discussion of related work and a summary of our results.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Ancilla Bits}
@@ -744,8 +758,8 @@ follows:
 \textit{Values}      & v &::=& \cdots \alt \gcv \\
 \textit{Level-1 types} &&& t \leftrightarrow t \\
 \textit{Level-1 programs} & c &::=& \cdots \alt
-   \eta : 1 \leftrightarrow (\net * \oneover{\net}) \\
-   &&& ~~~~~\alt \epsilon : (\net * \oneover{\net}) \leftrightarrow 1 \\
+   \eta_{\net} : 1 \leftrightarrow (\net * \oneover{\net}) \\
+   &&& ~~~~~\alt \epsilon_{\net} : (\net * \oneover{\net}) \leftrightarrow 1 \\
 \textit{Level-2 types} &&& c \Leftrightarrow c \\
 \textit{Level-2 programs} & \alpha &::=& \cdots 
   \alt \mathit{inv} : \eta \fatsemi \epsilon \Leftrightarrow \idc 
@@ -814,36 +828,91 @@ processes each collecting one of the values (and vice-versa):
 %%%%% 
 \subsection{Choosing Ancillae Values}
  
-move from 1/t to 1/v (how the quantum search runs; need ancilla 
-initialized to a specific value) 
+The previous development achieves a significant milestone but only
+hints at the full expressiveness of fractional types. A small but
+significant additional expressiveness is to allow ancillae to be
+initialized to a value of the programmer's choice, not just a globally
+fixed default value. This ability is used in Grover's search algorithm
+to implement phase kickback
+efficiently~\cite{howgrover}.\footnote{Instead of using an ancilla bit
+  initialized to $\ket{0}$, an ancilla initialized to
+  $\frac{\ket{0}-\ket{1}}{\sqrt{2}}$ is used.} This can be easily
+achieved in our language as follows:
+
+\[\begin{array}{lrcl}
+\textit{Value types} & t &::=& \cdots \alt \oneover{v} \\
+\textit{Values}      & v &::=& \cdots \alt \gcv \\
+\textit{Level-1 types} &&& t \leftrightarrow t \\
+\textit{Level-1 programs} & c &::=& \cdots \alt
+   \eta_{v:t} : 1 \leftrightarrow (t * \oneover{v}) \\
+   &&& ~~~~~\alt \epsilon_{v:t} : (t * \oneover{v}) \leftrightarrow 1 \\
+\textit{Level-2 types} &&& c \Leftrightarrow c \\
+\textit{Level-2 programs} & \alpha &::=& \cdots 
+  \alt \mathit{inv} : \eta_{v:t} \fatsemi \epsilon_{v:t} \Leftrightarrow \idc 
+\end{array}\]
+
+In addition to being more expressive, this version has the advantage
+of replacing the cumbersome cardinality-based evidence that the type
+is not empty by the more intuitive evidence of choosing a value of the
+type. The simplications are evident in the Agda formalization:
 
 \PIFDUdef{}
 
-change of combinators:
+\vspace{-\baselineskip}
+
 \PIFDCombdef{}
 
-change of interpreter:
+\vspace{-\baselineskip}
+
 \PIFDinterp{}
 
+We illustrate the new style of ancilla management with an interesting
+example used in quantum circuits as a dynamic assertion of
+entanglement~\cite{DBLP:journals/cal/ZhouB19}:
+
+\begin{wrapfigure}[0]{r}{0.2\textwidth}
+  \input{parity.tikz}
+\end{wrapfigure}  
+\PIFDparity{}
+
+\noindent The circuit initializes the ancilla to \textsf{true} and
+checks that it remains \textsf{true} after interacting with the two
+inputs. If either one of the inputs is \textsf{true} (but not both)
+the ancilla bit will be negated and the runtime check would fail. Thus
+the circuit can be used as a runtime assertion that the two inputs are
+equal. When applied to quantum inputs, the circuit detects whether the
+two qubits are entangled or not. By varying the initial value of the
+ancilla, it is possible to customize the dynamic assertion to check
+for particular entangled states~\cite{DBLP:journals/cal/ZhouB19}.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Space Operational Semantics}
+\section{Space-Tracking Abstract Machine}
 \label{sec:space}  
 
-Positive rational numbers are a model. Apparently there is a
-categorification
-\url{https://alistairsavage.ca/pubs/Copelli-Categorification_of_the_Nonnegative_Rational_Numbers.pdf}
+There are two main reasons we are calling the new type constructor a
+\emph{fractional type} and using the suggestive notation
+$\oneover{t}$:
+\begin{itemize}
+\item Categorical: ... explain and point to section with examples
+  showing 1/ab = 1/a  1/b etc.
+\item Operational ... this section; bits = log of size; fractional
+  needs negative bits; i.e. space collector; make this precise  
+\end{itemize}
 
-Use all the constructions name, coname, etc. and see what they do in this context!
 
-cardinality of pi type:
-\PIMEMcard{}
-enumeration:
-\PIMEMenum{}
-combinator preserve size:
-\PIMEMcardeq{}
-semantics for Pi:
-\PIMEMstate{}
-\PIMEMstep{}
+%% cardinality of pi type:
+%% \PIMEMcard{}
+%%   
+%% enumeration:
+%% \PIMEMenum{}
+%% 
+%%  combinator preserve size:
+%% \PIMEMcardeq{}
+%% 
+%%  semantics for Pi:
+%% \PIMEMstate{}
+%% \PIMEMstep{}
+
 semantics for PiFracDyn:
 \PIFMEMstate{}
 \PIFMEMstep{}
@@ -964,6 +1033,8 @@ the dynamic check won't fail.
 \subsection{Examples}
 \label{sec:cat}  
 
+Use all the constructions name, coname, etc. and see what they do in this context!  
+ 
 allocate A
 allocate B
 combinate the gc's for A and B to get 1/(AxB)
@@ -1041,11 +1112,21 @@ common complement ($Y$), then the ``other pieces''
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Conclusion}
 
-% General allocation and de-allocation. No need to keep track of
-% lifetime. Just make sure location is back to initial value. Safe to
-% de-allocate because indistinguishable from freshly created. No pointer
-% equality and aliases though. Concurrent: one thread allocates; gc
-% thread meets someone else
+Quantum wire recycling~\cite{PhysRevA.94.042337}
+
+Quantum runtime assertion~\cite{DBLP:journals/cal/ZhouB19}
+
+QWIRE~\cite{Paykin:2017:QCL:3009837.3009894}
+
+Positive rational numbers are a model. Apparently there is a
+categorification
+\url{https://alistairsavage.ca/pubs/Copelli-Categorification_of_the_Nonnegative_Rational_Numbers.pdf}
+
+General allocation and de-allocation. No need to keep track of
+lifetime. Just make sure location is back to initial value. Safe to
+de-allocate because indistinguishable from freshly created. No pointer
+equality and aliases though. Concurrent: one thread allocates; gc
+thread meets someone else
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliography{../cites.bib}
