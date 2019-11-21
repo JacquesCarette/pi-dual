@@ -784,11 +784,13 @@ In the Agda formalization, the types of $\eta$ and $\epsilon$ are as follows:
 \EtaEpsilon{}
 
 \noindent where the operations take an implicit argument asserting the
-given type is non-empty. The operational semantics of the language
-interprets each combinator (except $\eta$ and $\epsilon$) of type
-$t_1 \leftrightarrow t_2$ as a (reversible) function mapping values of
-type $t_1$ to values of type $t_2$ (and vice-versa). Extending this
-interpreter to handle $\eta$ and $\epsilon$ requires at this point
+given type is non-empty. A \emph{big step operational semantics} for
+the language interprets each combinator (except $\eta$ and $\epsilon$)
+of type $t_1 \leftrightarrow t_2$ as a (reversible) function mapping
+values of type $t_1$ to values of type $t_2$ (and
+vice-versa).\footnote{In Sec.~\ref{sec:space} we will define a small
+  step abstract machine that exposes the space used at each step.}
+Extending this interpreter to handle $\eta$ and $\epsilon$ requires
 that the interpreter returns either a value of the appropriate or an
 exception:
 
@@ -802,6 +804,7 @@ the type and if so collects it. Otherwise it returns
 
 %%%%%
 \subsection{Examples}
+\label{sub:id}
 
 The first example below illustrates the basic functionality of
 ancillae. The Agda code is written in a style that reveals the
@@ -932,29 +935,56 @@ $\oneover{t}$:
 %%
 \subsection{Abstract Machine without Fractionals}
 
-
-If a type has size $n$ we will use a number $0..(n-1)$ to represent
-the values of the types. In binary, this would use $\log{n}$ bits.
-
-The abstract machine has a register representing the code and a
-pointer. If the code is acting on a type with $n$ values, the pointer
-has $\log{n}$ bits (rounded).
-
-In plain pi, if the input is representable using $n$ bits then this is
-the only memory you get to use throughout the entire circuit. The
-circuit just transforms these $n$ bits; example.
-
-Use Fin size as proxy for memory size
+Before before the abstract machine for the full system with
+fractionals, we introduce some of the common technical details in the
+simpler setting of the core $\Pi$ language. First two simple facts
+about cardinalities:
 
 \PIFMEMsize{}
 
+\vspace{-\baselineskip}
+
 \PIMEMcardeq{}
+
+The cardinalities of the types (other than the fractional type) map
+directly to the natural numbers. An easy proposition to verify is that
+every combinator must be between types of the same cardinalities;
+indeed one of the standard interpretations of $\Pi$ combinators is
+that they are permutations on finite sets, i.e., they just shuffle
+elements around without changing the sizes of the underlying sets.
+
+To make the space usage explicit in every step of evaluation, we
+define an abstract machine whose states are pairs of a code register
+and a memory register. In a low-level implementation the code register
+would contain a pointer to the current instruction and the memory
+register would contain a bit-level runtime representation of values
+with one bit for boolean values, etc. In the Agda formalization, we
+include the current combinator in the code register, and represent the
+memory register using an index into an enumeration. Thus a memory
+register containing a boolean value would be represented in Agda as 𝔽
+::  𝕋 :: [] [ Fin.0F ] or 𝔽 :: 𝕋 :: [] [ Fin.1F ] depending on whether
+the values is \textsf{false} or \textsf{true}. The prepending list
+contains all possible values of the type and the number in between [\ldots ] 
+is an index into the list, representing a finite number that
+is guaranteed to be in bounds. In a low-level runtime representation
+only a binary encoding of this finite would need to be stored but in
+order to just prove that space is preserved, we can just inspect the
+size of the prepended list. Putting it all together, machine states and
+small-step reductions are formalized as follows:
 
 \PIMEMstep{}
 
-CNOT trace in plain pi: 
+The constructor for machine states takes a number which is the size of
+the memory list. This size is maintained throughout the execution,
+even if the intermediate types change. As a small example, the
+following is a trace of the execution of \AgdaFunction{CNOT} applied
+to 𝕋, 𝕋:
 
 \includegraphics[scale=0.4]{trace1.png}
+
+Note how the size of the list remains equal to 4 throughout the
+execution, even if the individual elements change as types change and
+the current index (i.e., the current value) changes.
 
 %% cardinality of pi type:
 %% \PIMEMcard{}
@@ -972,12 +1002,19 @@ CNOT trace in plain pi:
 %%
 \subsection{Abstract Machine with Fractionals}
 
-In frac pi, you are however allowed to use more than $n$ bits in the
-intermediate steps as eta is used to allocate more space.
+Using the same assumptions as before, machine states and small step
+reductions are formalized as follows:
 
 \PIFMEMstep{}
 
-zigzag trace
+The main difference is that now the state constructor does not take a
+fixed size and indeed the size changes during execution as appropriate
+to fit the elements of the type $A$. In particular, since fractional
+values have a trivial representation, the size of a fractional value
+is 1, and hence $\eta$ used at type $A$ changes the size of the memory
+list by the size of $A$. As an illustrative example, we include a
+trace of the execution of \AgdaFunction{id'} from Sec.~\ref{sub:id}
+applied to 𝕋:
 
 \includegraphics[scale=0.5]{trace2.png}
 
