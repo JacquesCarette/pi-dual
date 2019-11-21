@@ -139,3 +139,12 @@ rev× {A} {B} = dist×/ ∙⊚ (∙id⟷ ∙⊗ ∙Singᵤ ∙unite⋆l)
 rev : {A B : ∙𝕌} → (f : A ∙⟶ B) → Recipᵤ B ∙⟶ Recipᵤ A
 rev {A} {B} f = dual f
 
+-- A <-> 1 / (1/A)
+revrev : {A : ∙𝕌} → Singᵤ A ∙⟶ Recipᵤ (Recipᵤ A)
+revrev {A} = ∙uniti⋆r ∙⊚
+             ∙id⟷ ∙⊗ η (Recipᵤ A) ∙⊚
+             ∙assocl⋆ ∙⊚
+             (tensor ∙⊗ ∙id⟷) ∙⊚
+             (∙Singᵤ ((return _ ∙⊗ ∙id⟷) ∙⊚ ε A) ∙⊗ ∙id⟷) ∙⊚
+             (extract _ ∙⊗ ∙id⟷) ∙⊚
+             ∙unite⋆l
