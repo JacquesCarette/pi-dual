@@ -247,7 +247,7 @@ cotensorl : (T₁ T₂ : ∙𝕌) → Singᵤ (T₁ ∙×ᵤ T₂) ∙⟶ (Sing�
 cotensorl T₁ T₂ = extract (T₁ ∙×ᵤ T₂) ∙⊚ (return T₁ ∙⊗ ∙id⟷)
 
 cotensorr : (T₁ T₂ : ∙𝕌) → Singᵤ (T₁ ∙×ᵤ T₂) ∙⟶ (T₁ ∙×ᵤ Singᵤ T₂)
-cotensorr T₁ T₂ = untensor T₁ T₂ ∙⊚ (extract T₁ ∙⊗ ∙id⟷)
+cotensorr T₁ T₂ = extract (T₁ ∙×ᵤ T₂) ∙⊚ (∙id⟷ ∙⊗ return T₂)
 
 plusl : (T₁ T₂ : ∙𝕌) → (Singᵤ T₁ ∙+ᵤl T₂) ∙⟶ Singᵤ (T₁ ∙+ᵤl T₂)
 plusl T₁ T₂ = (extract T₁ ∙⊕ₗ ∙id⟷) ∙⊚ return (T₁ ∙+ᵤl T₂)
