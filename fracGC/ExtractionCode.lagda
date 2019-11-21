@@ -164,17 +164,10 @@ Ext∙⟶ ∙swap⋆ = swap⋆
 Ext∙⟶ ∙assocl⋆ = assocl⋆
 Ext∙⟶ ∙assocr⋆ = assocr⋆
 Ext∙⟶ (c₁ ∙⊗ c₂) = Ext∙⟶ c₁ ⊗ Ext∙⟶ c₂
+Ext∙⟶ (c₁ ∙⊕ₗ c₂) = Ext∙⟶ c₁ ⊕ Ext∙⟶ c₂
+Ext∙⟶ (c₁ ∙⊕ᵣ c₂) = Ext∙⟶ c₁ ⊕ Ext∙⟶ c₂
 Ext∙⟶ (return T) = id↔
-\end{code}
-\begin{code}[hide]
-Ext∙⟶ (plusl T₁ T₂) = id↔
-Ext∙⟶ (plusr T₁ T₂) = id↔
 Ext∙⟶ (extract T) = id↔
-Ext∙⟶ (coplusl T₁ T₂) = id↔
-Ext∙⟶ (coplusr T₁ T₂) = id↔
-\end{code}
-$\;\;\;\;\vdots$
-\begin{code}
 Ext∙⟶ (∙Singᵤ T₁ T₂ c) = Ext∙⟶ c
 Ext∙⟶ (η T) = η (proj₂ (Ext𝕌 T))
 Ext∙⟶ (ε T) = ε (proj₂ (Ext𝕌 T))
@@ -198,17 +191,10 @@ Ext≡ ∙swap⋆ = refl
 Ext≡ ∙assocl⋆ = refl
 Ext≡ ∙assocr⋆ = refl
 Ext≡ (c₁ ∙⊗ c₂) rewrite Ext≡ c₁ | Ext≡ c₂ = refl
-\end{code}
-\begin{code}[hide]
+Ext≡ (c₁ ∙⊕ₗ c₂) rewrite Ext≡ c₁ = refl
+Ext≡ (c₁ ∙⊕ᵣ c₂) rewrite Ext≡ c₂ = refl
 Ext≡ (return T) = refl
-Ext≡ (plusl T₁ T₂) = refl
-Ext≡ (plusr T₁ T₂) = refl
 Ext≡ (extract T) = refl
-Ext≡ (coplusl T₁ T₂) = refl
-Ext≡ (coplusr T₁ T₂) = refl
-\end{code}
-$\;\;\;\;\vdots$
-\begin{code}
 Ext≡ (∙Singᵤ T₁ T₂ c) rewrite Ext≡ c = refl
 Ext≡ (η T) = refl
 Ext≡ (ε T) with (proj₂ (Ext𝕌 T)) ≟ᵤ (proj₂ (Ext𝕌 T))

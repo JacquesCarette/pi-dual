@@ -20,7 +20,8 @@ infixr 50 _⊚_
 infix 100 !_
 
 infixr 70 _∙×ᵤ_
--- infixr 60 _+ᵤ_
+infixr 60 _∙+ᵤl_
+infixr 60 _∙+ᵤr_
 infixr 50 _∙⊚_
 
 ------------------------------------------------------------------------------
@@ -209,15 +210,16 @@ data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
   ∙swap⋆   : {T₁ T₂ : ∙𝕌} → T₁ ∙×ᵤ T₂ ∙⟶ T₂ ∙×ᵤ T₁
   ∙assocl⋆ : {T₁ T₂ T₃ : ∙𝕌} → T₁ ∙×ᵤ (T₂ ∙×ᵤ T₃) ∙⟶ (T₁ ∙×ᵤ T₂) ∙×ᵤ T₃
   ∙assocr⋆ : {T₁ T₂ T₃ : ∙𝕌} → (T₁ ∙×ᵤ T₂) ∙×ᵤ T₃ ∙⟶ T₁ ∙×ᵤ (T₂ ∙×ᵤ T₃)
-  _∙⊗_ : {T₁ T₂ T₃ T₄ : ∙𝕌} → (T₁ ∙⟶ T₃) → (T₂ ∙⟶ T₄) → (T₁ ∙×ᵤ T₂ ∙⟶ T₃ ∙×ᵤ T₄)
+  _∙⊗_ : {T₁ T₂ T₃ T₄ : ∙𝕌} → (T₁ ∙⟶ T₃) → (T₂ ∙⟶ T₄)
+       → (T₁ ∙×ᵤ T₂ ∙⟶ T₃ ∙×ᵤ T₄)
+  _∙⊕ₗ_ : {T₁ T₂ T₃ T₄ : ∙𝕌} → (T₁ ∙⟶ T₃) → (T₂ ∙⟶ T₄)
+        → (T₁ ∙+ᵤl T₂ ∙⟶ T₃ ∙+ᵤl T₄)
+  _∙⊕ᵣ_ : {T₁ T₂ T₃ T₄ : ∙𝕌} → (T₁ ∙⟶ T₃) → (T₂ ∙⟶ T₄)
+        → (T₁ ∙+ᵤr T₂ ∙⟶ T₃ ∙+ᵤr T₄)
   -- monad
   return : (T : ∙𝕌) → T ∙⟶ Singᵤ T
-  plusl : (T₁ T₂ : ∙𝕌) → (Singᵤ T₁ ∙+ᵤl T₂) ∙⟶ Singᵤ (T₁ ∙+ᵤl T₂)
-  plusr : (T₁ T₂ : ∙𝕌) → (T₁ ∙+ᵤr Singᵤ T₂) ∙⟶ Singᵤ (T₁ ∙+ᵤr T₂)
   -- comonad
   extract : (T : ∙𝕌) → Singᵤ T ∙⟶ T
-  coplusl : (T₁ T₂ : ∙𝕌) → Singᵤ (T₁ ∙+ᵤl T₂) ∙⟶ (Singᵤ T₁ ∙+ᵤl T₂)
-  coplusr : (T₁ T₂ : ∙𝕌) → Singᵤ (T₁ ∙+ᵤr T₂) ∙⟶ (T₁ ∙+ᵤr Singᵤ T₂)
   -- functor
   ∙Singᵤ : (T₁ T₂ : ∙𝕌) → (T₁ ∙⟶ T₂) → (Singᵤ T₁ ∙⟶ Singᵤ T₂)
   -- eta/epsilon
@@ -242,6 +244,18 @@ cotensorl T₁ T₂ = extract (T₁ ∙×ᵤ T₂) ∙⊚ (return T₁ ∙⊗ �
 cotensorr : (T₁ T₂ : ∙𝕌) → Singᵤ (T₁ ∙×ᵤ T₂) ∙⟶ (T₁ ∙×ᵤ Singᵤ T₂)
 cotensorr T₁ T₂ = untensor T₁ T₂ ∙⊚ (extract T₁ ∙⊗ ∙id⟷)
 
+plusl : (T₁ T₂ : ∙𝕌) → (Singᵤ T₁ ∙+ᵤl T₂) ∙⟶ Singᵤ (T₁ ∙+ᵤl T₂)
+plusl T₁ T₂ = (extract T₁ ∙⊕ₗ ∙id⟷) ∙⊚ return (T₁ ∙+ᵤl T₂)
+
+plusr : (T₁ T₂ : ∙𝕌) → (T₁ ∙+ᵤr Singᵤ T₂) ∙⟶ Singᵤ (T₁ ∙+ᵤr T₂)
+plusr T₁ T₂ = (∙id⟷ ∙⊕ᵣ extract T₂) ∙⊚ return (T₁ ∙+ᵤr T₂)
+
+coplusl : (T₁ T₂ : ∙𝕌) → Singᵤ (T₁ ∙+ᵤl T₂) ∙⟶ (Singᵤ T₁ ∙+ᵤl T₂)
+coplusl T₁ T₂ = extract (T₁ ∙+ᵤl T₂) ∙⊚ (return T₁ ∙⊕ₗ ∙id⟷)
+
+coplusr : (T₁ T₂ : ∙𝕌) → Singᵤ (T₁ ∙+ᵤr T₂) ∙⟶ (T₁ ∙+ᵤr Singᵤ T₂)
+coplusr T₁ T₂ = extract (T₁ ∙+ᵤr T₂) ∙⊚ (∙id⟷ ∙⊕ᵣ return T₂)
+
 !∙_ : {A B : ∙𝕌} → A ∙⟶ B → B ∙⟶ A
 !∙ (∙c {t₁} {t₂} {v} c) = subst (λ x → t₂ # eval c v ∙⟶ t₁ # x) (ΠisRev c v) (∙c (! c))
 !∙ ∙times# = ∙#times
@@ -256,12 +270,10 @@ cotensorr T₁ T₂ = untensor T₁ T₂ ∙⊚ (extract T₁ ∙⊗ ∙id⟷)
 !∙ ∙assocl⋆ = ∙assocr⋆
 !∙ ∙assocr⋆ = ∙assocl⋆
 !∙ (c₁ ∙⊗ c₂) = (!∙ c₁) ∙⊗ (!∙ c₂)
+!∙ (c₁ ∙⊕ₗ c₂) = (!∙ c₁) ∙⊕ₗ (!∙ c₂)
+!∙ (c₁ ∙⊕ᵣ c₂) = (!∙ c₁) ∙⊕ᵣ (!∙ c₂)
 !∙ return T = extract T
-!∙ plusl T₁ T₂ = coplusl T₁ T₂
-!∙ plusr T₁ T₂ = coplusr T₁ T₂
 !∙ extract T = return T
-!∙ coplusl T₁ T₂ = plusl T₁ T₂
-!∙ coplusr T₁ T₂ = plusr T₁ T₂
 !∙ ∙Singᵤ T₁ T₂ c = ∙Singᵤ T₂ T₁ (!∙ c)
 !∙ η T = ε T
 !∙ ε T = η T
@@ -283,16 +295,20 @@ cotensorr T₁ T₂ = untensor T₁ T₂ ∙⊚ (extract T₁ ∙⊗ ∙id⟷)
 ∙eval ∙assocr⋆ = (λ {((x , y) , z) → (x , (y , z))}) , refl
 ∙eval (C₀ ∙⊗ C₁) with ∙eval C₀ | ∙eval C₁
 ... | (f , p) | (g , q) = (λ {(t₁ , t₂) → f t₁ , g t₂}) , cong₂ _,_ p q
+∙eval (C₀ ∙⊕ₗ C₁) with ∙eval C₀ | ∙eval C₁
+... | (f , p) | (g , q) = (λ { (inj₁ x) → inj₁ (f x)
+                             ; (inj₂ y) → inj₂ (g y) })
+                        , cong inj₁ p
+∙eval (C₀ ∙⊕ᵣ C₁) with ∙eval C₀ | ∙eval C₁
+... | (f , p) | (g , q) = (λ { (inj₁ x) → inj₁ (f x)
+                             ; (inj₂ y) → inj₂ (g y) })
+                        , cong inj₂ q
 ∙eval ∙times# = (λ x → x) , refl
 ∙eval ∙#times = (λ x → x) , refl
 ∙eval (∙Singᵤ T₁ T₂ C) with ∙⟦ T₁ ⟧ | ∙⟦ T₂ ⟧ | ∙eval C
 ... | t₁ , v₁ | t₂ , .(f v₁) | f , refl = (λ {(x , refl) → f x , refl}) , refl
 ∙eval (return T) = (λ _ → proj₂ ∙⟦ T ⟧ , refl) , refl
-∙eval (plusl T₁ T₂) = (λ _ → inj₁ (proj₂ ∙⟦ T₁ ⟧) , refl) , refl
-∙eval (plusr T₁ T₂) = (λ _ → inj₂ (proj₂ ∙⟦ T₂ ⟧) , refl) , refl
 ∙eval (extract T) = (λ {(w , refl) → w}) , refl
-∙eval (coplusl T₁ T₂) = (λ _ → inj₁ (proj₂ ∙⟦ T₁ ⟧ , refl)) , refl
-∙eval (coplusr T₁ T₂) = (λ _ → inj₂ (proj₂ ∙⟦ T₂ ⟧ , refl)) , refl
 ∙eval (η T) = (λ tt → (proj₂ ∙⟦ T ⟧ , refl) , λ _ → tt) , refl
 ∙eval (ε T) = (λ { ((_ , refl) , f) → f (proj₂ ∙⟦ T ⟧ , refl)}) , refl
 
