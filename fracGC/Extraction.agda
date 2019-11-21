@@ -109,7 +109,6 @@ Ext∙⟶ (c₁ ∙⊕ₗ c₂) = Ext∙⟶ c₁ ⊕ Ext∙⟶ c₂
 Ext∙⟶ (c₁ ∙⊕ᵣ c₂) = Ext∙⟶ c₁ ⊕ Ext∙⟶ c₂
 Ext∙⟶ (return T) = id↔
 Ext∙⟶ (extract T) = id↔
-Ext∙⟶ (∙Singᵤ T₁ T₂ c) = Ext∙⟶ c
 Ext∙⟶ (η T) = η (proj₂ (Ext𝕌 T))
 Ext∙⟶ (ε T) = ε (proj₂ (Ext𝕌 T))
 
@@ -169,7 +168,6 @@ Ext≡ ∙assocr⋆ = refl
 Ext≡ (c₁ ∙⊗ c₂) rewrite Ext≡ c₁ | Ext≡ c₂ = refl
 Ext≡ (return T) = refl
 Ext≡ (extract T) = refl
-Ext≡ (∙Singᵤ T₁ T₂ c) rewrite Ext≡ c = refl
 Ext≡ (η T) = refl
 Ext≡ (ε T) with 𝕌dec _ (proj₂ (Ext𝕌 T)) (proj₂ (Ext𝕌 T))
 Ext≡ (ε T) | yes p = refl

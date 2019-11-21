@@ -227,8 +227,6 @@ data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
   return : (T : ∙𝕌) → T ∙⟶ Singᵤ T
   -- comonad
   extract : (T : ∙𝕌) → Singᵤ T ∙⟶ T
-  -- functor
-  ∙Singᵤ : (T₁ T₂ : ∙𝕌) → (T₁ ∙⟶ T₂) → (Singᵤ T₁ ∙⟶ Singᵤ T₂)
   -- eta/epsilon
   η : (T : ∙𝕌) → ∙𝟙 ∙⟶ (Singᵤ T ∙×ᵤ Recipᵤ T)
   ε : (T : ∙𝕌) → (Singᵤ T ∙×ᵤ Recipᵤ T) ∙⟶ ∙𝟙
@@ -262,6 +260,16 @@ coplusl T₁ T₂ = extract (T₁ ∙+ᵤl T₂) ∙⊚ (return T₁ ∙⊕ₗ �
 
 coplusr : (T₁ T₂ : ∙𝕌) → Singᵤ (T₁ ∙+ᵤr T₂) ∙⟶ (T₁ ∙+ᵤr Singᵤ T₂)
 coplusr T₁ T₂ = extract (T₁ ∙+ᵤr T₂) ∙⊚ (∙id⟷ ∙⊕ᵣ return T₂)
+
+-- functor
+∙Singᵤ : (T₁ T₂ : ∙𝕌) → (T₁ ∙⟶ T₂) → (Singᵤ T₁ ∙⟶ Singᵤ T₂)
+∙Singᵤ T₁ T₂ c = extract T₁ ∙⊚ c ∙⊚ return T₂
+
+join : (T₁ T₂ : ∙𝕌) → Singᵤ (Singᵤ T₁) ∙⟶ Singᵤ T₁
+join T₁ T₂ = extract (Singᵤ T₁)
+
+duplicate : (T₁ T₂ : ∙𝕌) → Singᵤ (Singᵤ T₁) ∙⟶ Singᵤ T₁
+duplicate T₁ T₂ = extract (Singᵤ T₁)
 \end{code}}
 
 \newcommand{\PIPFrev}{%
@@ -284,7 +292,6 @@ coplusr T₁ T₂ = extract (T₁ ∙+ᵤr T₂) ∙⊚ (∙id⟷ ∙⊕ᵣ retu
 !∙ (c₁ ∙⊕ᵣ c₂) = (!∙ c₁) ∙⊕ᵣ (!∙ c₂)
 !∙ return T = extract T
 !∙ extract T = return T
-!∙ ∙Singᵤ T₁ T₂ c = ∙Singᵤ T₂ T₁ (!∙ c)
 !∙ η T = ε T
 !∙ ε T = η T
 \end{code}}
@@ -318,8 +325,6 @@ coplusr T₁ T₂ = extract (T₁ ∙+ᵤr T₂) ∙⊚ (∙id⟷ ∙⊕ᵣ retu
                         , cong inj₂ q
 ∙eval ∙times# = (λ x → x) , refl
 ∙eval ∙#times = (λ x → x) , refl
-∙eval (∙Singᵤ T₁ T₂ C) with ∙⟦ T₁ ⟧ | ∙⟦ T₂ ⟧ | ∙eval C
-... | t₁ , v₁ | t₂ , .(f v₁) | f , refl = (λ {(x , refl) → f x , refl}) , refl
 ∙eval (return T) = (λ _ → proj₂ ∙⟦ T ⟧ , refl) , refl
 ∙eval (extract T) = (λ {(w , refl) → w}) , refl
 ∙eval (η T) = (λ tt → (proj₂ ∙⟦ T ⟧ , refl) , λ _ → tt) , refl

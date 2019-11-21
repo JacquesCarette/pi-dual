@@ -10,8 +10,8 @@ open import Data.Maybe
 open import Relation.Binary.PropositionalEquality
 open import Relation.Binary.HeterogeneousEquality
 open import Relation.Nullary
-open import PiPointedFrac as Pi/ hiding (𝕌; ⟦_⟧; eval)
-open import PiFracDyn
+open import PiPointedFracCode as Pi/ hiding (𝕌; ⟦_⟧; eval)
+open import PiFracDynCode
 \end{code}}
 \newcommand{\INJU}{%
 \begin{code}
@@ -168,7 +168,6 @@ Ext∙⟶ (c₁ ∙⊕ₗ c₂) = Ext∙⟶ c₁ ⊕ Ext∙⟶ c₂
 Ext∙⟶ (c₁ ∙⊕ᵣ c₂) = Ext∙⟶ c₁ ⊕ Ext∙⟶ c₂
 Ext∙⟶ (return T) = id↔
 Ext∙⟶ (extract T) = id↔
-Ext∙⟶ (∙Singᵤ T₁ T₂ c) = Ext∙⟶ c
 Ext∙⟶ (η T) = η (proj₂ (Ext𝕌 T))
 Ext∙⟶ (ε T) = ε (proj₂ (Ext𝕌 T))
 \end{code}}
@@ -195,7 +194,6 @@ Ext≡ (c₁ ∙⊕ₗ c₂) rewrite Ext≡ c₁ = refl
 Ext≡ (c₁ ∙⊕ᵣ c₂) rewrite Ext≡ c₂ = refl
 Ext≡ (return T) = refl
 Ext≡ (extract T) = refl
-Ext≡ (∙Singᵤ T₁ T₂ c) rewrite Ext≡ c = refl
 Ext≡ (η T) = refl
 Ext≡ (ε T) with (proj₂ (Ext𝕌 T)) ≟ᵤ (proj₂ (Ext𝕌 T))
 Ext≡ (ε T) | yes p = refl
