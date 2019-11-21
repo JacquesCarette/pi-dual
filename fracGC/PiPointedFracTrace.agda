@@ -3,6 +3,12 @@
 -- Pi combinators inspired by duals and traced monoidal categories
 
 module PiPointedFracTrace where
+
+open import Data.Unit
+open import Data.Sum
+open import Data.Product
+open import Relation.Binary.PropositionalEquality
+
 open import PiPointedFrac
 
 ------------------------------------------------------------------
@@ -32,26 +38,16 @@ trace {A} {B} {C} f =
   (extract _ ∙⊗ ε C) ∙⊚
   ∙unite⋆r
 
-open import Data.Unit
-open import Data.Sum
-open import Data.Product
-open import Relation.Binary.PropositionalEquality
-
-
 𝔹 : 𝕌
 𝔹 = 𝟙 +ᵤ 𝟙
 
-𝔽 : ⟦ 𝔹 ⟧
+𝔽 𝕋 : ⟦ 𝔹 ⟧
 𝔽 = inj₁ tt
+𝕋 = inj₂ tt
 
-∙𝔹 : ∙𝕌
-∙𝔹 = (𝟙 +ᵤ 𝟙) # 𝔽
+zz1 : (b : ⟦ 𝔹 ⟧) → Σ (⟦ 𝔹 ⟧ → ⟦ 𝔹 ⟧) (λ f → f b ≡ b)
+zz1 b = ∙eval (trace {𝔹 # b} ∙swap⋆)
 
-yy : ∙𝔹 ∙×ᵤ ∙𝔹 ∙⟶ ∙𝔹 ∙×ᵤ ∙𝔹
-yy = ∙swap⋆ 
+zz3 : (A : ∙𝕌) (b : ⟦ 𝔹 ⟧) → Σ (⟦ 𝔹 ⟧ → ⟦ 𝔹 ⟧) (λ f → f b ≡ b)
+zz3 A b = ∙eval (trace {𝔹 # b} {𝔹 # b} {A} ∙id⟷)
 
-xx : ∙𝔹 ∙⟶ ∙𝔹
-xx = trace yy 
-
-zz : Σ (⟦ 𝔹 ⟧ → ⟦ 𝔹 ⟧) (λ f → f 𝔽 ≡ 𝔽)
-zz = ∙eval xx
