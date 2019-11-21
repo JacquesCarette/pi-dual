@@ -19,17 +19,24 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ-syntax)
 open import Relation.Nullary
 open import Relation.Binary.PropositionalEquality
   renaming ([_] to R[_])
+
 open import PiFracDyn
 
 infix  80 ∣_∣
+\end{code}}
 
+\newcommand{\PIFMEMsize}{%
+\begin{code}
 ∣_∣ : (A : 𝕌) → ℕ
-∣ 𝟘 ∣ = 0
-∣ 𝟙 ∣ = 1
-∣ A₁ +ᵤ A₂ ∣ = ∣ A₁ ∣ + ∣ A₂ ∣
-∣ A₁ ×ᵤ A₂ ∣ = ∣ A₁ ∣ * ∣ A₂ ∣
-∣ 𝟙/ A ∣ = 1
+∣ 𝟘 ∣         = 0
+∣ 𝟙 ∣         = 1
+∣ A₁ +ᵤ A₂ ∣  = ∣ A₁ ∣ + ∣ A₂ ∣
+∣ A₁ ×ᵤ A₂ ∣  = ∣ A₁ ∣ * ∣ A₂ ∣
+∣ 𝟙/ v ∣      = 1
+\end{code}}
 
+\newcommand{\PIFMEMone}{%
+\begin{code}
 Vec× : ∀ {n m} {A B : Set} → Vec A n → Vec B m → Vec (A × B) (n * m)
 Vec× va vb = concat (map (λ a₁ → map (a₁ ,_) vb) va)
 
@@ -86,6 +93,7 @@ Find {𝟙/ A} ○ = index ○∈𝟙/A , lookup-index ○∈𝟙/A
 Find' : {A : 𝕌} (x : ⟦ A ⟧) → Fin ∣ A ∣
 Find' = proj₁ ∘ Find
 \end{code}}
+
 \newcommand{\PIFMEMstate}{%
 \begin{code}
 data State (A : 𝕌) : Set where
@@ -145,6 +153,7 @@ st (x , y) (c₁ ⊗ c₂)                        = let _ , c , st' = st x c₁ 
 step : {A B : 𝕌} (c : A ↔ B) → State A → Σ[ C ∈ 𝕌 ] (C ↔ B × State C)
 step c ⟪ v [ i ]⟫ = st (lookup v i) c
 \end{code}}
+
 \newcommand{\PIFMEMstep}{%
 \begin{code}
 data State' : Set where

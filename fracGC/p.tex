@@ -166,14 +166,20 @@ $\displaystyle
 
 \maketitle
 
+%% for Sec. 4
 \input{latex/PiFracDynDefCode.tex}
 \input{latex/PiFracDynCode.tex}
-\input{latex/BooleanCircuitsCode.tex}
+
+%% for Sec. 5
+%% \input{latex/PiMemSemCode.tex}
+\input{latex/PiFracMemSemCode.tex}
+
+%% for Sec. 6
+\input{latex/J.tex}
 \input{latex/PiPointedFracCode.tex}
 \input{latex/ExtractionCode.tex}
-\input{latex/PiMemSemCode.tex}
-\input{latex/PiFracMemSemCode.tex}
-\input{latex/J.tex}
+\input{latex/BooleanCircuitsCode.tex}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
@@ -889,16 +895,39 @@ for particular entangled states~\cite{DBLP:journals/cal/ZhouB19}.
 \section{Space-Tracking Abstract Machine}
 \label{sec:space}  
 
-There are two main reasons we are calling the new type constructor a
-\emph{fractional type} and using the suggestive notation
+There are two technical reasons we are calling the new type constructor a
+\emph{fractional type} and hence using for it the suggestive notation
 $\oneover{t}$:
 \begin{itemize}
-\item Categorical: ... explain and point to section with examples
-  showing 1/ab = 1/a  1/b etc.
-\item Operational ... this section; bits = log of size; fractional
-  needs negative bits; i.e. space collector; make this precise  
-\end{itemize}
+\item Categorical: The categorical model for the plain $\Pi$ language
+  of type isomorphisms is a category with two symmetric monoidal
+  structures (additive and multiplicative) with the multiplicative
+  fragment distributing over the additive one~\cite{XXX}. Generally,
+  a symmetric monoidal category is \emph{compact closed} if every
+  object has a dual object whose behavior is governed by our $\eta$
+  and $\epsilon$ operators~\cite{XXX}. Our language from the previous
+  section is an adaptation of this idea to the context of $\Pi$. Many
+  programming abstractions (such as \emph{name}, \emph{co-name}, and
+  \emph{trace} illustrated in Sec.~\ref{sec:cat}) can be automatically
+  derived from properties of compact closed categories. Additionally,
+  all the properties expected of the rational numbers
+  (e.g. $\oneover{(m*n)} = \oneover{m}*\oneover{n}$,
+  $\oneover{(\oneover{n})}=n$, etc.) can be given constructive content
+  corresponding to manipulation of gc processes. We have already seen
+  the first example and will see more in Sec.~\ref{sec:cat}.
 
+\item Operational: The other reason our types can be justifiably
+  called fractional is information theoretic. As mentioned in the
+  introduction the number of bits needed to store information about a
+  space with $n$ distinct values is $\log{n}$. If the number of bits
+  can be thought of as a debt (to be reclaimed) then a negative number
+  of bits corresponds to a space with $\oneover{n}$ distinct
+  values. Indeed we interpret these values as gc processes each
+  specialized to collect space for one of the $n$ distinct values. In
+  this section, we make this intuition precise by presenting a
+  (fully-formalized in Agda) abstract machine that manages an explicit
+  heap. 
+\end{itemize}
 
 %% cardinality of pi type:
 %% \PIMEMcard{}
@@ -912,6 +941,32 @@ $\oneover{t}$:
 %%  semantics for Pi:
 %% \PIMEMstate{}
 %% \PIMEMstep{}
+
+CNOT trace in plain pi: 
+
+\includegraphics[scale=0.4]{trace1.png}
+
+\PIFMEMsize{}
+
+If a type has size $n$ we will use a number $0..(n-1)$ to represent
+the values of the types. In binary, this would use $\log{n}$ bits.
+
+The abstract machine has a register representing the code and a
+pointer. If the code is acting on a type with $n$ values, the pointer
+has $\log{n}$ bits (rounded).
+
+In plain pi, if the input is representable using $n$ bits then this is
+the only memory you get to use throughout the entire circuit. The
+circuit just transforms these $n$ bits; example.
+
+In frac pi, you are however allowed to use more than $n$ bits in the
+intermediate steps as eta is used to allocate more space.
+
+Use Fin size as proxy for memory size
+
+zigzag trace
+
+\includegraphics[scale=0.5]{trace2.png}
 
 semantics for PiFracDyn:
 \PIFMEMstate{}
