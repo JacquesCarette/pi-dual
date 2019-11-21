@@ -22,6 +22,9 @@ infix 100 !_
 infixr 70 _∙×ᵤ_
 infixr 60 _∙+ᵤl_
 infixr 60 _∙+ᵤr_
+infixr 70 _∙⊗_
+infixr 60 _∙⊕ₗ_
+infixr 60 _∙⊕ᵣ_
 infixr 50 _∙⊚_
 
 ------------------------------------------------------------------------------
@@ -224,45 +227,45 @@ data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
   η : (T : ∙𝕌) → ∙𝟙 ∙⟶ (Singᵤ T ∙×ᵤ Recipᵤ T)
   ε : (T : ∙𝕌) → (Singᵤ T ∙×ᵤ Recipᵤ T) ∙⟶ ∙𝟙
 
-tensor : (T₁ T₂ : ∙𝕌) → (Singᵤ T₁ ∙×ᵤ Singᵤ T₂) ∙⟶ Singᵤ (T₁ ∙×ᵤ T₂)
-tensor T₁ T₂ = (extract T₁ ∙⊗ extract T₂) ∙⊚ return (T₁ ∙×ᵤ T₂)
+tensor : {T₁ T₂ : ∙𝕌} → (Singᵤ T₁ ∙×ᵤ Singᵤ T₂) ∙⟶ Singᵤ (T₁ ∙×ᵤ T₂)
+tensor {T₁} {T₂} = (extract T₁ ∙⊗ extract T₂) ∙⊚ return (T₁ ∙×ᵤ T₂)
 
-untensor : (T₁ T₂ : ∙𝕌) → Singᵤ (T₁ ∙×ᵤ T₂) ∙⟶ (Singᵤ T₁ ∙×ᵤ Singᵤ T₂)
-untensor T₁ T₂ = extract (T₁ ∙×ᵤ T₂) ∙⊚ (return T₁ ∙⊗ return T₂)
+untensor : {T₁ T₂ : ∙𝕌} → Singᵤ (T₁ ∙×ᵤ T₂) ∙⟶ (Singᵤ T₁ ∙×ᵤ Singᵤ T₂)
+untensor {T₁} {T₂} = extract (T₁ ∙×ᵤ T₂) ∙⊚ (return T₁ ∙⊗ return T₂)
 
-tensorl : (T₁ T₂ : ∙𝕌) → (Singᵤ T₁ ∙×ᵤ T₂) ∙⟶ Singᵤ (T₁ ∙×ᵤ T₂)
-tensorl T₁ T₂ = (extract T₁ ∙⊗ ∙id⟷) ∙⊚ return (T₁ ∙×ᵤ T₂)
+tensorl : {T₁ T₂ : ∙𝕌} → (Singᵤ T₁ ∙×ᵤ T₂) ∙⟶ Singᵤ (T₁ ∙×ᵤ T₂)
+tensorl {T₁} {T₂} = (extract T₁ ∙⊗ ∙id⟷) ∙⊚ return (T₁ ∙×ᵤ T₂)
 
-tensorr : (T₁ T₂ : ∙𝕌) → (T₁ ∙×ᵤ Singᵤ T₂) ∙⟶ Singᵤ (T₁ ∙×ᵤ T₂)
-tensorr T₁ T₂ = (∙id⟷ ∙⊗ extract T₂) ∙⊚ return (T₁ ∙×ᵤ T₂)
+tensorr : {T₁ T₂ : ∙𝕌} → (T₁ ∙×ᵤ Singᵤ T₂) ∙⟶ Singᵤ (T₁ ∙×ᵤ T₂)
+tensorr {T₁} {T₂} = (∙id⟷ ∙⊗ extract T₂) ∙⊚ return (T₁ ∙×ᵤ T₂)
 
-cotensorl : (T₁ T₂ : ∙𝕌) → Singᵤ (T₁ ∙×ᵤ T₂) ∙⟶ (Singᵤ T₁ ∙×ᵤ T₂)
-cotensorl T₁ T₂ = extract (T₁ ∙×ᵤ T₂) ∙⊚ (return T₁ ∙⊗ ∙id⟷)
+cotensorl : {T₁ T₂ : ∙𝕌} → Singᵤ (T₁ ∙×ᵤ T₂) ∙⟶ (Singᵤ T₁ ∙×ᵤ T₂)
+cotensorl {T₁} {T₂} = extract (T₁ ∙×ᵤ T₂) ∙⊚ (return T₁ ∙⊗ ∙id⟷)
 
-cotensorr : (T₁ T₂ : ∙𝕌) → Singᵤ (T₁ ∙×ᵤ T₂) ∙⟶ (T₁ ∙×ᵤ Singᵤ T₂)
-cotensorr T₁ T₂ = extract (T₁ ∙×ᵤ T₂) ∙⊚ (∙id⟷ ∙⊗ return T₂)
+cotensorr : {T₁ T₂ : ∙𝕌} → Singᵤ (T₁ ∙×ᵤ T₂) ∙⟶ (T₁ ∙×ᵤ Singᵤ T₂)
+cotensorr {T₁} {T₂} = extract (T₁ ∙×ᵤ T₂) ∙⊚ (∙id⟷ ∙⊗ return T₂)
 
-plusl : (T₁ T₂ : ∙𝕌) → (Singᵤ T₁ ∙+ᵤl T₂) ∙⟶ Singᵤ (T₁ ∙+ᵤl T₂)
-plusl T₁ T₂ = (extract T₁ ∙⊕ₗ ∙id⟷) ∙⊚ return (T₁ ∙+ᵤl T₂)
+plusl : {T₁ T₂ : ∙𝕌} → (Singᵤ T₁ ∙+ᵤl T₂) ∙⟶ Singᵤ (T₁ ∙+ᵤl T₂)
+plusl {T₁} {T₂} = (extract T₁ ∙⊕ₗ ∙id⟷) ∙⊚ return (T₁ ∙+ᵤl T₂)
 
-plusr : (T₁ T₂ : ∙𝕌) → (T₁ ∙+ᵤr Singᵤ T₂) ∙⟶ Singᵤ (T₁ ∙+ᵤr T₂)
-plusr T₁ T₂ = (∙id⟷ ∙⊕ᵣ extract T₂) ∙⊚ return (T₁ ∙+ᵤr T₂)
+plusr : {T₁ T₂ : ∙𝕌} → (T₁ ∙+ᵤr Singᵤ T₂) ∙⟶ Singᵤ (T₁ ∙+ᵤr T₂)
+plusr {T₁} {T₂} = (∙id⟷ ∙⊕ᵣ extract T₂) ∙⊚ return (T₁ ∙+ᵤr T₂)
 
-coplusl : (T₁ T₂ : ∙𝕌) → Singᵤ (T₁ ∙+ᵤl T₂) ∙⟶ (Singᵤ T₁ ∙+ᵤl T₂)
-coplusl T₁ T₂ = extract (T₁ ∙+ᵤl T₂) ∙⊚ (return T₁ ∙⊕ₗ ∙id⟷)
+coplusl : {T₁ T₂ : ∙𝕌} → Singᵤ (T₁ ∙+ᵤl T₂) ∙⟶ (Singᵤ T₁ ∙+ᵤl T₂)
+coplusl {T₁} {T₂} = extract (T₁ ∙+ᵤl T₂) ∙⊚ (return T₁ ∙⊕ₗ ∙id⟷)
 
-coplusr : (T₁ T₂ : ∙𝕌) → Singᵤ (T₁ ∙+ᵤr T₂) ∙⟶ (T₁ ∙+ᵤr Singᵤ T₂)
-coplusr T₁ T₂ = extract (T₁ ∙+ᵤr T₂) ∙⊚ (∙id⟷ ∙⊕ᵣ return T₂)
+coplusr : {T₁ T₂ : ∙𝕌} → Singᵤ (T₁ ∙+ᵤr T₂) ∙⟶ (T₁ ∙+ᵤr Singᵤ T₂)
+coplusr {T₁} {T₂} = extract (T₁ ∙+ᵤr T₂) ∙⊚ (∙id⟷ ∙⊕ᵣ return T₂)
 
 -- functor
-∙Singᵤ : (T₁ T₂ : ∙𝕌) → (T₁ ∙⟶ T₂) → (Singᵤ T₁ ∙⟶ Singᵤ T₂)
-∙Singᵤ T₁ T₂ c = extract T₁ ∙⊚ c ∙⊚ return T₂
+∙Singᵤ : {T₁ T₂ : ∙𝕌} → (T₁ ∙⟶ T₂) → (Singᵤ T₁ ∙⟶ Singᵤ T₂)
+∙Singᵤ {T₁} {T₂} c = extract T₁ ∙⊚ c ∙⊚ return T₂
 
-join : (T₁ T₂ : ∙𝕌) → Singᵤ (Singᵤ T₁) ∙⟶ Singᵤ T₁
-join T₁ T₂ = extract (Singᵤ T₁)
+join : {T₁ : ∙𝕌} → Singᵤ (Singᵤ T₁) ∙⟶ Singᵤ T₁
+join {T₁} = extract (Singᵤ T₁)
 
-duplicate : (T₁ T₂ : ∙𝕌) → Singᵤ (Singᵤ T₁) ∙⟶ Singᵤ T₁
-duplicate T₁ T₂ = extract (Singᵤ T₁)
+duplicate : {T₁ : ∙𝕌} → Singᵤ (Singᵤ T₁) ∙⟶ Singᵤ T₁
+duplicate {T₁} = extract (Singᵤ T₁)
 
 !∙_ : {A B : ∙𝕌} → A ∙⟶ B → B ∙⟶ A
 !∙ (∙c {t₁} {t₂} {v} c) = subst (λ x → t₂ # eval c v ∙⟶ t₁ # x) (ΠisRev c v) (∙c (! c))
