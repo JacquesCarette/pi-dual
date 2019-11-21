@@ -864,14 +864,15 @@ entanglement~\cite{DBLP:journals/cal/ZhouB19}:
 \end{wrapfigure}  
 \PIFDparity{}
 
-\noindent The circuit exploits the additional expressiveness of
-choosing the initial value of the ancilla (and sets it to true). When
-applied to quantum inputs, the circuit detects whether the two qubits
-are entangled in the state
-$\frac{1}{\sqrt{2}}(\ket{00}+\ket{11})$. This property can be
-confirmed from the classical behavior: if the inputs are anything
-else, the ancilla bit is not restored to its original value (true) and
-the dynamic check fails.
+\noindent The circuit initializes the ancilla to \textsf{true} and
+checks that it remains \textsf{true} after interacting with the two
+inputs. If either one of the inputs is \textsf{true} (but not both)
+the ancilla bit will be negated and the runtime check would fail. Thus
+the circuit can be used as a runtime assertion that the two inputs are
+equal. When applied to quantum inputs, the circuit detects whether the
+two qubits are entangled or not. By varying the initial value of the
+ancilla, it is possible to customize the dynamic assertion to check
+for particular entangled states~\cite{DBLP:journals/cal/ZhouB19}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Space Operational Semantics}
