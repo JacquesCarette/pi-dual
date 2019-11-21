@@ -275,19 +275,29 @@ James et al.~\cite{rc2011,rc2012,James:2012:IE:2103656.2103667} that
 introduces a reversible programming language built using isomorphism
 of types. Although it is conceivable that the concept of fractional
 types would apply to general-purpose languages (after some
-adaptation), its natural technical definition is using symmetries
+adaptation), its natural technical definition exploits symmetries
 present in categorical model of type isomorphisms. We present such a
-definition in Sec.~\ref{sec:dyn}: that definition captures the main
-ideas of fractional types and partially solves a more general and more
-expressive instance of the ancilla problem. To make the memory
-management explicit, Sec.~\ref{sec:space} provides an operational
-semantics that exposes memory management details using a realization
-of fractional types as first-class garbage collectors. In
-Sec.~\ref{sec:dep} we refine the type system to keep track of ancillae
-values. Technically this requires the introduction of pointed types on
-top of which are defined both a monad and co-monad of singleton
-types. We conclude with a discussion of related work and a summary of
-our results.
+definition in Sec.~\ref{sec:dyn} which captures and illustrates the
+main novelties of fractional types and their runtime representations
+as first-class gc processes. This presentation partially solves a more
+general and more expressive instance of the ancilla problem as
+illustrated with examples. To make the arguments regarding memory
+management explicit, Sec.~\ref{sec:space} presents an abstract machine
+with a heap component that grows and shrinks as ancillae are allocated
+and de-allocated via fractional gc processes. In Sec.~\ref{sec:dep} we
+lift ``plain'' programs manipulating ancillae to the type system in
+order to exploit the power of dependent types to guarantee, for the
+first time, the condition necessary for safe de-allocation of
+ancillae. Technically this solution requires the introduction of
+pointed types on top of which are defined both a monad and co-monad of
+singleton types. The tracking of ancillae value is done within the
+type system via the singleton types. A number of examples exploiting
+the singleton-based type system are present to demonstrate the full
+expressiveness of fractional types. We furthermore demonstrate that,
+from the proofs of type safety, plain (but guaranteed to be safe)
+programs can be extracted and executing without errors or runtime
+checks in the conventional type system. The last section concludes
+with a discussion of related work and a summary of our results.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Ancilla Bits}
@@ -875,24 +885,23 @@ ancilla, it is possible to customize the dynamic assertion to check
 for particular entangled states~\cite{DBLP:journals/cal/ZhouB19}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Space Operational Semantics}
+\section{Space-Tracking Abstract Machine}
 \label{sec:space}  
 
-Positive rational numbers are a model. Apparently there is a
-categorification
-\url{https://alistairsavage.ca/pubs/Copelli-Categorification_of_the_Nonnegative_Rational_Numbers.pdf}
-
-Use all the constructions name, coname, etc. and see what they do in this context!
 
 cardinality of pi type:
 \PIMEMcard{}
+
 enumeration:
 \PIMEMenum{}
+
 combinator preserve size:
 \PIMEMcardeq{}
+
 semantics for Pi:
 \PIMEMstate{}
 \PIMEMstep{}
+
 semantics for PiFracDyn:
 \PIFMEMstate{}
 \PIFMEMstep{}
@@ -1013,6 +1022,8 @@ the dynamic check won't fail.
 \subsection{Examples}
 \label{sec:cat}  
 
+Use all the constructions name, coname, etc. and see what they do in this context!  
+ 
 allocate A
 allocate B
 combinate the gc's for A and B to get 1/(AxB)
@@ -1096,12 +1107,15 @@ Quantum runtime assertion~\cite{DBLP:journals/cal/ZhouB19}
 
 QWIRE~\cite{Paykin:2017:QCL:3009837.3009894}
 
+Positive rational numbers are a model. Apparently there is a
+categorification
+\url{https://alistairsavage.ca/pubs/Copelli-Categorification_of_the_Nonnegative_Rational_Numbers.pdf}
 
-% General allocation and de-allocation. No need to keep track of
-% lifetime. Just make sure location is back to initial value. Safe to
-% de-allocate because indistinguishable from freshly created. No pointer
-% equality and aliases though. Concurrent: one thread allocates; gc
-% thread meets someone else
+General allocation and de-allocation. No need to keep track of
+lifetime. Just make sure location is back to initial value. Safe to
+de-allocate because indistinguishable from freshly created. No pointer
+equality and aliases though. Concurrent: one thread allocates; gc
+thread meets someone else
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliography{../cites.bib}
