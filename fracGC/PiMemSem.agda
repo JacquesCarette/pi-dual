@@ -19,6 +19,7 @@ infixr 70 _×ᵤ_
 infixr 60 _+ᵤ_
 infixr 50 _⊚_
 infix  80 ∣_∣
+infix 100 !_
 
 data 𝕌 : Set where
   𝟘       : 𝕌
@@ -59,6 +60,34 @@ data _⟷_ : 𝕌 → 𝕌 → Set where
   _⊚_     : {t₁ t₂ t₃ : 𝕌} → (t₁ ⟷ t₂) → (t₂ ⟷ t₃) → (t₁ ⟷ t₃)
   _⊕_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (t₁ +ᵤ t₂ ⟷ t₃ +ᵤ t₄)
   _⊗_     : {t₁ t₂ t₃ t₄ : 𝕌} → (t₁ ⟷ t₃) → (t₂ ⟷ t₄) → (t₁ ×ᵤ t₂ ⟷ t₃ ×ᵤ t₄)
+
+!_ : {A B : 𝕌} → A ⟷ B → B ⟷ A
+! unite₊l = uniti₊l
+! uniti₊l = unite₊l
+! unite₊r = uniti₊r
+! uniti₊r = unite₊r
+! swap₊ = swap₊
+! assocl₊ = assocr₊
+! assocr₊ = assocl₊
+! unite⋆l = uniti⋆l
+! uniti⋆l = unite⋆l
+! unite⋆r = uniti⋆r
+! uniti⋆r = unite⋆r
+! swap⋆ = swap⋆
+! assocl⋆ = assocr⋆
+! assocr⋆ = assocl⋆
+! absorbr = factorzl
+! absorbl = factorzr
+! factorzr = absorbl
+! factorzl = absorbr
+! dist = factor
+! factor = dist
+! distl = factorl
+! factorl = distl
+! id⟷ = id⟷
+! (c₁ ⊚ c₂) = (! c₂) ⊚ (! c₁)
+! (c₁ ⊕ c₂) = (! c₁) ⊕ (! c₂)
+! (c₁ ⊗ c₂) = (! c₁) ⊗ (! c₂)
 
 ∣_∣ : (A : 𝕌) → ℕ
 ∣ 𝟘 ∣ = 0
@@ -198,29 +227,27 @@ st (x , y) (c₁ ⊗ c₂)                        = let _ , c , st' = st x c₁ 
 step : {A B : 𝕌} (c : A ⟷ B) → State A → Σ[ C ∈ 𝕌 ] (C ⟷ B × State C)
 step c ⟪ v [ i ]⟫ = st (lookup v i) c
 
-data State' (n : ℕ) : Set where
-  ⟪_∥_,_[_]⟫ : {A B : 𝕌} → A ⟷ B → (∣ A ∣ ≡ n) → Vec ⟦ A ⟧ ∣ A ∣ → Fin ∣ A ∣ → State' n
+data State' : ℕ → Set where
+  ⟪_∥_[_]⟫ : {A B : 𝕌} → A ⟷ B → Vec ⟦ A ⟧ ∣ A ∣ → Fin ∣ A ∣ → State' ∣ A ∣
 
-step' : {A : 𝕌} → State' ∣ A ∣ → State' ∣ A ∣
-step' {A} ⟪ c ∥ p , v [ i ]⟫ =
-  case step c ⟪ v [ i ]⟫ of λ { (_ , c' , ⟪ v' [ i' ]⟫ ) →
-    ⟪ c' ∥ trans (trans (card= c') (sym $ card= c) ) p , v' [ i' ]⟫ }
+step' : ∀ {n} → State' n → State' n
+step' (⟪_∥_[_]⟫ {A} {B} c v i) with step c ⟪ v [ i ]⟫
+... | A' , c' , ⟪ v' [ i' ]⟫ rewrite card= (c ⊚ ! c') = ⟪ c' ∥ v' [ i' ]⟫
+
+run : (sz n : ℕ) → (st : State' sz) → Vec (State' sz) (suc n)
+run sz 0 st = [ st ]
+run sz (suc n) st with run sz n st
+... | sts with last sts
+... | ⟪_∥_[_]⟫ {A} {B} cx vx ix rewrite +-comm 1 (suc n) = sts ++ [ step' ⟪ cx ∥ vx [ ix ]⟫ ]
 
 𝔹 : 𝕌
 𝔹 = 𝟙 +ᵤ 𝟙
 
-𝔽 𝕋 : ⟦ 𝔹 ⟧
-𝔽 = inj₁ tt
-𝕋 = inj₂ tt
-
-run : (sz n : ℕ) → State' sz → Vec (State' sz) (suc n)
-run sz 0 st = [ st ]
-run sz (suc n) st with run sz n st
-... | sts with last sts
-... | ⟪_∥_,_[_]⟫ {A} {B} cx refl vx ix rewrite +-comm 1 (suc n) = sts ++ [ step' {A} ⟪ cx ∥ refl , vx [ ix ]⟫ ]
+pattern 𝔽 = inj₁ tt
+pattern 𝕋 = inj₂ tt
 
 CNOT : 𝔹 ×ᵤ 𝔹 ⟷ 𝔹 ×ᵤ 𝔹
 CNOT = dist ⊚ (id⟷ ⊕ (id⟷ ⊗ swap₊)) ⊚ factor
 
 ex₁ : Vec (State' ∣ 𝔹 ×ᵤ 𝔹 ∣) 8
-ex₁ = run ∣ 𝔹 ×ᵤ 𝔹 ∣ 7 ⟪ CNOT ∥ refl , Enum (𝔹 ×ᵤ 𝔹) [ Fin.fromℕ 3 ]⟫
+ex₁ = run ∣ 𝔹 ×ᵤ 𝔹 ∣ 7 ⟪ CNOT ∥ Enum (𝔹 ×ᵤ 𝔹) [ Fin.fromℕ 3 ]⟫
