@@ -38,6 +38,11 @@ trace {A} {B} {C} f =
   (extract _ ∙⊗ ε C) ∙⊚
   ∙unite⋆r
 
+-- Trace terminates!  The type C is pointed with point c; trace uses c
+-- as the initial value for C. So f gets two values (a,c). It can do
+-- whatever to produce (b',c'). But f is reversible so it is limited
+-- to essentially either id or swap. Makes sense???
+
 𝔹 : 𝕌
 𝔹 = 𝟙 +ᵤ 𝟙
 
@@ -45,9 +50,9 @@ trace {A} {B} {C} f =
 𝔽 = inj₁ tt
 𝕋 = inj₂ tt
 
-zz1 : (b : ⟦ 𝔹 ⟧) → Σ (⟦ 𝔹 ⟧ → ⟦ 𝔹 ⟧) (λ f → f b ≡ b)
-zz1 b = ∙eval (trace {𝔹 # b} ∙swap⋆)
+zz1 : (A : 𝕌) (v : ⟦ A ⟧) → Σ (⟦ A ⟧ → ⟦ A ⟧) (λ f → f v ≡ v)
+zz1 A v = ∙eval (trace {A # v} ∙swap⋆)
 
-zz3 : (A : ∙𝕌) (b : ⟦ 𝔹 ⟧) → Σ (⟦ 𝔹 ⟧ → ⟦ 𝔹 ⟧) (λ f → f b ≡ b)
-zz3 A b = ∙eval (trace {𝔹 # b} {𝔹 # b} {A} ∙id⟷)
+zz3 : (A : 𝕌) (v : ⟦ A ⟧) (T : ∙𝕌) → Σ (⟦ A ⟧ → ⟦ A ⟧) (λ f → f v ≡ v)
+zz3 A v T = ∙eval (trace {A # v} {_} {T} ∙id⟷)
 
