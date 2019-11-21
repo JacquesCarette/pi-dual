@@ -264,8 +264,8 @@ coplusr {T₁} {T₂} = extract (T₁ ∙+ᵤr T₂) ∙⊚ (∙id⟷ ∙⊕ᵣ 
 join : {T₁ : ∙𝕌} → Singᵤ (Singᵤ T₁) ∙⟶ Singᵤ T₁
 join {T₁} = extract (Singᵤ T₁)
 
-duplicate : {T₁ : ∙𝕌} → Singᵤ (Singᵤ T₁) ∙⟶ Singᵤ T₁
-duplicate {T₁} = extract (Singᵤ T₁)
+duplicate : {T₁ : ∙𝕌} → Singᵤ T₁ ∙⟶ Singᵤ (Singᵤ T₁)
+duplicate {T₁} = return (Singᵤ T₁)
 
 !∙_ : {A B : ∙𝕌} → A ∙⟶ B → B ∙⟶ A
 !∙ (∙c {t₁} {t₂} {v} c) = subst (λ x → t₂ # eval c v ∙⟶ t₁ # x) (ΠisRev c v) (∙c (! c))
