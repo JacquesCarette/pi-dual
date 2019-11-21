@@ -744,8 +744,8 @@ follows:
 \textit{Values}      & v &::=& \cdots \alt \gcv \\
 \textit{Level-1 types} &&& t \leftrightarrow t \\
 \textit{Level-1 programs} & c &::=& \cdots \alt
-   \eta : 1 \leftrightarrow (\net * \oneover{\net}) \\
-   &&& ~~~~~\alt \epsilon : (\net * \oneover{\net}) \leftrightarrow 1 \\
+   \eta_{\net} : 1 \leftrightarrow (\net * \oneover{\net}) \\
+   &&& ~~~~~\alt \epsilon_{\net} : (\net * \oneover{\net}) \leftrightarrow 1 \\
 \textit{Level-2 types} &&& c \Leftrightarrow c \\
 \textit{Level-2 programs} & \alpha &::=& \cdots 
   \alt \mathit{inv} : \eta \fatsemi \epsilon \Leftrightarrow \idc 
@@ -814,16 +814,49 @@ processes each collecting one of the values (and vice-versa):
 %%%%% 
 \subsection{Choosing Ancillae Values}
  
-move from 1/t to 1/v (how the quantum search runs; need ancilla 
-initialized to a specific value) 
+The previous development achieves a significant milestone but only
+hints at the full expressiveness of fractional types. A small but
+significant additional expressiveness is to allow ancillae to be
+initialized to a value of the programmer's choice, not just a globally
+fixed default value. This ability is used in Grover's search algorithm
+to implement phase kickback
+efficiently~\cite{howgrover}.\footnote{Instead of using an ancilla bit
+  initialized to $\ket{0}$, an ancilla initialized to
+  $\frac{\ket{0}-\ket{1}}{\sqrt{2}}$ is used.} This can be easily
+achieved in our language as follows:
+
+\[\begin{array}{lrcl}
+\textit{Value types} & t &::=& \cdots \alt \oneover{v} \\
+\textit{Values}      & v &::=& \cdots \alt \gcv \\
+\textit{Level-1 types} &&& t \leftrightarrow t \\
+\textit{Level-1 programs} & c &::=& \cdots \alt
+   \eta_{v:t} : 1 \leftrightarrow (t * \oneover{v}) \\
+   &&& ~~~~~\alt \epsilon_{v:t} : (t * \oneover{v}) \leftrightarrow 1 \\
+\textit{Level-2 types} &&& c \Leftrightarrow c \\
+\textit{Level-2 programs} & \alpha &::=& \cdots 
+  \alt \mathit{inv} : \eta_{v:t} \fatsemi \epsilon_{v:t} \Leftrightarrow \idc 
+\end{array}\]
+
+In addition to being more expressive, this version has the advantage
+of replacing the cumbersome evidence that the type is not empty by the
+more intuitive evidence of choosing a value of the type. The
+simplications are evident in the Agda formalization:
 
 \PIFDUdef{}
 
-change of combinators:
+\vspace{-\baselineskip}
+
 \PIFDCombdef{}
 
-change of interpreter:
+\vspace{-\baselineskip}
+
 \PIFDinterp{}
+
+Example Sec. 3.2 of
+\url{https://people.engr.ncsu.edu/hzhou/quantum_assert.pdf} with ancilla
+initialized to 1 to detected entanglement
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Space Operational Semantics}
@@ -1040,6 +1073,13 @@ common complement ($Y$), then the ``other pieces''
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Conclusion}
+
+Quantum wire recycling~\cite{PhysRevA.94.042337}
+
+Quantum runtime assertion~\cite{DBLP:journals/cal/ZhouB19}
+
+QWIRE~\cite{Paykin:2017:QCL:3009837.3009894}
+
 
 % General allocation and de-allocation. No need to keep track of
 % lifetime. Just make sure location is back to initial value. Safe to
