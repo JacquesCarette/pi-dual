@@ -87,6 +87,9 @@ mutual
 𝕌dec (t₁ ×ᵤ t₂) (x₁ , y₁) (x₂ , y₂) | no ¬p | no ¬p₁ = no (λ p → ¬p (cong proj₁ p))
 𝕌dec (𝟙/ v) ○ ○ = yes refl
 
+_≟ᵤ_ : {t : 𝕌} → Decidable (_≡_ {A = ⟦ t ⟧})
+_≟ᵤ_ {t} v w = 𝕌dec t v w
+
 interp : {t₁ t₂ : 𝕌} → (t₁ ↔ t₂) → ⟦ t₁ ⟧ → Maybe ⟦ t₂ ⟧
 interp unite₊l (inj₁ ())
 interp unite₊l (inj₂ v) = just v

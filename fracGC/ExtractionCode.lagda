@@ -167,15 +167,9 @@ Ext∙⟶ (c₁ ∙⊗ c₂) = Ext∙⟶ c₁ ⊗ Ext∙⟶ c₂
 Ext∙⟶ (return T) = id↔
 \end{code}
 \begin{code}[hide]
-Ext∙⟶ (tensorl T₁ T₂) = id↔
-Ext∙⟶ (tensorr T₁ T₂) = id↔
-Ext∙⟶ (tensor T₁ T₂) = id↔
-Ext∙⟶ (untensor T₁ T₂) = id↔
 Ext∙⟶ (plusl T₁ T₂) = id↔
 Ext∙⟶ (plusr T₁ T₂) = id↔
 Ext∙⟶ (extract T) = id↔
-Ext∙⟶ (cotensorl T₁ T₂) = id↔
-Ext∙⟶ (cotensorr T₁ T₂) = id↔
 Ext∙⟶ (coplusl T₁ T₂) = id↔
 Ext∙⟶ (coplusr T₁ T₂) = id↔
 \end{code}
@@ -207,15 +201,9 @@ Ext≡ (c₁ ∙⊗ c₂) rewrite Ext≡ c₁ | Ext≡ c₂ = refl
 \end{code}
 \begin{code}[hide]
 Ext≡ (return T) = refl
-Ext≡ (tensorl T₁ T₂) = refl
-Ext≡ (tensorr T₁ T₂) = refl
-Ext≡ (tensor T₁ T₂) = refl
-Ext≡ (untensor T₁ T₂) = refl
 Ext≡ (plusl T₁ T₂) = refl
 Ext≡ (plusr T₁ T₂) = refl
 Ext≡ (extract T) = refl
-Ext≡ (cotensorl T₁ T₂) = refl
-Ext≡ (cotensorr T₁ T₂) = refl
 Ext≡ (coplusl T₁ T₂) = refl
 Ext≡ (coplusr T₁ T₂) = refl
 \end{code}
@@ -223,7 +211,7 @@ $\;\;\;\;\vdots$
 \begin{code}
 Ext≡ (∙Singᵤ T₁ T₂ c) rewrite Ext≡ c = refl
 Ext≡ (η T) = refl
-Ext≡ (ε T) with 𝕌dec _ (proj₂ (Ext𝕌 T)) (proj₂ (Ext𝕌 T))
+Ext≡ (ε T) with (proj₂ (Ext𝕌 T)) ≟ᵤ (proj₂ (Ext𝕌 T))
 Ext≡ (ε T) | yes p = refl
 Ext≡ (ε T) | no ¬p = ⊥-elim (¬p refl)
 \end{code}}
