@@ -27,7 +27,9 @@ eval square n = n * n
 eval isZero 0 = true
 eval isZero (suc _) = false
 eval (compose g f) v = eval g (eval f v)
-
+\end{code}}
+\newcommand{\Jexamplecont}{%
+\begin{code}
 data T∙ : Set where
   _#_ : (a : T) → (v : ⟦ a ⟧) → T∙
 
@@ -37,7 +39,9 @@ data T∙ : Set where
 data Fun∙ : T∙ → T∙ → Set where
   lift : {a b : T} {v : ⟦ a ⟧} → (f : Fun a b) → 
          Fun∙ (a # v) (b # (eval f v))
-
+\end{code}}
+\newcommand{\Jexampletest}{%
+\begin{code}
 test1 : Fun∙ (N # 3) (B # false)
 test1 = lift (compose isZero square)
 

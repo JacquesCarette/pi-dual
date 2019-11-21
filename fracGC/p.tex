@@ -149,10 +149,10 @@ $\displaystyle
 
   We propose a novel approach based on the idea of \emph{fractional
     types}. As a simple intuitive example, allocation of a new boolean
-  value initialized to \textsf{false} also creates a value
-  $\oneover{\textsf{false}}$ that can be thought of as a garbage
+  value initialized to \AgdaInductiveConstructor{false} also creates a value
+  $\oneover{\AgdaInductiveConstructor{false}}$ that can be thought of as a garbage
   collection (gc) process specialized to reclaim, and only reclaim,
-  storage containing the value $\textsf{false}$. This gc process is a
+  storage containing the value $\AgdaInductiveConstructor{false}$. This gc process is a
   first-class entity that can sliced and diced by combining it with
   other gc processes and decomposing it in smaller
   processes.
@@ -884,9 +884,9 @@ entanglement~\cite{DBLP:journals/cal/ZhouB19}:
 \end{wrapfigure}  
 \PIFDparity{}
 
-\noindent The circuit initializes the ancilla to \textsf{true} and
-checks that it remains \textsf{true} after interacting with the two
-inputs. If either one of the inputs is \textsf{true} (but not both)
+\noindent The circuit initializes the ancilla to \AgdaInductiveConstructor{true} and
+checks that it remains \AgdaInductiveConstructor{true} after interacting with the two
+inputs. If either one of the inputs is \AgdaInductiveConstructor{true} (but not both)
 the ancilla bit will be negated and the runtime check would fail. Thus
 the circuit can be used as a runtime assertion that the two inputs are
 equal. When applied to quantum inputs, the circuit detects whether the
@@ -963,7 +963,7 @@ include the current combinator in the code register, and represent the
 memory register using an index into an enumeration. Thus a memory
 register containing a boolean value would be represented in Agda as 𝔽
 ::  𝕋 :: [] [ Fin.0F ] or 𝔽 :: 𝕋 :: [] [ Fin.1F ] depending on whether
-the values is \textsf{false} or \textsf{true}. The prepending list
+the values is \AgdaInductiveConstructor{false} or \AgdaInductiveConstructor{true}. The prepending list
 contains all possible values of the type and the number in between [\ldots ] 
 is an index into the list, representing a finite number that
 is guaranteed to be in bounds. In a low-level runtime representation
@@ -1042,7 +1042,43 @@ highlight the main idea using the toy language below:
 
 \Jexample{}
 
-rationale: we want singleton types to track, in the type system
+The toy language has two types (natural numbers and booleans) and two
+functions (and their compositions). Say we wanted to prove that
+\AgdaInductiveConstructor{compose isZero square} always returns
+\AgdaInductiveConstructor{false} when applies to a non-zero natural
+number. We can certainly do this proof in Agda (i.e., in the
+meta-language of our formalization) but we would like to do the proof
+within the framework of the toy language itself. The most important
+reason is that this proof can be now be used within the language to
+optimize programs (or as the case will be for the full language to
+remove a runtime check).
+
+The strategy we adopt is to create a lifted version of the toy
+language with \emph{pointed types}~\cite{XXX}, i.e., types paired with
+a value of the type. In such the lifted language, the evaluation
+function has an interesting type: it keeps track of the result of
+evaluation within the type:
+
+\Jexamplecont{}
+
+Now various properties of our small example
+\AgdaInductiveConstructor{compose isZero square} can be derived within
+the extended type system for the toy language:
+
+\Jexampletest{}
+
+Evidently we can track concrete values as the first two tests
+show. What is more interesting is \AgdaFunction{test3} which shows a
+property that holds for all natural numbers $n$. The full evaluation
+was not used but only partially as needed to derive the property. This
+form of partial evaluation will prove to be quite expressive allowing
+us to keep track of ancillae values throughout complex programs as
+demonstrated in Sec.~\ref{sec:cat}. 
+
+%%%%% 
+\subsection{Pointed Types}
+ 
+ rationale: we want singleton types to track, in the type system
 the values of ancillae, i.e.. we construct a proof using the type
 system. Technically the singleton types allow you to focus on one
 value by reflecting it in the type system. Now this type can only be
@@ -1055,11 +1091,8 @@ computation itself is reflected in the type system. In order to mix
 singleton types with other types, we use pointed types as a unifying
 substrate. Now all types have values; we can focus (using monad) and
 unfocus using (comonad). (This by the way ensures we don't write 1/0
-which woudl be bad). 
+which would be bad). 
 
-%%%%% 
-\subsection{Pointed Types}
- 
 %%%%% 
 \subsection{Singleton Types}
  
