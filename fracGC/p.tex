@@ -322,6 +322,13 @@ programs can be extracted and executed without errors or runtime
 checks in the conventional type system. The last section concludes
 with a discussion of related work and a summary of our results.
 
+The paper includes a number of languages that express different
+points. The three most important languages and their relationships are
+highlighted in this diagram:
+\begin{center}
+\input{lang.tikz}
+\end{center} 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Ancilla Bits}
 \label{sec:examples}
@@ -754,7 +761,7 @@ processes each collecting one of the values (and vice-versa):
 \EtaEpsilonExampletwo{}
 
 %%%%%
-\subsection{Choosing Ancillae Values}
+\subsection{Choosing Ancillae Values: $\Pi/D$}
 
 The previous development achieves a significant milestone but only
 hints at the full expressiveness of fractional types. A small addition
@@ -776,9 +783,11 @@ achieved by adapting our language as follows:
    &&& ~~~~~\alt \epsilon_{v:t} : (t \times \oneover{v}) \leftrightarrow 1 
 \end{array}\]
 
-In addition to being more expressive, this version has the advantage
-of replacing the cumbersome cardinality-based evidence that the type
-is not empty by the more intuitive evidence of choosing a value of the
+We will call this language $\Pi/D$ for the fractional extension of
+$\Pi$ with a dynamic check. In addition to being more expressive than
+the language in the previous subsection, $\Pi/D$ has the advantage of
+replacing the cumbersome cardinality-based evidence that the type is
+not empty by the more intuitive evidence of choosing a value of the
 type. The simplications are evident in the Agda formalization:
 
 \PIFDUdef{}
@@ -860,7 +869,7 @@ $\oneover{t}$:
 \end{itemize}
 
 %%
-\subsection{Abstract Machine without Fractionals}
+\subsection{Abstract Machine for $\Pi$}
 
 To start, we introduce some of the common technical details in the
 simpler setting of the core $\Pi$ language. The cardinalities of
@@ -923,7 +932,7 @@ the current index (i.e., the current value) changes.
 %% \PIMEMstep{}
 
 %%
-\subsection{Abstract Machine with Fractionals}
+\subsection{Abstract Machine for $\Pi/D$}
 
 Using the same assumptions as before, machine states and small step
 reductions are formalized as follows:
@@ -1009,16 +1018,16 @@ of ancillae values throughout complex programs as demonstrated in
 Sec.~\ref{sec:cat}.
 
 %%%%%
-\subsection{Pointed and Singleton Types}
+\subsection{Pointed and Singleton Types: $\Pi/\bullet$}
 
 Following the development for the toy language above, we create a
-lifted version of fractional $\Pi$ with pointed types. In addition to
-the explicit pointed types of the form $t$\Acon{\#}$v$, we will need a
-multiplicative structure over pointed types, fractional types, and a
-special kind of pointed type that includes just one value, a singleton
-type. The singleton types will allow the type system to track the flow
-of one particular value, which is exactly what is needed to prove the
-safety of deallocation:
+lifted version of fractional $\Pi$ with pointed types which we call
+$\Pi/\bullet$. In addition to the explicit pointed types of the form
+$t$\Acon{\#}$v$, we will need a multiplicative structure over pointed
+types, fractional types, and a special kind of pointed type that
+includes just one value, a singleton type. The singleton types will
+allow the type system to track the flow of one particular value, which
+is exactly what is needed to prove the safety of deallocation:
 
 \PIPFUdef{}
 
@@ -1032,8 +1041,8 @@ disregards the value it is given: the type system however prevents
 this value from being applied to anything but the particular singleton
 value in question.
 
-The combinators in the lifted language consist of all the combinators
-in the base language but now operating on pointed types. The mediation
+The combinators in the lifted language $\Pi/\bullet$ consist of all the combinators
+in the core $\Pi$ language but now operating on pointed types. The mediation
 between general pointed types and singleton types is done via
 \Acon{return} and \Acon{extract} which as we prove below form a
 dual monad/comonad pair. The types for \Acon{$\eta$} and
@@ -1094,12 +1103,22 @@ trace shows the actual execution for confirmation:
 %%%%%%%%%
 \subsection{Extraction}
 
-Exploit dependent types to reify proofs in the type system. Type
-checking requires (partial) eval. Once we have a proof can we somehow
-go back to \verb|PiFracDyn| and remove the runtime check?
+By lifting programs and their evaluation to the type level, we can
+naturally leverage the typechecking process to verify properties of
+interest, including the safe de-allocation of ancillae. One ``could''
+just write programs in that style: indeed the dual nature of proofs
+and programs is more and more exploited in languages like the one used
+to formalize this paper (Agda). The examples in Sec.~\ref{sec:cat} are
+written in that style and they are relatively similar to programs
+in the ``normal'' language.
 
-Polymorphic type for ancilla?
-\\
+However, it is also often the case than constructive proofs are
+further processed to extract a native efficient programs that eschew
+all the information needed for the proof invariants. In our case, the
+question is whether we can extract a program that runs in the XX but
+is guaranteed to be safe and hence can run without the runtime checks
+associated with de-allocation sites.
+
 First we can inject plain Pi type and value into PiFracDyn:
 %% \ednote{Pi/.U is not defined before its use below}
 \INJU{}
