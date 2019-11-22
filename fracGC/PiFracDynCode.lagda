@@ -10,7 +10,7 @@ open import Data.Nat.Properties
 open import Data.Sum
 open import Data.Product
 open import Data.Maybe
-open import Function
+open import Function using (_∘_)
 open import Relation.Binary.PropositionalEquality
   renaming ([_] to R[_])
 open import Relation.Binary.Core
@@ -192,7 +192,7 @@ ex2 = refl
 switch : 𝟙 ↔ 𝟙
 switch = uniti⋆r ⊚ (η 𝔽 ⊗ η 𝔽) ⊚ assocl⋆ ⊚
          (((swap⋆ ⊗ id↔) ⊚ assocr⋆ ⊚
-         (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚ 
+         (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚
          assocr⋆ ⊚ (ε 𝔽 ⊗ ε 𝔽) ⊚ unite⋆r
 
 bad : 𝟚 ↔ 𝟚
@@ -243,7 +243,7 @@ CNOT13 : (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋) ↔  (𝔹 ×ᵤ 𝔹) 
 CNOT13 = assocl⋆ ⊚ ((assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (CNOT ⊗ id↔) ⊚ assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆) ⊗ id↔) ⊚ assocr⋆
 
 CNOT23 : (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋) ↔  (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋)
-CNOT23 = assocl⋆ ⊚ ((assocr⋆ ⊚ (id↔ ⊗ CNOT) ⊚ assocl⋆) ⊗ id↔) ⊚ assocr⋆ 
+CNOT23 = assocl⋆ ⊚ ((assocr⋆ ⊚ (id↔ ⊗ CNOT) ⊚ assocl⋆) ⊗ id↔) ⊚ assocr⋆
 \end{code}}
 \newcommand{\PIFDparity}{%
 \begin{code}
@@ -254,9 +254,9 @@ parity =
   (𝔹 ×ᵤ 𝔹) ×ᵤ 𝟙
   ⟷⟨ id↔ ⊗ (η 𝕋) ⟩
   (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋)
-  ⟷⟨ CNOT13 ⟩ 
+  ⟷⟨ CNOT13 ⟩
   (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋)
-  ⟷⟨ CNOT23 ⟩ 
+  ⟷⟨ CNOT23 ⟩
   (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋)
   ⟷⟨ id↔ ⊗ (ε 𝕋) ⟩
   (𝔹 ×ᵤ 𝔹) ×ᵤ 𝟙
