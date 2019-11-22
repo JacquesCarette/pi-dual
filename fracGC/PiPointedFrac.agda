@@ -26,6 +26,7 @@ infixr 70 _∙⊗_
 infixr 60 _∙⊕ₗ_
 infixr 60 _∙⊕ᵣ_
 infixr 50 _∙⊚_
+infix 100 !∙_
 
 ------------------------------------------------------------------------------
 -- Pi
@@ -300,7 +301,7 @@ duplicate {T₁} = return (Singᵤ T₁)
 ∙eval ∙uniti⋆l = (λ {x → (tt , x)}) , refl
 ∙eval ∙unite⋆r = (λ {(x , tt) → x}) , refl
 ∙eval ∙uniti⋆r = (λ {x → (x , tt)}) , refl
-∙eval ∙swap⋆ = (λ {(x , y) → y , x}) , refl 
+∙eval ∙swap⋆ = (λ {(x , y) → y , x}) , refl
 ∙eval ∙assocl⋆ = (λ {(x , (y , z)) → ((x , y) , z)}) , refl
 ∙eval ∙assocr⋆ = (λ {((x , y) , z) → (x , (y , z))}) , refl
 ∙eval (C₀ ∙⊗ C₁) with ∙eval C₀ | ∙eval C₁
@@ -320,4 +321,31 @@ duplicate {T₁} = return (Singᵤ T₁)
 ∙eval (η T) = (λ tt → (proj₂ ∙⟦ T ⟧ , refl) , λ _ → tt) , refl
 ∙eval (ε T) = (λ { ((_ , refl) , f) → f (proj₂ ∙⟦ T ⟧ , refl)}) , refl
 
+{- I'm convinced this is true, but now is not necessarily the time to finish this proof
+∙ΠisRev : ∀ {T₁ T₂} → (c : T₁ ∙⟶ T₂) →
+  let (t₁ , v₁) = ∙⟦ T₁ ⟧
+      (t₂ , v₂) = ∙⟦ T₂ ⟧
+      (f , pf) = ∙eval (c ∙⊚ !∙ c) in
+  f v₁ ≡ v₁
+∙ΠisRev (∙c {v = v} c) =
+  let (f , pf) = ∙eval ((∙c c) ∙⊚ !∙ (∙c c)) in pf
+∙ΠisRev ∙times# = refl
+∙ΠisRev ∙#times = refl
+∙ΠisRev ∙id⟷ = refl
+∙ΠisRev (c ∙⊚ c₁) = {!!}
+∙ΠisRev ∙unite⋆l = refl
+∙ΠisRev ∙uniti⋆l = refl
+∙ΠisRev ∙unite⋆r = {!!}
+∙ΠisRev ∙uniti⋆r = {!!}
+∙ΠisRev ∙swap⋆ = {!!}
+∙ΠisRev ∙assocl⋆ = {!!}
+∙ΠisRev ∙assocr⋆ = {!!}
+∙ΠisRev (c ∙⊗ c₁) = {!!}
+∙ΠisRev (c ∙⊕ₗ c₁) = {!!}
+∙ΠisRev (c ∙⊕ᵣ c₁) = cong inj₂ {!!}
+∙ΠisRev (return T₁) = refl
+∙ΠisRev (extract T₁) = refl
+∙ΠisRev (η T₁) = refl
+∙ΠisRev (ε T₁) = refl
+-}
 -----------------------------------------------------------------------------
