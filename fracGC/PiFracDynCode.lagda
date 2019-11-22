@@ -248,20 +248,13 @@ CNOT23 = assocl⋆ ⊚ ((assocr⋆ ⊚ (id↔ ⊗ CNOT) ⊚ assocl⋆) ⊗ id↔
 \newcommand{\PIFDparity}{%
 \begin{code}
 parity : 𝔹 ×ᵤ 𝔹 ↔ 𝔹 ×ᵤ 𝔹
-parity =
-  𝔹 ×ᵤ 𝔹
-  ⟷⟨ uniti⋆r ⟩
-  (𝔹 ×ᵤ 𝔹) ×ᵤ 𝟙
-  ⟷⟨ id↔ ⊗ (η 𝕋) ⟩
-  (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋)
-  ⟷⟨ CNOT13 ⟩
-  (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋)
-  ⟷⟨ CNOT23 ⟩
-  (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋)
-  ⟷⟨ id↔ ⊗ (ε 𝕋) ⟩
-  (𝔹 ×ᵤ 𝔹) ×ᵤ 𝟙
-  ⟷⟨ unite⋆r ⟩
-  (𝔹 ×ᵤ 𝔹) □
+parity =             𝔹 ×ᵤ 𝔹
+  ⟷⟨ uniti⋆r ⟩       (𝔹 ×ᵤ 𝔹) ×ᵤ 𝟙
+  ⟷⟨ id↔ ⊗ (η 𝕋) ⟩  (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋)
+  ⟷⟨ CNOT13 ⟩        (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋)
+  ⟷⟨ CNOT23 ⟩        (𝔹 ×ᵤ 𝔹) ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝕋)
+  ⟷⟨ id↔ ⊗ (ε 𝕋) ⟩   (𝔹 ×ᵤ 𝔹) ×ᵤ 𝟙
+  ⟷⟨ unite⋆r ⟩       (𝔹 ×ᵤ 𝔹) □
 
 t1 t2 t3 t4 : Maybe ⟦ 𝔹 ×ᵤ 𝔹 ⟧
 t1 = interp parity (𝔽 , 𝔽) -- just (𝔽 , 𝔽)
