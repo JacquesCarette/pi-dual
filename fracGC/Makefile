@@ -3,7 +3,7 @@ all : p.pdf
 
 p.pdf : p.tex latex/PiFracDynCode.tex latex/PiFracDynDefCode.tex latex/BooleanCircuitsCode.tex \
 	latex/PiPointedFracCode.tex latex/ExtractionCode.tex latex/PiMemSemCode.tex \
-	latex/PiFracMemSemCode.tex latex/J.tex \
+	latex/PiFracMemSemCode.tex latex/PiPointedFracTraceCode latex/J.tex \
 	idpic.tikz parity.tikz revrev.tikz
 #	xelatex p.tex; bibtex p; xelatex p.tex; xelatex p.tex; xelatex p.tex
 #	xelatex p.tex; bibtex p
@@ -32,3 +32,6 @@ latex/PiMemSemCode.tex : PiMemSemCode.lagda
 
 latex/PiFracMemSemCode.tex : PiFracMemSemCode.lagda
 	agda --latex PiFracMemSemCode.lagda
+
+latex/PiPointedFracTraceCode : PiPointedFracTraceCode.lagda
+	agda --latex PiPointedFracTraceCode.lagda
