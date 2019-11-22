@@ -31,6 +31,7 @@
 \usepackage{tikzit}
 \input{frac.tikzstyles}
 
+\newunicodechar{Π}{$\Pi$}
 \newunicodechar{≟}{$\mathbin{\stackrel{?}{=}}$}
 \newunicodechar{𝕌}{$\mathbb{U}$}
 \newunicodechar{𝔹}{$\mathbb{B}$}
@@ -1118,7 +1119,14 @@ Combinators:
 
 \PIPFCombDef{}
 
-properties of singleton, recip
+\begin{proposition}
+sing is a monad; comonad; etc
+\end{proposition}
+\begin{proof}
+\PIPFCombderive{}
+\end{proof}
+
+  properties of singleton, recip
 derive join etc
 monad,comonad structure
 
@@ -1129,6 +1137,12 @@ Combine with eval, the whole thing is reversible:
 \PIPFrev{}
 
 show a small example
+
+\centering{
+\input{revrev.tikz}
+}
+
+\PIPFrevrev{}
 
 %%%%%%%%%
 \subsection{Extraction}
