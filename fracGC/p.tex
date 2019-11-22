@@ -724,7 +724,7 @@ pay back the debt with one person paying \$5, another \$2, and a third
 \$3.
 
 Computationally, this extra generality is not a gratuitous concern:
-since scope is fundamentally a static property of programs, it does
+since scope is a \emhp{static property} of programs, it does
 not allow the flexibility of heap allocation in which the lifetime of
 resources is dynamically determined. To summarize, since the
 reversible-quantum computational framework guarantees that information
@@ -740,7 +740,7 @@ Instead of restricting ancillae to be scoped, we separate allocation
 and de-allocation into two dual actions $\eta$ and $\epsilon$ whose
 types are:
 \[
-\eta_A : 1 \leftrightarrow A * \oneover{A} : \epsilon_A
+\eta_A : 1 \leftrightarrow A \times \oneover{A} : \epsilon_A
 \]
 The names and types of these operations are inspired by compact closed
 categories which are extensions of the monoidal categories that model
@@ -758,7 +758,7 @@ To make this idea work, several technical details are needed. Most
 notably, we must exclude the empty types from this creation and
 annihilation process. Otherwise, we would be able to prove that:
 \[\begin{array}{rcll}
-1 &=& 0 * 1/0 & \textrm{by~} \eta_0 \\
+1 &=& 0 \times 1/0 & \textrm{by~} \eta_0 \\
 &=& 0 & \textrm{by~} \absorbr
 \end{array}\]
 The second important detail is to ensure that the gc process is
@@ -789,10 +789,8 @@ and annihilation process as a level-2 program that would enforce the
 duality of $\eta$ and $\epsilon$. At this point, an application of
 $\eta$ following by $\epsilon$ might however throw an exception.
 
-In the Agda formalization, the types of $\eta$ and $\epsilon$ are as follows:
-
+In the Agda formalization, the types of $\eta$ and $\epsilon$ are:
 \EtaEpsilon{}
-
 \noindent where the operations take an implicit argument asserting the
 given type is non-empty. A \emph{big step operational semantics} for
 the language interprets each combinator (except $\eta$ and $\epsilon$)
@@ -801,12 +799,12 @@ values of type $t_1$ to values of type $t_2$ (and
 vice-versa).\footnote{In Sec.~\ref{sec:space} we will define a small
   step abstract machine that exposes the space used at each step.}
 Extending this interpreter to handle $\eta$ and $\epsilon$ requires
-that the interpreter returns either a value of the appropriate or an
+that the interpreter returns either a value of the appropriate type or an
 exception:
 
 \dyninterp{}
 
-When ancillae are created they are created with a specific default
+When ancillae are created, they are created with a specific default
 value depending on the type. When the gc process encounters a value to
 be collected, it checks whether this value is the default value for
 the type and if so collects it. Otherwise it returns
@@ -848,15 +846,15 @@ processes each collecting one of the values (and vice-versa):
 \subsection{Choosing Ancillae Values}
 
 The previous development achieves a significant milestone but only
-hints at the full expressiveness of fractional types. A small but
-significant additional expressiveness is to allow ancillae to be
+hints at the full expressiveness of fractional types. A small addition
+that significantly increases expressiveness is to allow ancillae to be
 initialized to a value of the programmer's choice, not just a globally
 fixed default value. This ability is used in Grover's search algorithm
 to implement phase kickback
 efficiently~\cite{howgrover}.\footnote{Instead of using an ancilla bit
   initialized to $\ket{0}$, an ancilla initialized to
   $\frac{\ket{0}-\ket{1}}{\sqrt{2}}$ is used.} This can be easily
-achieved in our language as follows:
+achieved by adapting our language as follows:
 
 \[\begin{array}{lrcl}
 \textit{Value types} & t &::=& \cdots \alt \oneover{v} \\
