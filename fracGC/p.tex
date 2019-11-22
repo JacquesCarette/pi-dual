@@ -238,7 +238,7 @@ universality (i) assume that temporary storage (often called
 this temporary storage is returned to its initial state before
 de-allocation. Indeed if no temporary storage is allowed, the Toffoli
 gate is not
-universal~\cite{DBLP:conf/innovations/AaronsonGS17,DBLP:journals/corr/Xu15e}.
+universal~\cite{aaronson_et_al:LIPIcs:2017:8173,DBLP:journals/corr/Xu15e}.
 And, as would be expected, the more temporary storage is allowed, the
 more efficient certain computations can become.
 
@@ -329,7 +329,7 @@ with a discussion of related work and a summary of our results.
 Restricting a reversible (classical or quantum) circuit to use no
 ancillae is like restricting a Turing machine to use no memory other
 than the $n$ bits used to represent the
-input~\cite{DBLP:conf/innovations/AaronsonGS17}. As such a restriction
+input~\cite{aaronson_et_al:LIPIcs:2017:8173}. As such a restriction
 disallows countless computations for trivial reasons, reversible and
 quantum models of computation have, since their inception, included
 management for scratch storage in the form of ancilla
@@ -394,9 +394,10 @@ Matuschak and Nielsen~\cite{howgrover}, the idea is as follows:
 
 \paragraph*{Quantum Error Correction.}
 Quantum error correction requires the ability to replicate the state of a
-qubit onto a number of qubits~\cite[Ch.~3]{NAP25196}. This is
-impossible to do directly, by the no-cloning theorem~\cite{XXX}. Again ancilla
-qubits solve the problem: because they start in a known
+qubit onto a number of qubits~\cite[Ch.~3]{NAP25196}. This is impossible to do
+directly, by the no-cloning
+theorem~\cite{park1970concept,wootters1982single,dieks1982communication}. Again
+ancilla qubits solve the problem: because they start in a known
 initial state, it is possible to create a simple circuit that makes
 their output state match a protected qubit without knowing or
 disturbing the protected qubit. Chong et al.~\cite{sigarchblog}
@@ -502,12 +503,10 @@ it has direct and evident connections to type theory and category
 theory. Indeed our solution for managing ancillae is inspired by the
 construction of \emph{compact closed
   categories}~\cite{kelly1972many}. These categories extend the
-monoidal categories~\cite{XXX} which are used to model many
-resource-aware (e.g., based on linear types) programming
-languages~\cite{XXX}
-%% \ednote{The search on
-%% "monoidal category" "resource-aware" "programming language" on Google
-%% Scholar produces just 6 papers!}
+monoidal
+categories~\cite{benabou1963algebre,benabou1964algebre,maclane1963natural} which
+are used to model many resource-aware (e.g., based on linear types) programming
+languages~\cite{benton1994mixed,krishnaswami2015integrating}
 (including $\Pi$) with a new type
 constructor that creates duals or inverses to existing types. This
 dual will be our fractional type.
@@ -832,11 +831,11 @@ $\oneover{t}$:
 \begin{itemize}
 \item Categorical: The categorical model for the plain $\Pi$ language
   of type isomorphisms is a category with two symmetric monoidal
-  structures (additive and multiplicative) with the multiplicative
-  fragment distributing over the additive one~\cite{XXX}. Generally,
+  structures (additive and multiplicative) with the multiplicative fragment
+  distributing over the additive one~\cite{DBLP:conf/esop/CaretteS16}. Generally,
   a symmetric monoidal category is \emph{compact closed} if every
   object has a dual object whose behavior is governed by our $\eta$
-  and $\epsilon$ operators~\cite{XXX}. Our language from the previous
+  and $\epsilon$ operators~\cite{kelly1972many}. Our language from the previous
   section is an adaptation of this idea to the context of $\Pi$. Many
   programming abstractions (such as \emph{name}, \emph{co-name}, and
   \emph{trace} illustrated in Sec.~\ref{sec:cat}) can be
@@ -936,11 +935,15 @@ fixed size and indeed the size changes during execution as appropriate
 to fit the elements of the type $A$. In particular, since fractional
 values have a trivial representation, the cardinality of a fractional
 type is 1, and hence $\eta$ used at type $A$ changes the size of the
-memory list by the size of $A$. As an illustrative example, we include
-a trace of the execution of \AgdaFunction{id'} from Sec.~\ref{sub:id}
-applied to 𝕋:
+memory list by the size of $A$. As an illustrative example,
+Figure~\ref{fig:trace-id} shows a trace of the execution of \AgdaFunction{id'}
+from Sec.~\ref{sub:id} applied to 𝕋:
 
+\begin{figure}[htb]
 \includegraphics[scale=0.5]{trace2.png}
+\caption{Execution trace of \AgdaFunction{id'}}
+\label{fig:trace-id}
+\end{figure}
 
 %% semantics for PiFracDyn:
 %% \PIFMEMstate{}
@@ -978,7 +981,7 @@ optimize programs (or as the case will be for the full language to
 remove a runtime check).
 
 The strategy we adopt is to create a lifted version of the toy
-language with \emph{pointed types}~\cite{XXX}, i.e., types paired with
+language with \emph{pointed types}~\cite{hottbook}, i.e., types paired with
 a value of the type. In the lifted language, the evaluation
 function has an interesting type: it keeps track of the result of
 evaluation within the type:
