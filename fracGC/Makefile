@@ -4,7 +4,7 @@ all : p.pdf
 p.pdf : p.tex latex/PiFracDynCode.tex latex/PiFracDynDefCode.tex latex/BooleanCircuitsCode.tex \
 	latex/PiPointedFracCode.tex latex/ExtractionCode.tex latex/PiMemSemCode.tex \
 	latex/PiFracMemSemCode.tex latex/PiPointedFracTraceCode.tex latex/J.tex \
-	idpic.tikz parity.tikz revrev.tikz trace1.tex
+	idpic.tikz parity.tikz revrev.tikz trace1.tex trace2.tex trace3.tex
 #	xelatex p.tex; bibtex p; xelatex p.tex; xelatex p.tex; xelatex p.tex
 #	xelatex p.tex; bibtex p
 	latexmk -pdfxe p.tex
