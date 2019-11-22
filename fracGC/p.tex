@@ -103,6 +103,9 @@
 \newcommand{\distz}{\mathit{absorbr}}
 \newcommand{\iso}{\leftrightarrow}
 \newcommand{\proves}{\vdash}
+\newcommand{\Afun}[1]{\AgdaFunction{#1}}
+\newcommand{\Acon}[1]{\AgdaInductiveConstructor{#1}}
+\newcommand{\Avar}[1]{\AgdaBound{#1}}
 \newcommand{\idc}{\mathit{id}\!\!\leftrightarrow}
 \newcommand{\Rule}[4]{
 \makebox{{\rm #1}
@@ -208,7 +211,7 @@ circuits lack this form of parallelism. Most importantly, structurally
 the two circuits models are identical and one can derive properties
 valid for both families by focusing on the simpler classical model. In
 fact, classical reversible computations are often used as
-``subroutines'' of quantum computations. Indeed classical reversible
+``subroutines'' of quantum computations, i.e., classical reversible
 circuits can be applied to either classical inputs or to quantum
 inputs.
 
@@ -226,7 +229,8 @@ explained next.
 
 \paragraph*{Temporary Storage using Ancilla Bits.} The universality of
 the Toffoli gate for classical reversible computing and of the
-universality of the Toffoli-Hadamard gates for quantum computing should
+universality of the Toffoli-Hadamard gates for quantum computing come
+with a catch and should
 not distract from efficiency and safety concerns. The theorems proving
 universality (i) assume that temporary storage (often called
 \emph{ancilla bits}) may be used~\cite{Toffoli:1980}, and (ii) that
@@ -243,7 +247,7 @@ safety condition. Violating this condition destroys the symmetry
 between input and output, making the circuits irreversible and, in
 the quantum model, causes decoherence that may destroy the quantum
 state. As reviewed in Sec.~\ref{sec:examples}, ancilla bits have a
-number of critical applications, yet are poorly supported in
+number of other critical applications, yet are poorly supported in
 current reversible and quantum programming languages making them a
 common source of bugs.
 
@@ -277,27 +281,28 @@ linearly used, i.e., they cannot be duplicated or erased: this
 property is automatically enforced in a reversible
 computational model.
 
-\paragraph*{Outline.} We solve the ancilla problem in reversible and quantum
-computation using a novel concept: \emph{fractional types}. In the next
-section, we introduce the problem of ancilla, motivate its importance, and
-explain the limitations of current solutions. In Sec.~\ref{sec:pi}, we review
-existing work%
+\paragraph*{Outline.} We solve the ancilla problem in reversible and
+quantum computation using a novel concept: \emph{fractional types}. In
+the next section, we introduce the problem of ancilla, motivate its
+importance, and explain the limitations of current solutions. Inm
+Sec.~\ref{sec:pi}, we review existing work%
 ~\cite{rc2011,DBLP:conf/esop/CaretteS16,rc2012,James:2012:IE:2103656.2103667}
-that introduces a reversible programming language built using type isomorphism.
-Although the concept of fractional
-types might apply to general-purpose languages (after some
-adaptation), its natural technical definition exploits symmetries
-present in the categorical model of type isomorphisms. We present such a
-definition in Sec.~\ref{sec:dyn} which captures and illustrates the
-main novelties of fractional types and their runtime representations
-as first-class gc processes. This presentation partially solves a more
-general and more expressive instance of the ancilla problem as
-illustrated with examples.
-\ednote{JC: I don't understand the previous sentence. What does
-``this presentation'' refer to?  The paper as a whole, or the
-details of the fractional types? There is also a tension between
-``partially solves'' and ``more general and more expressive'' which
-might very well be true, but makes for a very vague sentence.}
+that introduces a reversible programming language built using type
+isomorphism.  Although the concept of fractional types might apply to
+general-purpose languages (after some adaptation), its natural
+technical definition exploits symmetries present in the categorical
+model of type isomorphisms. We present such a definition in
+Sec.~\ref{sec:dyn} which captures and illustrates the main novelties
+of fractional types and their runtime representations as first-class
+gc processes. This definition allows allocation and de-allocation of
+ancillae in patterns beyond the scope model but, like existing
+stack-based solutions, still requires a runtime check to verify the
+safety of de-allocation.
+%% \ednote{JC: I don't understand the previous sentence. What does
+%% ``this presentation'' refer to?  The paper as a whole, or the
+%% details of the fractional types? There is also a tension between
+%% ``partially solves'' and ``more general and more expressive'' which
+%% might very well be true, but makes for a very vague sentence.}
 To make the arguments regarding memory
 management explicit, Sec.~\ref{sec:space} presents an abstract machine
 with a heap component that grows and shrinks as ancillae are allocated
@@ -310,7 +315,7 @@ pointed types on top of which are defined both a monad and comonad of
 singleton types. The tracking of ancillae value is done within the
 type system via the singleton types. A number of examples exploiting
 the singleton-based type system are presented to demonstrate the full
-expressiveness of fractional types. The type safety proofs demonstrate
+expressiveness of reasoning about fractional types. The type safety proofs demonstrate
 that plain (but guaranteed safe)
 programs can be extracted and executed without errors or runtime
 checks in the conventional type system. The last section concludes
@@ -384,7 +389,7 @@ Matuschak and Nielsen~\cite{howgrover}, the idea is as follows:
   computation, resetting the ancilla to its original state so you can
   subsequently ignore it.
 \end{quote}
-\ednote{Would it make sense to explicitly mention CNOT here?}
+%% \ednote{Would it make sense to explicitly mention CNOT here?}
 
 \paragraph*{Quantum Error Correction.}
 Quantum error correction requires the ability to replicate the state of a
@@ -443,11 +448,11 @@ several problems. For example:
 \identlp :&  0 + \tau & \iso & \tau &: \identrp \\
 \swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
 \assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\ [1.5ex]
-\identlt :&  1 * \tau & \iso & \tau &: \identrt \\
-\swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
-\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\ [1.5ex]
-\distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl \\
-\dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor
+\identlt :&  1 \times \tau & \iso & \tau &: \identrt \\
+\swapt :&  \tau_1 \times \tau_2 & \iso & \tau_2 \times \tau_1 &: \swapt \\
+\assoclt :&  \tau_1 \times (\tau_2 \times \tau_3) & \iso & (\tau_1 \times\tau_2) \times \tau_3 &: \assocrt \\ [1.5ex]
+\distz :&~ 0 \times \tau & \iso & 0 ~ &: \factorzl \\
+\dist :&~ (\tau_1 + \tau_2) \times \tau_3 & \iso & (\tau_1 \times \tau_3) + (\tau_2 \times \tau_3)~ &: \factor
 \end{array}\]
 %\vspace{2cm}
 \begin{center}
@@ -467,7 +472,7 @@ several problems. For example:
 
 \Rule{}
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_3 \iso \tau_4}
-{\jdg{}{}{c_1 \otimes c_2 : \tau_1 * \tau_3 \iso \tau_2 * \tau_4}}
+{\jdg{}{}{c_1 \otimes c_2 : \tau_1 \times \tau_3 \iso \tau_2 \times \tau_4}}
 {}
 \end{center}
 \end{multicols}
@@ -483,23 +488,25 @@ requires the addition of just one gate that creates
 superpositions. Similarly the step from a reversible classical
 programming language to a quantum one requires just the management of
 superpositions. For example starting from the classical reversible
-language Theseus~\cite{james2014theseus}, a small extension produces a quantum
-language with quantum control~\cite{10.1007/978-3-319-89366-2_19}.
-Theseus~\cite{james2014theseus} is a language that layers
-convenient syntactic extensions over an even more basic language $\Pi$ of
+language Theseus~\cite{james2014theseus}, a small extension produces a
+quantum language with quantum
+control~\cite{10.1007/978-3-319-89366-2_19}.
+Theseus~\cite{james2014theseus} is a language that layers convenient
+syntactic extensions over an even more basic language $\Pi$ of
 combinators witnessing isomorphisms over finite
-types~\cite{DBLP:conf/esop/CaretteS16}. The
-combinator-based language has the advantage of being more amenable to
-formal analysis for at least two reasons: (i) it is conceptually
-simple and small, and (ii) it has direct and evident connections to
-type theory and category theory. Indeed our solution for managing
-ancillae is inspired by the construction of \emph{compact closed
-categories}~\cite{kelly1972many}. These categories extend the monoidal
-categories~\cite{XXX} which are used to model many resource-aware
-programming languages~\cite{XXX}
-\ednote{The search on
-"monoidal category" "resource-aware" "programming language" on Google
-Scholar produces just 6 papers!}
+types~\cite{DBLP:conf/esop/CaretteS16}. The combinator-based language
+has the advantage of being more amenable to formal analysis for at
+least two reasons: (i) it is conceptually simple and small, and (ii)
+it has direct and evident connections to type theory and category
+theory. Indeed our solution for managing ancillae is inspired by the
+construction of \emph{compact closed
+  categories}~\cite{kelly1972many}. These categories extend the
+monoidal categories~\cite{XXX} which are used to model many
+resource-aware (e.g., based on linear types) programming
+languages~\cite{XXX}
+%% \ednote{The search on
+%% "monoidal category" "resource-aware" "programming language" on Google
+%% Scholar produces just 6 papers!}
 (including $\Pi$) with a new type
 constructor that creates duals or inverses to existing types. This
 dual will be our fractional type.
@@ -632,6 +639,7 @@ $\swapp$.
 
 %%%
 \subsection{Small Examples}
+\label{sub:toff}
 
 Below we show code that defines types corresponding to bits (booleans),
 two-bits, three-bits, and four-bits. It then defines an operator that
@@ -774,15 +782,15 @@ follows:
 \textit{Values}      & v &::=& \cdots \alt \gcv \\
 \textit{Level-1 types} &&& t \leftrightarrow t \\
 \textit{Level-1 programs} & c &::=& \cdots \alt
-   \eta_{\net} : 1 \leftrightarrow (\net * \oneover{\net}) \\
-   &&& ~~~~~\alt \epsilon_{\net} : (\net * \oneover{\net}) \leftrightarrow 1 \\
+   \eta_{\net} : 1 \leftrightarrow (\net \times \oneover{\net}) \\
+   &&& ~~~~~\alt \epsilon_{\net} : (\net \times \oneover{\net}) \leftrightarrow 1 \\
 \textit{Level-2 types} &&& c \Leftrightarrow c \\
 \textit{Level-2 programs} & \alpha &::=& \cdots
   \alt \mathit{inv} : \eta \fatsemi \epsilon \Leftrightarrow \idc
 \end{array}\]
 
 The metavariable $\net$ excludes all types that are equivalent to the
-empty type, e.g., $(1 + 1) * 0$. For now, all gc processes are
+empty type, e.g., $(1 + 1) \times 0$. For now, all gc processes are
 represented at runtime using a trivial value denoted by $\gcv$. We
 also explicitly add the desired coherence condition on the creation
 and annihilation process as a level-2 program that would enforce the
@@ -861,8 +869,8 @@ achieved by adapting our language as follows:
 \textit{Values}      & v &::=& \cdots \alt \gcv \\
 \textit{Level-1 types} &&& t \leftrightarrow t \\
 \textit{Level-1 programs} & c &::=& \cdots \alt
-   \eta_{v:t} : 1 \leftrightarrow (t * \oneover{v}) \\
-   &&& ~~~~~\alt \epsilon_{v:t} : (t * \oneover{v}) \leftrightarrow 1 \\
+   \eta_{v:t} : 1 \leftrightarrow (t \times \oneover{v}) \\
+   &&& ~~~~~\alt \epsilon_{v:t} : (t \times \oneover{v}) \leftrightarrow 1 \\
 \textit{Level-2 types} &&& c \Leftrightarrow c \\
 \textit{Level-2 programs} & \alpha &::=& \cdots
   \alt \mathit{inv} : \eta_{v:t} \fatsemi \epsilon_{v:t} \Leftrightarrow \idc
@@ -901,6 +909,17 @@ equal. When applied to quantum inputs, the circuit detects whether the
 two qubits are entangled or not. By varying the initial value of the
 ancilla, it is possible to customize the dynamic assertion to check
 for particular entangled states~\cite{DBLP:journals/cal/ZhouB19}.
+
+As a more substantial example, we present a construction (in
+Fig.~\ref{fig:toff}) of not just the four-bit Toffoli function from
+Sec.~\ref{sub:toff} but in fact an inductive construction that defines
+all $n$-bit Toffoli gates. The construction goes back to Toffoli's
+proof of universality~\cite{Toffoli:1980}:
+
+\begin{figure*}[ht]
+  \PIFDtoffoli{}
+\caption{\label{fig:toff}Generalized Toffoli Gates}
+\end{figure*}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Space-Tracking Abstract Machine}
@@ -944,21 +963,15 @@ $\oneover{t}$:
 \subsection{Abstract Machine without Fractionals}
 
 To start, we introduce some of the common technical details in the
-simpler setting of the core $\Pi$ language. First, simple facts
-about cardinalities:
-
-\PIFMEMsize{}  % maybe we should use \PIMEMcard here?
-
-\vspace{-\baselineskip}
+simpler setting of the core $\Pi$ language. The cardinalities of
+finite types map directly to the natural numbers. An easy proposition
+to verify is that every combinator must be between types of the same
+cardinalities; indeed one of the standard interpretations of $\Pi$
+combinators is that they are permutations on finite sets, i.e., they
+just shuffle elements around without changing the sizes of the
+underlying sets:
 
 \PIMEMcardeq{}
-
-The cardinalities of the types (other than the fractional type) map
-directly to the natural numbers. An easy proposition to verify is that
-every combinator must be between types of the same cardinalities;
-indeed one of the standard interpretations of $\Pi$ combinators is
-that they are permutations on finite sets, i.e., they just shuffle
-elements around without changing the sizes of the underlying sets.
 
 To make the space usage explicit in every step of evaluation, we
 define an abstract machine whose states are pairs of a code register
@@ -1015,13 +1028,13 @@ reductions are formalized as follows:
 
 \PIFMEMstep{}
 
-The main difference is that now the state constructor does not take a
+The main difference is that the state constructor does not take a
 fixed size and indeed the size changes during execution as appropriate
 to fit the elements of the type $A$. In particular, since fractional
-values have a trivial representation, the size of a fractional value
-is 1, and hence $\eta$ used at type $A$ changes the size of the memory
-list by the size of $A$. As an illustrative example, we include a
-trace of the execution of \AgdaFunction{id'} from Sec.~\ref{sub:id}
+values have a trivial representation, the cardinality of a fractional
+type is 1, and hence $\eta$ used at type $A$ changes the size of the
+memory list by the size of $A$. As an illustrative example, we include
+a trace of the execution of \AgdaFunction{id'} from Sec.~\ref{sub:id}
 applied to 𝕋:
 
 \includegraphics[scale=0.5]{trace2.png}
@@ -1077,16 +1090,22 @@ the extended type system for the toy language:
 
 Evidently we can track concrete values as the first two tests
 show. What is more interesting is \AgdaFunction{test3} which shows a
-property that holds for all natural numbers $n$. The full evaluation
-was not used but only partially as needed to derive the property. This
-form of partial evaluation will prove to be quite expressive allowing
-us to keep track of ancillae values throughout complex programs as
-demonstrated in Sec.~\ref{sec:cat}.
-\ednote{JC: Doesn't \AgdaFunction{eval}, in the type, evaluate
-fully for this work?  That Agda is strongly normalizing is rather
-important here. What exactly is partially evaluating is really not
-clear (says an expert in PE). I think the idea being expressed is
-correct, but the paragraph is insufficiently clear/precise.}
+property that holds for all natural numbers $n$. Evaluation in this
+case proceeds ``symbolically'' in the type system. From the definition
+of \Afun{eval}, it is clear that
+\Afun{eval}~\Acon{square}~(\Acon{suc}~\Avar{n}) produces
+(\Acon{suc}~\Avar{n})*(\Acon{suc}~\Avar{n}) which by definition of
+multiplication is an expression with a leading \Acon{suc} constructor
+which is enough to determine that the result of evaluating
+\Acon{isZero} on it yields \Acon{false}. This form of partial
+evaluation will prove to be quite expressive allowing us to keep track
+of ancillae values throughout complex programs as demonstrated in
+Sec.~\ref{sec:cat}.
+%% \ednote{JC: Doesn't \AgdaFunction{eval}, in the type, evaluate
+%% fully for this work?  That Agda is strongly normalizing is rather
+%% important here. What exactly is partially evaluating is really not
+%% clear (says an expert in PE). I think the idea being expressed is
+%% correct, but the paragraph is insufficiently clear/precise.}
 
 %%%%%
 \subsection{Pointed and Singleton Types}

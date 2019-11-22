@@ -271,25 +271,29 @@ t4 = interp parity (𝕋 , 𝕋) -- just (𝕋 , 𝕋)
 \end{code}}
 \newcommand{\PIFDtoffoli}{%
 \begin{code}
--- Toffoli construction
 𝔹^_ : ℕ → 𝕌
-𝔹^ zero = 𝔹
-𝔹^ suc n = (𝔹^ n) ×ᵤ 𝔹
+𝔹^ zero   = 𝔹
+𝔹^ suc n  = (𝔹^ n) ×ᵤ 𝔹
 
 θ : (n : ℕ) → (𝔹^ n) ↔ (𝔹^ n)
 θ = <′-rec (λ n → (𝔹^ n) ↔ (𝔹^ n)) θ'
   where
-    θ' : (n : ℕ) → (∀ m → m <′ n → (𝔹^ m) ↔ (𝔹^ m)) → (𝔹^ n) ↔ (𝔹^ n)
+    θ' : (n : ℕ) →
+         (∀ m → m <′ n → (𝔹^ m) ↔ (𝔹^ m)) → (𝔹^ n) ↔ (𝔹^ n)
     θ' 0 _ = swap₊
     θ' (suc 0) θ'' = dist ⊚ (id↔ ⊕ (id↔ ⊗ θ'' 0 ≤′-refl)) ⊚ factor
-    θ' (suc (suc 0)) θ'' = assocr⋆ ⊚ dist ⊚ (id↔ ⊕ (id↔ ⊗ θ'' 1 ≤′-refl)) ⊚ factor ⊚ assocl⋆
-    θ' (suc (suc (suc n))) θ'' = (id↔ ⊗ (uniti⋆l ⊚ (η 𝔽 ⊗ id↔) ⊚ assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆)) ⊚ assocl⋆
-                               ⊚ (assocl⋆ ⊗ id↔)
-                               ⊚ ((θₙ₋₁ ⊗ id↔) ⊗ id↔)
-                               ⊚ (θ₃ ⊗ id↔)
-                               ⊚ ((θₙ₋₁ ⊗ id↔) ⊗ id↔)
-                               ⊚ (assocr⋆ ⊗ id↔)
-                               ⊚ assocr⋆ ⊚ (id↔ ⊗ (assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (ε 𝔽 ⊗ id↔) ⊚ unite⋆l))
+    θ' (suc (suc 0)) θ'' =
+      assocr⋆ ⊚ dist ⊚ (id↔ ⊕ (id↔ ⊗ θ'' 1 ≤′-refl)) ⊚ factor ⊚ assocl⋆
+    θ' (suc (suc (suc n))) θ'' =
+      (id↔ ⊗ (uniti⋆l ⊚ (η 𝔽 ⊗ id↔) ⊚ assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆))
+      ⊚ assocl⋆
+      ⊚ (assocl⋆ ⊗ id↔)
+      ⊚ ((θₙ₋₁ ⊗ id↔) ⊗ id↔)
+      ⊚ (θ₃ ⊗ id↔)
+      ⊚ ((θₙ₋₁ ⊗ id↔) ⊗ id↔)
+      ⊚ (assocr⋆ ⊗ id↔)
+      ⊚ assocr⋆
+      ⊚ (id↔ ⊗ (assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (ε 𝔽 ⊗ id↔) ⊚ unite⋆l))
       where
         θₙ₋₁ : (((𝔹^ n) ×ᵤ 𝔹) ×ᵤ 𝔹) ×ᵤ 𝔹 ↔ (((𝔹^ n) ×ᵤ 𝔹) ×ᵤ 𝔹) ×ᵤ 𝔹
         θₙ₋₁ = assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆
@@ -300,7 +304,9 @@ t4 = interp parity (𝕋 , 𝕋) -- just (𝕋 , 𝕋)
         θ₃ = (assocr⋆ ⊗ id↔) ⊚ assocr⋆
            ⊚ (id↔ ⊗ θ'' 2 (s≤′s (s≤′s (s≤′s z≤′n))))
            ⊚ assocl⋆ ⊚ (assocl⋆ ⊗ id↔)
-
+\end{code}}
+\newcommand{\PIFDtoffolitests}{%
+\begin{code}
 test₁ : interp (θ 0) 𝔽 ≡ just 𝕋
 test₁ = refl
 
