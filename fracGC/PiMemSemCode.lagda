@@ -1,9 +1,9 @@
-\newcommand{\PIMEM}{%
+\newcommand{\PIMEM}{% Not used
 \begin{code}
 {-# OPTIONS --without-K --safe #-}
 module _ where
 
-open import Function
+open import Function using (_∘_; _$_)
 open import Data.Nat
 open import Data.Nat.Properties
 open import Data.Fin as Fin using (Fin; zero; suc)
@@ -91,7 +91,7 @@ data _⟷_ : 𝕌 → 𝕌 → Set where
 ! (c₁ ⊕ c₂) = (! c₁) ⊕ (! c₂)
 ! (c₁ ⊗ c₂) = (! c₁) ⊗ (! c₂)
 \end{code}}
-\newcommand{\PIMEMcard}{%
+\newcommand{\PIMEMcard}{% Not used
 \begin{code}
 ∣_∣ : (A : 𝕌) → ℕ
 ∣ 𝟘 ∣ = 0
@@ -99,7 +99,7 @@ data _⟷_ : 𝕌 → 𝕌 → Set where
 ∣ A₁ +ᵤ A₂ ∣ = ∣ A₁ ∣ + ∣ A₂ ∣
 ∣ A₁ ×ᵤ A₂ ∣ = ∣ A₁ ∣ * ∣ A₂ ∣
 \end{code}}
-\newcommand{\PIMEMvec}{%
+\newcommand{\PIMEMvec}{% Not used
 \begin{code}
 Vec× : ∀ {n m} {A B : Set} → Vec A n → Vec B m → Vec (A × B) (n * m)
 Vec× va vb = concat (map (λ a₁ → map (a₁ ,_) vb) va)
@@ -120,7 +120,7 @@ any≡← : ∀ {ℓ} {A : Set ℓ} {n} {a} → (v : Vec A n) → (i : Fin n) �
 any≡← (_ ∷ _)  Fin.0F refl = here refl
 any≡← (_ ∷ v) (suc i) refl = there (any≡← v i refl)
 \end{code}}
-\newcommand{\PIMEMenum}{%
+\newcommand{\PIMEMenum}{% Not used
 \begin{code}
 Enum : (A : 𝕌) → Vec ⟦ A ⟧ ∣ A ∣
 Enum 𝟘         = []
@@ -130,7 +130,7 @@ Enum (A₁ ×ᵤ A₂) = Vec× (Enum A₁) (Enum A₂)
 
 Find : {A : 𝕌} (x : ⟦ A ⟧) → Σ[ i ∈ Fin ∣ A ∣ ] (x ≡ lookup (Enum A) i)
 \end{code}
-\begin{code}[hide]
+\begin{code}
 Find {𝟘} ()
 Find {𝟙} tt = index tt∈𝟙 , lookup-index tt∈𝟙
   where
@@ -161,7 +161,7 @@ Find' = proj₁ ∘ Find
 \begin{code}
 card= : {t₁ t₂ : 𝕌} (C : t₁ ⟷ t₂) → (∣ t₁ ∣ ≡ ∣ t₂ ∣)
 \end{code}}
-\newcommand{\PIMEMcardeqrest}{%
+\newcommand{\PIMEMcardeqrest}{% Not used
 \begin{code}
 card=                   unite₊l   = refl
 card=                   uniti₊l   = refl
@@ -190,7 +190,7 @@ card=              (c₁ ⊚ c₂) = trans (card= c₁) (card= c₂)
 card=              (c₁ ⊕ c₂) = cong₂ _+_ (card= c₁) (card= c₂)
 card=              (c₁ ⊗ c₂) = cong₂ _*_ (card= c₁) (card= c₂)
 \end{code}}
-\newcommand{\PIMEMstate}{%
+\newcommand{\PIMEMstate}{% Not used
 \begin{code}
 data State (A : 𝕌) : Set where
   ⟪_[_]⟫ : Vec ⟦ A ⟧ ∣ A ∣ → Fin ∣ A ∣ → State A
@@ -253,9 +253,9 @@ data State' : ℕ → Set where
 
 step' : ∀ {n} → State' n → State' n
 step' (⟪_∥_[_]⟫ {A} {B} c v i) with step c ⟪ v [ i ]⟫
-... | A' , c' , ⟪ v' [ i' ]⟫ rewrite card= (c ⊚ ! c') = ⟪ c' ∥ v' [ i' ]⟫
+... | _ , c' , ⟪ v' [ i' ]⟫ rewrite card= (c ⊚ ! c') = ⟪ c' ∥ v' [ i' ]⟫
 \end{code}}
-\newcommand{\PIMEMrun}{%
+\newcommand{\PIMEMrun}{% Not used
 \begin{code}
 run : (sz n : ℕ) → (st : State' sz) → Vec (State' sz) (suc n)
 run sz 0 st = [ st ]
@@ -263,7 +263,7 @@ run sz (suc n) st with run sz n st
 ... | sts with last sts
 ... | ⟪_∥_[_]⟫ {A} {B} cx vx ix rewrite +-comm 1 (suc n) = sts ++ [ step' ⟪ cx ∥ vx [ ix ]⟫ ]
 \end{code}}
-\newcommand{\PIMEMex}{%
+\newcommand{\PIMEMex}{% Not used
 \begin{code}[hide]
 𝔹 : 𝕌
 𝔹 = 𝟙 +ᵤ 𝟙

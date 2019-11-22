@@ -305,7 +305,7 @@ t4 = interp parity (𝕋 , 𝕋) -- just (𝕋 , 𝕋)
         ⊚ (id↔ ⊗ θ'' 2 (s≤′s (s≤′s (s≤′s z≤′n))))
         ⊚ assocl⋆ ⊚ (assocl⋆ ⊗ id↔)
 \end{code}}
-\newcommand{\PIFDtoffolitests}{%
+\newcommand{\PIFDtoffolitests}{% Not used
 \begin{code}
 test₁ : interp (θ 0) 𝔽 ≡ just 𝕋
 test₁ = refl
