@@ -2,14 +2,14 @@
 \settopmatter{printfolios=true,printccs=false,printacmref=false}
 \acmConference[PL'18]{ACM SIGPLAN Conference on Programming Languages}{January 01--03, 2018}{New York, NY, USA}
 \acmYear{2018}
-\acmISBN{} 
-\acmDOI{} 
+\acmISBN{}
+\acmDOI{}
 \startPage{1}
 \setcopyright{none}
 \bibliographystyle{ACM-Reference-Format}
 
-\usepackage{booktabs}  
-\usepackage{subcaption} 
+\usepackage{booktabs}
+\usepackage{subcaption}
 \usepackage{amssymb}
 \usepackage{stmaryrd}
 \usepackage{bbm}
@@ -18,10 +18,10 @@
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
 \usepackage{autofe}
-\usepackage[references]{agda} 
+\usepackage[references]{agda}
 \usepackage{newunicodechar}
 \usepackage[nocenter]{qtree}
-\usepackage{multicol}  
+\usepackage{multicol}
 \usepackage{bbold}
 \usepackage[show]{ed}
 \usepackage{tikz}
@@ -210,7 +210,7 @@ valid for both families by focusing on the simpler classical model. In
 fact, classical reversible computations are often used as
 ``subroutines'' of quantum computations. Indeed classical reversible
 circuits can be applied to either classical inputs or to quantum
-inputs. 
+inputs.
 
 Instead of using the low-level circuit model of computation,
 one can leverage the full force of type theory and category theory by
@@ -247,7 +247,7 @@ number of critical applications, yet are poorly supported in
 current reversible and quantum programming languages making them a
 common source of bugs.
 
-\paragraph*{Conservation of Information and Negative Entropy.}  
+\paragraph*{Conservation of Information and Negative Entropy.}
 The conventional theory of
 communication~\cite{Shannon1948} views a type with $N$ values as
 an abstract system that has $N$ distinguishable states; the
@@ -292,9 +292,9 @@ definition in Sec.~\ref{sec:dyn} which captures and illustrates the
 main novelties of fractional types and their runtime representations
 as first-class gc processes. This presentation partially solves a more
 general and more expressive instance of the ancilla problem as
-illustrated with examples. 
+illustrated with examples.
 \ednote{JC: I don't understand the previous sentence. What does
-``this presentation'' refer to?  The paper as a whole, or the 
+``this presentation'' refer to?  The paper as a whole, or the
 details of the fractional types? There is also a tension between
 ``partially solves'' and ``more general and more expressive'' which
 might very well be true, but makes for a very vague sentence.}
@@ -319,7 +319,7 @@ with a discussion of related work and a summary of our results.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Ancilla Bits}
 \label{sec:examples}
- 
+
 Restricting a reversible (classical or quantum) circuit to use no
 ancillae is like restricting a Turing machine to use no memory other
 than the $n$ bits used to represent the
@@ -333,9 +333,9 @@ reused or de-allocated.
 
 %%%
 \subsection{Applications}
- 
+
 Beyond computability and efficiency reasons, ancillae have found a
-wide range of interesting applications. 
+wide range of interesting applications.
 
 \paragraph*{Quantum blackboxes and Phase Kickback Trick.} Consider a
 small database with four elements $a$, $b$, $c$, and $d$. We are given
@@ -386,7 +386,7 @@ Matuschak and Nielsen~\cite{howgrover}, the idea is as follows:
 \end{quote}
 \ednote{Would it make sense to explicitly mention CNOT here?}
 
-\paragraph*{Quantum Error Correction.} 
+\paragraph*{Quantum Error Correction.}
 Quantum error correction requires the ability to replicate the state of a
 qubit onto a number of qubits~\cite[Ch.~3]{NAP25196}. This is
 impossible to do directly, by the no-cloning theorem~\cite{XXX}. Again ancilla
@@ -405,7 +405,7 @@ destroyed.  Instead, we measure syndromes from each possible pair of
 qubits by interacting them with an ancilla, then measure each ancilla.
 Although the errors to the qubits are actually continuous, the effect
 of measuring the ancilla is to discretize the errors, as well as
-inform us whether an error occurred so that it can be corrected.  
+inform us whether an error occurred so that it can be corrected.
 \end{quote}
 
 \paragraph*{Deferring Quantum Measurements.} The evolution of a
@@ -413,16 +413,16 @@ quantum system is deterministic. Measurement add significant
 complications, collapsing the quantum state, and producing
 probabilistic results. However, using ancilla qubits it is possible to
 avoid doing any intermediate measurements in a quantum
-circuit~\cite{dewolf}. 
+circuit~\cite{dewolf}.
 
 %%%
 \subsection{Ancillae Bugs in Benchmarks.}
 Despite its fundamental importance, the management of ancillae is
-poorly supported in current languages, simulators, and toolkits. 
+poorly supported in current languages, simulators, and toolkits.
 A recent analysis of bugs in quantum
 benchmarks~\cite{DBLP:conf/oopsla/HuangM18} demonstrates this. The analysis
 reveals that lack of language support in the management of ancillae leads to
-several problems. For example: 
+several problems. For example:
 \begin{quote}
   \textbf{Bug type 6: Incorrect composition of operations using mirroring}
   Section~4.5 discussed how bugs in deallocating ancillary qubits can
@@ -442,16 +442,14 @@ several problems. For example:
 \\
 \identlp :&  0 + \tau & \iso & \tau &: \identrp \\
 \swapp :&  \tau_1 + \tau_2 & \iso & \tau_2 + \tau_1 &: \swapp \\
-\assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\
-\\
+\assoclp :&  \tau_1 + (\tau_2 + \tau_3) & \iso & (\tau_1 + \tau_2) + \tau_3 &: \assocrp \\ [1.5ex]
 \identlt :&  1 * \tau & \iso & \tau &: \identrt \\
 \swapt :&  \tau_1 * \tau_2 & \iso & \tau_2 * \tau_1 &: \swapt \\
-\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\
-\\
+\assoclt :&  \tau_1 * (\tau_2 * \tau_3) & \iso & (\tau_1 * \tau_2) * \tau_3 &: \assocrt \\ [1.5ex]
 \distz :&~ 0 * \tau & \iso & 0 ~ &: \factorzl \\
 \dist :&~ (\tau_1 + \tau_2) * \tau_3 & \iso & (\tau_1 * \tau_3) + (\tau_2 * \tau_3)~ &: \factor
 \end{array}\]
-\vspace{2cm}
+%\vspace{2cm}
 \begin{center}
 \Rule{}
 {\jdg{}{}{c_1 : \tau_1 \iso \tau_2} \quad \vdash c_2 : \tau_2 \iso \tau_3}
@@ -484,20 +482,25 @@ The step from reversible classical circuits to quantum circuits
 requires the addition of just one gate that creates
 superpositions. Similarly the step from a reversible classical
 programming language to a quantum one requires just the management of
-superpositions, for example starting from the classical reversible
+superpositions. For example starting from the classical reversible
 language Theseus~\cite{james2014theseus}, a small extension produces a quantum
-language with quantum control~\cite{10.1007/978-3-319-89366-2_19}. The
-language Theseus~\cite{james2014theseus} mentioned above is a language that uses
-convenient syntactic extensions over an more basic language $\Pi$ of
-combinators witnessing isomorphisms over finite types~\cite{XXX}. The
+language with quantum control~\cite{10.1007/978-3-319-89366-2_19}.
+Theseus~\cite{james2014theseus} is a language that layers
+convenient syntactic extensions over an even more basic language $\Pi$ of
+combinators witnessing isomorphisms over finite
+types~\cite{DBLP:conf/esop/CaretteS16}. The
 combinator-based language has the advantage of being more amenable to
 formal analysis for at least two reasons: (i) it is conceptually
 simple and small, and (ii) it has direct and evident connections to
 type theory and category theory. Indeed our solution for managing
 ancillae is inspired by the construction of \emph{compact closed
-  categories}~\cite{XXX}. These categories extend the monoidal
+categories}~\cite{kelly1972many}. These categories extend the monoidal
 categories~\cite{XXX} which are used to model many resource-aware
-programming languages~\cite{XXX} (including $\Pi$) with a new type
+programming languages~\cite{XXX}
+\ednote{The search on
+"monoidal category" "resource-aware" "programming language" on Google
+Scholar produces just 6 papers!}
+(including $\Pi$) with a new type
 constructor that creates duals or inverses to existing types. This
 dual will be our fractional type.
 
@@ -507,7 +510,7 @@ dual will be our fractional type.
 
 The syntax of the language consists of several categories:
 \[\begin{array}{lrcl}
-\textit{Value types} & t &::=& 0 \alt 1 \alt t+t \alt t*t \\
+\textit{Value types} & t &::=& 0 \alt 1 \alt t+t \alt t\times t \\
 \textit{Values}      & v &::=& \star \alt \inlv{v} \alt \inrv{v} \alt (v,v) \\
 \textit{Level-1 types} &&& t \leftrightarrow t \\
 \textit{Level-1 programs} & c &::=& (\textrm{See Fig.~\ref{pi-terms}})\\
@@ -537,11 +540,11 @@ circuits~\cite{fredkin1982conservative,James:2012:IE:2103656.2103667,Toffoli:198
 these types and combinators form a \emph{commutative semiring} (up to
 type isomorphism). Logically they form a superstructural logic
 capturing space-time tradeoffs~\cite{superstructural}. Categorically,
-they form a \emph{bimonoidal category}~\cite{laplaza72}. 
+they form a \emph{distributive bimonoidal category}~\cite{laplaza72}.
 
 So far, the types encode conventional data structures, i.e, sets of
 values and structured trees of values and the isomorphisms act on such
-conventional data structures. Universal computation models however
+conventional data. Universal computation models however
 fundamentally rely on the fact that \emph{programs are (or can be
   encoded as) data}, e.g., a Turing machine can be encoded as a string
 that another Turing machine (or even the same machine) can
@@ -552,6 +555,7 @@ yes~\cite{Miller:2003:TBA:775832.775915,DBLP:conf/esop/CaretteS16,DBLP:journals/
 only give one example below. (We will require a new level-2 program to
 witness coherence of fractional types in Sec.~\ref{sec:dep}.)
 
+\begin{figure}[htb]
 \begin{center}
 \begin{tikzpicture}[scale=0.6,every node/.style={scale=0.6}]
   \draw[>=latex,<->,double,red,thick] (2.25,-1.2) -- (2.25,-2.9) ;
@@ -603,6 +607,7 @@ witness coherence of fractional types in Sec.~\ref{sec:dep}.)
 
 \end{tikzpicture}
 \end{center}
+\end{figure}
 
 \noindent The top path is the $\Pi$ program
 $(c_1~\oplus~c_2)~\fatsemi~\swapp$ which acts on the type $A$ by $c_1$,
@@ -627,8 +632,8 @@ $\swapp$.
 
 %%%
 \subsection{Small Examples}
- 
-The code below defines the types corresponding to bits (booleans),
+
+Below we show code that defines types corresponding to bits (booleans),
 two-bits, three-bits, and four-bits. It then defines an operator that
 builds a controlled version of a given combinator $c$. This controlled
 version takes an additional ``control'' bit and only applies $c$ if
@@ -651,7 +656,7 @@ unused bit can be either state, which means that
 \AgdaFunction{TOFFOLI} generates an even permutation. The function
 \AgdaFunction{CTOFFOLI} is however an odd permutation which is
 unreachable from even permutations. This function will however be
-definable in the next section once we introduce ancilla bits.
+definable once we introduce ancilla bits in the next section.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Interchangeable Ancillae}
@@ -660,7 +665,7 @@ definable in the next section once we introduce ancilla bits.
 The management of ancilla data can be teased into two relatively
 distinct subproblems:
 \begin{itemize}
-\item Every allocated ancilla bit must be de-allocated, and 
+\item Every allocated ancilla bit must be de-allocated, and
 \item De-allocation of an ancilla bit is only safe if the bit is
   restored to its allocation-time initial value.
 \end{itemize}
@@ -730,7 +735,7 @@ the net balance is 0.
 
 %%%%%
 \subsection{GC Value of Fractional Type}
- 
+
 Instead of restricting ancillae to be scoped, we separate allocation
 and de-allocation into two dual actions $\eta$ and $\epsilon$ whose
 types are:
@@ -772,8 +777,8 @@ follows:
    \eta_{\net} : 1 \leftrightarrow (\net * \oneover{\net}) \\
    &&& ~~~~~\alt \epsilon_{\net} : (\net * \oneover{\net}) \leftrightarrow 1 \\
 \textit{Level-2 types} &&& c \Leftrightarrow c \\
-\textit{Level-2 programs} & \alpha &::=& \cdots 
-  \alt \mathit{inv} : \eta \fatsemi \epsilon \Leftrightarrow \idc 
+\textit{Level-2 programs} & \alpha &::=& \cdots
+  \alt \mathit{inv} : \eta \fatsemi \epsilon \Leftrightarrow \idc
 \end{array}\]
 
 The metavariable $\net$ excludes all types that are equivalent to the
@@ -839,9 +844,9 @@ processes each collecting one of the values (and vice-versa):
 
 \EtaEpsilonExampletwo{}
 
-%%%%% 
+%%%%%
 \subsection{Choosing Ancillae Values}
- 
+
 The previous development achieves a significant milestone but only
 hints at the full expressiveness of fractional types. A small but
 significant additional expressiveness is to allow ancillae to be
@@ -861,8 +866,8 @@ achieved in our language as follows:
    \eta_{v:t} : 1 \leftrightarrow (t * \oneover{v}) \\
    &&& ~~~~~\alt \epsilon_{v:t} : (t * \oneover{v}) \leftrightarrow 1 \\
 \textit{Level-2 types} &&& c \Leftrightarrow c \\
-\textit{Level-2 programs} & \alpha &::=& \cdots 
-  \alt \mathit{inv} : \eta_{v:t} \fatsemi \epsilon_{v:t} \Leftrightarrow \idc 
+\textit{Level-2 programs} & \alpha &::=& \cdots
+  \alt \mathit{inv} : \eta_{v:t} \fatsemi \epsilon_{v:t} \Leftrightarrow \idc
 \end{array}\]
 
 In addition to being more expressive, this version has the advantage
@@ -886,7 +891,7 @@ entanglement~\cite{DBLP:journals/cal/ZhouB19}:
 
 \begin{wrapfigure}[0]{r}{0.2\textwidth}
   \input{parity.tikz}
-\end{wrapfigure}  
+\end{wrapfigure}
 \PIFDparity{}
 
 \noindent The circuit initializes the ancilla to \AgdaInductiveConstructor{true} and
@@ -901,7 +906,7 @@ for particular entangled states~\cite{DBLP:journals/cal/ZhouB19}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Space-Tracking Abstract Machine}
-\label{sec:space}  
+\label{sec:space}
 
 There are two technical reasons we are calling the new type constructor a
 \emph{fractional type} and hence using for it the suggestive notation
@@ -934,7 +939,7 @@ $\oneover{t}$:
   specialized to collect space for one of the $n$ distinct values. In
   this section, we make this intuition precise by presenting a
   (fully-formalized in Agda) abstract machine that manages an explicit
-  heap. 
+  heap.
 \end{itemize}
 
 %%
@@ -969,7 +974,7 @@ memory register using an index into an enumeration. Thus a memory
 register containing a boolean value would be represented in Agda as 𝔽
 ::  𝕋 :: [] [ Fin.0F ] or 𝔽 :: 𝕋 :: [] [ Fin.1F ] depending on whether
 the values is \AgdaInductiveConstructor{false} or \AgdaInductiveConstructor{true}. The prepending list
-contains all possible values of the type and the number in between [\ldots ] 
+contains all possible values of the type and the number in between [\ldots ]
 is an index into the list, representing a finite number that
 is guaranteed to be in bounds. In a low-level runtime representation
 only a binary encoding of this finite would need to be stored but in
@@ -993,13 +998,13 @@ the current index (i.e., the current value) changes.
 
 %% cardinality of pi type:
 %% \PIMEMcard{}
-%%   
+%%
 %% enumeration:
 %% \PIMEMenum{}
-%% 
+%%
 %%  combinator preserve size:
 %% \PIMEMcardeq{}
-%% 
+%%
 %%  semantics for Pi:
 %% \PIMEMstate{}
 %% \PIMEMstep{}
@@ -1039,7 +1044,7 @@ allocation~\cite{10.1007/978-3-319-20860-2_13,Green:2013:QSQ:2491956.2462177}.
 In this section, we address this limitation using a combination of
 pointed types, singleton types, monads, and comonads.
 
-%%%%% 
+%%%%%
 \subsection{Lifting Evaluation to Type System}
 
 Before giving all the (rather involved) technical details, we
@@ -1078,11 +1083,11 @@ property that holds for all natural numbers $n$. The full evaluation
 was not used but only partially as needed to derive the property. This
 form of partial evaluation will prove to be quite expressive allowing
 us to keep track of ancillae values throughout complex programs as
-demonstrated in Sec.~\ref{sec:cat}. 
+demonstrated in Sec.~\ref{sec:cat}.
 
-%%%%% 
+%%%%%
 \subsection{Pointed and Singleton Types}
- 
+
 The denotation of the fractional type is now:
 
 \PIPFUdef{}
@@ -1091,9 +1096,9 @@ Combinators:
 
 \PIPFCombDef{}
 
-properties of singleton, recip  
-derive join etc  
-monad,comonad structure  
+properties of singleton, recip
+derive join etc
+monad,comonad structure
 
 Evaluation:
 \PIPFeval{}
@@ -1103,7 +1108,7 @@ Combine with eval, the whole thing is reversible:
 
 show a small example
 
-%%%%%%%%% 
+%%%%%%%%%
 \subsection{Extraction}
 
 Exploit dependent types to reify proofs in the type system. Type
@@ -1147,7 +1152,7 @@ the dynamic check won't fail.
 
 %%%%%%%%%%%
 \subsection{Examples}
-\label{sec:cat}  
+\label{sec:cat}
 
 About trace, it is remarkable: it says, given a function (possibly
 using eta/epsilon so input/output sizes not guaranteed to be the same)
@@ -1156,10 +1161,10 @@ using eta/epsilon so input/output sizes not guaranteed to be the same)
 \verb|C| and derive a function \verb|A <-> B|. This is true \emph{even
   if} \verb|C| is actually used. See the swap example.
 
-revrev: rematerialization ! gc the gc process! 
+revrev: rematerialization ! gc the gc process!
 
-Use all the constructions name, coname, etc. and see what they do in this context!  
- 
+Use all the constructions name, coname, etc. and see what they do in this context!
+
 allocate A
 allocate B
 combinate the gc's for A and B to get 1/(AxB)
@@ -1178,8 +1183,8 @@ In-place matrix transpose: ease of programming, efficiency. Say we
 want to transpose a matrix. Wikipedia example
 (\url{https://en.wikipedia.org/wiki/In-place_matrix_transposition}):
 \begin{verbatim}
-11 12 13 14 
-21 22 23 24 
+11 12 13 14
+21 22 23 24
 \end{verbatim}
 transposed to
 \begin{verbatim}
@@ -1190,9 +1195,9 @@ transposed to
 \end{verbatim}
 In Pi, the input and output matrices are:
 \begin{verbatim}
-M = (11,21) , (12,22) , (13,23) , (14,24) 
+M = (11,21) , (12,22) , (13,23) , (14,24)
 
-trM = (11,12,13,14) , (21,22,23,23) 
+trM = (11,12,13,14) , (21,22,23,23)
 \end{verbatim}
 Say we are given a language like Pi that is sound and complete with
 respect to permutations on finite types, we would write the
@@ -1214,7 +1219,7 @@ quipper de-allocation left to programmer.
 Is the below a possible example?
 
 Say we already have a permutation $A \leftrightarrow B$
-we can implement a permutation $X \leftrightarrow Z$ 
+we can implement a permutation $X \leftrightarrow Z$
 when there exists $Y$ such that $A = X * Y = Z * Y = B$:
 \[\begin{array}{rcl}
 X &\rightarrow& X * Y * 1/Y \\
