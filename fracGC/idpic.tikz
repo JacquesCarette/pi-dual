@@ -1,17 +1,17 @@
-\begin{tikzpicture}[yscale=0.4,xscale=0.8]
+\begin{tikzpicture}[yscale=0.4,xscale=0.8,every node/.style={scale=0.7}]
 	\begin{pgfonlayer}{nodelayer}
-		\node [style=none] (0) at (-7, 25) {};
+		\node [style=none,label=$\mathbb{B}$] (0) at (-7, 25) {};
 		\node [style=none] (1) at (-3, 25) {};
 		\node [style=none] (2) at (-1, 25) {};
 		\node [style=none] (3) at (1, 25) {};
-		\node [style=none] (4) at (-5, 23) {};
+		\node [style=none,label=left:$\mathbb{B}~~$] (4) at (-5, 23) {};
 		\node [style=none] (5) at (-4, 23) {};
 		\node [style=none] (6) at (-5, 25) {};
 		\node [style=none] (7) at (-4, 25) {};
 		\node [style=none] (8) at (-3, 23) {};
 		\node [style=none] (9) at (-1, 23) {};
 		\node [style=none] (10) at (-6, 22) {};
-		\node [style=none] (11) at (-5, 21) {};
+		\node [style=none,label=below:$\oneover{\mathbb{B}}$] (11) at (-5, 21) {};
 		\node [style=none] (13) at (0, 22) {};
 		\node [style=none] (14) at (-1, 21) {};
 		\node [style=control,scale=0.5] (15) at (-5, 25) {};
