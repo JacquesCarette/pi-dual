@@ -1,4 +1,4 @@
-\newcommand{\PPFTone}{%
+\newcommand{\PPFTone}{% Not used
 \begin{code}
 {-# OPTIONS --without-K --safe #-}
 
@@ -15,33 +15,35 @@ open import PiPointedFracCode
 
 \end{code}}
 
-\newcommand{\PPFTmore}{%
-\begin{code}
+\newcommand{\PPFTmore}{% Not used
+Trace terminates!  The type C is pointed with point c; trace uses c
+as the initial value for C. So f gets two values (a,c). It can do
+whatever to produce (b',c'). But f is reversible so it is limited
+to essentially either id or swap. Makes sense???
 
--- Trace terminates!  The type C is pointed with point c; trace uses c
--- as the initial value for C. So f gets two values (a,c). It can do
--- whatever to produce (b',c'). But f is reversible so it is limited
--- to essentially either id or swap. Makes sense???
+\begin{code}
 dual : {A B : ∙𝕌} → (f : A ∙⟶ B) →  (∙𝟙/ B ∙⟶ ∙𝟙/ A)
 dual {A} {B} f =
   ∙uniti⋆l ∙⊚ (η A ∙⊗ ∙id⟷) ∙⊚ ((∙Singᵤ f ∙⊗ ∙id⟷) ∙⊗ ∙id⟷) ∙⊚
   ∙assocr⋆ ∙⊚ (∙id⟷ ∙⊗ ∙swap⋆) ∙⊚ ∙assocl⋆ ∙⊚ (ε B ∙⊗ ∙id⟷) ∙⊚ ∙unite⋆l
+\end{code}
+}
 
-
+\begin{code}
 𝔹 : 𝕌
 𝔹 = 𝟙 +ᵤ 𝟙
 
 𝔽 𝕋 : ⟦ 𝔹 ⟧
 𝔽 = inj₁ tt
 𝕋 = inj₂ tt
-\end{code}}
+\end{code}
 
 
 \newcommand{\PPFTtrace}{%
 \begin{code}
 trace : {A B C : ∙𝕌} → (f : A ∙×ᵤ C ∙⟶ B ∙×ᵤ C) → A ∙⟶ B
 trace {A} {B} {C} f =
-  ∙uniti⋆r ∙⊚ (return _ ∙⊗ η C) ∙⊚ ∙assocl⋆ ∙⊚         
+  ∙uniti⋆r ∙⊚ (return _ ∙⊗ η C) ∙⊚ ∙assocl⋆ ∙⊚
   (tensor ∙⊗ ∙id⟷) ∙⊚
   (∙Singᵤ f ∙⊗ ∙id⟷) ∙⊚
   (cotensor ∙⊗ ∙id⟷) ∙⊚
@@ -61,12 +63,10 @@ traceA f₁ f₂ f₃ f₄ = trace f
             ∙id⟷ ∙⊗ (∙swap⋆ ∙⊗ ∙id⟷ ∙⊚ ∙assocr⋆)
 \end{code}}
 
-\newcommand{\PPFTtracemore}{%
+\newcommand{\PPFTtracemore}{% Not used
 \begin{code}
 traceS : (A : 𝕌) (v : ⟦ A ⟧) → Σ (⟦ A ⟧ → ⟦ A ⟧) (λ f → f v ≡ v)
 traceS A v = ∙eval (trace {A # v} ∙swap⋆)
-
-
 
 zz3 : (A : 𝕌) (v : ⟦ A ⟧) (T : ∙𝕌) → Σ (⟦ A ⟧ → ⟦ A ⟧) (λ f → f v ≡ v)
 zz3 A v T = ∙eval (trace {A # v} {_} {T} ∙id⟷)
@@ -106,7 +106,7 @@ dist×/  :  {A B C D : ∙𝕌} →
           (A ⊸ B) ∙×ᵤ (C ⊸ D) ∙⟶ ((A ∙×ᵤ C) ⊸ (B ∙×ᵤ D))
 \end{code}}
 
-\newcommand{\PPFTfrac}{%
+\newcommand{\PPFTfrac}{% Not used
 \begin{code}
 
 comp⊸ A B C = ∙assocr⋆ ∙⊚

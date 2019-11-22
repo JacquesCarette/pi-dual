@@ -1,4 +1,4 @@
-\newcommand{\BCCONE}{%
+\newcommand{\BCCONE}{% Not used
 \begin{code}
 {-# OPTIONS --without-K #-}
 
@@ -39,8 +39,8 @@ TOFFOLI = ctrl (ctrl NOT)
 
 CTOFFOLI : 𝔹⁴ ⟷ 𝔹⁴
 CTOFFOLI = ctrl (ctrl (ctrl NOT))
-\end{code}}  
-\newcommand{\BCCTWO}{%
+\end{code}}
+\newcommand{\BCCTWO}{% Not used
 \begin{code}
 -- Ancilla examples from literature
 
@@ -157,7 +157,7 @@ test1 = eval (zigzag 𝔽) (𝔽 , refl)      -- (⇑ #f refl)
 -- test3 = eval (zigzag 𝕋) (𝔽 , refl)   -- typechecks if given proof #f=#t
 test4 = eval (zigzag 𝕋) (𝕋 , refl)      -- (⇑ #t refl)
 
-zigzagU : ⟦ 𝔹 ⟧ → ⟦ 𝔹 ⟧ 
+zigzagU : ⟦ 𝔹 ⟧ → ⟦ 𝔹 ⟧
 zigzagU b = unfocus (eval (zigzag b) (focus b))
 
 -- then prove a theorem that specifies its semantics
