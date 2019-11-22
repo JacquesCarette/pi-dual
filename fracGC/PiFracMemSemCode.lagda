@@ -179,7 +179,7 @@ run (suc n) st with run n st
 ex₁ : Vec State' 33
 ex₁ = run 32 ⟪ id' ∥ Enum 𝟚 [ Fin.fromℕ 1 ]⟫
 
-revrev : {A : 𝕌} {v : ⟦ A ⟧} → A ↔ (𝟙/ ○)
+revrev : {A : 𝕌} {v : ⟦ A ⟧} → A ↔ (𝟙/_ {𝟙/ v} ○)
 revrev {A} {v} =
   uniti⋆r ⊚
   (id↔ ⊗ η ○) ⊚
@@ -187,7 +187,7 @@ revrev {A} {v} =
   (ε v ⊗ id↔) ⊚
   unite⋆l
 
-irevrev : {A : 𝕌} {v : ⟦ A ⟧} → (𝟙/ ○) ↔ A
+irevrev : {A : 𝕌} {v : ⟦ A ⟧} → (𝟙/_ {𝟙/ v} ○) ↔ A
 irevrev {A} {v} =
   uniti⋆l ⊚
   (η v ⊗ id↔) ⊚
@@ -198,10 +198,10 @@ irevrev {A} {v} =
 𝔹 : 𝕌
 𝔹 = 𝟙 +ᵤ 𝟙
 
-revrev' : 𝔹 ↔ (𝟙/ ○)
+revrev' : 𝔹 ↔ (𝟙/_ {𝟙/ 𝕋} ○)
 revrev' = revrev {𝔹} {inj₂ tt}
 
-irevrev' : (𝟙/ ○) ↔ 𝔹
+irevrev' : (𝟙/_ {𝟙/ 𝕋} ○) ↔ 𝔹
 irevrev' = irevrev {𝔹} {inj₂ tt}
 
 ex₂ : Vec State' 12
@@ -229,7 +229,7 @@ ex₂ = run 11 ⟪ revrev' ∥ Enum 𝟚 [ Fin.fromℕ 1 ]⟫
 --}
 
 ex₃ : Vec State' 12
-ex₃ = run 11 ⟪ irevrev' ∥ Enum (𝟙/_ {𝟙/_ {𝔹} (inj₂ tt)} ○) [ Fin.fromℕ 0 ]⟫
+ex₃ = run 11 ⟪ irevrev' ∥ Enum (𝟙/_ {𝟙/_ {𝔹} 𝕋} ○) [ Fin.fromℕ 0 ]⟫
 
 {--
 
