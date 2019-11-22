@@ -1,4 +1,4 @@
-\newcommand{\PIPF}{%
+\newcommand{\PIPF}{% Not used
 \begin{code}
 {-# OPTIONS --without-K --safe #-}
 
@@ -192,7 +192,7 @@ data ∙𝕌 : Set where
 ∙⟦ ❰ T ❱ ⟧       = let (t , v) = ∙⟦ T ⟧ in Singleton t v , (v , refl)
 ∙⟦ ∙𝟙/ T ⟧       = let (t , v) = ∙⟦ T ⟧ in Recip t v , λ _ → tt
 \end{code}}
-\newcommand{\PIPFonelift}{%
+\newcommand{\PIPFonelift}{% Not used
 \begin{code}
 ∙𝟙 : ∙𝕌
 ∙𝟙 = 𝟙 # tt
@@ -208,14 +208,14 @@ data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
   ∙#times  :  {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} →
               ((t₁ # v₁) ∙×ᵤ (t₂ # v₂)) ∙⟶ ((t₁ ×ᵤ t₂) # (v₁ , v₂))
   -- multiplicative structure (omitted)
-  -- monad / comonad 
+  -- monad / comonad
   return   : (T : ∙𝕌) → T ∙⟶ ❰ T ❱
   extract  : (T : ∙𝕌) → ❰ T ❱ ∙⟶ T
   -- eta/epsilon
   η  :  (T : ∙𝕌) → ∙𝟙 ∙⟶ ❰ T ❱ ∙×ᵤ ∙𝟙/ T
   ε  :  (T : ∙𝕌) → ❰ T ❱ ∙×ᵤ ∙𝟙/ T ∙⟶ ∙𝟙
 \end{code}}
-\newcommand{\PIPFCombDefrest}{%
+\newcommand{\PIPFCombDefrest}{% Not used
 \begin{code}
   ∙id⟷      :  {T : ∙𝕌} → T ∙⟶ T
   _∙⊚_      :  {T₁ T₂ T₃ : ∙𝕌} →
@@ -229,7 +229,7 @@ data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
                T₁ ∙×ᵤ (T₂ ∙×ᵤ T₃) ∙⟶ (T₁ ∙×ᵤ T₂) ∙×ᵤ T₃
   ∙assocr⋆  :  {T₁ T₂ T₃ : ∙𝕌} →
                (T₁ ∙×ᵤ T₂) ∙×ᵤ T₃ ∙⟶ T₁ ∙×ᵤ (T₂ ∙×ᵤ T₃)
-  _∙⊗_      :  {T₁ T₂ T₃ T₄ : ∙𝕌} → (T₁ ∙⟶ T₃) → (T₂ ∙⟶ T₄) → 
+  _∙⊗_      :  {T₁ T₂ T₃ T₄ : ∙𝕌} → (T₁ ∙⟶ T₃) → (T₂ ∙⟶ T₄) →
                (T₁ ∙×ᵤ T₂ ∙⟶ T₃ ∙×ᵤ T₄)
 \end{code}}
 \newcommand{\PIPFCombderive}{%
@@ -237,25 +237,25 @@ data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
 ∙Singᵤ : {T₁ T₂ : ∙𝕌} → (T₁ ∙⟶ T₂) → ❰ T₁ ❱ ∙⟶ ❰ T₂ ❱
 ∙Singᵤ {T₁} {T₂} c = extract T₁ ∙⊚ c ∙⊚ return T₂
 
-tensor : {T₁ T₂ : ∙𝕌} → ❰ T₁ ❱ ∙×ᵤ ❰ T₂ ❱ ∙⟶ ❰ T₁ ∙×ᵤ T₂ ❱ 
+tensor : {T₁ T₂ : ∙𝕌} → ❰ T₁ ❱ ∙×ᵤ ❰ T₂ ❱ ∙⟶ ❰ T₁ ∙×ᵤ T₂ ❱
 tensor {T₁} {T₂} = (extract T₁ ∙⊗ extract T₂) ∙⊚ return (T₁ ∙×ᵤ T₂)
 
 cotensor : {T₁ T₂ : ∙𝕌} → ❰ T₁ ∙×ᵤ T₂ ❱ ∙⟶ ❰ T₁ ❱ ∙×ᵤ ❰ T₂ ❱
 cotensor {T₁} {T₂} = extract (T₁ ∙×ᵤ T₂) ∙⊚ (return T₁ ∙⊗ return T₂)
 
-join : {T₁ : ∙𝕌} →  ❰ ❰ T₁ ❱ ❱ ∙⟶ ❰ T₁ ❱ 
+join : {T₁ : ∙𝕌} →  ❰ ❰ T₁ ❱ ❱ ∙⟶ ❰ T₁ ❱
 join {T₁} = extract ❰ T₁ ❱
 
 duplicate : {T₁ : ∙𝕌} → ❰ T₁ ❱ ∙⟶ ❰ ❰ T₁ ❱ ❱
 duplicate {T₁} = return ❰ T₁ ❱
 \end{code}}
 
-\newcommand{\PIPFCombderivedefs}{%
+\newcommand{\PIPFCombderivedefs}{% Not used
 \begin{code}
-tensorl : {T₁ T₂ : ∙𝕌} → (❰ T₁ ❱ ∙×ᵤ T₂) ∙⟶  ❰ (T₁ ∙×ᵤ T₂) ❱ 
+tensorl : {T₁ T₂ : ∙𝕌} → (❰ T₁ ❱ ∙×ᵤ T₂) ∙⟶  ❰ (T₁ ∙×ᵤ T₂) ❱
 tensorl {T₁} {T₂} = (extract T₁ ∙⊗ ∙id⟷) ∙⊚ return (T₁ ∙×ᵤ T₂)
 
-tensorr : {T₁ T₂ : ∙𝕌} → (T₁ ∙×ᵤ ❰ T₂ ❱) ∙⟶  ❰ (T₁ ∙×ᵤ T₂) ❱ 
+tensorr : {T₁ T₂ : ∙𝕌} → (T₁ ∙×ᵤ ❰ T₂ ❱) ∙⟶  ❰ (T₁ ∙×ᵤ T₂) ❱
 tensorr {T₁} {T₂} = (∙id⟷ ∙⊗ extract T₂) ∙⊚ return (T₁ ∙×ᵤ T₂)
 
 cotensorl : {T₁ T₂ : ∙𝕌} →  ❰ (T₁ ∙×ᵤ T₂) ❱ ∙⟶ (❰ T₁ ❱ ∙×ᵤ T₂)
@@ -273,7 +273,7 @@ cotensorr {T₁} {T₂} = extract (T₁ ∙×ᵤ T₂) ∙⊚ (∙id⟷ ∙⊗ r
 !∙_ : {A B : ∙𝕌} → A ∙⟶ B → B ∙⟶ A
 \end{code}}
 
-\newcommand{\PIPFrevrest}{%
+\newcommand{\PIPFrevrest}{% Not used
 \begin{code}
 !∙ (∙c {t₁} {t₂} {v} c) =
   subst (λ x → t₂ # eval c v ∙⟶ t₁ # x) (ΠisRev c v) (∙c (! c))
@@ -295,14 +295,14 @@ cotensorr {T₁} {T₂} = extract (T₁ ∙×ᵤ T₂) ∙⊚ (∙id⟷ ∙⊗ r
 !∙ ε T = η T
 \end{code}}
 
-\newcommand{\PIPFeval}{%
+\newcommand{\PIPFeval}{% Not used
 \begin{code}
 ∙eval : {T₁ T₂ : ∙𝕌} → (C : T₁ ∙⟶ T₂) →
   let (t₁ , v₁) = ∙⟦ T₁ ⟧; (t₂ , v₂) = ∙⟦ T₂ ⟧
   in Σ (t₁ → t₂) (λ f → f v₁ ≡ v₂)
 \end{code}}
 
-\newcommand{\PIPFevalrest}{%
+\newcommand{\PIPFevalrest}{% Not used
 \begin{code}
 ∙eval ∙id⟷ = (λ x → x) , refl
 ∙eval (∙c c) = eval c , refl
@@ -312,7 +312,7 @@ cotensorr {T₁} {T₂} = extract (T₁ ∙×ᵤ T₂) ∙⊚ (∙id⟷ ∙⊗ r
 ∙eval ∙uniti⋆l = (λ {x → (tt , x)}) , refl
 ∙eval ∙unite⋆r = (λ {(x , tt) → x}) , refl
 ∙eval ∙uniti⋆r = (λ {x → (x , tt)}) , refl
-∙eval ∙swap⋆ = (λ {(x , y) → y , x}) , refl 
+∙eval ∙swap⋆ = (λ {(x , y) → y , x}) , refl
 ∙eval ∙assocl⋆ = (λ {(x , (y , z)) → ((x , y) , z)}) , refl
 ∙eval ∙assocr⋆ = (λ {((x , y) , z) → (x , (y , z))}) , refl
 ∙eval (C₀ ∙⊗ C₁) with ∙eval C₀ | ∙eval C₁
@@ -325,14 +325,14 @@ cotensorr {T₁} {T₂} = extract (T₁ ∙×ᵤ T₂) ∙⊚ (∙id⟷ ∙⊗ r
 ∙eval (ε T) = (λ { ((_ , refl) , f) → f (proj₂ ∙⟦ T ⟧ , refl)}) , refl
 \end{code}}
 
-
 \newcommand{\PIPFrevrev}{%
 \begin{code}
-revrev : {A : ∙𝕌} → ∙𝟙/ (∙𝟙/ A) ∙⟶ ❰ A ❱ 
-revrev {A} = ∙uniti⋆l ∙⊚
-             (η A ∙⊗ ∙id⟷) ∙⊚
-             ((∙id⟷ ∙⊗ return (∙𝟙/ A)) ∙⊗ ∙id⟷) ∙⊚
-             ∙assocr⋆ ∙⊚
-             ∙id⟷ ∙⊗ ε (∙𝟙/ A) ∙⊚
-             ∙unite⋆r 
+revrev : {A : ∙𝕌} → ∙𝟙/ (∙𝟙/ A) ∙⟶ ❰ A ❱
+revrev {A} =
+  ∙uniti⋆l ∙⊚
+  (η A ∙⊗ ∙id⟷) ∙⊚
+  ((∙id⟷ ∙⊗ return (∙𝟙/ A)) ∙⊗ ∙id⟷) ∙⊚
+  ∙assocr⋆ ∙⊚
+  ∙id⟷ ∙⊗ ε (∙𝟙/ A) ∙⊚
+  ∙unite⋆r
 \end{code}}

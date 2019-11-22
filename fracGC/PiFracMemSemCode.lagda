@@ -1,4 +1,4 @@
-\newcommand{\PIFMEM}{%
+\newcommand{\PIFMEM}{% Not used
 \begin{code}
 {-# OPTIONS --without-K --safe #-}
 module _ where
@@ -94,7 +94,7 @@ Find' : {A : 𝕌} (x : ⟦ A ⟧) → Fin ∣ A ∣
 Find' = proj₁ ∘ Find
 \end{code}}
 
-\newcommand{\PIFMEMstate}{%
+\newcommand{\PIFMEMstate}{% Not used
 \begin{code}
 data State (A : 𝕌) : Set where
   ⟪_[_]⟫ : Vec ⟦ A ⟧ ∣ A ∣ → Fin ∣ A ∣ → State A
@@ -165,7 +165,7 @@ step' ⟪ c ∥ v [ i ]⟫ with step c ⟪ v [ i ]⟫
 step' ⟪ c ∥ v [ i ]⟫ | _ , c' , ⟪ v' [ i' ]⟫ = ⟪ c' ∥ v' [ i' ]⟫
 \end{code}}
 
-\newcommand{\PIFMEMrun}{%
+\newcommand{\PIFMEMrun}{% Not used
 \begin{code}
 run : (n : ℕ) → State' → Vec State' (suc n)
 run 0 st = [ st ]
@@ -174,21 +174,21 @@ run (suc n) st with run n st
 ... | ⟪ cx ∥ vx [ ix ]⟫ rewrite +-comm 1 (suc n) = sts ++ [ step' ⟪ cx ∥ vx [ ix ]⟫ ]
 \end{code}}
 
-\newcommand{\PIFMEMex}{%
+\newcommand{\PIFMEMex}{% Not used
 \begin{code}
 ex₁ : Vec State' 33
 ex₁ = run 32 ⟪ id' ∥ Enum 𝟚 [ Fin.fromℕ 1 ]⟫
 
-revrev : {A : 𝕌} {v : ⟦ A ⟧} → A ↔ (𝟙/_ {𝟙/ v} ○)
-revrev {A} {v} =
+revrev : {A : 𝕌} (v : ⟦ A ⟧) → A ↔ (𝟙/_ {𝟙/ v} ○)
+revrev v =
   uniti⋆r ⊚
   (id↔ ⊗ η ○) ⊚
   assocl⋆ ⊚
   (ε v ⊗ id↔) ⊚
   unite⋆l
 
-irevrev : {A : 𝕌} {v : ⟦ A ⟧} → (𝟙/_ {𝟙/ v} ○) ↔ A
-irevrev {A} {v} =
+irevrev : {A : 𝕌} (v : ⟦ A ⟧) → (𝟙/_ {𝟙/ v} ○) ↔ A
+irevrev v =
   uniti⋆l ⊚
   (η v ⊗ id↔) ⊚
   assocr⋆ ⊚
@@ -199,10 +199,10 @@ irevrev {A} {v} =
 𝔹 = 𝟙 +ᵤ 𝟙
 
 revrev' : 𝔹 ↔ (𝟙/_ {𝟙/ 𝕋} ○)
-revrev' = revrev {𝔹} {inj₂ tt}
+revrev' = revrev (inj₂ tt)
 
 irevrev' : (𝟙/_ {𝟙/ 𝕋} ○) ↔ 𝔹
-irevrev' = irevrev {𝔹} {inj₂ tt}
+irevrev' = irevrev (inj₂ tt)
 
 ex₂ : Vec State' 12
 ex₂ = run 11 ⟪ revrev' ∥ Enum 𝟚 [ Fin.fromℕ 1 ]⟫
@@ -214,17 +214,17 @@ ex₂ = run 11 ⟪ revrev' ∥ Enum 𝟚 [ Fin.fromℕ 1 ]⟫
 ⟪ (id↔ ⊗ η ○) ⊚ assocl⋆ ⊚ (ε 𝕋 ⊗ id↔) ⊚ unite⋆l ∥
 (𝔽 , tt) ∷ (𝕋 , tt) ∷ [] [ Fin.1F ]⟫
 
-⟪ assocl⋆ ⊚ (ε 𝕋 ⊗ id↔) ⊚ unite⋆l ∥ 
+⟪ assocl⋆ ⊚ (ε 𝕋 ⊗ id↔) ⊚ unite⋆l ∥
 (𝔽 , ○ , ○) ∷ (𝕋 , ○ , ○) ∷ [] [ Fin.1F ]⟫
 
-⟪ (ε 𝕋 ⊗ id↔) ⊚ unite⋆l ∥ 
+⟪ (ε 𝕋 ⊗ id↔) ⊚ unite⋆l ∥
 ((𝔽 , ○) , ○) ∷ ((𝕋 , ○) , ○) ∷ [] [ Fin.1F ]⟫
 
-⟪ unite⋆l ∥ 
-(tt , ○) ∷ [] [ Fin.0F ]⟫ 
+⟪ unite⋆l ∥
+(tt , ○) ∷ [] [ Fin.0F ]⟫
 
-⟪ id↔ ∥ 
-○ ∷ [] [ Fin.0F ]⟫ 
+⟪ id↔ ∥
+○ ∷ [] [ Fin.0F ]⟫
 
 --}
 
@@ -233,22 +233,22 @@ ex₃ = run 11 ⟪ irevrev' ∥ Enum (𝟙/_ {𝟙/_ {𝔹} 𝕋} ○) [ Fin.fro
 
 {--
 
-  ⟪ uniti⋆l ⊚ (η 𝕋 ⊗ id↔) ⊚ assocr⋆ ⊚ (id↔ ⊗ ε ○) ⊚ unite⋆r ∥ 
+  ⟪ uniti⋆l ⊚ (η 𝕋 ⊗ id↔) ⊚ assocr⋆ ⊚ (id↔ ⊗ ε ○) ⊚ unite⋆r ∥
   ○ [ Fin.0F ]⟫
 
-  ⟪ (η 𝕋 ⊗ id↔) ⊚ assocr⋆ ⊚ (id↔ ⊗ ε ○) ⊚ unite⋆r ∥ 
+  ⟪ (η 𝕋 ⊗ id↔) ⊚ assocr⋆ ⊚ (id↔ ⊗ ε ○) ⊚ unite⋆r ∥
   (tt , ○) ∷ [] [ Fin.0F ]⟫
 
   ⟪ assocr⋆ ⊚ (id↔ ⊗ ε ○) ⊚ unite⋆r ∥
   ((𝔽 , ○) , ○) ∷ ((𝕋 , ○) , ○) ∷ [] [ Fin.1F ]⟫
 
-  ⟪ (id↔ ⊗ ε ○) ⊚ unite⋆r ∥ 
+  ⟪ (id↔ ⊗ ε ○) ⊚ unite⋆r ∥
   (𝔽 , ○ , ○) ∷ (𝕋 , ○ , ○) ∷ [] [ Fin.1F ]⟫
 
-  ⟪ unite⋆r ∥ 
+  ⟪ unite⋆r ∥
   (𝔽 , tt) ∷ (𝕋 , tt) ∷ [] [ Fin.1F ]⟫ ∷
 
-  ⟪ id↔ ∥ 
+  ⟪ id↔ ∥
   𝔽 ∷ 𝕋 ∷ [] [ Fin.1F ]⟫ ∷ []
 
 --}
