@@ -143,9 +143,9 @@ Ext𝕌 (t₁ ∙+ᵤl t₂) with Ext𝕌 t₁ | Ext𝕌 t₂
 ... | (t₁' , v₁') | (t₂' , v₂') = t₁' +ᵤ t₂' , inj₁ v₁'
 Ext𝕌 (t₁ ∙+ᵤr t₂) with Ext𝕌 t₁ | Ext𝕌 t₂
 ... | (t₁' , v₁') | (t₂' , v₂') = t₁' +ᵤ t₂' , inj₂ v₂'
-Ext𝕌 (Singᵤ T) with Ext𝕌 T
+Ext𝕌 ❰ T ❱ with Ext𝕌 T
 ... | (t , v) = t , v
-Ext𝕌 (Recipᵤ T) with Ext𝕌 T
+Ext𝕌 (∙𝟙/ T) with Ext𝕌 T
 ... | (t , v) = 𝟙/ v , ○
 \end{code}}
 \newcommand{\EXTUComb}{%
@@ -164,7 +164,7 @@ Ext∙⟶ ∙swap⋆ = swap⋆
 Ext∙⟶ ∙assocl⋆ = assocl⋆
 Ext∙⟶ ∙assocr⋆ = assocr⋆
 Ext∙⟶ (c₁ ∙⊗ c₂) = Ext∙⟶ c₁ ⊗ Ext∙⟶ c₂
-Ext∙⟶ (c₁ ∙⊕ₗ c₂) = Ext∙⟶ c₁ ⊕ Ext∙⟶ c₂
+Ext∙⟶ (c₁ ∙⊕ c₂) = Ext∙⟶ c₁ ⊕ Ext∙⟶ c₂
 Ext∙⟶ (c₁ ∙⊕ᵣ c₂) = Ext∙⟶ c₁ ⊕ Ext∙⟶ c₂
 Ext∙⟶ (return T) = id↔
 Ext∙⟶ (extract T) = id↔
@@ -190,7 +190,7 @@ Ext≡ ∙swap⋆ = refl
 Ext≡ ∙assocl⋆ = refl
 Ext≡ ∙assocr⋆ = refl
 Ext≡ (c₁ ∙⊗ c₂) rewrite Ext≡ c₁ | Ext≡ c₂ = refl
-Ext≡ (c₁ ∙⊕ₗ c₂) rewrite Ext≡ c₁ = refl
+Ext≡ (c₁ ∙⊕ c₂) rewrite Ext≡ c₁ = refl
 Ext≡ (c₁ ∙⊕ᵣ c₂) rewrite Ext≡ c₂ = refl
 Ext≡ (return T) = refl
 Ext≡ (extract T) = refl

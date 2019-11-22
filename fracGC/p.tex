@@ -49,6 +49,8 @@
 \newunicodechar{⊎}{$\uplus$}
 \newunicodechar{ₗ}{$_l$}
 \newunicodechar{ᵣ}{$_r$}
+\newunicodechar{❰}{$\llparenthesis$}
+\newunicodechar{❱}{$\rrparenthesis$}
 
 \newcommand{\alt}{~|~}
 \newcommand{\net}{t_\bullet}
@@ -1076,7 +1078,7 @@ us to keep track of ancillae values throughout complex programs as
 demonstrated in Sec.~\ref{sec:cat}. 
 
 %%%%% 
-\subsection{Pointed Types}
+\subsection{Pointed and Singleton Types}
  
  rationale: we want singleton types to track, in the type system
 the values of ancillae, i.e.. we construct a proof using the type
@@ -1093,9 +1095,6 @@ substrate. Now all types have values; we can focus (using monad) and
 unfocus using (comonad). (This by the way ensures we don't write 1/0
 which would be bad). 
 
-%%%%% 
-\subsection{Singleton Types}
- 
 Consider the type $\Sigma \mathbb{N} (\lambda n. n \equiv 5)$. Values
 of that type are a number $m$ and a proof that this is number is equal
 to 5. So we can have $(4 + 1, \textit{refl})$, $(2 + 3 ,
