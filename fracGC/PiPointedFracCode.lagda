@@ -351,3 +351,15 @@ duplicate {T₁} = return (❰ T₁ ❱)
 ∙eval (η T) = (λ tt → (proj₂ ∙⟦ T ⟧ , refl) , λ _ → tt) , refl
 ∙eval (ε T) = (λ { ((_ , refl) , f) → f (proj₂ ∙⟦ T ⟧ , refl)}) , refl
 \end{code}}
+
+
+\newcommand{\PIPFrevrev}{%
+\begin{code}
+revrev : {A : ∙𝕌} → ❰ A ❱ ∙⟶ ∙𝟙/ (∙𝟙/ A)
+revrev {A} = ∙uniti⋆r ∙⊚
+             ∙id⟷ ∙⊗ η (∙𝟙/ A) ∙⊚
+             ∙assocl⋆ ∙⊚
+             ((∙id⟷ ∙⊗ extract (∙𝟙/ A)) ∙⊗ ∙id⟷) ∙⊚
+             (ε A ∙⊗ ∙id⟷) ∙⊚
+             ∙unite⋆l
+\end{code}}
