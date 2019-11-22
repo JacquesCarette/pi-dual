@@ -919,7 +919,7 @@ $\oneover{t}$:
   and $\epsilon$ operators~\cite{XXX}. Our language from the previous
   section is an adaptation of this idea to the context of $\Pi$. Many
   programming abstractions (such as \emph{name}, \emph{co-name}, and
-  \emph{trace} illustrated in Sec.~\ref{sec:cat}) can be automatically
+  \emph{trace} illustrated in Sec.~\ref{sec:cat}) can be
   derived from properties of compact closed categories. Additionally,
   all the properties expected of the rational numbers
   (e.g. $\oneover{(m*n)} = \oneover{m}*\oneover{n}$,
@@ -943,9 +943,8 @@ $\oneover{t}$:
 %%
 \subsection{Abstract Machine without Fractionals}
 
-Before the abstract machine for the full system with
-fractionals, we introduce some of the common technical details in the
-simpler setting of the core $\Pi$ language. First two simple facts
+To start, we introduce some of the common technical details in the
+simpler setting of the core $\Pi$ language. First, simple facts
 about cardinalities:
 
 \PIFMEMsize{}  % maybe we should use \PIMEMcard here?
@@ -970,12 +969,13 @@ with one bit for boolean values, etc. In the Agda formalization, we
 include the current combinator in the code register, and represent the
 memory register using an index into an enumeration. Thus a memory
 register containing a boolean value would be represented in Agda as 𝔽
-::  𝕋 :: [] [ Fin.0F ] or 𝔽 :: 𝕋 :: [] [ Fin.1F ] depending on whether
-the values is \AgdaInductiveConstructor{false} or \AgdaInductiveConstructor{true}. The prepending list
+::  𝕋 :: [] [ Fin.0F ] or 𝔽 :: 𝕋 :: [] [ Fin.1F ] depending on whether the
+values is \AgdaInductiveConstructor{false} or \AgdaInductiveConstructor{true}.
+The prepended list
 contains all possible values of the type and the number in between [\ldots ]
 is an index into the list, representing a finite number that
 is guaranteed to be in bounds. In a low-level runtime representation
-only a binary encoding of this finite would need to be stored but in
+only a binary encoding of this finite type would need to be stored, but in
 order to just prove that space is preserved, we can just inspect the
 size of the prepended list. Putting it all together, machine states and
 small-step reductions are formalized as follows:
@@ -988,7 +988,7 @@ even if the intermediate types change. As a small example, the
 following is a trace of the execution of \AgdaFunction{CNOT} applied
 to 𝕋, 𝕋:
 
-\includegraphics[scale=0.4]{trace1.png}
+\includegraphics[scale=0.5]{trace1.png}
 
 Note how the size of the list remains equal to 4 throughout the
 execution, even if the individual elements change as types change and
@@ -1063,7 +1063,7 @@ remove a runtime check).
 
 The strategy we adopt is to create a lifted version of the toy
 language with \emph{pointed types}~\cite{XXX}, i.e., types paired with
-a value of the type. In such the lifted language, the evaluation
+a value of the type. In the lifted language, the evaluation
 function has an interesting type: it keeps track of the result of
 evaluation within the type:
 
@@ -1082,6 +1082,11 @@ was not used but only partially as needed to derive the property. This
 form of partial evaluation will prove to be quite expressive allowing
 us to keep track of ancillae values throughout complex programs as
 demonstrated in Sec.~\ref{sec:cat}.
+\ednote{JC: Doesn't \AgdaFunction{eval}, in the type, evaluate
+fully for this work?  That Agda is strongly normalizing is rather
+important here. What exactly is partially evaluating is really not
+clear (says an expert in PE). I think the idea being expressed is
+correct, but the paragraph is insufficiently clear/precise.}
 
 %%%%%
 \subsection{Pointed and Singleton Types}
@@ -1116,6 +1121,7 @@ go back to \verb|PiFracDyn| and remove the runtime check?
 Polymorphic type for ancilla?
 \\
 First we can inject plain Pi type and value into PiFracDyn:
+\ednote{Pi/.U is not defined before its use below}
 \INJU{}
 and the combinators for Pi can also be inject into PiFracDyn in a straightforward way:
 \INJcomb{}
