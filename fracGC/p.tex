@@ -975,12 +975,12 @@ highlight the main idea using the toy language below:
 The toy language has two types (natural numbers and booleans) and two
 functions (and their compositions). Say we wanted to prove that
 \AgdaInductiveConstructor{compose isZero square} always returns
-\AgdaInductiveConstructor{false} when applies to a non-zero natural
+\AgdaInductiveConstructor{false} when applied to a non-zero natural
 number. We can certainly do this proof in Agda (i.e., in the
 meta-language of our formalization) but we would like to do the proof
-within the framework of the toy language itself. The most important
-reason is that this proof can be now be used within the language to
-optimize programs (or as the case will be for the full language to
+within the toy language itself. The most important
+reason is that it can then be used within the language to
+optimize programs (or, for the full language, to
 remove a runtime check).
 
 The strategy we adopt is to create a lifted version of the toy
@@ -991,33 +991,33 @@ evaluation within the type:
 
 \Jexamplecont{}
 
-Now various properties of our small example
+Various properties of
 \AgdaInductiveConstructor{compose isZero square} can be derived within
-the extended type system for the toy language:
+the extended type system:
 
 \Jexampletest{}
 
-Evidently we can track concrete values as the first two tests
-show. What is more interesting is \AgdaFunction{test3} which shows a
-property that holds for all natural numbers $n$. Evaluation in this
-case proceeds ``symbolically'' in the type system. From the definition
+We can track concrete values as the first two tests
+show. More interesting is \AgdaFunction{test3} which shows a
+property that holds for all natural numbers $n$. Evaluation
+proceeds ``symbolically'' in the type system. From the definition
 of \Afun{eval}, it is clear that
 \Afun{eval}~\Acon{square}~(\Acon{suc}~\Avar{n}) produces
-(\Acon{suc}~\Avar{n})*(\Acon{suc}~\Avar{n}) which by definition of
+(\Acon{suc}~\Avar{n}) * (\Acon{suc}~\Avar{n}) which by definition of
 multiplication is an expression with a leading \Acon{suc} constructor
-which is enough to determine that the result of evaluating
+which is enough to determine that evaluating
 \Acon{isZero} on it yields \Acon{false}. This form of partial
-evaluation will prove to be quite expressive allowing us to keep track
+evaluation will prove to be quite expressive, allowing us to keep track
 of ancillae values throughout complex programs as demonstrated in
 Sec.~\ref{sec:cat}.
 
 %%%%%
 \subsection{Pointed and Singleton Types: $\Pi/\bullet$}
 
-Following the development for the toy language above, we create a
-lifted version of fractional $\Pi$ with pointed types which we call
-$\Pi/\bullet$. In addition to the explicit pointed types of the form
-$t$\Acon{\#}$v$, we will need a multiplicative structure over pointed
+Proceeding similarly, we create a
+version of $\Pi$ with pointed types which we call
+$\Pi/\bullet$. In addition to the pointed types of the form
+$t$\Acon{\#}$v$, we need a multiplicative structure over pointed
 types, fractional types, and a special kind of pointed type that
 includes just one value, a singleton type. The singleton types will
 allow the type system to track the flow of one particular value, which
