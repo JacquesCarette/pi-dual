@@ -139,10 +139,6 @@ Ext𝕌 : ∙𝕌 → Σ[ t ∈ 𝕌 ] ⟦ t ⟧
 Ext𝕌 (t # v) = (Inj𝕌 t , Inj⟦𝕌⟧ v)
 Ext𝕌 (t₁ ∙×ᵤ t₂) with Ext𝕌 t₁ | Ext𝕌 t₂
 ... | (t₁' , v₁') | (t₂' , v₂') = t₁' ×ᵤ t₂' , v₁' , v₂'
-Ext𝕌 (t₁ ∙+ᵤl t₂) with Ext𝕌 t₁ | Ext𝕌 t₂
-... | (t₁' , v₁') | (t₂' , v₂') = t₁' +ᵤ t₂' , inj₁ v₁'
-Ext𝕌 (t₁ ∙+ᵤr t₂) with Ext𝕌 t₁ | Ext𝕌 t₂
-... | (t₁' , v₁') | (t₂' , v₂') = t₁' +ᵤ t₂' , inj₂ v₂'
 Ext𝕌 ❰ T ❱ with Ext𝕌 T
 ... | (t , v) = t , v
 Ext𝕌 (∙𝟙/ T) with Ext𝕌 T
@@ -164,8 +160,6 @@ Ext∙⟶ ∙swap⋆ = swap⋆
 Ext∙⟶ ∙assocl⋆ = assocl⋆
 Ext∙⟶ ∙assocr⋆ = assocr⋆
 Ext∙⟶ (c₁ ∙⊗ c₂) = Ext∙⟶ c₁ ⊗ Ext∙⟶ c₂
-Ext∙⟶ (c₁ ∙⊕ c₂) = Ext∙⟶ c₁ ⊕ Ext∙⟶ c₂
-Ext∙⟶ (c₁ ∙⊕ᵣ c₂) = Ext∙⟶ c₁ ⊕ Ext∙⟶ c₂
 Ext∙⟶ (return T) = id↔
 Ext∙⟶ (extract T) = id↔
 Ext∙⟶ (η T) = η (proj₂ (Ext𝕌 T))
@@ -190,8 +184,6 @@ Ext≡ ∙swap⋆ = refl
 Ext≡ ∙assocl⋆ = refl
 Ext≡ ∙assocr⋆ = refl
 Ext≡ (c₁ ∙⊗ c₂) rewrite Ext≡ c₁ | Ext≡ c₂ = refl
-Ext≡ (c₁ ∙⊕ c₂) rewrite Ext≡ c₁ = refl
-Ext≡ (c₁ ∙⊕ᵣ c₂) rewrite Ext≡ c₂ = refl
 Ext≡ (return T) = refl
 Ext≡ (extract T) = refl
 Ext≡ (η T) = refl
@@ -199,4 +191,3 @@ Ext≡ (ε T) with (proj₂ (Ext𝕌 T)) ≟ᵤ (proj₂ (Ext𝕌 T))
 Ext≡ (ε T) | yes p = refl
 Ext≡ (ε T) | no ¬p = ⊥-elim (¬p refl)
 \end{code}}
-
