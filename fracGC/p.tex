@@ -23,6 +23,7 @@
 \usepackage[nocenter]{qtree}
 \usepackage{multicol}  
 \usepackage{bbold}
+\usepackage[show]{ed}
 \usepackage{tikz}
 \usetikzlibrary{cd}
 \usetikzlibrary{quotes}
@@ -155,7 +156,7 @@ $\displaystyle
   $\oneover{\AgdaInductiveConstructor{false}}$ that can be thought of as a garbage
   collection (gc) process specialized to reclaim, and only reclaim,
   storage containing the value $\AgdaInductiveConstructor{false}$. This gc process is a
-  first-class entity that can sliced and diced by combining it with
+  first-class entity that can be sliced and diced by combining it with
   other gc processes and decomposing it in smaller
   processes.
 
@@ -211,7 +212,7 @@ fact, classical reversible computations are often used as
 circuits can be applied to either classical inputs or to quantum
 inputs. 
 
-Instead of using the rather low-level circuit model of computation,
+Instead of using the low-level circuit model of computation,
 one can leverage the full force of type theory and category theory by
 expressing reversible classical computations as \emph{isomorphisms
   over finite types}~\cite{Fiore:2004,James:2012:IE:2103656.2103667}
@@ -232,35 +233,36 @@ universality (i) assume that temporary storage (often called
 this temporary storage is returned to its initial state before
 de-allocation. Indeed if no temporary storage is allowed, the Toffoli
 gate is not
-universal~\cite{DBLP:conf/innovations/AaronsonGS17,DBLP:journals/corr/Xu15e}
-and as would be expected the more temporary storage is allowed, the
-more efficient certain computations could become.
+universal~\cite{DBLP:conf/innovations/AaronsonGS17,DBLP:journals/corr/Xu15e}.
+And, as would be expected, the more temporary storage is allowed, the
+more efficient certain computations can become.
 
 More fundamentally, the condition requiring that the temporary storage
 is only de-allocated when returned to its initial condition is a
 safety condition. Violating this condition destroys the symmetry
-between input and output making the circuits not reversible and, in
+between input and output, making the circuits irreversible and, in
 the quantum model, causes decoherence that may destroy the quantum
 state. As reviewed in Sec.~\ref{sec:examples}, ancilla bits have a
-number of critical applications and yet are poorly supported in
+number of critical applications, yet are poorly supported in
 current reversible and quantum programming languages making them a
 common source of bugs.
 
 \paragraph*{Conservation of Information and Negative Entropy.}  
-According to the conventional theory of
-communication~\cite{Shannon1948}, a type with $N$ values is viewed as
-an abstract system that has $N$ distinguishable states where the
+The conventional theory of
+communication~\cite{Shannon1948} views a type with $N$ values as
+an abstract system that has $N$ distinguishable states; the
 amount of information contained in each state is $\log{N}$. This
 entropy is a measure of information which materializes itself in
 memory or bandwidth requirements when storing or transmitting elements
 of this type. Thus a type with 8 elements needs 3 bits of memory for
-storage or 3 bits of bandwidth for communication. The logarithmic map
-implies that information contained in a composite state is the sum of
+storage or 3 bits of bandwidth for communication. The information
+information contained in a composite state, by definition of the
+logarithm, is the sum of
 the information contained in its constituents. For example, the type
 $A \times B$ where $A$ has two elements and $B$ has three elements can
 be thought of a composite system consisting of two independent
 unrelated subsystems.  Each state of the composite system therefore
-contains $\log{(2*3)} = \log{2} + \log{3}$ bits which is the sum of
+contains $\log{(2*3)} = \log{2} + \log{3}$ bits, the sum of
 the information contained in each subsystem. If we could imagine a
 \emph{fractional type} $\frac{1}{A}$, this type would introduce
 negative entropy. For example, a type with ``cardinality''
@@ -272,39 +274,45 @@ fractional types and use them to represent ``garbage collection
 processes'' that reclaim temporary storage. Just like in the case of
 ``negative money'' it is critical that these fractional types be
 linearly used, i.e., they cannot be duplicated or erased: this
-property is however automatically enforced in a reversible
+property is automatically enforced in a reversible
 computational model.
 
-\paragraph*{Outline.} The paper solves the ancilla problem in
-reversible and quantum computation using a novel concept:
-\emph{fractional types}. In the next section, we introduce the problem
-of ancilla, motivate its importance, and explain the limitations of
-current solutions. In Sec.~\ref{sec:pi}, we review existing work by
-James et al.~\cite{rc2011,rc2012,James:2012:IE:2103656.2103667} that
-introduces a reversible programming language built using isomorphism
-of types. Although it is conceivable that the concept of fractional
-types would apply to general-purpose languages (after some
+\paragraph*{Outline.} We solve the ancilla problem in reversible and quantum
+computation using a novel concept: \emph{fractional types}. In the next
+section, we introduce the problem of ancilla, motivate its importance, and
+explain the limitations of current solutions. In Sec.~\ref{sec:pi}, we review
+existing work%
+~\cite{rc2011,DBLP:conf/esop/CaretteS16,rc2012,James:2012:IE:2103656.2103667}
+that introduces a reversible programming language built using type isomorphism.
+Although the concept of fractional
+types might apply to general-purpose languages (after some
 adaptation), its natural technical definition exploits symmetries
-present in categorical model of type isomorphisms. We present such a
+present in the categorical model of type isomorphisms. We present such a
 definition in Sec.~\ref{sec:dyn} which captures and illustrates the
 main novelties of fractional types and their runtime representations
 as first-class gc processes. This presentation partially solves a more
 general and more expressive instance of the ancilla problem as
-illustrated with examples. To make the arguments regarding memory
+illustrated with examples. 
+\ednote{JC: I don't understand the previous sentence. What does
+``this presentation'' refer to?  The paper as a whole, or the 
+details of the fractional types? There is also a tension between
+``partially solves'' and ``more general and more expressive'' which
+might very well be true, but makes for a very vague sentence.}
+To make the arguments regarding memory
 management explicit, Sec.~\ref{sec:space} presents an abstract machine
 with a heap component that grows and shrinks as ancillae are allocated
-and de-allocated via fractional gc processes. In Sec.~\ref{sec:dep} we
+and de-allocated via garbage collection. In Sec.~\ref{sec:dep} we
 lift ``plain'' programs manipulating ancillae to the type system in
 order to exploit the power of dependent types to guarantee, for the
 first time, the condition necessary for safe de-allocation of
 ancillae. Technically this solution requires the introduction of
-pointed types on top of which are defined both a monad and co-monad of
+pointed types on top of which are defined both a monad and comonad of
 singleton types. The tracking of ancillae value is done within the
 type system via the singleton types. A number of examples exploiting
-the singleton-based type system are present to demonstrate the full
-expressiveness of fractional types. We furthermore demonstrate that,
-from the proofs of type safety, plain (but guaranteed to be safe)
-programs can be extracted and executing without errors or runtime
+the singleton-based type system are presented to demonstrate the full
+expressiveness of fractional types. The type safety proofs demonstrate
+that plain (but guaranteed safe)
+programs can be extracted and executed without errors or runtime
 checks in the conventional type system. The last section concludes
 with a discussion of related work and a summary of our results.
 
@@ -342,18 +350,12 @@ $\frac{1}{2}\ket{a}+\frac{1}{2}\ket{b}+\frac{1}{2}\ket{c}+\frac{1}{2}\ket{d}$
 and operate concurrently of the superposition as follows:
 
 \[\begin{array}{l}
-                    \frac{1}{2}\ket{a}+\frac{1}{2}\ket{b}+\frac{1}{2}\ket{c}+\frac{1}{2}\ket{d}\\
-\\
-\Rightarrow  \textrm{phase kickback} \\
-\\
--\frac{1}{2}\ket{a}+\frac{1}{2}\ket{b}+\frac{1}{2}\ket{c}+\frac{1}{2}\ket{d}\\
-\\
-\Rightarrow  \textrm{diffusion} \\
-\\
- (\frac{1}{2}-(-\frac{1}{2}))\ket{a}+(\frac{1}{2}-\frac{1}{2})\ket{b}+(\frac{1}{2}-\frac{1}{2})\ket{c}+(\frac{1}{2}-\frac{1}{2})\ket{d})\\
-\\
-\Rightarrow  \textrm{simplification} \\
-\\
+\frac{1}{2}\ket{a}+\frac{1}{2}\ket{b}+\frac{1}{2}\ket{c}+\frac{1}{2}\ket{d}\\ [1.5ex]
+\qquad\Rightarrow  \textrm{phase kickback} \\ [1.5ex]
+-\frac{1}{2}\ket{a}+\frac{1}{2}\ket{b}+\frac{1}{2}\ket{c}+\frac{1}{2}\ket{d}\\ [1.5ex]
+\qquad\Rightarrow  \textrm{diffusion} \\ [1.5ex]
+ (\frac{1}{2}-(-\frac{1}{2}))\ket{a}+(\frac{1}{2}-\frac{1}{2})\ket{b}+(\frac{1}{2}-\frac{1}{2})\ket{c}+(\frac{1}{2}-\frac{1}{2})\ket{d})\\ [1.5ex]
+\qquad\Rightarrow  \textrm{simplification} \\ [1.5ex]
 \ket{a}
 \end{array}\]
 
@@ -368,10 +370,10 @@ superposition:
 \end{array}\]
 In the quantum world, na\"\i vely attempting to test whether the
 current element is equal to $\ket{a}$ by performing a measurement would
-destroy the quantum superposition defeating the entire algorithm.
+destroy the quantum superposition, defeating the entire algorithm.
 
-Here is where ancilla qubits come to the rescue. In the words of
-Matuschak and Nielsen~\cite{howgrover}, the idea is the following:
+Ancilla bits offer a solution.  In the words of
+Matuschak and Nielsen~\cite{howgrover}, the idea is as follows:
 \begin{quote}
   There's a rough heuristic worth noting here, which is that you can
   often convert \verb|if-then| style of thinking into quantum
@@ -382,18 +384,19 @@ Matuschak and Nielsen~\cite{howgrover}, the idea is the following:
   computation, resetting the ancilla to its original state so you can
   subsequently ignore it.
 \end{quote}
+\ednote{Would it make sense to explicitly mention CNOT here?}
 
-\paragraph*{Quantum Error Correction.} The main requirement for
-quantum error correction is the ability to replicate the state of a
-qubit onto a number of qubits~\cite[Ch.~3]{NAP25196}. This is however
-impossible to do directly by the no-cloning theorem~\cite{XXX}. Again ancilla
-qubits come to the rescue: because ancilla qubits start in a known
+\paragraph*{Quantum Error Correction.} 
+Quantum error correction requires the ability to replicate the state of a
+qubit onto a number of qubits~\cite[Ch.~3]{NAP25196}. This is
+impossible to do directly, by the no-cloning theorem~\cite{XXX}. Again ancilla
+qubits solve the problem: because they start in a known
 initial state, it is possible to create a simple circuit that makes
 their output state match a protected qubit without knowing or
 disturbing the protected qubit. Chong et al.~\cite{sigarchblog}
 illustrate the idea with a simple example:
 \begin{quote}
-consider a 3-qubit quantum majority code in which a logical ``0'' is
+Consider a 3-qubit quantum majority code in which a logical ``0'' is
 encoded as ``000'' and a logical ``1'' is encoded as ``111.''  Just as with
 a classical majority code, a single bit-flip error can be corrected by
 restoring to the majority value.  Unlike a classical code, however, we
@@ -415,10 +418,10 @@ circuit~\cite{dewolf}.
 %%%
 \subsection{Ancillae Bugs in Benchmarks.}
 Despite its fundamental importance, the management of ancillae is
-poorly supported in current languages, simulators, and toolkits as
-demonstrated in a recent analysis of bugs in quantum
-benchmarks~\cite{DBLP:conf/oopsla/HuangM18}. The analysis reveals that
-lack of language support in the management of ancillae leads to
+poorly supported in current languages, simulators, and toolkits. 
+A recent analysis of bugs in quantum
+benchmarks~\cite{DBLP:conf/oopsla/HuangM18} demonstrates this. The analysis
+reveals that lack of language support in the management of ancillae leads to
 several problems. For example: 
 \begin{quote}
   \textbf{Bug type 6: Incorrect composition of operations using mirroring}
