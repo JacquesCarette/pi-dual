@@ -270,6 +270,19 @@ t3 = interp parity (𝕋 , 𝔽) -- nothing
 t4 = interp parity (𝕋 , 𝕋) -- just (𝕋 , 𝕋)
 \end{code}}
 \newcommand{\PIFDtoffoli}{%
+\begin{code}[hide]
+0<1 : 0 <′ 1
+0<1 = ≤′-refl
+
+1<2 : 1 <′ 2
+1<2 = ≤′-refl
+
+2+n<3+n : ∀ {n} → 2 + n <′ 3 + n
+2+n<3+n = ≤′-refl
+
+2<3+n : ∀ {n} → 2 <′ 3 + n
+2<3+n = s≤′s (s≤′s (s≤′s z≤′n))
+\end{code}
 \begin{code}
 𝔹^_ : ℕ → 𝕌
 𝔹^ zero   = 𝔹
@@ -281,9 +294,9 @@ t4 = interp parity (𝕋 , 𝕋) -- just (𝕋 , 𝕋)
   θ' : (n : ℕ) →
        (∀ m → m <′ n → (𝔹^ m) ↔ (𝔹^ m)) → (𝔹^ n) ↔ (𝔹^ n)
   θ' 0 _ = swap₊
-  θ' 1 θ'' = dist ⊚ (id↔ ⊕ (id↔ ⊗ θ'' 0 ≤′-refl)) ⊚ factor
+  θ' 1 θ'' = dist ⊚ (id↔ ⊕ (id↔ ⊗ θ'' 0 0<1)) ⊚ factor
   θ' 2 θ'' =
-   assocr⋆ ⊚ dist ⊚ (id↔ ⊕ (id↔ ⊗ θ'' 1 ≤′-refl)) ⊚ factor ⊚ assocl⋆
+   assocr⋆ ⊚ dist ⊚ (id↔ ⊕ (id↔ ⊗ θ'' 1 1<2)) ⊚ factor ⊚ assocl⋆
   θ' (suc (suc (suc n))) θ'' =
    (id↔ ⊗ (uniti⋆l ⊚ (η 𝔽 ⊗ id↔) ⊚ assocr⋆
           ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆))
@@ -297,12 +310,12 @@ t4 = interp parity (𝕋 , 𝕋) -- just (𝕋 , 𝕋)
    where
      θₙ₋₁ : (𝔹^ (3 + n)) ↔ (𝔹^ (3 + n))
      θₙ₋₁ = assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆
-          ⊚ (θ'' (suc (suc n)) ≤′-refl ⊗ id↔)
+          ⊚ (θ'' (suc (suc n)) 2+n<3+n ⊗ id↔)
           ⊚ assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆
 
      θ₃ : (𝔹^ (4 + n)) ↔ (𝔹^ (4 + n))
      θ₃ = (assocr⋆ ⊗ id↔) ⊚ assocr⋆
-        ⊚ (id↔ ⊗ θ'' 2 (s≤′s (s≤′s (s≤′s z≤′n))))
+        ⊚ (id↔ ⊗ θ'' 2 2<3+n)
         ⊚ assocl⋆ ⊚ (assocl⋆ ⊗ id↔)
 \end{code}}
 \newcommand{\PIFDtoffolitests}{% Not used
