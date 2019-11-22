@@ -1011,38 +1011,83 @@ Sec.~\ref{sec:cat}.
 %%%%%
 \subsection{Pointed and Singleton Types}
 
-The denotation of the fractional type is now:
+Following the development for the toy language above, we create a
+lifted version of fractional $\Pi$ with pointed types. In addition to
+the explicit pointed types of the form $t$\Acon{\#}$v$, we will need a
+multiplicative structure over pointed types, fractional types, and a
+special kind of pointed type that includes just one value, a singleton
+type. The singleton types will allow the type system to track the flow
+of one particular value, which is exactly what is needed to prove the
+safety of deallocation:
 
 \PIPFUdef{}
 
-Combinators:
+As can be seen, a lifted type is interpreted as a type along with a
+corresponding value. A singleton type consists a special value of a
+given type: any claim that a value belongs to the singleton type must
+come with a proof that this value is equivalent to the special
+value. A fractional type consumes a particular singleton type
+returning the unit type. Note that the runtime gc process simply
+disregards the value it is given: the type system however prevents
+this value from being applied to anything but the particular singleton
+value in question.
+
+The combinators in the lifted language consist of all the combinators
+in the base language but now operating on pointed types. The mediation
+between general pointed types and singleton types is done via
+\Acon{return} and \Acon{extract} which as we prove below form a
+dual monad/comonad pair. The types for \Acon{$\eta$} and
+\Acon{$\epsilon$} are now specialized to guarantee safety of
+de-allocation as follows. When applying \Acon{$\eta$} at a pointed type, the
+current witness value is put in focus in a singleton type and a gc
+process for that particular singleton type is created. To apply this
+process using \Acon{$\epsilon$} the very same singleton value must be
+the current one. 
 
 \PIPFCombDef{}
 
+The mediation between pointed and singleton types is based a dual
+monad/comonad pair from which many structural properties can be
+derived.
+
 \begin{proposition}
-sing is a monad; comonad; etc
+  $\llparenthesis \cdot \rrparenthesis$ is both an idempotent strong
+  monad and an idempotent costrong comonad over pointed types.
 \end{proposition}
 \begin{proof}
+  The main insight needed is to define the functor \Afun{∙Singᵤ}, the
+  tensor/cotensor, and the join/cojoin (duplicate):
 \PIPFCombderive{}
 \end{proof}
 
-  properties of singleton, recip
-derive join etc
-monad,comonad structure
+Like for the toy language, evaluation is reflected in the type
+system, and in this case we have the additional property that
+evaluation is reversible:
 
-Evaluation:
-\PIPFeval{}
+\PIPFeval{} 
 
-Combine with eval, the whole thing is reversible:
+\vspace{-\baselineskip}
+
 \PIPFrev{}
 
-show a small example
+Thus, to summarize if a combinator expects a singleton type, then it
+would only typecheck in the lifted language, if it is given the unique
+value it expects. A particularly intringuing instance of that
+situation is the following program:
 
 \begin{center}
 \input{revrev.tikz}
 \end{center}
 
 \PIPFrevrev{}
+
+The program takes a value of type
+\Acon{∙𝟙/}~(\Acon{∙𝟙/}~\Avar{A}). This would be a gc process
+specialized to collect another gc process! At runtime type there would
+be no information other than the functions that ignore their argument
+but the type system provides enough guarantees to ensure that this
+process is well-defined, is reversible, and is safe. The following
+trace shows the actual execution for confirmation:
 
 \includegraphics[scale=0.5]{trace3.png}
 
@@ -1178,11 +1223,14 @@ $A$ and $B$, whenever they can be factored with a
 common complement ($Y$), then the ``other pieces''
 (here $X$ and $Y$) are automatically isomorphic.
 
+thinking of gc as space transformers
+
 \PPFTname{}
+\PPFThof{}
+
+trace about gc'ing cycles
 
 \PPFTtrace{}
-
-\PPFThof{}
 
 \includegraphics[scale=0.5]{trace.png}
 

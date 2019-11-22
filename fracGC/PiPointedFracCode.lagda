@@ -191,11 +191,12 @@ data ∙𝕌 : Set where
 ∙⟦ T₁ ∙×ᵤ T₂ ⟧   = zip _×_ _,_ ∙⟦ T₁ ⟧ ∙⟦ T₂ ⟧
 ∙⟦ ❰ T ❱ ⟧       = let (t , v) = ∙⟦ T ⟧ in Singleton t v , (v , refl)
 ∙⟦ ∙𝟙/ T ⟧       = let (t , v) = ∙⟦ T ⟧ in Recip t v , λ _ → tt
-
+\end{code}}
+\newcommand{\PIPFonelift}{%
+\begin{code}
 ∙𝟙 : ∙𝕌
 ∙𝟙 = 𝟙 # tt
 \end{code}}
-
 \newcommand{\PIPFCombDef}{%
 \begin{code}
 data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
@@ -206,7 +207,16 @@ data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
               ((t₁ ×ᵤ t₂) # (v₁ , v₂)) ∙⟶ ((t₁ # v₁) ∙×ᵤ (t₂ # v₂))
   ∙#times  :  {t₁ t₂ : 𝕌} {v₁ : ⟦ t₁ ⟧} {v₂ : ⟦ t₂ ⟧} →
               ((t₁ # v₁) ∙×ᵤ (t₂ # v₂)) ∙⟶ ((t₁ ×ᵤ t₂) # (v₁ , v₂))
-  -- multiplicative structure on pointed types
+  -- multiplicative structure (omitted)
+  -- monad / comonad 
+  return   : (T : ∙𝕌) → T ∙⟶ ❰ T ❱
+  extract  : (T : ∙𝕌) → ❰ T ❱ ∙⟶ T
+  -- eta/epsilon
+  η  :  (T : ∙𝕌) → ∙𝟙 ∙⟶ ❰ T ❱ ∙×ᵤ ∙𝟙/ T
+  ε  :  (T : ∙𝕌) → ❰ T ❱ ∙×ᵤ ∙𝟙/ T ∙⟶ ∙𝟙
+\end{code}}
+\newcommand{\PIPFCombDefrest}{%
+\begin{code}
   ∙id⟷      :  {T : ∙𝕌} → T ∙⟶ T
   _∙⊚_      :  {T₁ T₂ T₃ : ∙𝕌} →
                (T₁ ∙⟶ T₂) → (T₂ ∙⟶ T₃) → (T₁ ∙⟶ T₃)
@@ -221,21 +231,17 @@ data _∙⟶_ : ∙𝕌 → ∙𝕌 → Set where
                (T₁ ∙×ᵤ T₂) ∙×ᵤ T₃ ∙⟶ T₁ ∙×ᵤ (T₂ ∙×ᵤ T₃)
   _∙⊗_      :  {T₁ T₂ T₃ T₄ : ∙𝕌} → (T₁ ∙⟶ T₃) → (T₂ ∙⟶ T₄) → 
                (T₁ ∙×ᵤ T₂ ∙⟶ T₃ ∙×ᵤ T₄)
-  -- monad / comonad 
-  return  : (T : ∙𝕌) → T ∙⟶ ❰ T ❱
-  extract : (T : ∙𝕌) → ❰ T ❱ ∙⟶ T
-  -- eta/epsilon
-  η  :  (T : ∙𝕌) → ∙𝟙 ∙⟶ ❰ T ❱ ∙×ᵤ ∙𝟙/ T
-  ε  :  (T : ∙𝕌) → ❰ T ❱ ∙×ᵤ ∙𝟙/ T ∙⟶ ∙𝟙
 \end{code}}
-
 \newcommand{\PIPFCombderive}{%
 \begin{code}
+∙Singᵤ : {T₁ T₂ : ∙𝕌} → (T₁ ∙⟶ T₂) → ❰ T₁ ❱ ∙⟶ ❰ T₂ ❱
+∙Singᵤ {T₁} {T₂} c = extract T₁ ∙⊚ c ∙⊚ return T₂
+
 tensor : {T₁ T₂ : ∙𝕌} → ❰ T₁ ❱ ∙×ᵤ ❰ T₂ ❱ ∙⟶ ❰ T₁ ∙×ᵤ T₂ ❱ 
 tensor {T₁} {T₂} = (extract T₁ ∙⊗ extract T₂) ∙⊚ return (T₁ ∙×ᵤ T₂)
 
-∙Singᵤ : {T₁ T₂ : ∙𝕌} → (T₁ ∙⟶ T₂) → ❰ T₁ ❱ ∙⟶ ❰ T₂ ❱
-∙Singᵤ {T₁} {T₂} c = extract T₁ ∙⊚ c ∙⊚ return T₂
+cotensor : {T₁ T₂ : ∙𝕌} → ❰ T₁ ∙×ᵤ T₂ ❱ ∙⟶ ❰ T₁ ❱ ∙×ᵤ ❰ T₂ ❱
+cotensor {T₁} {T₂} = extract (T₁ ∙×ᵤ T₂) ∙⊚ (return T₁ ∙⊗ return T₂)
 
 join : {T₁ : ∙𝕌} →  ❰ ❰ T₁ ❱ ❱ ∙⟶ ❰ T₁ ❱ 
 join {T₁} = extract ❰ T₁ ❱
@@ -246,9 +252,6 @@ duplicate {T₁} = return ❰ T₁ ❱
 
 \newcommand{\PIPFCombderivedefs}{%
 \begin{code}
-untensor : {T₁ T₂ : ∙𝕌} → ❰ (T₁ ∙×ᵤ T₂) ❱ ∙⟶ (❰ T₁ ❱ ∙×ᵤ ❰ T₂ ❱)
-untensor {T₁} {T₂} = extract (T₁ ∙×ᵤ T₂) ∙⊚ (return T₁ ∙⊗ return T₂)
-
 tensorl : {T₁ T₂ : ∙𝕌} → (❰ T₁ ❱ ∙×ᵤ T₂) ∙⟶  ❰ (T₁ ∙×ᵤ T₂) ❱ 
 tensorl {T₁} {T₂} = (extract T₁ ∙⊗ ∙id⟷) ∙⊚ return (T₁ ∙×ᵤ T₂)
 
@@ -295,8 +298,7 @@ cotensorr {T₁} {T₂} = extract (T₁ ∙×ᵤ T₂) ∙⊚ (∙id⟷ ∙⊗ r
 \newcommand{\PIPFeval}{%
 \begin{code}
 ∙eval : {T₁ T₂ : ∙𝕌} → (C : T₁ ∙⟶ T₂) →
-  let (t₁ , v₁) = ∙⟦ T₁ ⟧
-      (t₂ , v₂) = ∙⟦ T₂ ⟧
+  let (t₁ , v₁) = ∙⟦ T₁ ⟧; (t₂ , v₂) = ∙⟦ T₂ ⟧
   in Σ (t₁ → t₂) (λ f → f v₁ ≡ v₂)
 \end{code}}
 

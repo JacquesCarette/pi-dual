@@ -34,7 +34,7 @@ data T∙ : Set where
   _#_ : (a : T) → (v : ⟦ a ⟧) → T∙
 
 ⟦_⟧∙ : T∙ → Σ[ A ∈ Set ] A
-⟦ C # v ⟧∙ = ⟦ C ⟧ , v
+⟦ T # v ⟧∙ = ⟦ T ⟧ , v
 
 data Fun∙ : T∙ → T∙ → Set where
   lift : {a b : T} {v : ⟦ a ⟧} → (f : Fun a b) → 

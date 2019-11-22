@@ -57,7 +57,7 @@ trace {A} {B} {C} f =
   ∙assocl⋆ ∙⊚         
   (tensor ∙⊗ ∙id⟷) ∙⊚
   (∙Singᵤ f ∙⊗ ∙id⟷) ∙⊚
-  (untensor ∙⊗ ∙id⟷) ∙⊚
+  (cotensor ∙⊗ ∙id⟷) ∙⊚
   ∙assocr⋆ ∙⊚          
   (extract _ ∙⊗ ε C) ∙⊚
   ∙unite⋆r
@@ -152,7 +152,7 @@ dist×/ {A} {B} {C} {D} = ∙assocr⋆ ∙⊚
       (η (A ∙×ᵤ C) ∙⊗ ∙id⟷) ∙⊚
       (∙swap⋆ ∙⊗ ∙id⟷) ∙⊚
       ∙assocr⋆ ∙⊚
-      (∙id⟷ ∙⊗ (untensor ∙⊗ ∙id⟷)) ∙⊚
+      (∙id⟷ ∙⊗ (cotensor ∙⊗ ∙id⟷)) ∙⊚
       (∙id⟷ ∙⊗ (∙swap⋆ ∙⊗ ∙id⟷)) ∙⊚
       (∙id⟷ ∙⊗ ∙assocr⋆) ∙⊚
       (∙id⟷ ∙⊗ (∙id⟷ ∙⊗ ∙assocl⋆)) ∙⊚
