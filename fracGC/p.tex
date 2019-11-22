@@ -1189,26 +1189,51 @@ leaving no memory footprint.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Conclusion}
 
-Quantum wire recycling~\cite{PhysRevA.94.042337}
+There has been ample work on ancillae before us.  For example%
+\cite{PhysRevA.94.042337} explicitly represent the lifetime of
+quantum wires, enable quantum wires to be recycled, leading
+to more efficient circuits.  Interesting applications of
+ancillae is in the recent paper~\cite{DBLP:journals/cal/ZhouB19}
+on Quantum runtime assertions.  In section~\ref{sub:id}, we
+already mentionned dynamic assertion of entanglement; they
+also show how to provide (dynamic) assertions on classical
+states, and testing of superposition states.  Our techniques
+should combine with theirs to provide even more possibilities
+for dynamic asserctions. Ancilla management is a complex
+business, and the verified circuit compiler
+ReVerC~\cite{amy2017verified} goes to great pains to
+ensure that ancilla are dealt with properly.  Both
+QCL~\cite{omer2002procedural} and Quipper~\cite{Green:2013:QSQ:2491956.2462177}
+also do automatic (but not certified) ancilla management during code
+generation.  This remains an active area of research, as
+outlined in the CACM paper~\cite{valiron2015programming}.
 
-Quantum runtime assertion~\cite{DBLP:journals/cal/ZhouB19}
+Another interesting avenue is to understand how to merge 
+pointed $\Pi$ with another simple language for quantum
+computing: QWIRE~\cite{Paykin:2017:QCL:3009837.3009894}.
+QWIRE has many desirable meta-properties that have been
+formally proven to hold.  Our respective paradigms appear eminently compatible,
+however their language has an unguarded \texttt{discard} directive that
+may lead to erroneous circuits. For example, their circuit
+reversing operation is partial, whereas ours is provably total.
 
-QWIRE~\cite{Paykin:2017:QCL:3009837.3009894}
+When looking at higher-level reversible languages, Janus
+comes to mind~\cite{lutz1982janus}.  More recently, \cite{Yokoyama:2008:PRP}
+shows how to do clean, i.e. \emph{garbage free} computation. It
+would certainly be intriguing to augment Janus with a certified
+garbage collection discipline such as ours, so that one might hope
+that the resulting computations might be more efficiently done.
 
-Yokoyama, T., Axelsen, H.B., Glück, R.: Principles of a reversible
-programming language. In: Conference on Computing Frontiers, CF,
-pp. 43–54. ACM Press (2008)
-
-Trace as a lens? This basically says, in the language of Lens, that
-when $A$ is isomorphic to $X \times Y$ and $B$ is isomorphic to
-$Z \times Y$, then $X$ is isomorphic to $Y$. Another way to think of
-it: for all isomorphic $A$ and $B$, whenever they can be factored with
-a common complement ($Y$), then the ``other pieces'' (here $X$ and
-$Y$) are automatically isomorphic.
+%Trace as a lens? This basically says, in the language of Lens, that
+%when $A$ is isomorphic to $X \times Y$ and $B$ is isomorphic to
+%$Z \times Y$, then $X$ is isomorphic to $Y$. Another way to think of
+%it: for all isomorphic $A$ and $B$, whenever they can be factored with
+%a common complement ($Y$), then the ``other pieces'' (here $X$ and
+%$Y$) are automatically isomorphic.
  
-Positive rational numbers are a model. Apparently there is a
-categorification
-\url{https://alistairsavage.ca/pubs/Copelli-Categorification_of_the_Nonnegative_Rational_Numbers.pdf}
+%Positive rational numbers are a model. Apparently there is a
+%categorification
+%\url{https://alistairsavage.ca/pubs/Copelli-Categorification_of_the_Nonnegative_Rational_Numbers.pdf}
 
 General allocation and de-allocation. No need to keep track of
 lifetime. Just make sure location is back to initial value. Safe to
