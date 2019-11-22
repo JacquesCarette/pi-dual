@@ -1160,7 +1160,7 @@ In addition to the examples presented throughout the paper, we present
 examples that provides novel perspectives on gc processes, first as
 space transformers, and second as tracing operators. Both ideas are
 inspired from known constructions in compact closed
-categories~\cite{DBLP:conf/calco/Abramsky05}.
+categories~\cite{dblp:conf/calco/abramsky05}.
 
 \paragraph*{Space Transformers.} A pair of a value and a gc process
 cancel each other when the gc process is expecting this particular
@@ -1184,7 +1184,7 @@ guarantees the existence of a smaller permutation that permutes $A$ to
 $B$. Indeed, we can programmatically construct such a permutation:
 
 As the diagram below (take from Abramsky's
-paper~\cite{DBLP:conf/calco/Abramsky05}) illustrates, this is not a
+paper~\cite{dblp:conf/calco/abramsky05}) illustrates, this is not a
 trivial construction in the sense that the permutation from $A$ to $B$
 uses $C$ in non-trivial ways. 
 
@@ -1207,7 +1207,7 @@ leaving no memory footprint.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Conclusion}
 
-There has been ample work on ancillae before us.  For example%
+There has been ample work on ancillae before us.  For example
 \cite{PhysRevA.94.042337} explicitly represent the lifetime of
 quantum wires, enable quantum wires to be recycled, leading
 to more efficient circuits.  Interesting applications of
@@ -1241,6 +1241,24 @@ shows how to do clean, i.e. \emph{garbage free} computation. It
 would certainly be intriguing to augment Janus with a certified
 garbage collection discipline such as ours, so that one might hope
 that the resulting computations might be more efficiently done.
+
+Another different thread of work stems from categorical models
+of quantum computation, especially those based on dagger
+compact closed categories as introduced
+in~\cite{Abramsky:2004:CSQ:1018438.1021878}, and greatly
+expanded upon in~\cite{abramsky2009categorical}.  Various
+results can be obtained in that general setting, such as the
+no-cloning theorem~\cite{abramsky2009no}. The $2016$ book
+\cite{chiribella2016quantum} is a good survey of the
+developments since. Selinger~\cite{selinger2007dagger,Selinger:2011:FDH:1942319.1942398}
+has been particularly active in this area. Of particular
+note for our applications are two 2005 papers by Abramsky
+\cite{abramsky2005structural,dblp:conf/calco/abramsky05}
+with explicit examples of circuits using trace that are very useful tests
+for our approach.
+
+Also related are various approaches to quantum lambda
+calculi, such as~\cite{dblp:journals/mscs/selingerv06,vantonder:2004,dowek2017lineal}.
 
 %Trace as a lens? This basically says, in the language of Lens, that
 %when $A$ is isomorphic to $X \times Y$ and $B$ is isomorphic to
