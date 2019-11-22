@@ -1080,48 +1080,25 @@ demonstrated in Sec.~\ref{sec:cat}.
 %%%%% 
 \subsection{Pointed and Singleton Types}
  
- rationale: we want singleton types to track, in the type system
-the values of ancillae, i.e.. we construct a proof using the type
-system. Technically the singleton types allow you to focus on one
-value by reflecting it in the type system. Now this type can only be
-equal to another type if and only if the other type is the same
-singleton value.
-
-Once singleton types are built, we need to make sure circuit
-evaluation is also reflected in the type system. So in fact
-computation itself is reflected in the type system. In order to mix
-singleton types with other types, we use pointed types as a unifying
-substrate. Now all types have values; we can focus (using monad) and
-unfocus using (comonad). (This by the way ensures we don't write 1/0
-which would be bad). 
-
-Consider the type $\Sigma \mathbb{N} (\lambda n. n \equiv 5)$. Values
-of that type are a number $m$ and a proof that this is number is equal
-to 5. So we can have $(4 + 1, \textit{refl})$, $(2 + 3 ,
-\textit{refl})$, and so on. All these syntactically different values
-are identical to 5 and hence we can \emph{contract} the type to a
-single point at 5. 
-
-PiPointedFrac:
-lift pi
-lift multiplicative structure
-monad/comonad for singletons
-eta/epsilon
-
 The denotation of the fractional type is now:
 
 \PIPFUdef{}
 
-RECIP 
-
 Combinators:
+
 \PIPFCombDef{}
+
+properties of singleton, recip  
+derive join etc  
+monad,comonad structure  
 
 Evaluation:
 \PIPFeval{}
 
 Combine with eval, the whole thing is reversible:
 \PIPFrev{}
+
+show a small example
 
 %%%%%%%%% 
 \subsection{Extraction}
