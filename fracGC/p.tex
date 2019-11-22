@@ -881,12 +881,12 @@ register would contain a bit-level runtime representation of values
 with one bit for boolean values, etc. In the Agda formalization, we
 include the current combinator in the code register, and represent the
 memory register using an index into an enumeration. Thus a memory
-register containing a boolean value would be represented in Agda as 𝔽
-::  𝕋 :: [] [ Fin.0F ] or 𝔽 :: 𝕋 :: [] [ Fin.1F ] depending on whether the
+register containing a boolean value would be represented as
+\AgdaFunction{[𝔽 ,  𝕋 ][0]} or \AgdaFunction{[𝔽 ,  𝕋 ][1]} depending on whether the
 values is \AgdaInductiveConstructor{false} or \AgdaInductiveConstructor{true}.
-The prepended list
+The prepended vector
 contains all possible values of the type and the number in between [\ldots ]
-is an index into the list, representing a finite number that
+is an index into the vector, representing a finite number that
 is guaranteed to be in bounds. In a low-level runtime representation
 only a binary encoding of this finite type would need to be stored, but in
 order to just prove that space is preserved, we can just inspect the
