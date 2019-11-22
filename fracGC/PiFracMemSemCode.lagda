@@ -5,7 +5,7 @@ module _ where
 
 open import Relation.Binary.Core
 open import Data.Empty
-open import Function
+open import Function using (_∘_; _$_)
 open import Data.Nat
 open import Data.Nat.Properties
 open import Data.Fin as Fin using (Fin; zero; suc)

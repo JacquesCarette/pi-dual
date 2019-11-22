@@ -8,7 +8,7 @@ open import Data.Nat.Properties
 open import Data.Sum
 open import Data.Product
 open import Data.Maybe
-open import Function
+open import Function using (_∘_)
 open import Relation.Binary.PropositionalEquality
   renaming ([_] to R[_])
 open import Relation.Binary.Core
@@ -133,7 +133,7 @@ interp (η {t} v) tt = just (v , ○)
 interp (ε {t} v) (v' , ○) with 𝕌dec t v v'
 interp (ε {t} v) (v' , ○) | yes _ = just tt
 interp (ε {t} v) (v' , ○) | no  _ = nothing -- if v ≡ v' then tt else throw Error
-  
+
 --- Examples
 
 𝟚 : 𝕌
@@ -169,7 +169,7 @@ ex2 = refl
 switch : 𝟙 ↔ 𝟙
 switch = uniti⋆r ⊚ (η {𝟚} 𝔽 ⊗ η 𝔽) ⊚ assocl⋆ ⊚
          (((swap⋆ ⊗ id↔) ⊚ assocr⋆ ⊚
-         (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚ 
+         (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚
          assocr⋆ ⊚ (ε 𝔽 ⊗ ε 𝔽) ⊚ unite⋆r
 
 bad : 𝟚 ↔ 𝟚

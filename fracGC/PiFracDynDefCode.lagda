@@ -11,7 +11,7 @@ open import Data.Nat.Properties
 open import Data.Sum
 open import Data.Product
 open import Data.Maybe
-open import Function
+open import Function using (_∘_)
 open import Relation.Binary.PropositionalEquality
   renaming ([_] to R[_])
 open import Relation.Binary.Core
@@ -113,7 +113,7 @@ mutual
 0empty {𝟙/ t} () f
 
 default : (t : 𝕌) → {t≠0 : ¬ card t ≡ 0} → ⟦ t ⟧
-default 𝟘 {t≠0} = ⊥-elim (t≠0 refl) 
+default 𝟘 {t≠0} = ⊥-elim (t≠0 refl)
 default 𝟙 = tt
 default (t₁ +ᵤ t₂) {p≠0} with card t₁ | card t₂ | inspect card t₁ | inspect card t₂
 ... | 0 | 0 | R[ s₁ ] | R[ s₂ ] = ⊥-elim (p≠0 refl)
@@ -131,7 +131,7 @@ default (t₁ ×ᵤ t₂) {p≠0} with card t₁ | card t₂ | inspect card t₁
 ... | suc m | suc n | R[ s₁ ] | R[ s₂ ] =
   default t₁ {λ t1≡0 → ⊥-elim (1+n≢0 (trans (sym s₁) t1≡0))},
   default t₂ {λ t2≡0 → ⊥-elim (1+n≢0 (trans (sym s₂) t2≡0))}
-default (𝟙/ t) = ○ 
+default (𝟙/ t) = ○
 
 𝕌dec : (t : 𝕌) → Decidable (_≡_ {A = ⟦ t ⟧})
 𝕌dec 𝟘 ()
@@ -251,7 +251,7 @@ switchx : 𝟙 ↔ 𝟙
 switchx =
   uniti⋆r ⊚ (η' ⊗ η') ⊚ assocl⋆ ⊚
   (((swap⋆ ⊗ id↔) ⊚ assocr⋆ ⊚
-  (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚ 
+  (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (swap⋆ ⊗ id↔)) ⊗ id↔) ⊚
   assocr⋆ ⊚ (ε' ⊗ ε') ⊚ unite⋆r
 
 switch : {A : 𝕌} {A≠0 : ¬ card A ≡ 0} → 𝟙 ↔ 𝟙
@@ -266,7 +266,7 @@ switch {A} {A≠0} =
   ↔⟨ assocr⋆ ⟩ (A ×ᵤ 𝟙/ A) ×ᵤ (A ×ᵤ 𝟙/ A)
   ↔⟨ ε' ⊗ ε' ⟩ 𝟙 ×ᵤ 𝟙
   ↔⟨ unite⋆r ⟩ 𝟙 □
-  
+
 shuffle : {A B C D : 𝕌} → (A ×ᵤ B) ×ᵤ (C ×ᵤ D) ↔ (B ×ᵤ D) ×ᵤ (A ×ᵤ C)
 shuffle = (swap⋆ ⊗ swap⋆) ⊚ assocr⋆ ⊚ (id↔ ⊗ (assocl⋆ ⊚ (swap⋆ ⊗ id↔) ⊚ assocr⋆)) ⊚ assocl⋆
 
@@ -294,11 +294,11 @@ id' =
 
 idcheck : (b : ⟦ 𝔹 ⟧) → interp id' b ≡ just b
 idcheck ?𝔽 = refl
-idcheck ?𝕋 = refl 
+idcheck ?𝕋 = refl
 \end{code}}
 \newcommand{\EtaEpsilonExampletwo}{%
 \begin{code}
-rev× : {A B : 𝕌} {A≠0 : ¬ card A ≡ 0} {B≠0 : ¬ card B ≡ 0} → 
+rev× : {A B : 𝕌} {A≠0 : ¬ card A ≡ 0} {B≠0 : ¬ card B ≡ 0} →
        𝟙/ (A ×ᵤ B) ↔ 𝟙/ A ×ᵤ 𝟙/ B
 rev× {A} {B} {A≠0} {B≠0} =
   let η₁ = η {A} {A≠0}; η₂ = η {B} {B≠0}
