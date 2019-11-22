@@ -1,4 +1,4 @@
-\newcommand{\EXTRACT}{%
+\newcommand{\EXTRACT}{% Not used
 \begin{code}
 {-# OPTIONS --safe #-}
 module _ where
@@ -7,8 +7,8 @@ open import Data.Unit
 open import Data.Product
 open import Data.Sum
 open import Data.Maybe
-open import Relation.Binary.PropositionalEquality
-open import Relation.Binary.HeterogeneousEquality
+open import Relation.Binary.PropositionalEquality as PropEq
+open import Relation.Binary.HeterogeneousEquality hiding (subst)
 open import Relation.Nullary
 open import PiPointedFracCode as Pi/ hiding (𝕌; ⟦_⟧; eval)
 open import PiFracDynCode
@@ -66,9 +66,18 @@ Inj𝕌≡ : (t : Pi/.𝕌) → Pi/.⟦ t ⟧ ≡ ⟦ Inj𝕌 t ⟧
 \begin{code}[hide]
 Inj𝕌≡ 𝟘 = refl
 Inj𝕌≡ 𝟙 = refl
-Inj𝕌≡ (t₁ +ᵤ t₂) rewrite (Inj𝕌≡ t₁) | (Inj𝕌≡ t₂) = refl
-Inj𝕌≡ (t₁ ×ᵤ t₂) rewrite (Inj𝕌≡ t₁) | (Inj𝕌≡ t₂) = refl
+Inj𝕌≡ (t₁ +ᵤ t₂) = PropEq.cong₂ _⊎_ (Inj𝕌≡ t₁) (Inj𝕌≡ t₂)
+Inj𝕌≡ (t₁ ×ᵤ t₂) = PropEq.cong₂ _×_ (Inj𝕌≡ t₁) (Inj𝕌≡ t₂)
 \end{code}}
+\newcommand{\INJWeq}{% Not used
+\begin{spec} -- This is provable too, just tedious
+Inj⟦𝕌⟧≡ : {t : Pi/.𝕌} (x : Pi/.⟦ t ⟧) → subst (λ z → z) (Inj𝕌≡ t) x ≡ Inj⟦𝕌⟧ x
+Inj⟦𝕌⟧≡ {𝟙} tt = refl
+Inj⟦𝕌⟧≡ {t +ᵤ t₁} (inj₁ x) = {!!}
+Inj⟦𝕌⟧≡ {t +ᵤ t₁} (inj₂ y) = {!!}
+Inj⟦𝕌⟧≡ {t ×ᵤ t₁} x = {!!}
+\end{spec}
+}
 \newcommand{\INJVeq}{%
 \begin{code}
 Inj⟦𝕌⟧≅ : {t : Pi/.𝕌} (x : Pi/.⟦ t ⟧) → x ≅ Inj⟦𝕌⟧ x
@@ -139,8 +148,7 @@ Ext𝕌 : ∙𝕌 → Σ[ t ∈ 𝕌 ] ⟦ t ⟧
 Ext𝕌 (t # v) = (Inj𝕌 t , Inj⟦𝕌⟧ v)
 Ext𝕌 (t₁ ∙×ᵤ t₂) with Ext𝕌 t₁ | Ext𝕌 t₂
 ... | (t₁' , v₁') | (t₂' , v₂') = t₁' ×ᵤ t₂' , v₁' , v₂'
-Ext𝕌 ❰ T ❱ with Ext𝕌 T
-... | (t , v) = t , v
+Ext𝕌 ❰ T ❱ = Ext𝕌 T
 Ext𝕌 (∙𝟙/ T) with Ext𝕌 T
 ... | (t , v) = 𝟙/ v , ○
 \end{code}}
