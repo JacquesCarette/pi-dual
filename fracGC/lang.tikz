@@ -1,0 +1,18 @@
+\begin{tikzpicture}[scale=0.5,every node/.style={scale=0.5}]
+	\begin{pgfonlayer}{nodelayer}
+		\node [circle,radius=1cm] (0) at (0, -2) {$\Pi$};
+		\node [circle,radius=1cm] (1) at (-2, 1) {$\Pi/D$};
+		\node [circle,radius=1cm] (2) at (2, 1) {$\Pi/\bullet$};
+		\node at (-3.5,-0.5) { + fractionals / dynamic check };
+		\node at (-3,-0.8) { (Sec. 3) };
+		\node at (4,-0.5) { + pointed / singleton / safe fractionals };
+		\node at (3.2,-0.8) { (Sec. 4.4) };
+		\node at (-0.1,1.5) { Extracting safe program };
+		\node at (0,1.8) { (Sec. 6.3) };
+	\end{pgfonlayer}
+	\begin{pgfonlayer}{edgelayer}
+		\draw[->] (0) to (1);
+		\draw[->] (0) to (2);
+		\draw[->] (2) to (1);
+	\end{pgfonlayer}
+\end{tikzpicture}

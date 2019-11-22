@@ -141,20 +141,36 @@ Eval≡ {_} {_} {x} (c₁ ⊚ c₂) rewrite Eval≡ {v = x} c₁ = Eval≡ c₂
 Eval≡ {_} {_} {inj₁ x} (c₁ ⊕ c₂) rewrite Eval≡ {v = x} c₁ = refl
 Eval≡ {_} {_} {inj₂ y} (c₁ ⊕ c₂) rewrite Eval≡ {v = y} c₂ = refl
 Eval≡ {_} {_} {x , y} (c₁ ⊗ c₂) rewrite Eval≡ {v = x} c₁ | Eval≡ {v = y} c₂ = refl
+
+𝕌D : Set
+𝕌D = 𝕌
 \end{code}}
-\newcommand{\EXTU}{%
+\newcommand{\EXTsig}{%
 \begin{code}
-Ext𝕌 : ∙𝕌 → Σ[ t ∈ 𝕌 ] ⟦ t ⟧
+Ext𝕌   : ∙𝕌 → Σ[ t ∈ 𝕌D ] ⟦ t ⟧
+
+Ext∙⟶  : ∀ {t₁ t₂} → t₁ ∙⟶ t₂ →
+          proj₁ (Ext𝕌 t₁) ↔ proj₁ (Ext𝕌 t₂)
+
+Ext≡ : ∀ {t₁ t₂} → (c : t₁ ∙⟶ t₂)
+     → let (t₁' , v₁') = Ext𝕌 t₁
+           (t₂' , v₂') = Ext𝕌 t₂
+       in interp (Ext∙⟶ c) v₁' ≡ just v₂'
+\end{code}}
+\newcommand{\EXTuno}{%
+\begin{code}
 Ext𝕌 (t # v) = (Inj𝕌 t , Inj⟦𝕌⟧ v)
 Ext𝕌 (t₁ ∙×ᵤ t₂) with Ext𝕌 t₁ | Ext𝕌 t₂
 ... | (t₁' , v₁') | (t₂' , v₂') = t₁' ×ᵤ t₂' , v₁' , v₂'
 Ext𝕌 ❰ T ❱ = Ext𝕌 T
+\end{code}}
+\newcommand{\EXTu}{%
+\begin{code}
 Ext𝕌 (∙𝟙/ T) with Ext𝕌 T
 ... | (t , v) = 𝟙/ v , ○
 \end{code}}
-\newcommand{\EXTUComb}{%
+\newcommand{\EXTcombno}{%
 \begin{code}
-Ext∙⟶ : ∀ {t₁ t₂} → t₁ ∙⟶ t₂ → proj₁ (Ext𝕌 t₁) ↔ proj₁ (Ext𝕌 t₂)
 Ext∙⟶ (∙c c) = Inj⟷ c
 Ext∙⟶ ∙times# = id↔
 Ext∙⟶ ∙#times = id↔
@@ -170,15 +186,14 @@ Ext∙⟶ ∙assocr⋆ = assocr⋆
 Ext∙⟶ (c₁ ∙⊗ c₂) = Ext∙⟶ c₁ ⊗ Ext∙⟶ c₂
 Ext∙⟶ (return T) = id↔
 Ext∙⟶ (extract T) = id↔
+\end{code}}
+\newcommand{\EXTcomb}{%
+\begin{code}
 Ext∙⟶ (η T) = η (proj₂ (Ext𝕌 T))
 Ext∙⟶ (ε T) = ε (proj₂ (Ext𝕌 T))
 \end{code}}
-\newcommand{\EXTeq}{%
+\newcommand{\EXTeqno}{%
 \begin{code}
-Ext≡ : ∀ {t₁ t₂} → (c : t₁ ∙⟶ t₂)
-     → let (t₁' , v₁') = Ext𝕌 t₁
-           (t₂' , v₂') = Ext𝕌 t₂
-       in  interp (Ext∙⟶ c) v₁' ≡ just v₂'
 Ext≡ (∙c c) = Eval≡ c
 Ext≡ ∙times# = refl
 Ext≡ ∙#times = refl
@@ -196,6 +211,9 @@ Ext≡ (return T) = refl
 Ext≡ (extract T) = refl
 Ext≡ (η T) = refl
 Ext≡ (ε T) with (proj₂ (Ext𝕌 T)) ≟ᵤ (proj₂ (Ext𝕌 T))
+\end{code}}
+\newcommand{\EXTeq}{%
+\begin{code}
 Ext≡ (ε T) | yes p = refl
 Ext≡ (ε T) | no ¬p = ⊥-elim (¬p refl)
 \end{code}}

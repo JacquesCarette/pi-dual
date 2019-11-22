@@ -209,7 +209,7 @@ quantum circuits~\cite{hadtoffuniv}. The ``only'' difference between
 the two circuit models is that quantum circuits can process
 superpositions of values (waves) in one step whereas classical
 circuits lack this form of parallelism. Most importantly, structurally
-the two circuits models are identical and one can derive properties
+the two circuit models are identical and one can derive properties
 valid for both families by focusing on the simpler classical model. In
 fact, classical reversible computations are often used as
 ``subroutines'' of quantum computations, i.e., classical reversible
@@ -229,7 +229,7 @@ computations that we will exploit to solve the ``ancilla problem''
 explained next.
 
 \paragraph*{Temporary Storage using Ancilla Bits.} The universality of
-the Toffoli gate for classical reversible computing and of the
+the Toffoli gate for classical reversible computing and the
 universality of the Toffoli-Hadamard gates for quantum computing come
 with a catch and should
 not distract from efficiency and safety concerns. The theorems proving
@@ -261,10 +261,9 @@ entropy is a measure of information which materializes itself in
 memory or bandwidth requirements when storing or transmitting elements
 of this type. Thus a type with 8 elements needs 3 bits of memory for
 storage or 3 bits of bandwidth for communication. The information
-information contained in a composite state, by definition of the
-logarithm, is the sum of
-the information contained in its constituents. For example, the type
-$A \times B$ where $A$ has two elements and $B$ has three elements can
+contained in a composite state, by definition of the logarithm,
+is the sum of the information contained in its constituents. For example,
+the type $A \times B$ where $A$ has two elements and $B$ has three elements can
 be thought of a composite system consisting of two independent
 unrelated subsystems.  Each state of the composite system therefore
 contains $\log{(2*3)} = \log{2} + \log{3}$ bits, the sum of
@@ -289,7 +288,7 @@ importance, and explain the limitations of current solutions. In
 Sec.~\ref{sec:pi}, we review existing work%
 ~\cite{rc2011,DBLP:conf/esop/CaretteS16,rc2012,James:2012:IE:2103656.2103667}
 that introduces a reversible programming language built using type
-isomorphism.  Although the concept of fractional types might apply to
+isomorphisms.  Although the concept of fractional types might apply to
 general-purpose languages (after some adaptation), its natural
 technical definition exploits symmetries present in the categorical
 model of type isomorphisms. We present such a definition in
@@ -312,15 +311,22 @@ lift ``plain'' programs manipulating ancillae to the type system in
 order to exploit the power of dependent types to guarantee, for the
 first time, the condition necessary for safe de-allocation of
 ancillae. Technically this solution requires the introduction of
-pointed types on top of which are defined both a monad and comonad of
+pointed types on top of which we define both a monad and comonad of
 singleton types. The tracking of ancillae value is done within the
-type system via the singleton types. A number of examples exploiting
+type system via singleton types. A number of examples exploiting
 the singleton-based type system are presented to demonstrate the full
 expressiveness of reasoning about fractional types. The type safety proofs demonstrate
 that plain (but guaranteed safe)
 programs can be extracted and executed without errors or runtime
 checks in the conventional type system. The last section concludes
 with a discussion of related work and a summary of our results.
+
+The paper includes a number of languages that express different
+points. The three most important languages and their relationships are
+highlighted in this diagram:
+\begin{center}
+\input{lang.tikz}
+\end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Ancilla Bits}
@@ -693,12 +699,12 @@ follows:
 \textit{Program types} &&& t \leftrightarrow t \\
 \textit{Programs} & c &::=& \cdots \alt
    \eta_{\net} : 1 \leftrightarrow (\net \times \oneover{\net}) \\
-   &&& ~~~~~\alt \epsilon_{\net} : (\net \times \oneover{\net}) \leftrightarrow 1 
+   &&& ~~~~~\alt \epsilon_{\net} : (\net \times \oneover{\net}) \leftrightarrow 1
 \end{array}\]
 
 The metavariable $\net$ excludes all types that are equivalent to the
 empty type, e.g., $(1 + 1) \times 0$. For now, all gc processes are
-represented at runtime using a trivial value denoted by $\gcv$. 
+represented at runtime using a trivial value denoted by $\gcv$.
 
 In the Agda formalization, the types of $\eta$ and $\epsilon$ are:
 \EtaEpsilon{}
@@ -754,7 +760,7 @@ processes each collecting one of the values (and vice-versa):
 \EtaEpsilonExampletwo{}
 
 %%%%%
-\subsection{Choosing Ancillae Values}
+\subsection{Choosing Ancillae Values: $\Pi/D$}
 
 The previous development achieves a significant milestone but only
 hints at the full expressiveness of fractional types. A small addition
@@ -773,12 +779,14 @@ achieved by adapting our language as follows:
 \textit{Program types} &&& t \leftrightarrow t \\
 \textit{Programs} & c &::=& \cdots \alt
    \eta_{v:t} : 1 \leftrightarrow (t \times \oneover{v}) \\
-   &&& ~~~~~\alt \epsilon_{v:t} : (t \times \oneover{v}) \leftrightarrow 1 
+   &&& ~~~~~\alt \epsilon_{v:t} : (t \times \oneover{v}) \leftrightarrow 1
 \end{array}\]
 
-In addition to being more expressive, this version has the advantage
-of replacing the cumbersome cardinality-based evidence that the type
-is not empty by the more intuitive evidence of choosing a value of the
+We will call this language $\Pi/D$ for the fractional extension of
+$\Pi$ with a dynamic check. In addition to being more expressive than
+the language in the previous subsection, $\Pi/D$ has the advantage of
+replacing the cumbersome cardinality-based evidence that the type is
+not empty by the more intuitive evidence of choosing a value of the
 type. The simplications are evident in the Agda formalization:
 
 \PIFDUdef{}
@@ -791,13 +799,13 @@ type. The simplications are evident in the Agda formalization:
 
 \PIFDinterp{}
 
+\begin{wrapfigure}{r}{0.2\textwidth}
+  \input{parity.tikz}
+\end{wrapfigure}
 We illustrate the new style of ancilla management with an interesting
 example used in quantum circuits as a dynamic assertion of
 entanglement~\cite{DBLP:journals/cal/ZhouB19}:
 
-\begin{wrapfigure}[0]{r}{0.2\textwidth}
-  \input{parity.tikz}
-\end{wrapfigure}
 \PIFDparity{}
 
 \noindent The circuit initializes the ancilla to \AgdaInductiveConstructor{true} and
@@ -860,7 +868,7 @@ $\oneover{t}$:
 \end{itemize}
 
 %%
-\subsection{Abstract Machine without Fractionals}
+\subsection{Abstract Machine for $\Pi$}
 
 To start, we introduce some of the common technical details in the
 simpler setting of the core $\Pi$ language. The cardinalities of
@@ -922,7 +930,7 @@ the current index (i.e., the current value) changes.
 %% \PIMEMstep{}
 
 %%
-\subsection{Abstract Machine with Fractionals}
+\subsection{Abstract Machine for $\Pi/D$}
 
 Using the same assumptions as before, machine states and small step
 reductions are formalized as follows:
@@ -1004,16 +1012,16 @@ of ancillae values throughout complex programs as demonstrated in
 Sec.~\ref{sec:cat}.
 
 %%%%%
-\subsection{Pointed and Singleton Types}
+\subsection{Pointed and Singleton Types: $\Pi/\bullet$}
 
 Following the development for the toy language above, we create a
-lifted version of fractional $\Pi$ with pointed types. In addition to
-the explicit pointed types of the form $t$\Acon{\#}$v$, we will need a
-multiplicative structure over pointed types, fractional types, and a
-special kind of pointed type that includes just one value, a singleton
-type. The singleton types will allow the type system to track the flow
-of one particular value, which is exactly what is needed to prove the
-safety of deallocation:
+lifted version of fractional $\Pi$ with pointed types which we call
+$\Pi/\bullet$. In addition to the explicit pointed types of the form
+$t$\Acon{\#}$v$, we will need a multiplicative structure over pointed
+types, fractional types, and a special kind of pointed type that
+includes just one value, a singleton type. The singleton types will
+allow the type system to track the flow of one particular value, which
+is exactly what is needed to prove the safety of deallocation:
 
 \PIPFUdef{}
 
@@ -1027,8 +1035,8 @@ disregards the value it is given: the type system however prevents
 this value from being applied to anything but the particular singleton
 value in question.
 
-The combinators in the lifted language consist of all the combinators
-in the base language but now operating on pointed types. The mediation
+The combinators in the lifted language $\Pi/\bullet$ consist of all the combinators
+in the core $\Pi$ language but now operating on pointed types. The mediation
 between general pointed types and singleton types is done via
 \Acon{return} and \Acon{extract} which as we prove below form a
 dual monad/comonad pair. The types for \Acon{$\eta$} and
@@ -1037,7 +1045,7 @@ de-allocation as follows. When applying \Acon{$\eta$} at a pointed type, the
 current witness value is put in focus in a singleton type and a gc
 process for that particular singleton type is created. To apply this
 process using \Acon{$\epsilon$} the very same singleton value must be
-the current one. 
+the current one.
 
 \PIPFCombDef{}
 
@@ -1059,7 +1067,7 @@ Like for the toy language, evaluation is reflected in the type
 system, and in this case we have the additional property that
 evaluation is reversible:
 
-\PIPFeval{} 
+\PIPFeval{}
 
 \vspace{-\baselineskip}
 
@@ -1089,45 +1097,97 @@ trace shows the actual execution for confirmation:
 %%%%%%%%%
 \subsection{Extraction}
 
-Exploit dependent types to reify proofs in the type system. Type
-checking requires (partial) eval. Once we have a proof can we somehow
-go back to \verb|PiFracDyn| and remove the runtime check?
+By lifting programs and their evaluation to the type level, we can
+naturally leverage the typechecking process to verify properties of
+interest, including the safe de-allocation of ancillae. One ``could''
+just write programs in that style in $\Pi/\bullet$: indeed the dual nature of proofs
+and programs is more and more exploited in languages like the one used
+to formalize this paper (Agda). The examples in Sec.~\ref{sec:cat} are
+written in that style and they are relatively similar to programs
+in the ``normal'' $\Pi/D$ language.
 
-Polymorphic type for ancilla?
-\\
-First we can inject plain Pi type and value into PiFracDyn:
-%% \ednote{Pi/.U is not defined before its use below}
-\INJU{}
-and the combinators for Pi can also be inject into PiFracDyn in a straightforward way:
-\INJcomb{}
-The given injection is correct because it does not change the denotation of type
-\INJUeq{}
-,the value
-\INJVeq{}
-and the interpretation of PiFracDyn is consistent with Pi:
-\INJEvaleq{}
-To extract a combinator from PiPointedFrac, first we need to extract the corresponding type for PiFracDyn.
-Since every type (except Recip) in PiPointedFrac is pointed type so we can always extract a type for plain
-Pi and a value from it.
-There is no corresponding type of Recip in plain Pi, but we can map it to the
-\AgdaOperator{\AgdaInductiveConstructor{𝟙/}}\AgdaSpace{}\AgdaBound{v} type in PiFracDyn.
-Note that for all other type the extracted value is erased from type except for
-\AgdaOperator{\AgdaInductiveConstructor{𝟙/}}\AgdaSpace{}\AgdaBound{v}
-which we still keep it in type.
-\EXTU{}
-Once we extract the corresponding type we can extract the combinator, the combinators about monad/comonad
-just becomes \AgdaInductiveConstructor{id↔} since the information in type is erased,
-for the rest combinators there exist direct corresponding combinators in PiFracDyn:
-\EXTUComb{}
-Finally we can prove the correctness of the extraction,
-the lifted multiplicative combinators have the corresponding combinators in PiFracDyn which represent
-the same computation so the proof is just \AgdaInductiveConstructor{refl}.
-Because the combinators about monad/comonad does not really
-computes so for those case the proof is also \AgdaInductiveConstructor{refl}.
-And for \AgdaInductiveConstructor{∙c} we rely on \AgdaFunction{Eval≡}.
-The interesting case is \AgdaInductiveConstructor{ε} where the singleton type guarantee that
-the dynamic check won't fail.
+However, it is also often the case than constructive proofs are
+further processed to extract a native efficient programs that eschew
+the overhead of maintaining information needed just for proof
+invariants. In our case, the question is whether we can extract from
+$\Pi/\bullet$ program, a program in $\Pi/D$ that uses a simpler type
+system, a simpler runtime representation, and yet is guaranteed to be
+safe and hence can run without the runtime checks associated with
+de-allocation sites. In this section, we show that this indeed the
+case.
+
+% First we can inject plain Pi type and value into PiFracDyn:
+% %% \ednote{Pi/.U is not defined before its use below}
+% \INJU{}
+% and the combinators for Pi can also be inject into PiFracDyn in a straightforward way:
+% \INJcomb{}
+% The given injection is correct because it does not change the denotation of type
+% \INJUeq{}
+% ,the value
+% \INJVeq{}
+% and the interpretation of PiFracDyn is consistent with Pi:
+% \INJEvaleq{}
+
+The extraction map is fully implemented in the underlying Agda
+formalization. We present the most significant highlights. There are
+three important functions who signatures are below:
+
+\EXTsig{}
+
+The function \Afun{Ext𝕌} maps a $\Pi/\bullet$ type to a $\Pi/D$ type
+and a value in the type. The function \Afun{Ext∙⟶} maps a
+$\Pi/\bullet$ combinator to a $\Pi/D$ combinator. And finally the
+function \Afun{Ext≡} asserts that extracted code cannot throw an
+exception (it must return \Acon{just}\ldots).
+
+Each of these functions has one or two enlightening cases which we
+explain:
+
+In $\Pi/D$ the fractional type expresses that it expects a particular
+value but lacks any mechanisms to enforce this requirement. Thus we
+have no choice when mapping a fractional type from $\Pi/\bullet$ to
+$\Pi/D$ than to just use this \Acon{𝟙/}~\Avar{v} type:
+
+\EXTu{}
+
+% There is no corresponding type of Recip
+% in plain Pi, but we can map it to the
+% \AgdaOperator{\AgdaInductiveConstructor{𝟙/}}\AgdaSpace{}\AgdaBound{v}
+% type in PiFracDyn.  Note that for all other type the extracted value
+% is erased from type except for
+% \AgdaOperator{\AgdaInductiveConstructor{𝟙/}}\AgdaSpace{}\AgdaBound{v}
+% which we still keep it in type.
+
+When mapping $\Pi/\bullet$ combinators to
+$\Pi/D$ combinators, the main interesting cases are for \Acon{η} and
+\Acon{ε}. In those we just use the values from the pointed type as
+choices for the ancilla value and expectation for the gc process:
+
+\EXTcomb{}
+
+% Once we extract the
+% corresponding type we can extract the combinator, the combinators
+% about monad/comonad just becomes \AgdaInductiveConstructor{id↔} since
+% the information in type is erased, for the rest combinators there
+% exist direct corresponding combinators in PiFracDyn:
+
+% Finally we can prove the correctness of the extraction, the lifted
+% multiplicative combinators have the corresponding combinators in
+% PiFracDyn which represent the same computation so the proof is just
+% \AgdaInductiveConstructor{refl}.  Because the combinators about
+% monad/comonad does not really computes so for those case the proof is
+% also \AgdaInductiveConstructor{refl}.  And for
+% \AgdaInductiveConstructor{∙c} we rely on \AgdaFunction{Eval≡}.  The
+% interesting case is \AgdaInductiveConstructor{ε} where the singleton
+% type guarantee that the dynamic check won't fail.
+
+Finally we can prove the correctness of the extraction. The punchline
+is in the following case:
+
 \EXTeq{}
+
+In this case, the singleton type in $\Pi/\bullet$ guarantees that the
+runtime check cannot fail.
 
 %%%%%%%%%%%
 \subsection{Examples}
@@ -1137,7 +1197,7 @@ In addition to the examples presented throughout the paper, we present
 examples that provides novel perspectives on gc processes, first as
 space transformers, and second as tracing operators. Both ideas are
 inspired from known constructions in compact closed
-categories~\cite{DBLP:conf/calco/Abramsky05}.
+categories~\cite{dblp:conf/calco/abramsky05}.
 
 \paragraph*{Space Transformers.} A pair of a value and a gc process
 cancel each other when the gc process is expecting this particular
@@ -1160,10 +1220,10 @@ reversible programs (or permutations), the larger permutation
 guarantees the existence of a smaller permutation that permutes $A$ to
 $B$. Indeed, we can programmatically construct such a permutation:
 
-As the diagram below (take from Abramsky's
-paper~\cite{DBLP:conf/calco/Abramsky05}) illustrates, this is not a
+As the diagram below (taken from Abramsky's
+paper~\cite{dblp:conf/calco/abramsky05}) illustrates, this is not a
 trivial construction in the sense that the permutation from $A$ to $B$
-uses $C$ in non-trivial ways. 
+uses $C$ in non-trivial ways.
 
 \includegraphics[scale=0.5]{trace.png}
 
@@ -1176,7 +1236,7 @@ and de-allocation. The safety condition on de-allocation ensures that
 the allocated value (now in the feedback loop) matches the
 de-allocated value. Thus, the entire traced component is treated as an
 ancillae value used internally used to perform the larger program but
-leaving no memory footprint. 
+leaving no memory footprint.
 
 %% SAT solver ??
 %% in-place matrix transpose
@@ -1184,17 +1244,17 @@ leaving no memory footprint.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Conclusion}
 
-There has been ample work on ancillae before us.  For example%
+There has been ample work on ancillae before us.  For example
 \cite{PhysRevA.94.042337} explicitly represent the lifetime of
 quantum wires, enable quantum wires to be recycled, leading
 to more efficient circuits.  Interesting applications of
 ancillae is in the recent paper~\cite{DBLP:journals/cal/ZhouB19}
 on Quantum runtime assertions.  In section~\ref{sub:id}, we
-already mentionned dynamic assertion of entanglement; they
+already mentioned dynamic assertion of entanglement; they
 also show how to provide (dynamic) assertions on classical
 states, and testing of superposition states.  Our techniques
 should combine with theirs to provide even more possibilities
-for dynamic asserctions. Ancilla management is a complex
+for dynamic assertions. Ancilla management is a complex
 business, and the verified circuit compiler
 ReVerC~\cite{amy2017verified} goes to great pains to
 ensure that ancilla are dealt with properly.  Both
@@ -1203,7 +1263,7 @@ also do automatic (but not certified) ancilla management during code
 generation.  This remains an active area of research, as
 outlined in the CACM paper~\cite{valiron2015programming}.
 
-Another interesting avenue is to understand how to merge 
+Another interesting avenue is to understand how to merge
 pointed $\Pi$ with another simple language for quantum
 computing: QWIRE~\cite{Paykin:2017:QCL:3009837.3009894}.
 QWIRE has many desirable meta-properties that have been
@@ -1219,22 +1279,40 @@ would certainly be intriguing to augment Janus with a certified
 garbage collection discipline such as ours, so that one might hope
 that the resulting computations might be more efficiently done.
 
+Another different thread of work stems from categorical models
+of quantum computation, especially those based on dagger
+compact closed categories as introduced
+in~\cite{Abramsky:2004:CSQ:1018438.1021878}, and greatly
+expanded upon in~\cite{abramsky2009categorical}.  Various
+results can be obtained in that general setting, such as the
+no-cloning theorem~\cite{abramsky2009no}. The $2016$ book
+\cite{chiribella2016quantum} is a good survey of the
+developments since. Selinger~\cite{selinger2007dagger,Selinger:2011:FDH:1942319.1942398}
+has been particularly active in this area. Of particular
+note for our applications are two 2005 papers by Abramsky
+\cite{abramsky2005structural,dblp:conf/calco/abramsky05}
+with explicit examples of circuits using trace that are very useful tests
+for our approach.
+
+Also related are various approaches to quantum lambda
+calculi, such as~\cite{dblp:journals/mscs/selingerv06,vantonder:2004,dowek2017lineal}.
+
 %Trace as a lens? This basically says, in the language of Lens, that
 %when $A$ is isomorphic to $X \times Y$ and $B$ is isomorphic to
 %$Z \times Y$, then $X$ is isomorphic to $Y$. Another way to think of
 %it: for all isomorphic $A$ and $B$, whenever they can be factored with
 %a common complement ($Y$), then the ``other pieces'' (here $X$ and
 %$Y$) are automatically isomorphic.
- 
+
 %Positive rational numbers are a model. Apparently there is a
 %categorification
 %\url{https://alistairsavage.ca/pubs/Copelli-Categorification_of_the_Nonnegative_Rational_Numbers.pdf}
 
-General allocation and de-allocation. No need to keep track of
-lifetime. Just make sure location is back to initial value. Safe to
-de-allocate because indistinguishable from freshly created. No pointer
-equality and aliases though. Concurrent: one thread allocates; gc
-thread meets someone else
+% General allocation and de-allocation. No need to keep track of
+% lifetime. Just make sure location is back to initial value. Safe to
+% de-allocate because indistinguishable from freshly created. No pointer
+% equality and aliases though. Concurrent: one thread allocates; gc
+% thread meets someone else
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \bibliography{../cites.bib}
