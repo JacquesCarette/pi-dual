@@ -321,31 +321,12 @@ duplicate {T₁} = return (Singᵤ T₁)
 ∙eval (η T) = (λ tt → (proj₂ ∙⟦ T ⟧ , refl) , λ _ → tt) , refl
 ∙eval (ε T) = (λ { ((_ , refl) , f) → f (proj₂ ∙⟦ T ⟧ , refl)}) , refl
 
-{- I'm convinced this is true, but now is not necessarily the time to finish this proof
+-- you don't need to prove this
 ∙ΠisRev : ∀ {T₁ T₂} → (c : T₁ ∙⟶ T₂) →
   let (t₁ , v₁) = ∙⟦ T₁ ⟧
       (t₂ , v₂) = ∙⟦ T₂ ⟧
       (f , pf) = ∙eval (c ∙⊚ !∙ c) in
   f v₁ ≡ v₁
-∙ΠisRev (∙c {v = v} c) =
-  let (f , pf) = ∙eval ((∙c c) ∙⊚ !∙ (∙c c)) in pf
-∙ΠisRev ∙times# = refl
-∙ΠisRev ∙#times = refl
-∙ΠisRev ∙id⟷ = refl
-∙ΠisRev (c ∙⊚ c₁) = {!!}
-∙ΠisRev ∙unite⋆l = refl
-∙ΠisRev ∙uniti⋆l = refl
-∙ΠisRev ∙unite⋆r = {!!}
-∙ΠisRev ∙uniti⋆r = {!!}
-∙ΠisRev ∙swap⋆ = {!!}
-∙ΠisRev ∙assocl⋆ = {!!}
-∙ΠisRev ∙assocr⋆ = {!!}
-∙ΠisRev (c ∙⊗ c₁) = {!!}
-∙ΠisRev (c ∙⊕ₗ c₁) = {!!}
-∙ΠisRev (c ∙⊕ᵣ c₁) = cong inj₂ {!!}
-∙ΠisRev (return T₁) = refl
-∙ΠisRev (extract T₁) = refl
-∙ΠisRev (η T₁) = refl
-∙ΠisRev (ε T₁) = refl
--}
+∙ΠisRev c = proj₂ (∙eval (c ∙⊚ !∙ c))
+
 -----------------------------------------------------------------------------
