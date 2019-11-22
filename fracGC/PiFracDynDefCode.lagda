@@ -1,9 +1,8 @@
 
-\newcommand{\Preamble}{%
+\newcommand{\Preamble}{% Not used in the latex
 \begin{code}
 {-# OPTIONS --without-K #-}
 module _ where
-open import Data.Bool
 open import Data.Empty
 open import Data.Unit
 open import Data.Nat
@@ -30,7 +29,7 @@ data ◯ : Set where
 
 mutual
 \end{code}}
-\newcommand{\Udef}{%
+\newcommand{\Udef}{% Not used
 \begin{code}
   data 𝕌 : Set where
     𝟘     : 𝕌
@@ -39,7 +38,7 @@ mutual
     _×ᵤ_  : 𝕌 → 𝕌 → 𝕌
     𝟙/_   : 𝕌 → 𝕌
 \end{code}}
-\newcommand{\CodeA}{%
+\newcommand{\CodeA}{% Not Used
 \begin{code}
   ⟦_⟧ : 𝕌 → Set
   ⟦ 𝟘 ⟧ = ⊥
@@ -81,7 +80,7 @@ mutual
     η : {t : 𝕌} {t≠0 : ¬ card t ≡ 0} → 𝟙 ↔ t ×ᵤ 𝟙/ t
     ε : {t : 𝕌} {t≠0 : ¬ card t ≡ 0} → t ×ᵤ 𝟙/ t ↔ 𝟙
 \end{code}}
-\newcommand{\CodeB}{%
+\newcommand{\CodeB}{% Not Used
 \begin{code}
 -- Number of points in type
   card : (t : 𝕌) → ℕ
@@ -89,11 +88,10 @@ mutual
   card 𝟙 = 1
   card (t₁ +ᵤ t₂) = card t₁ + card t₂
   card (t₁ ×ᵤ t₂) = card t₁ * card t₂
-  card 𝟙/● = 1
+  card (𝟙/ _)  = 1
 
--- If number of points is zero then it is impossible to find a value
--- of the type
-0empty : {t : 𝕌} → card t ≡ 0 → (v : ⟦ t ⟧) → ⊥
+-- If the cardinality is 0, then there are no points
+0empty : {t : 𝕌} → card t ≡ 0 → ¬ ⟦ t ⟧
 0empty {𝟘} _ ()
 0empty {𝟙} () tt
 0empty {t₁ +ᵤ t₂} s (inj₁ v₁)
@@ -160,13 +158,13 @@ _≟ᵤ_ {t} v w = 𝕌dec t v w
 interp : {t₁ t₂ : 𝕌} → (t₁ ↔ t₂) → ⟦ t₁ ⟧ → Maybe ⟦ t₂ ⟧
 interp swap⋆ (v₁ , v₂) = just (v₂ , v₁)
 interp (c₁ ⊚ c₂) v = interp c₁ v >>= interp c₂
--- (skip)
+-- (elided)
 interp (η {t} {t≠0}) tt = just (default t {t≠0} , ○)
 interp (ε {t} {t≠0}) (v' , ○) with v' ≟ᵤ (default t {t≠0})
 ... | yes _ = just tt
 ... | no _ = nothing
 \end{code}}
-\newcommand{\PFDCONE}{%
+\newcommand{\PFDCONE}{% Not used
 \begin{code}
 interp unite₊l (inj₁ ())
 interp unite₊l (inj₂ v) = just v
@@ -205,7 +203,7 @@ interp (c₁ ⊕ c₂) (inj₁ v) = interp c₁ v >>= just ∘ inj₁
 interp (c₁ ⊕ c₂) (inj₂ v) = interp c₂ v >>= just ∘ inj₂
 interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ >>= (λ v₁' → interp c₂ v₂ >>= λ v₂' → just (v₁' , v₂'))
 \end{code}}
-\newcommand{\CodeC}{%
+\newcommand{\CodeC}{% Not used
 \begin{code}
 --- Examples
 
@@ -303,17 +301,17 @@ rev× : {A B : 𝕌} {A≠0 : ¬ card A ≡ 0} {B≠0 : ¬ card B ≡ 0} →
 rev× {A} {B} {A≠0} {B≠0} =
   let η₁ = η {A} {A≠0}; η₂ = η {B} {B≠0}
       ε' = ε {A ×ᵤ B} {pr≠0 A B A≠0 B≠0}
-    in  𝟙/ (A ×ᵤ B)
+    in              𝟙/ (A ×ᵤ B)
   ↔⟨ uniti⋆l ⊚ uniti⋆l ⊚ assocl⋆ ⟩
-        (𝟙 ×ᵤ 𝟙) ×ᵤ 𝟙/ (A ×ᵤ B)
+                    (𝟙 ×ᵤ 𝟙) ×ᵤ 𝟙/ (A ×ᵤ B)
   ↔⟨ (η₁ ⊗ η₂) ⊗ id↔ ⟩
-        ((A ×ᵤ 𝟙/ A) ×ᵤ (B ×ᵤ 𝟙/ B)) ×ᵤ 𝟙/ (A ×ᵤ B)
+                    ((A ×ᵤ 𝟙/ A) ×ᵤ (B ×ᵤ 𝟙/ B)) ×ᵤ 𝟙/ (A ×ᵤ B)
   ↔⟨ (shuffle ⊗ id↔) ⊚ assocr⋆ ⟩
-        (𝟙/ A ×ᵤ 𝟙/ B) ×ᵤ ((A ×ᵤ B) ×ᵤ 𝟙/ (A ×ᵤ B))
+                    (𝟙/ A ×ᵤ 𝟙/ B) ×ᵤ ((A ×ᵤ B) ×ᵤ 𝟙/ (A ×ᵤ B))
   ↔⟨ id↔ ⊗ ε' ⟩
-        (𝟙/ A ×ᵤ 𝟙/ B) ×ᵤ 𝟙
+                    (𝟙/ A ×ᵤ 𝟙/ B) ×ᵤ 𝟙
   ↔⟨ unite⋆r ⟩
-        𝟙/ A ×ᵤ 𝟙/ B □
+                    𝟙/ A ×ᵤ 𝟙/ B □
 \end{code}}
 \newcommand{\CodeD}{%
 \begin{code}

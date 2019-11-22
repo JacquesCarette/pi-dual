@@ -1,4 +1,4 @@
-\newcommand{\PIFD}{%
+\newcommand{\PIFD}{% Not used
 \begin{code}
 {-# OPTIONS --without-K --safe #-}
 module _ where
@@ -81,7 +81,7 @@ mutual
     η : {t : 𝕌} (v : ⟦ t ⟧) → 𝟙 ↔ t ×ᵤ (𝟙/ v)
     ε : {t : 𝕌} (v : ⟦ t ⟧) → t ×ᵤ (𝟙/ v) ↔ 𝟙
 \end{code}}
-\newcommand{\PIFDdec}{%
+\newcommand{\PIFDdec}{% Not used
 \begin{code}
 𝕌dec : (t : 𝕌) → Decidable (_≡_ {A = ⟦ t ⟧})
 𝕌dec 𝟘 ()
@@ -153,7 +153,7 @@ interp (ε v) (v' , ○) with v ≟ᵤ v'
 ... | yes _ = just tt
 ... | no _ = nothing
 \end{code}}
-\newcommand{\PFDxx}{%
+\newcommand{\PFDxx}{% Not used
 \begin{code}
 --- Examples
 
@@ -277,33 +277,33 @@ t4 = interp parity (𝕋 , 𝕋) -- just (𝕋 , 𝕋)
 
 θ : (n : ℕ) → (𝔹^ n) ↔ (𝔹^ n)
 θ = <′-rec (λ n → (𝔹^ n) ↔ (𝔹^ n)) θ'
-  where
-    θ' : (n : ℕ) →
-         (∀ m → m <′ n → (𝔹^ m) ↔ (𝔹^ m)) → (𝔹^ n) ↔ (𝔹^ n)
-    θ' 0 _ = swap₊
-    θ' (suc 0) θ'' = dist ⊚ (id↔ ⊕ (id↔ ⊗ θ'' 0 ≤′-refl)) ⊚ factor
-    θ' (suc (suc 0)) θ'' =
-      assocr⋆ ⊚ dist ⊚ (id↔ ⊕ (id↔ ⊗ θ'' 1 ≤′-refl)) ⊚ factor ⊚ assocl⋆
-    θ' (suc (suc (suc n))) θ'' =
-      (id↔ ⊗ (uniti⋆l ⊚ (η 𝔽 ⊗ id↔) ⊚ assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆))
-      ⊚ assocl⋆
-      ⊚ (assocl⋆ ⊗ id↔)
-      ⊚ ((θₙ₋₁ ⊗ id↔) ⊗ id↔)
-      ⊚ (θ₃ ⊗ id↔)
-      ⊚ ((θₙ₋₁ ⊗ id↔) ⊗ id↔)
-      ⊚ (assocr⋆ ⊗ id↔)
-      ⊚ assocr⋆
-      ⊚ (id↔ ⊗ (assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (ε 𝔽 ⊗ id↔) ⊚ unite⋆l))
-      where
-        θₙ₋₁ : (((𝔹^ n) ×ᵤ 𝔹) ×ᵤ 𝔹) ×ᵤ 𝔹 ↔ (((𝔹^ n) ×ᵤ 𝔹) ×ᵤ 𝔹) ×ᵤ 𝔹
-        θₙ₋₁ = assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆
-             ⊚ (θ'' (suc (suc n)) ≤′-refl ⊗ id↔)
-             ⊚ assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆
+ where
+  θ' : (n : ℕ) →
+       (∀ m → m <′ n → (𝔹^ m) ↔ (𝔹^ m)) → (𝔹^ n) ↔ (𝔹^ n)
+  θ' 0 _ = swap₊
+  θ' 1 θ'' = dist ⊚ (id↔ ⊕ (id↔ ⊗ θ'' 0 ≤′-refl)) ⊚ factor
+  θ' 2 θ'' =
+   assocr⋆ ⊚ dist ⊚ (id↔ ⊕ (id↔ ⊗ θ'' 1 ≤′-refl)) ⊚ factor ⊚ assocl⋆
+  θ' (suc (suc (suc n))) θ'' =
+   (id↔ ⊗ (uniti⋆l ⊚ (η 𝔽 ⊗ id↔) ⊚ assocr⋆
+          ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆))
+   ⊚ assocl⋆ ⊚ (assocl⋆ ⊗ id↔)
+   ⊚ ((θₙ₋₁ ⊗ id↔) ⊗ id↔)
+   ⊚ (θ₃ ⊗ id↔)
+   ⊚ ((θₙ₋₁ ⊗ id↔) ⊗ id↔)
+   ⊚ (assocr⋆ ⊗ id↔) ⊚ assocr⋆
+   ⊚ (id↔ ⊗ (assocr⋆ ⊚ (id↔ ⊗ swap⋆)
+             ⊚ assocl⋆ ⊚ (ε 𝔽 ⊗ id↔) ⊚ unite⋆l))
+   where
+     θₙ₋₁ : (𝔹^ (3 + n)) ↔ (𝔹^ (3 + n))
+     θₙ₋₁ = assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆
+          ⊚ (θ'' (suc (suc n)) ≤′-refl ⊗ id↔)
+          ⊚ assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆
 
-        θ₃ : ((((𝔹^ n) ×ᵤ 𝔹) ×ᵤ 𝔹) ×ᵤ 𝔹) ×ᵤ 𝔹 ↔ ((((𝔹^ n) ×ᵤ 𝔹) ×ᵤ 𝔹) ×ᵤ 𝔹) ×ᵤ 𝔹
-        θ₃ = (assocr⋆ ⊗ id↔) ⊚ assocr⋆
-           ⊚ (id↔ ⊗ θ'' 2 (s≤′s (s≤′s (s≤′s z≤′n))))
-           ⊚ assocl⋆ ⊚ (assocl⋆ ⊗ id↔)
+     θ₃ : (𝔹^ (4 + n)) ↔ (𝔹^ (4 + n))
+     θ₃ = (assocr⋆ ⊗ id↔) ⊚ assocr⋆
+        ⊚ (id↔ ⊗ θ'' 2 (s≤′s (s≤′s (s≤′s z≤′n))))
+        ⊚ assocl⋆ ⊚ (assocl⋆ ⊗ id↔)
 \end{code}}
 \newcommand{\PIFDtoffolitests}{%
 \begin{code}

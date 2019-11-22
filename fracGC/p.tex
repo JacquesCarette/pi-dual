@@ -23,7 +23,6 @@
 \usepackage[nocenter]{qtree}
 \usepackage{multicol}
 \usepackage{bbold}
-\usepackage[show]{ed}
 \usepackage{tikz}
 \usetikzlibrary{cd}
 \usetikzlibrary{quotes}
@@ -817,10 +816,10 @@ Sec.~\ref{sub:toff} but in fact an inductive construction that defines
 all $n$-bit Toffoli gates. The construction goes back to Toffoli's
 proof of universality~\cite{Toffoli:1980}:
 
-\begin{figure*}[ht]
+\begin{figure}[ht]
   \PIFDtoffoli{}
 \caption{\label{fig:toff}Generalized Toffoli Gates}
-\end{figure*}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Space-Tracking Abstract Machine}
@@ -1002,11 +1001,6 @@ which is enough to determine that the result of evaluating
 evaluation will prove to be quite expressive allowing us to keep track
 of ancillae values throughout complex programs as demonstrated in
 Sec.~\ref{sec:cat}.
-%% \ednote{JC: Doesn't \AgdaFunction{eval}, in the type, evaluate
-%% fully for this work?  That Agda is strongly normalizing is rather
-%% important here. What exactly is partially evaluating is really not
-%% clear (says an expert in PE). I think the idea being expressed is
-%% correct, but the paragraph is insufficiently clear/precise.}
 
 %%%%%
 \subsection{Pointed and Singleton Types}
@@ -1101,7 +1095,7 @@ go back to \verb|PiFracDyn| and remove the runtime check?
 Polymorphic type for ancilla?
 \\
 First we can inject plain Pi type and value into PiFracDyn:
-\ednote{Pi/.U is not defined before its use below}
+%% \ednote{Pi/.U is not defined before its use below}
 \INJU{}
 and the combinators for Pi can also be inject into PiFracDyn in a straightforward way:
 \INJcomb{}
