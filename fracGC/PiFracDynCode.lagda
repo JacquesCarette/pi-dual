@@ -2,7 +2,6 @@
 \begin{code}
 {-# OPTIONS --without-K --safe #-}
 module _ where
-open import Data.Bool
 open import Data.Empty
 open import Data.Unit
 open import Data.Nat
@@ -15,10 +14,11 @@ open import Relation.Binary.PropositionalEquality
   renaming ([_] to R[_])
 open import Relation.Binary.Core
 open import Relation.Nullary
+open import Induction.Nat
 
 infix 90 𝟙/_
-infix  70 _×ᵤ_
-infix  60 _+ᵤ_
+infixr 70 _×ᵤ_
+infixr 60 _+ᵤ_
 infix  40 _↔_
 infixr 50 _⊚_
 
@@ -268,4 +268,36 @@ t1 = interp parity (𝔽 , 𝔽) -- just (𝔽 , 𝔽)
 t2 = interp parity (𝔽 , 𝕋) -- nothing
 t3 = interp parity (𝕋 , 𝔽) -- nothing
 t4 = interp parity (𝕋 , 𝕋) -- just (𝕋 , 𝕋)
+\end{code}}
+\newcommand{\PIFDtoffoli}{%
+\begin{code}
+-- Toffoli construction
+𝔹^_ : ℕ → 𝕌
+𝔹^ zero = 𝔹
+𝔹^ suc n = (𝔹^ n) ×ᵤ 𝔹
+
+θ : (n : ℕ) → (𝔹^ n) ↔ (𝔹^ n)
+θ = <′-rec (λ n → (𝔹^ n) ↔ (𝔹^ n)) θ'
+  where
+    θ' : (n : ℕ) → (∀ m → m <′ n → (𝔹^ m) ↔ (𝔹^ m)) → (𝔹^ n) ↔ (𝔹^ n)
+    θ' 0 _ = swap₊
+    θ' (suc 0) θ'' = distl ⊚ (id↔ ⊕ (θ'' 0 ≤′-refl ⊗ id↔)) ⊚ factorl
+    θ' (suc (suc 0)) θ'' = distl ⊚ (id↔ ⊕ (θ'' 1 ≤′-refl ⊗ id↔)) ⊚ factorl
+    θ' (suc (suc (suc n))) θ'' = (id↔ ⊗ (uniti⋆l ⊚ (η 𝔽 ⊗ id↔) ⊚ assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆)) ⊚ assocl⋆
+                               ⊚ (assocl⋆ ⊗ id↔)
+                               ⊚ ((θₙ₋₁ ⊗ id↔) ⊗ id↔)
+                               ⊚ (θ₃ ⊗ id↔)
+                               ⊚ ((θₙ₋₁ ⊗ id↔) ⊗ id↔)
+                               ⊚ (assocr⋆ ⊗ id↔)
+                               ⊚ assocr⋆ ⊚ (id↔ ⊗ (assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆ ⊚ (ε 𝔽 ⊗ id↔) ⊚ unite⋆l))
+      where
+        θₙ₋₁ : (((𝔹^ n) ×ᵤ 𝔹) ×ᵤ 𝔹) ×ᵤ (𝟙 +ᵤ 𝟙) ↔ (((𝔹^ n) ×ᵤ 𝔹) ×ᵤ 𝔹) ×ᵤ (𝟙 +ᵤ 𝟙)
+        θₙ₋₁ = assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆
+             ⊚ (θ'' (suc (suc n)) ≤′-refl ⊗ id↔)
+             ⊚ assocr⋆ ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆
+
+        θ₃ : ((((𝔹^ n) ×ᵤ 𝔹) ×ᵤ 𝔹) ×ᵤ (𝟙 +ᵤ 𝟙)) ×ᵤ 𝔹 ↔ ((((𝔹^ n) ×ᵤ 𝔹) ×ᵤ 𝔹) ×ᵤ (𝟙 +ᵤ 𝟙)) ×ᵤ 𝔹
+        θ₃ = (assocr⋆ ⊗ id↔) ⊚ assocr⋆
+           ⊚ (id↔ ⊗ θ'' 2 (s≤′s (s≤′s (s≤′s z≤′n))))
+           ⊚ assocl⋆ ⊚ (assocl⋆ ⊗ id↔)
 \end{code}}
