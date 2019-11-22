@@ -16,27 +16,24 @@ open import PiPointedFracCode
 \end{code}}
 
 \newcommand{\PPFTmore}{% Not used
-Trace terminates!  The type C is pointed with point c; trace uses c
-as the initial value for C. So f gets two values (a,c). It can do
-whatever to produce (b',c'). But f is reversible so it is limited
-to essentially either id or swap. Makes sense???
-
 \begin{code}
+-- Trace terminates!  The type C is pointed with point c; trace uses c
+-- as the initial value for C. So f gets two values (a,c). It can do
+-- whatever to produce (b',c'). But f is reversible so it is limited
+-- to essentially either id or swap. Makes sense???
+
 dual : {A B : ∙𝕌} → (f : A ∙⟶ B) →  (∙𝟙/ B ∙⟶ ∙𝟙/ A)
 dual {A} {B} f =
   ∙uniti⋆l ∙⊚ (η A ∙⊗ ∙id⟷) ∙⊚ ((∙Singᵤ f ∙⊗ ∙id⟷) ∙⊗ ∙id⟷) ∙⊚
   ∙assocr⋆ ∙⊚ (∙id⟷ ∙⊗ ∙swap⋆) ∙⊚ ∙assocl⋆ ∙⊚ (ε B ∙⊗ ∙id⟷) ∙⊚ ∙unite⋆l
-\end{code}
-}
 
-\begin{code}
 𝔹 : 𝕌
 𝔹 = 𝟙 +ᵤ 𝟙
 
 𝔽 𝕋 : ⟦ 𝔹 ⟧
 𝔽 = inj₁ tt
 𝕋 = inj₂ tt
-\end{code}
+\end{code}}
 
 
 \newcommand{\PPFTtrace}{%
