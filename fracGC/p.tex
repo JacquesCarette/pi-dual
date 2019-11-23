@@ -900,6 +900,8 @@ underlying sets:
 
 \PIMEMcardeq{}
 
+\vspace{-\baselineskip} 
+
 To make the space usage explicit in every step of evaluation, we
 define an abstract machine whose states are pairs of a code register
 and a memory register. In a low-level implementation the code register
@@ -921,6 +923,7 @@ size of the prepended list. Putting it all together, machine states and
 small-step reductions are formalized as follows:
 
 \PIMEMstep{}
+
 %% Note that step' uses step, but step is never shown
 %% The need for the rewrite probably should be explained too.
 
@@ -929,6 +932,7 @@ the memory list. This size is maintained throughout the execution,
 even if the intermediate types change. As a small example, the
 following is a trace of the execution of \AgdaFunction{CNOT} applied
 to 𝕋, 𝕋:
+
 {\center\input{trace1.tex}}
 
 Note how the size of the list remains equal to 4 throughout the
@@ -956,13 +960,15 @@ reductions are formalized as follows:
 
 \PIFMEMstep{}
 
+\vspace{-\baselineskip}
+
 The main difference is that the state constructor does not take a
 fixed size and indeed the size changes during execution as appropriate
 to fit the elements of the type $A$. In particular, since fractional
 values have a trivial representation, the cardinality of a fractional
-type is 1, and hence $\eta$ used at type $A$ changes the size of the
-memory list by the size of $A$. As an illustrative example,
-Figure~\ref{fig:trace-id} shows a trace of the execution of \AgdaFunction{id'}
+type is 1, and hence $\eta$ used at type $A$ grows the size of the
+memory list by an $|A|$-factor. As an illustrative example,
+we show a trace of the execution of \AgdaFunction{id'}
 from Sec.~\ref{sub:id} applied to 𝕋:
 
 {\center\input{trace2.tex}}
