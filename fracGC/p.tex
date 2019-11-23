@@ -985,7 +985,8 @@ By lifting the scoping restriction, the development in the previous
 sections is already more general than the state of the art in ancilla
 management.  It however shares the same limitation of requiring a
 runtime check to ensure ancillae values are properly restored to their
-allocation~\cite{10.1007/978-3-319-20860-2_13,Green:2013:QSQ:2491956.2462177}.
+allocation
+value~\cite{10.1007/978-3-319-20860-2_13,Green:2013:QSQ:2491956.2462177}.
 In this section, we address this limitation using a combination of
 pointed types, singleton types, monads, and comonads.
 
@@ -997,16 +998,17 @@ highlight the main idea using the toy language below:
 
 \Jexample{}
 
+\vspace{-\baselineskip}
+
 The toy language has two types (natural numbers and booleans) and two
 functions (and their compositions). Say we wanted to prove that
 \AgdaInductiveConstructor{compose isZero square} always returns
 \AgdaInductiveConstructor{false} when applied to a non-zero natural
 number. We can certainly do this proof in Agda (i.e., in the
 meta-language of our formalization) but we would like to do the proof
-within the toy language itself. The most important
-reason is that it can then be used within the language to
-optimize programs (or, for the full language, to
-remove a runtime check).
+within the toy language itself. The most important reason is that it
+can then be used within the language to optimize programs (or, for the
+case of $\Pi/D$ to remove a runtime check).
 
 The strategy we adopt is to create a lifted version of the toy
 language with \emph{pointed types}~\cite{hottbook}, i.e., types paired with
@@ -1016,6 +1018,8 @@ evaluation within the type:
 
 \Jexamplecont{}
 
+\vspace{-\baselineskip}
+ 
 Various properties of
 \AgdaInductiveConstructor{compose isZero square} can be derived within
 the extended type system:
@@ -1033,8 +1037,7 @@ multiplication is an expression with a leading \Acon{suc} constructor
 which is enough to determine that evaluating
 \Acon{isZero} on it yields \Acon{false}. This form of partial
 evaluation will prove to be quite expressive, allowing us to keep track
-of ancillae values throughout complex programs as demonstrated in
-Sec.~\ref{sec:cat}.
+of ancillae values throughout complex programs.
 
 %%%%%
 \subsection{Pointed and Singleton Types: $\Pi/\bullet$}
@@ -1120,23 +1123,28 @@ trace shows the actual execution for confirmation:
 
 {\center\input{trace3.tex}}
 
+As the trace shows, by garbage collecting the collector for value
+$\mathbb{T}$, this value which was maintained in the type is now
+``rematerialized.''
+
 %%%%%%%%%
 \subsection{Extraction}
 
 By lifting programs and their evaluation to the type level, we can
 naturally leverage the typechecking process to verify properties of
 interest, including the safe de-allocation of ancillae. One ``could''
-just write programs in that style in $\Pi/\bullet$: indeed the dual nature of proofs
-and programs is more and more exploited in languages like the one used
-to formalize this paper (Agda). The examples in Sec.~\ref{sec:cat} are
-written in that style and they are relatively similar to programs
-in the ``normal'' $\Pi/D$ language.
+just forget about $\Pi/D$ and instead use $\Pi/\bullet$ as \emph{the}
+programming language for ancilla management. Indeed the dual nature of
+proofs and programs is more and more exploited in languages like the
+one used to formalize this paper (Agda). The examples in
+Sec.~\ref{sec:cat} are written in that style and they are relatively
+similar to programs in the ``normal'' $\Pi/D$ language.
 
 However, it is also often the case than constructive proofs are
-further processed to extract a native efficient programs that eschew
+further processed to extract native efficient programs that eschew
 the overhead of maintaining information needed just for proof
 invariants. In our case, the question is whether we can extract from
-$\Pi/\bullet$ program, a program in $\Pi/D$ that uses a simpler type
+a $\Pi/\bullet$ program, a program in $\Pi/D$ that uses a simpler type
 system, a simpler runtime representation, and yet is guaranteed to be
 safe and hence can run without the runtime checks associated with
 de-allocation sites. In this section, we show that this indeed the
@@ -1160,19 +1168,21 @@ three important functions who signatures are below:
 
 \EXTsig{}
 
-The function \Afun{Ext𝕌} maps a $\Pi/\bullet$ type to a $\Pi/D$ type
+\vspace{-\baselineskip}
+
+\noindent The function \Afun{Ext𝕌} maps a $\Pi/\bullet$ type to a $\Pi/D$ type
 and a value in the type. The function \Afun{Ext∙⟶} maps a
 $\Pi/\bullet$ combinator to a $\Pi/D$ combinator. And finally the
 function \Afun{Ext≡} asserts that extracted code cannot throw an
 exception (it must return \Acon{just}\ldots).
 
 Each of these functions has one or two enlightening cases which we
-explain:
+explain. 
 
 In $\Pi/D$ the fractional type expresses that it expects a particular
 value but lacks any mechanisms to enforce this requirement. Thus we
 have no choice when mapping a fractional type from $\Pi/\bullet$ to
-$\Pi/D$ than to just use this \Acon{𝟙/}~\Avar{v} type:
+$\Pi/D$ than to just use this \Acon{𝟙/}~\Avar{v} ~type:
 
 \EXTu{}
 
@@ -1186,7 +1196,7 @@ $\Pi/D$ than to just use this \Acon{𝟙/}~\Avar{v} type:
 
 When mapping $\Pi/\bullet$ combinators to
 $\Pi/D$ combinators, the main interesting cases are for \Acon{η} and
-\Acon{ε}. In those we just use the values from the pointed type as
+\Acon{ε}. In those, we just use the values from the pointed type as
 choices for the ancilla value and expectation for the gc process:
 
 \EXTcomb{}
@@ -1212,7 +1222,7 @@ is in the following case:
 
 \EXTeq{}
 
-In this case, the singleton type in $\Pi/\bullet$ guarantees that the
+\noindent In this case, the singleton type in $\Pi/\bullet$ guarantees that the
 runtime check cannot fail.
 
 %%%%%%%%%%%
@@ -1220,7 +1230,7 @@ runtime check cannot fail.
 \label{sec:cat}
 
 In addition to the examples presented throughout the paper, we present
-examples that provides novel perspectives on gc processes, first as
+examples that provide novel perspectives on gc processes, first as
 space transformers, and second as tracing operators. Both ideas are
 inspired from known constructions in compact closed
 categories~\cite{dblp:conf/calco/abramsky05}.
@@ -1270,12 +1280,18 @@ leaving no memory footprint.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Related Work and Conclusion}
 
+We have introduced, in the context of reversible/quantum languages,
+the concept of fractional types as descriptions of specialized gc
+processes. Although the basic idea is rather simple and intuitive, the
+technical details needed to reason about individual values are
+somewhat intricate. 
+
 There has been ample work on ancillae before us.  For example
 \cite{PhysRevA.94.042337} explicitly represents the lifetime of
 quantum wires, enabling quantum wires to be recycled, leading
 to more efficient circuits.  Interesting applications of
 ancillae is in the recent paper~\cite{DBLP:journals/cal/ZhouB19}
-on Quantum runtime assertions.  In section~\ref{sub:id}, we
+on quantum runtime assertions.  In section~\ref{sub:id}, we
 already mentioned dynamic assertion of entanglement; they
 also show how to provide (dynamic) assertions on classical
 states, and testing of superposition states.  Our techniques
@@ -1289,14 +1305,15 @@ also do automatic (but not certified) ancilla management during code
 generation.  This remains an active area of research, as
 outlined in the CACM paper~\cite{valiron2015programming}.
 
-Another interesting avenue is to understand how to merge
-pointed $\Pi$ with another simple language for quantum
-computing: QWIRE~\cite{Paykin:2017:QCL:3009837.3009894}.
-QWIRE has many desirable meta-properties that have been
-formally proven to hold.  Our respective paradigms appear eminently compatible,
-however their language has an unguarded \texttt{discard} directive that
-may lead to erroneous circuits. For example, their circuit
-reversing operation is partial, whereas ours is provably total.
+Another interesting avenue is to understand how to merge $\Pi/\bullet$
+with other languages for quantum
+computing~\cite{dblp:journals/mscs/selingerv06,vantonder:2004,dowek2017lineal}. One
+particular language, QWIRE~\cite{Paykin:2017:QCL:3009837.3009894}, has
+a paradigm that appears eminently compatible to ours and has many
+desirable meta-properties that have been formally proven to hold.
+QWIRE however has an unguarded \texttt{discard} directive that may
+lead to erroneous circuits. For example, their circuit reversing
+operation is partial, whereas ours is provably total.
 
 When looking at higher-level reversible languages, Janus
 comes to mind~\cite{lutz1982janus}.  More recently, \cite{Yokoyama:2008:PRP}
@@ -1309,20 +1326,17 @@ Another different thread of work stems from categorical models
 of quantum computation, especially those based on dagger
 compact closed categories as introduced
 in~\cite{Abramsky:2004:CSQ:1018438.1021878}, and greatly
-expanded upon in~\cite{abramsky2009categorical}, or more
+expanded upon
+in~\cite{abramsky2009categorical,selinger2007dagger,Selinger:2011:FDH:1942319.1942398}, or more
 recently in~\cite{DBLP:conf/lics/HuotS19}. Various
 results can be obtained in that general setting, such as the
 no-cloning theorem~\cite{abramsky2009no}. The $2016$ book
 \cite{chiribella2016quantum} is a good survey of the
-developments since. Selinger~\cite{selinger2007dagger,Selinger:2011:FDH:1942319.1942398}
-has been particularly active in this area. Of particular
+developments since. Of particular
 note for our applications are two 2005 papers by Abramsky
 \cite{abramsky2005structural,dblp:conf/calco/abramsky05}
 with explicit examples of circuits using trace that are very useful tests
 for our approach.
-
-Also related are various approaches to quantum lambda
-calculi, such as~\cite{dblp:journals/mscs/selingerv06,vantonder:2004,dowek2017lineal}.
 
 %Trace as a lens? This basically says, in the language of Lens, that
 %when $A$ is isomorphic to $X \times Y$ and $B$ is isomorphic to
