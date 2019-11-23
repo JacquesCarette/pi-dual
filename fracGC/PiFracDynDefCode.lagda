@@ -1,4 +1,3 @@
-
 \newcommand{\Preamble}{% Not used in the latex
 \begin{code}
 {-# OPTIONS --without-K #-}
@@ -211,9 +210,9 @@ interp (c₁ ⊗ c₂) (v₁ , v₂) = interp c₁ v₁ >>= (λ v₁' → interp
 𝟚 = 𝟙 +ᵤ 𝟙
 𝔹 = 𝟙 +ᵤ 𝟙
 
-𝔽 𝕋 : ⟦ 𝟚 ⟧
-𝔽 = inj₁ tt
-𝕋 = inj₂ tt
+-- 𝔽 𝕋 : ⟦ 𝟚 ⟧
+-- 𝔽 = inj₁ tt
+-- 𝕋 = inj₂ tt
 
 CNOT CNOT' : 𝔹 ×ᵤ 𝔹 ↔ 𝔹 ×ᵤ 𝔹
 CNOT = dist ⊚ (id↔ ⊕ (id↔ ⊗ swap₊)) ⊚ factor
@@ -265,23 +264,22 @@ switch {A} {A≠0} =
   ↔⟨ ε' ⊗ ε' ⟩ 𝟙 ×ᵤ 𝟙
   ↔⟨ unite⋆r ⟩ 𝟙 □
 
-shuffle : {A B C D : 𝕌} → (A ×ᵤ B) ×ᵤ (C ×ᵤ D) ↔ (B ×ᵤ D) ×ᵤ (A ×ᵤ C)
-shuffle = (swap⋆ ⊗ swap⋆) ⊚ assocr⋆ ⊚ (id↔ ⊗ (assocl⋆ ⊚ (swap⋆ ⊗ id↔) ⊚ assocr⋆)) ⊚ assocl⋆
 
 postulate
-  pr≠0 : (A B : 𝕌) → (A≠0 : ¬ card A ≡ 0) → (B≠0 : ¬ card B ≡ 0) →
+  pr≠0 : {A B : 𝕌} → {A≠0 : ¬ card A ≡ 0} → {B≠0 : ¬ card B ≡ 0} →
          ¬ (card (A ×ᵤ B) ≡ 0)
 
 
-pattern ?𝔽 = inj₁ tt
-pattern ?𝕋 = inj₂ tt
+pattern 𝔽 = inj₁ tt
+pattern 𝕋 = inj₂ tt
 \end{code}}
 \newcommand{\EtaEpsilonExampleone}{%
 \begin{code}
 id' : 𝔹 ↔ 𝔹
 id' =
-  let η' = η {𝔹} {𝔹≠0}; ε' = ε {𝔹} {𝔹≠0}
-  in 𝔹
+  let η' = η {𝔹} {𝔹≠0}
+      ε' = ε {𝔹} {𝔹≠0}
+  in  𝔹
   ↔⟨ uniti⋆r ⟩                        𝔹 ×ᵤ 𝟙
   ↔⟨ id↔ ⊗ η' ⟩                       𝔹 ×ᵤ (𝔹 ×ᵤ 𝟙/ 𝔹)
   ↔⟨ assocl⋆ ⟩                        (𝔹 ×ᵤ 𝔹) ×ᵤ 𝟙/ 𝔹
@@ -291,17 +289,18 @@ id' =
   ↔⟨ unite⋆r ⟩                        𝔹 □
 
 idcheck : (b : ⟦ 𝔹 ⟧) → interp id' b ≡ just b
-idcheck ?𝔽 = refl
-idcheck ?𝕋 = refl
+idcheck 𝔽 = refl
+idcheck 𝕋 = refl
 \end{code}}
 \newcommand{\EtaEpsilonExampletwo}{%
 \begin{code}
 rev× : {A B : 𝕌} {A≠0 : ¬ card A ≡ 0} {B≠0 : ¬ card B ≡ 0} →
        𝟙/ (A ×ᵤ B) ↔ 𝟙/ A ×ᵤ 𝟙/ B
 rev× {A} {B} {A≠0} {B≠0} =
-  let η₁ = η {A} {A≠0}; η₂ = η {B} {B≠0}
-      ε' = ε {A ×ᵤ B} {pr≠0 A B A≠0 B≠0}
-    in              𝟙/ (A ×ᵤ B)
+  let η₁ = η {A} {A≠0}
+      η₂ = η {B} {B≠0}
+      ε' = ε {A ×ᵤ B} {A×B≠0}
+  in                𝟙/ (A ×ᵤ B)
   ↔⟨ uniti⋆l ⊚ uniti⋆l ⊚ assocl⋆ ⟩
                     (𝟙 ×ᵤ 𝟙) ×ᵤ 𝟙/ (A ×ᵤ B)
   ↔⟨ (η₁ ⊗ η₂) ⊗ id↔ ⟩
@@ -312,6 +311,14 @@ rev× {A} {B} {A≠0} {B≠0} =
                     (𝟙/ A ×ᵤ 𝟙/ B) ×ᵤ 𝟙
   ↔⟨ unite⋆r ⟩
                     𝟙/ A ×ᵤ 𝟙/ B □
+  where
+    shuffle : {A B C D : 𝕌} → (A ×ᵤ B) ×ᵤ (C ×ᵤ D) ↔ (B ×ᵤ D) ×ᵤ (A ×ᵤ C)
+\end{code}
+\begin{code}[hide]
+    shuffle = (swap⋆ ⊗ swap⋆) ⊚ assocr⋆ ⊚ (id↔ ⊗ (assocl⋆ ⊚ (swap⋆ ⊗ id↔) ⊚ assocr⋆)) ⊚ assocl⋆
+
+    A×B≠0 : ¬ (card (A ×ᵤ B) ≡ 0)
+    A×B≠0 = pr≠0 {A} {B} {A≠0} {B≠0}
 \end{code}}
 \newcommand{\CodeD}{%
 \begin{code}

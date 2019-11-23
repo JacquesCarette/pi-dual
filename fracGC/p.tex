@@ -51,6 +51,7 @@
 \newunicodechar{⊎}{$\uplus$}
 \newunicodechar{ₗ}{$_l$}
 \newunicodechar{ᵣ}{$_r$}
+\newunicodechar{ₙ}{$_n$}
 \newunicodechar{❰}{$\llparenthesis$}
 \newunicodechar{❱}{$\rrparenthesis$}
 
@@ -594,8 +595,9 @@ possibly negates a third; when used in a circuit with four bits, the
 unused bit can be either state, which means that
 \AgdaFunction{TOFFOLI} generates an even permutation. The function
 \AgdaFunction{CTOFFOLI} is however an odd permutation which is
-unreachable from even permutations. This function will however be
-definable once we introduce ancilla bits in the next section.
+unreachable from even permutations.
+This function will however be definable using composition of
+\AgdaFunction{TOFFOLI} once we introduce ancilla bits in the next section.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Interchangeable Ancillae}
@@ -843,6 +845,9 @@ proof of universality~\cite{Toffoli:1980}:\\
 
 \input{toffoli.tikz}
 
+Note that in the construction of \AgdaFunction{TOFFOLIₙ} only wire manipulating operators
+(multiplicative operators), ancilla allocation / de-allocation and \AgdaFunction{TOFFOLI}
+are used.
 \begin{figure}[ht]
   \PIFDtoffoli{}
 \caption{\label{fig:toff}Generalized Toffoli Gates}
