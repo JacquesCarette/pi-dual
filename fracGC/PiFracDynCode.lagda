@@ -275,6 +275,8 @@ t₄ = interp parity (𝕋 , 𝕋) -- just (𝕋 , 𝕋)
 
 2<3+n : ∀ {n} → 2 <′ 3 + n
 2<3+n = s≤′s (s≤′s (s≤′s z≤′n))
+
+pattern 3+_ n = (suc (suc (suc n)))
 \end{code}
 \begin{code}
 𝔹^_ : ℕ → 𝕌
@@ -291,7 +293,7 @@ t₄ = interp parity (𝕋 , 𝕋) -- just (𝕋 , 𝕋)
   -- TOFFOLI
   θ' 2 θ'' = assocr⋆ ⊚ dist ⊚ (id↔ ⊕ (id↔ ⊗ θ'' 1 1<2)) ⊚ factor ⊚ assocl⋆
   -- TOFFOLIₙ
-  θ' (suc (suc (suc n))) θ'' =
+  θ' (3+ n) θ'' =
    (id↔ ⊗ (uniti⋆l ⊚ (η 𝔽 ⊗ id↔) ⊚ assocr⋆
           ⊚ (id↔ ⊗ swap⋆) ⊚ assocl⋆))
    ⊚ assocl⋆ ⊚ (assocl⋆ ⊗ id↔)

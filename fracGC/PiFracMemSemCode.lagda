@@ -161,6 +161,8 @@ data State' : Set where
     A ↔ B → Vec ⟦ A ⟧ ∣ A ∣ → Fin ∣ A ∣ → State'
 
 step' : State' → State'
+\end{code}
+\begin{code}[hide]
 step' ⟪ c ∥ v [ i ]⟫ with step c ⟪ v [ i ]⟫
 step' ⟪ c ∥ v [ i ]⟫ | _ , c' , ⟪ v' [ i' ]⟫ = ⟪ c' ∥ v' [ i' ]⟫
 \end{code}}

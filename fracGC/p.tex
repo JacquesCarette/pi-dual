@@ -569,6 +569,12 @@ type isomorphism). Logically they form a superstructural logic
 capturing space-time tradeoffs~\cite{superstructural}. Categorically,
 they form a \emph{distributive bimonoidal category}~\cite{laplaza72}.
 
+%% Not sure about this
+%% The formalization of $\Pi$ in Agda
+%% \PI{}
+%% And it is reversible:
+%% \PIrev
+
 %%%
 \subsection{Small Examples}
 \label{sub:toff}
@@ -843,11 +849,12 @@ Sec.~\ref{sub:toff} but in fact an inductive construction that defines
 all $n$-bit Toffoli gates. The construction goes back to Toffoli's
 proof of universality~\cite{Toffoli:1980}:\\
 
-\input{toffoli.tikz}
+{\centering \input{toffoli.tikz}}
 
 Note that in the construction of \AgdaFunction{TOFFOLIₙ} only wire manipulating operators
 (multiplicative operators), ancilla allocation / de-allocation and \AgdaFunction{TOFFOLI}
 are used.
+
 \begin{figure}[ht]
   \PIFDtoffoli{}
 \caption{\label{fig:toff}Generalized Toffoli Gates}
@@ -918,8 +925,7 @@ memory register using an index into an enumeration. Thus a memory
 register containing a boolean value would be represented as
 \AgdaFunction{[𝔽 ,  𝕋 ][0]} or \AgdaFunction{[𝔽 ,  𝕋 ][1]} depending on whether the
 value is \AgdaInductiveConstructor{false} or \AgdaInductiveConstructor{true}.
-The prepended vector
-contains all possible values of the type and the number in between [\ldots ]
+The prepended vector contains all possible values of the type and the number in between [\ldots ]
 is an index into the vector, representing a finite number that
 is guaranteed to be in bounds. In a low-level runtime representation
 only a binary encoding of this finite type would need to be stored, but in
@@ -933,14 +939,14 @@ small-step reductions are formalized as follows:
 %% The need for the rewrite probably should be explained too.
 
 The constructor for machine states takes a number which is the size of
-the memory list. This size is maintained throughout the execution,
+the memory. This size is maintained throughout the execution,
 even if the intermediate types change. As a small example, the
 following is a trace of the execution of \AgdaFunction{CNOT} applied
 to 𝕋, 𝕋:
 
 {\center\input{trace1.tex}}
 
-Note how the size of the list remains equal to 4 throughout the
+Note how the size of the vector remains equal to 4 throughout the
 execution, even if the individual elements change as types change and
 the current index (i.e., the current value) changes.
 
@@ -972,7 +978,7 @@ fixed size and indeed the size changes during execution as appropriate
 to fit the elements of the type $A$. In particular, since fractional
 values have a trivial representation, the cardinality of a fractional
 type is 1, and hence $\eta$ used at type $A$ grows the size of the
-memory list by an $|A|$-factor. As an illustrative example,
+memory by an $|A|$-factor. As an illustrative example,
 we show a trace of the execution of \AgdaFunction{id'}
 from Sec.~\ref{sub:id} applied to 𝕋:
 
@@ -1168,8 +1174,8 @@ case.
 % \INJEvaleq{}
 
 The extraction map is fully implemented in the underlying Agda
-formalization. We present the most significant highlights. There are
-three important functions who signatures are below:
+formalization. We present the most significant highlights. Here are
+three important functions' signatures:
 
 \EXTsig{}
 
@@ -1276,7 +1282,7 @@ The feedback loop in the diagram is realized using ancillae allocation
 and de-allocation. The safety condition on de-allocation ensures that
 the allocated value (now in the feedback loop) matches the
 de-allocated value. Thus, the entire traced component is treated as an
-ancilla value used internally used to perform the larger program but
+ancilla value used internally to perform the larger program but
 leaving no memory footprint.
 
 %% SAT solver ??
