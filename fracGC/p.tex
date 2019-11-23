@@ -327,6 +327,14 @@ highlighted in this diagram:
 \begin{center}
 \input{lang.tikz}
 \end{center}
+The language $\Pi$ is the base language of type isomorphisms. It is
+defined in Sec. 3, and first extended with fractional types in
+Sec. 4.4. This extension $\Pi/D$ requires a runtime check to ensure
+safe de-allocation. In Sec. 6.2, $\Pi$ is independently extended to
+$\Pi/\bullet$ which uses singleton types to keep track of the value of
+ancillae. In Sec. 6.3, we show that $\Pi/D$ programs extracted from
+$\Pi/\bullet$ are safe without the runtime checks associated with
+de-allocation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Ancilla Bits}
