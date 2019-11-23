@@ -6,7 +6,7 @@
 		\node at (0,1.8) { (Sec. 6.3) };
 		\node at (-0.1,1.5) { Extracting safe programs };
 		\node at (-4.5,-0.5) { + fractionals / dynamic check };
-		\node at (4.9,-0.5) { + pointed / singleton / safe fractionals };
+		\node at (5.1,-0.5) { + pointed / singleton / safe fractionals };
 	\end{pgfonlayer}
 	\begin{pgfonlayer}{edgelayer}
 		\draw[->] (0) to (1);

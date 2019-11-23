@@ -1,4 +1,4 @@
-\begin{tikzpicture}[yscale=0.4,xscale=0.8,every node/.style={scale=0.7}]
+\begin{tikzpicture}[yscale=0.3,xscale=0.7,every node/.style={scale=0.6}]
 	\begin{pgfonlayer}{nodelayer}
 		\node [style=none,label=$\mathbb{B}$] (0) at (-7, 25) {};
 		\node [style=none] (1) at (-3, 25) {};

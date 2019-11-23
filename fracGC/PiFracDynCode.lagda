@@ -256,11 +256,11 @@ parity =             𝔹 ×ᵤ 𝔹
   ⟷⟨ id↔ ⊗ (ε 𝕋) ⟩   (𝔹 ×ᵤ 𝔹) ×ᵤ 𝟙
   ⟷⟨ unite⋆r ⟩       (𝔹 ×ᵤ 𝔹) □
 
-t1 t2 t3 t4 : Maybe ⟦ 𝔹 ×ᵤ 𝔹 ⟧
-t1 = interp parity (𝔽 , 𝔽) -- just (𝔽 , 𝔽)
-t2 = interp parity (𝔽 , 𝕋) -- nothing
-t3 = interp parity (𝕋 , 𝔽) -- nothing
-t4 = interp parity (𝕋 , 𝕋) -- just (𝕋 , 𝕋)
+t₁ t₂ t₃ t₄ : Maybe ⟦ 𝔹 ×ᵤ 𝔹 ⟧
+t₁ = interp parity (𝔽 , 𝔽) -- just (𝔽 , 𝔽)
+t₂ = interp parity (𝔽 , 𝕋) -- nothing
+t₃ = interp parity (𝕋 , 𝔽) -- nothing
+t₄ = interp parity (𝕋 , 𝕋) -- just (𝕋 , 𝕋)
 \end{code}}
 \newcommand{\PIFDtoffoli}{%
 \begin{code}[hide]
