@@ -1,4 +1,4 @@
-\begin{tikzpicture}[scale=0.4]
+\begin{tikzpicture}[scale=0.4,font=\tiny]
 	\begin{pgfonlayer}{nodelayer}
 		\node [style=none] (0) at (-28.5, 29) {};
 		\node [style=none] (1) at (-25, 29) {};
@@ -76,6 +76,8 @@
 		\node [style=none] (125) at (-19.75, 28) {\vdots};
 		\node [style=none] (126) at (-19.75, 27) {\vdots};
 		\node [style=none] (127) at (-19.75, 26) {\vdots};
+		\node [style=none] (128) at (-14.5, 24.5) {};
+		\node [style=none] (129) at (-12, 24.5) {};
 	\end{pgfonlayer}
 	\begin{pgfonlayer}{edgelayer}
 		\draw (0.center) to (1.center);
@@ -119,5 +121,6 @@
 		\draw (71.center) to (70.center);
 		\draw (48.center) to (73.center);
 		\draw (47.center) to (74.center);
+		\draw (128.center) to (129.center);
 	\end{pgfonlayer}
 \end{tikzpicture}
