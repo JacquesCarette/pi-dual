@@ -58,16 +58,14 @@
 \newcommand{\net}{t_\bullet}
 \newcommand{\gcv}{\circlearrowright}
 \newcommand{\opr}[1]{|#1\rangle\langle#1|}
-\newcommand{\inlv}[1]{\ensuremath{\mathit{inl}(v)}}
-\newcommand{\inrv}[1]{\ensuremath{\mathit{inr}(v)}}
+\newcommand{\inlv}[1]{\ensuremath{\mathit{inj}_1(#1)}}
+\newcommand{\inrv}[1]{\ensuremath{\mathit{inj}_2(#1)}}
 \newcommand{\ket}[1]{|#1\rangle}
 \newcommand{\oneover}[1]{1/#1}
 \newcommand{\pointed}[2]{[#1 \bullet #2]}
 \newcommand{\nboxtimes}[2]{\,\,~{^{#1}\boxtimes^{#2}}~\,\,}
 \newcommand{\mm}{\texttt{\textminus}}
 \newcommand{\pp}{\texttt{+}}
-\newcommand{\inl}[1]{\textsf{inl}~#1}
-\newcommand{\inr}[1]{\textsf{inr}~#1}
 \newcommand{\idv}[3]{#2 \xrightarrow{#1} #3}
 \newcommand{\cp}[3]{#1\stackrel{#2}{\bullet}#3}
 \newcommand{\idt}[3]{#2 \equiv_{#1} #3}
@@ -115,7 +113,7 @@ $\displaystyle
 {\begin{array}{l}#3      \\\end{array}}$
  #4}}
 \newcommand{\jdg}[3]{#2 \proves_{#1} #3}
-\renewcommand{\AgdaCodeStyle}{\small}
+\renewcommand{\AgdaCodeStyle}{\footnotesize} %% small}
 % 12 pages
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -189,6 +187,8 @@ $\displaystyle
 \input{latex/PiPointedFracTraceCode.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{-0.5\baselineskip}
+
 \section{Introduction}
 
 If quantum field theory is correct (as it so far seems to be) then
@@ -324,10 +324,16 @@ with a discussion of related work and a summary of our results.
 The paper includes a number of languages that express different
 points. The three most important languages and their relationships are
 highlighted in this diagram:
+
+\vspace{-\baselineskip}
+
 \begin{center}
 \input{lang.tikz}
 \end{center}
-The language $\Pi$ is the base language of type isomorphisms. It is
+
+\vspace{-1.5\baselineskip}
+
+\noindent The language $\Pi$ is the base language of type isomorphisms. It is
 defined in Sec. 3, and first extended with fractional types in
 Sec. 4.4. This extension $\Pi/D$ requires a runtime check to ensure
 safe de-allocation. In Sec. 6.2, $\Pi$ is independently extended to
@@ -532,24 +538,25 @@ dual will be our fractional type.
 The syntax of the language consists of several categories:
 \[\begin{array}{lrcl}
 \textit{Value types} & t &::=& 0 \alt 1 \alt t+t \alt t\times t \\
-\textit{Values}      & v &::=& \star \alt \inlv{v} \alt \inrv{v} \alt (v,v) \\
+\textit{Values}      & v &::=& \textsf{tt} \alt \inlv{v} \alt \inrv{v} \alt (v,v) \\
 \textit{Program types} &&& t \leftrightarrow t \\
 \textit{Programs} & c &::=& (\textrm{See Fig.~\ref{pi-terms}})
 \end{array}\]
 
-Focusing on finite types, the building blocks of the type theory are: the
+Focusing on finite types, the building blocks of type theory are: the
 empty type ($0$), the unit type ($1$), the sum type ($+$), and the
 product ($\times$) type. One may view each type $A$ as a collection of
-physical wires that can transmit $\|A\|$ distinct values where $\|A\|$
-is the size of a type, computed as: $\| 0 \| = 0$; $\| 1 \| = 1$;
-$\| A + B \| = \| A \| + \| B \|$; and
-$\| A \times B \| = \| A \| * \| B \|$. Thus the type
-$\mathbb{B} = 1 + 1$ corresponds to a wire that can transmit two
-values, i.e., bits, and the type
+physical wires that can transmit $|A|$ distinct values where $|A|$ is
+the size of a type, computed as: $| 0 | = 0$; $| 1 | = 1$;
+$| A + B | = | A | + | B |$; and $| A \times B | = | A | * | B
+|$. Thus the type $\mathbb{B} = 1 + 1$ corresponds to a wire that can
+transmit two values, i.e., bits, with the convention that $\inlv{\textsf{tt}}$
+represents \textsf{false} and $\inrv{\textsf{tt}}$ represents
+\textsf{true}. The type
 $\mathbb{B} \times \mathbb{B} \times \mathbb{B}$ corresponds to a
 collection of wires that can transmit three bits. From that
 perspective, a type isomorphism between types $A$ and $B$ (such that
-$\|A\|=\|B\|=n$) models a \emph{reversible} combinational circuit that
+$|A|=|B|=n$) models a \emph{reversible} combinational circuit that
 \emph{permutes} the $n$ different values. These type isomorphisms are
 collected in Fig.~\ref{pi-terms}. It is known that these type
 isomorphisms are sound and complete for all permutations on finite
@@ -566,7 +573,7 @@ they form a \emph{distributive bimonoidal category}~\cite{laplaza72}.
 \label{sub:toff}
 
 Below, we show code that defines types corresponding to bits (booleans),
-two-bits, three-bits, and four-bits. It then defines an operator that
+two-bits, three-bits, and four-bits. We then define an operator that
 builds a controlled version of a given combinator $c$. This controlled
 version takes an additional ``control'' bit and only applies $c$ if
 the control bit is true. The code then iterates the control operation
