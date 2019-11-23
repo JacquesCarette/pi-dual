@@ -421,7 +421,7 @@ Consider a 3-qubit quantum majority code in which a logical ``0'' is
 encoded as ``000'' and a logical ``1'' is encoded as ``111.''  Just as with
 a classical majority code, a single bit-flip error can be corrected by
 restoring to the majority value.  Unlike a classical code, however, we
-can not directly measure the qubits else their quantum state will be
+cannot directly measure the qubits else their quantum state will be
 destroyed.  Instead, we measure syndromes from each possible pair of
 qubits by interacting them with an ancilla, then measure each ancilla.
 Although the errors to the qubits are actually continuous, the effect
@@ -430,9 +430,9 @@ inform us whether an error occurred so that it can be corrected.
 \end{quote}
 
 \paragraph*{Deferring Quantum Measurements.} The evolution of a
-quantum system is deterministic. Measurement add significant
+quantum system is deterministic. Measurement adds significant
 complications, collapsing the quantum state, and producing
-probabilistic results. However, using ancilla qubits it is possible to
+probabilistic results. However, using ancilla qubits, it is possible to
 avoid doing any intermediate measurements in a quantum
 circuit~\cite{dewolf}.
 
@@ -503,7 +503,7 @@ The step from reversible classical circuits to quantum circuits
 requires the addition of just one gate that creates
 superpositions. Similarly the step from a reversible classical
 programming language to a quantum one requires just the management of
-superpositions. For example starting from the classical reversible
+superpositions. For example, starting from the classical reversible
 language Theseus~\cite{james2014theseus}, a small extension produces a
 quantum language with quantum
 control~\cite{10.1007/978-3-319-89366-2_19}.
@@ -537,7 +537,7 @@ The syntax of the language consists of several categories:
 \textit{Programs} & c &::=& (\textrm{See Fig.~\ref{pi-terms}})
 \end{array}\]
 
-Focusing on finite types, the building blocks of type theory are: the
+Focusing on finite types, the building blocks of the type theory are: the
 empty type ($0$), the unit type ($1$), the sum type ($+$), and the
 product ($\times$) type. One may view each type $A$ as a collection of
 physical wires that can transmit $\|A\|$ distinct values where $\|A\|$
@@ -565,7 +565,7 @@ they form a \emph{distributive bimonoidal category}~\cite{laplaza72}.
 \subsection{Small Examples}
 \label{sub:toff}
 
-Below we show code that defines types corresponding to bits (booleans),
+Below, we show code that defines types corresponding to bits (booleans),
 two-bits, three-bits, and four-bits. It then defines an operator that
 builds a controlled version of a given combinator $c$. This controlled
 version takes an additional ``control'' bit and only applies $c$ if
