@@ -453,8 +453,8 @@ reveals that lack of language support in the management of ancillae leads to
 several problems. For example:
 \begin{quote}
   \textbf{Bug type 6: Incorrect composition of operations using mirroring}
-  Section~4.5 discussed how bugs in deallocating ancillary qubits can
-  happen due to bad parameters. Here we see how bugs in deallocating
+  Section~4.5 discussed how bugs in de-allocating ancillary qubits can
+  happen due to bad parameters. Here we see how bugs in de-allocating
   ancillary qubits can happen due to incorrect composition of
   operations following a mirroring pattern. For example, in Table~7,
   the operations in rows 2 and 3 are respectively mirrored and undone
@@ -912,7 +912,7 @@ underlying sets:
 
 \PIMEMcardeq{}
 
-\vspace{-\baselineskip} 
+\vspace{-\baselineskip}
 
 To make the space usage explicit in every step of evaluation, we
 define an abstract machine whose states are pairs of a code register
@@ -1030,7 +1030,7 @@ evaluation within the type:
 \Jexamplecont{}
 
 \vspace{-\baselineskip}
- 
+
 Various properties of
 \AgdaInductiveConstructor{compose isZero square} can be derived within
 the extended type system:
@@ -1060,7 +1060,7 @@ $t$\Acon{\#}$v$, we need a multiplicative structure over pointed
 types, fractional types, and a special kind of pointed type that
 includes just one value, a singleton type. The singleton types will
 allow the type system to track the flow of one particular value, which
-is exactly what is needed to prove the safety of deallocation:
+is exactly what is needed to prove the safety of de-allocation:
 
 \PIPFUdef{}
 
@@ -1188,7 +1188,7 @@ function \Afun{Ext≡} asserts that extracted code cannot throw an
 exception (it must return \Acon{just}\ldots).
 
 Each of these functions has one or two enlightening cases which we
-explain. 
+explain.
 
 In $\Pi/D$ the fractional type expresses that it expects a particular
 value but lacks any mechanisms to enforce this requirement. Thus we
@@ -1295,7 +1295,7 @@ We have introduced, in the context of reversible/quantum languages,
 the concept of fractional types as descriptions of specialized gc
 processes. Although the basic idea is rather simple and intuitive, the
 technical details needed to reason about individual values are
-somewhat intricate. 
+somewhat intricate.
 
 There has been ample work on ancillae before us.  For example
 \cite{PhysRevA.94.042337} explicitly represents the lifetime of
