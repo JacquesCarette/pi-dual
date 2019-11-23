@@ -802,7 +802,7 @@ $\Pi$ with a dynamic check. In addition to being more expressive than
 the language in the previous subsection, $\Pi/D$ has the advantage of
 replacing the cumbersome cardinality-based evidence that the type is
 not empty by the more intuitive evidence of choosing a value of the
-type. The simplications are evident in the Agda formalization:
+type. The simplifications are evident in the Agda formalization:
 
 \PIFDUdef{}
 
@@ -871,7 +871,7 @@ $\oneover{t}$:
 
 \item Operational: The other reason our types can be justifiably
   called fractional is information theoretic. As mentioned in the
-  introduction the number of bits needed to store information about a
+  introduction, the number of bits needed to store information about a
   space with $n$ distinct values is $\log{n}$. If the number of bits
   can be thought of as a debt (to be reclaimed) then a negative number
   of bits corresponds to a space with $\oneover{n}$ distinct
@@ -906,7 +906,7 @@ include the current combinator in the code register, and represent the
 memory register using an index into an enumeration. Thus a memory
 register containing a boolean value would be represented as
 \AgdaFunction{[𝔽 ,  𝕋 ][0]} or \AgdaFunction{[𝔽 ,  𝕋 ][1]} depending on whether the
-values is \AgdaInductiveConstructor{false} or \AgdaInductiveConstructor{true}.
+value is \AgdaInductiveConstructor{false} or \AgdaInductiveConstructor{true}.
 The prepended vector
 contains all possible values of the type and the number in between [\ldots ]
 is an index into the vector, representing a finite number that
@@ -980,7 +980,7 @@ In this section, we address this limitation using a combination of
 pointed types, singleton types, monads, and comonads.
 
 %%%%%
-\subsection{Lifting Evaluation to Type System}
+\subsection{Lifting Evaluation to the Type System}
 
 Before giving all the (rather involved) technical details, we
 highlight the main idea using the toy language below:
@@ -1053,7 +1053,7 @@ value in question.
 The combinators in the lifted language $\Pi/\bullet$ consist of all the combinators
 in the core $\Pi$ language but now operating on pointed types. The mediation
 between general pointed types and singleton types is done via
-\Acon{return} and \Acon{extract} which as we prove below form a
+\Acon{return} and \Acon{extract}, which as we prove below form a
 dual monad/comonad pair. The types for \Acon{$\eta$} and
 \Acon{$\epsilon$} are now specialized to guarantee safety of
 de-allocation as follows. When applying \Acon{$\eta$} at a pointed type, the
@@ -1064,7 +1064,7 @@ the current one.
 
 \PIPFCombDef{}
 
-The mediation between pointed and singleton types is based a dual
+The mediation between pointed and singleton types is based on a dual
 monad/comonad pair from which many structural properties can be
 derived.
 
@@ -1074,7 +1074,8 @@ derived.
 \end{proposition}
 \begin{proof}
   The main insight needed is to define the functor \Afun{∙Singᵤ}, the
-  tensor/cotensor, and the join/cojoin (duplicate):
+  \Afun{tensor}/\Afun{cotensor}, and the \Afun{join}/\Afun{cojoin}
+  (\Afun{duplicate}):
 \PIPFCombderive{}
 \end{proof}
 
@@ -1088,7 +1089,7 @@ evaluation is reversible:
 
 \PIPFrev{}
 
-Thus, to summarize if a combinator expects a singleton type, then it
+Thus, to summarize, if a combinator expects a singleton type, then it
 would only typecheck in the lifted language, if it is given the unique
 value it expects. A particularly intriguing instance of that
 situation is the following program:
@@ -1101,7 +1102,7 @@ situation is the following program:
 
 The program takes a value of type
 \Acon{∙𝟙/}~(\Acon{∙𝟙/}~\Avar{A}). This would be a gc process
-specialized to collect another gc process! At runtime type there would
+specialized to collect another gc process! At runtime, there would
 be no information other than the functions that ignore their argument
 but the type system provides enough guarantees to ensure that this
 process is well-defined, is reversible, and is safe. The following
@@ -1219,7 +1220,7 @@ cancel each other when the gc process is expecting this particular
 value. In more general cases, the pair can be viewed as a space
 transformer that represents an implicit function that converts the value to the
 one expected by the gc process. Such space transformers can be
-composed and applied
+composed and applied.
 
 \PPFThof{}
 
@@ -1250,7 +1251,7 @@ The feedback loop in the diagram is realized using ancillae allocation
 and de-allocation. The safety condition on de-allocation ensures that
 the allocated value (now in the feedback loop) matches the
 de-allocated value. Thus, the entire traced component is treated as an
-ancillae value used internally used to perform the larger program but
+ancilla value used internally used to perform the larger program but
 leaving no memory footprint.
 
 %% SAT solver ??
