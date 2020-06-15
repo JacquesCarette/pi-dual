@@ -1,0 +1,50 @@
+\begin{tikzpicture}[scale=0.7,every node/.style={scale=0.7}]
+	\begin{pgfonlayer}{nodelayer}
+		\node [left,style=none] (1) at (-3, 2) {$A$};
+		\node [left,style=none] (0) at (-3, 1) {$B$};
+		\node [left,style=none] (2) at (-3, 0) {0};
+		\node [left,style=none] (3) at (-3, -1) {$C_{\mathit{in}}$};
+
+		\node [style=none] (4) at (4, 2) {};
+		\node [style=none] (5) at (4, 1) {};
+		\node [right,style=none] (6) at (4, 0) {$S$};
+		\node [right,style=none] (7) at (4, -1) {$C_{\mathit{out}}$};
+
+		\node [style=control] (12) at (-2, 2) {};
+		\node [style=control] (13) at (-2, 1) {};
+		\node [style=not] (30) at (-2, 0) {};
+
+		\node [style=control] (14) at (-0.25, 2) {};
+		\node [style=not] (31) at (-0.25, 1) {};
+		\node [style=none] (8) at (-1, 0) {};
+		\node [style=none] (9) at (-1, -1) {};
+		\node [style=none] (10) at (0.5, 0) {};
+		\node [style=none] (11) at (0.5, -1) {};
+
+		\node [style=control] (15) at (1.5, 1) {};
+		\node [style=control] (16) at (1.5, 0) {};
+		\node [style=not] (32) at (1.5, -1) {};
+
+		\node [style=control] (17) at (2.75, 1) {};
+		\node [style=not] (33) at (2.75, 0) {};
+	\end{pgfonlayer}
+	\begin{pgfonlayer}{edgelayer}
+		\draw (1) to (4);
+		\draw (0) to (5);
+		\draw (2) to (8.center);
+		\draw (3) to (9.center);
+
+		\draw (8.center) to (11.center);
+		\draw (9.center) to (10.center);
+
+		\draw (10.center) to (6);
+		\draw (11.center) to (7);
+
+		\draw (12.center) to (30.center);
+		\draw (14.center) to (31.center);
+		\draw (15.center) to (32.center);
+		\draw (17.center) to (33.center);
+
+
+	\end{pgfonlayer}
+\end{tikzpicture}

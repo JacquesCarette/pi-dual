@@ -11,7 +11,9 @@
 \usepackage{multicol}
 \usepackage{stmaryrd}
 \usepackage{proof}
-\usetikzlibrary{quotes,fit,positioning}
+\usetikzlibrary{quotes,fit,positioning,decorations}
+\usepackage{tikzit}
+\input{tikzit.tikzstyles}
 \tikzset{>=latex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -601,18 +603,19 @@ how inconvenient this is, consider the reversible full adder
 below designed by Desoete et al.~\cite{117414}:
 
 \begin{center}
-\includegraphics[scale=0.6]{full-adder.png}
+%%\includegraphics[scale=0.6]{full-adder.png}
+\input{full-adder.tikz}
 \end{center}
 
 In the figure (copied from a more general paper that includes
 alternative designs~\cite{Rentergem2005OptimalDO}), the full adder
 takes 4 inputs: the two bits to add $A$ and $B$, an incoming carry bit
-$C_i$, and a heap input initialized to 0 to maintain
+$C_{\mathit{in}}$, and a heap input initialized to 0 to maintain
 reversibility. There are four outputs: the first two are identical to
 the incoming bits $A$ and $B$ and are considered ``garbage.'' The
-third bit $S$ is the sum and the last bit $C_o$ is the outgoing carry
-bit. In the notation used to describe the circuit, the $\times$ denotes
-boolean negation and the dots are control bits. In our reversible
+third bit $S$ is the sum and the last bit $C_{\mathit{out}}$ is the outgoing carry
+bit. In the notation used to describe the circuit, the black dot represent
+control bits and the white dots represent negations. In our reversible
 language, we can express this circuit as the following permutation of
 type $[2^4] \rightarrow [2^4]$:
 
