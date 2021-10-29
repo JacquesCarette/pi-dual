@@ -1,0 +1,44 @@
+cff-version: 1.2.0
+title: "pi-dual"
+abstract: "Collaborative work on reversible computing and its relationship to Homotopy Type Theory."
+type: software
+message: "If you use this software, please cite it using these metadata."
+contact:
+  - family-names: Carette
+    given-names: Jacques
+    orcid: "https://orcid.org/0000-0001-8993-9804"
+    website: "https://www.cas.mcmaster.ca/~carette/"
+    affiliation: "McMaster University, Computing and Software Department"
+    email: "carette@mcmaster.ca"
+  - family-names: Sabry
+    given-names: Amr
+    orcid: "https://orcid.org/0000-0002-1025-7331"
+    website: "https://amr-sabry.luddy.indiana.edu/"
+    affiliation: "Indiana University, Department of Computer Science - Luddy School of Informatics, Computing, and Engineering"
+    email: "sabry@indiana.edu"
+keywords:
+  - agda
+  - "reversible computation"
+  - "homotopy type theory"
+  - research
+identifiers:
+  - description: "All archived snapshots of pi-dual."
+    type: doi
+    value: 10.5281/zenodo.5620828
+license: "BSD-2-Clause"
+repository: "https://github.com/JacquesCarette/pi-dual"
+version: "v0.1-alpha"
+date-released: "2021-10-29"
+authors:
+  - family-names: Carette
+    given-names: Jacques
+    orcid: "https://orcid.org/0000-0001-8993-9804"
+    website: "https://www.cas.mcmaster.ca/~carette/"
+    affiliation: "McMaster University, Computing and Software Department"
+    email: "carette@mcmaster.ca"
+  - family-names: Sabry
+    given-names: Amr
+    orcid: "https://orcid.org/0000-0002-1025-7331"
+    website: "https://amr-sabry.luddy.indiana.edu/"
+    affiliation: "Indiana University, Department of Computer Science - Luddy School of Informatics, Computing, and Engineering"
+    email: "sabry@indiana.edu"
