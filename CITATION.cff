@@ -22,6 +22,12 @@ contact:
     website: "https://vikraman.org"
     affiliation: "Indiana University, Department of Computer Science - Luddy School of Informatics, Computing, and Engineering"
     email: "vikraman@indiana.edu"
+  - family-names: Chen
+    given-names: Chao-Hong
+    orcid: "https://orcid.org/0000-0002-9314-8105"
+    website: "https://dreamlinuxer.github.io/"
+    affiliation: "Facebook, Inc."
+    email: "chaohong@fb.com"
 keywords:
   - agda
   - "reversible computation"
@@ -54,3 +60,9 @@ authors:
     website: "https://vikraman.org"
     affiliation: "Indiana University, Department of Computer Science - Luddy School of Informatics, Computing, and Engineering"
     email: "vikraman@indiana.edu"
+  - family-names: Chen
+    given-names: Chao-Hong
+    orcid: "https://orcid.org/0000-0002-9314-8105"
+    website: "https://dreamlinuxer.github.io/"
+    affiliation: "Facebook, Inc."
+    email: "chaohong@fb.com"
