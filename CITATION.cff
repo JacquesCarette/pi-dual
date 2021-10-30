@@ -16,6 +16,12 @@ contact:
     website: "https://amr-sabry.luddy.indiana.edu/"
     affiliation: "Indiana University, Department of Computer Science - Luddy School of Informatics, Computing, and Engineering"
     email: "sabry@indiana.edu"
+  - family-names: Choudhury
+    given-names: Vikraman
+    orcid: "https://orcid.org/0000-0003-2030-8056"
+    website: "https://vikraman.org"
+    affiliation: "Indiana University, Department of Computer Science - Luddy School of Informatics, Computing, and Engineering"
+    email: "vikraman@indiana.edu"
 keywords:
   - agda
   - "reversible computation"
@@ -42,3 +48,9 @@ authors:
     website: "https://amr-sabry.luddy.indiana.edu/"
     affiliation: "Indiana University, Department of Computer Science - Luddy School of Informatics, Computing, and Engineering"
     email: "sabry@indiana.edu"
+  - family-names: Choudhury
+    given-names: Vikraman
+    orcid: "https://orcid.org/0000-0003-2030-8056"
+    website: "https://vikraman.org"
+    affiliation: "Indiana University, Department of Computer Science - Luddy School of Informatics, Computing, and Engineering"
+    email: "vikraman@indiana.edu"
